@@ -6,7 +6,7 @@ module.exports = (env, argv) => {
     mode: mode,
     devtool: mode === 'production' ? false : 'cheap-source-map',
     entry: {
-      index: path.join(__dirname, 'src', 'index.js'),
+      index: path.join(__dirname, 'src', 'index.ts'),
     },
     output: {
       path: path.join(__dirname, 'build'),
@@ -14,9 +14,16 @@ module.exports = (env, argv) => {
       clean: true,
     },
     module: {
+      rules: [
+        {
+          test: /\.ts$/,
+          use: 'ts-loader',
+          exclude: /node_modules/,
+        },
+      ],
     },
     resolve: {
-      extensions: ['.js'],
+      extensions: ['.ts'],
     },
     plugins: [
     ],
