@@ -6,6 +6,7 @@
   "scripts": {
     "build": "webpack --mode development",
     "build:production": "webpack --mode production",
+    "clean": "rimraf build",
     "eslint": "eslint src/**/*.ts",
     "prettier:check": "prettier --check src/",
     "prettier:write": "prettier --write src/"
