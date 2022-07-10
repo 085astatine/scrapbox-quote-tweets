@@ -6,8 +6,10 @@
   "scripts": {
     "chrome:build": "TARGET_BROWSER=chrome webpack --mode development",
     "chrome:production": "TARGET_BROWSER=chrome webpack --mode production",
+    "chrome:run": "TARGET_BROWSER=chrome node web-ext-run.mjs",
     "firefox:build": "TARGET_BROWSER=firefox webpack --mode development",
     "firefox:production": "TARGET_BROWSER=firefox webpack --mode production",
+    "firefox:run": "TARGET_BROWSER=firefox node web-ext-run.mjs",
     "clean": "rimraf build",
     "eslint": "eslint src/**/*.ts",
     "prettier:check": "prettier --check src/",
