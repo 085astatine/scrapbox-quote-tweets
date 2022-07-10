@@ -4,6 +4,7 @@ const WextManifestPlugin = require('wext-manifest-webpack-plugin');
 
 module.exports = (env, argv) => {
   const mode = argv?.mode || 'development';
+  const browser = process.env.TARGET_BROWSER;
   return {
     mode: mode,
     devtool: mode === 'production' ? false : 'cheap-source-map',
@@ -12,7 +13,7 @@ module.exports = (env, argv) => {
       manifest: path.join(__dirname, 'src', 'manifest.json'),
     },
     output: {
-      path: path.join(__dirname, 'build'),
+      path: path.join(__dirname, 'build', browser),
       filename: '[name].js',
       clean: true,
     },
