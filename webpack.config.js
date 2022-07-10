@@ -1,5 +1,6 @@
 const path = require('path');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const WextManifestPlugin = require('wext-manifest-webpack-plugin');
 
 module.exports = (env, argv) => {
   const mode = argv?.mode || 'development';
@@ -8,6 +9,7 @@ module.exports = (env, argv) => {
     devtool: mode === 'production' ? false : 'cheap-source-map',
     entry: {
       index: path.join(__dirname, 'src', 'index.ts'),
+      manifest: path.join(__dirname, 'src', 'manifest.json'),
     },
     output: {
       path: path.join(__dirname, 'build'),
@@ -21,6 +23,17 @@ module.exports = (env, argv) => {
           use: 'ts-loader',
           exclude: /node_modules/,
         },
+        {
+          type: 'javascript/auto',
+          test: /manifest\.json$/,
+          use: {
+            loader: 'wext-manifest-loader',
+            options: {
+              usePackageJSONVersion: true,
+            },
+          },
+          exclude: /node_modules/,
+        },
       ],
     },
     resolve: {
@@ -31,6 +44,7 @@ module.exports = (env, argv) => {
         extensions: ['ts'],
         exclude: ['node_modules'],
       }),
+      new WextManifestPlugin(),
     ],
   };
 };
