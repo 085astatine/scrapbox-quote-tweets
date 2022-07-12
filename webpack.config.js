@@ -8,6 +8,7 @@ module.exports = (env, argv) => {
   return {
     mode: mode,
     devtool: mode === 'production' ? false : 'cheap-source-map',
+    context: path.join(__dirname),
     entry: {
       index: path.join(__dirname, 'src', 'index.ts'),
       manifest: path.join(__dirname, 'src', 'manifest.json'),
