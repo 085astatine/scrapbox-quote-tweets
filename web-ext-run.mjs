@@ -44,8 +44,12 @@ const main = async () => {
     sourceDir,
   };
 
+  if (browser === 'firefox') {
+    webExtOptions.startUrl = 'about:debugging#/runtime/this-firefox';
+  }
   if (browser === 'chrome') {
     webExtOptions.chromiumBinary = (await chromePaths())[0];
+    webExtOptions.startUrl = 'chrome://extensions';
   }
 
   console.log(webExtOptions);
