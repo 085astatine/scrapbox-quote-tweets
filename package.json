@@ -43,5 +43,9 @@
     "webpack-cli": "^4.10.0",
     "wext-manifest-loader": "^2.4.1",
     "wext-manifest-webpack-plugin": "^1.2.1"
+  },
+  "dependencies": {
+    "typescript-logging": "^2.0.1",
+    "typescript-logging-category-style": "^2.0.1"
   }
 }
