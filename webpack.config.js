@@ -11,6 +11,7 @@ module.exports = (env, argv) => {
     context: path.join(__dirname),
     entry: {
       index: path.join(__dirname, 'src', 'index.ts'),
+      'content-twitter': path.join(__dirname, 'src', 'content-twitter.ts'),
       manifest: path.join(__dirname, 'src', 'manifest.json'),
     },
     output: {
