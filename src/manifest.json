@@ -3,6 +3,11 @@
   "__firefox__manifest_version": 2,
   "name": "Scrapbox Copy Tweets",
 
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+
   "content_scripts": [
     {
       "matches": ["https://twitter.com/*"],
