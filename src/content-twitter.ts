@@ -1,4 +1,6 @@
+import browser from 'webextension-polyfill';
 import { loggerProvider } from './logger';
+import { Message } from './message';
 
 const logger = loggerProvider.getCategory('content-twitter');
 
@@ -46,3 +48,11 @@ window.addEventListener('load', () => {
     observer.observe(node, options);
   }
 });
+
+// message: url changed
+const urlChangedListener = (message: Message) => {
+  if (message.type == 'url_changed') {
+    logger.info('url changged');
+  }
+};
+browser.runtime.onMessage.addListener(urlChangedListener);
