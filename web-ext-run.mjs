@@ -61,6 +61,7 @@ const main = async () => {
 
   if (browser === 'firefox') {
     webExtOptions.startUrl = 'about:debugging#/runtime/this-firefox';
+    webExtOptions.pref = { 'devtools.toolbox.host': 'window' };
   }
   if (browser === 'chrome') {
     webExtOptions.chromiumBinary = (await chromePaths())[0];
