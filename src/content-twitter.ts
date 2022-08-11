@@ -18,9 +18,7 @@ const getNode = (xpath: string): Node | null => {
   );
   const node = result.singleNodeValue;
   if (node !== null) {
-    logger.info(
-      `node: name=${node.nodeName}, type=${showNodeType(node.nodeType)})`
-    );
+    logger.info(`node: ${showNode(node)}`);
   } else {
     logger.error('node is not found');
   }
@@ -60,6 +58,11 @@ const nodeTypeToString = (nodeType: number): string => {
 const showNodeType = (nodeType: number): string => {
   return `${nodeType}(${nodeTypeToString(nodeType)})`;
 };
+
+const showNode = (node: Node): string => {
+  return `${node.nodeName} type=${showNodeType(node.nodeType)}`;
+};
+
 // observer
 const observerCallback = (records: MutationRecord[]): void => {
   logger.info('mutation observer callback');
