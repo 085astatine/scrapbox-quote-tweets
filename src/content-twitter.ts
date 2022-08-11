@@ -67,7 +67,21 @@ const showNode = (node: Node): string => {
 const observerCallback = (records: MutationRecord[]): void => {
   logger.info('mutation observer callback');
   records.forEach((record) => {
-    logger.info('record:', { type: record.type });
+    // show record
+    showMutationRecord(record);
+  });
+};
+
+const showMutationRecord = (record: MutationRecord) => {
+  // .type
+  logger.info(`record type: ${record.type}`);
+  // .addedNodes
+  record.addedNodes.forEach((node) => {
+    logger.info(`added node: ${showNode(node)}`);
+  });
+  // .removedNodes
+  record.removedNodes.forEach((node) => {
+    logger.info(`removed node: ${showNode(node)}`);
   });
 };
 const observer = new MutationObserver(observerCallback);
