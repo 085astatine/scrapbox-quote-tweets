@@ -23,7 +23,7 @@ module.exports = (env, argv) => {
     module: {
       rules: [
         {
-          test: /\.ts$/,
+          test: /\.tsx?$/,
           use: 'ts-loader',
           exclude: /node_modules/,
         },
@@ -41,7 +41,7 @@ module.exports = (env, argv) => {
       ],
     },
     resolve: {
-      extensions: ['.ts'],
+      extensions: ['.ts', '.tsx'],
     },
     plugins: [
       new ESLintPlugin({
