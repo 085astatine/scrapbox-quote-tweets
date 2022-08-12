@@ -28,6 +28,8 @@
   },
   "homepage": "https://github.com/085astatine/scrapbox-copy-tweets#readme",
   "devDependencies": {
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
     "@types/webextension-polyfill": "^0.9.0",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",
@@ -48,6 +50,8 @@
     "wext-manifest-webpack-plugin": "^1.2.1"
   },
   "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "typescript-logging": "^2.0.1",
     "typescript-logging-category-style": "^2.0.1",
     "webextension-polyfill": "^0.9.0"
