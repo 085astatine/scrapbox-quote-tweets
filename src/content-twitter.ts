@@ -82,6 +82,7 @@ const observerCallback = (records: MutationRecord[]): void => {
       // tweet nodes
       findTweetNodes(node).forEach((node) => {
         logger.info(`tweet node: ${showNode(node)}`);
+        insertCopyButton(node);
       });
     });
   });
@@ -117,6 +118,25 @@ const findTweetNodes = (element: Element): Element[] => {
     }
   }
   return nodes;
+};
+
+const insertCopyButton = (element: Element) => {
+  // button group
+  const xpathResult = document.evaluate(
+    '(.//div[@role="group"])[last()]',
+    element,
+    null,
+    XPathResult.FIRST_ORDERED_NODE_TYPE,
+    null
+  );
+  const group = xpathResult.singleNodeValue;
+  if (group === null) {
+    logger.warn('<div role="group"> is not found');
+    return;
+  }
+  // insert
+  const button = group.appendChild(document.createElement('div'));
+  button.textContent = 'copy';
 };
 
 // observe body
