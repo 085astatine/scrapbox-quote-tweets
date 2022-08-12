@@ -13,7 +13,7 @@
     "firefox:run": "PATH=./bin:$PATH TARGET_BROWSER=firefox node web-ext-run.mjs",
     "firefox:watch": "TARGET_BROWSER=firefox webpack --watch --mode development",
     "clean": "rimraf build",
-    "eslint": "eslint src/**/*.ts",
+    "eslint": "eslint src/**/*.ts src/**/*.tsx",
     "prettier:check": "prettier --check src/",
     "prettier:write": "prettier --write src/"
   },

@@ -8,6 +8,8 @@
     "google",
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
     "prettier"
   ],
   "parserOptions": {
@@ -15,5 +17,10 @@
   },
   "rules": {
     "require-jsdoc": "off"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }
