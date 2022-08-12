@@ -12,7 +12,7 @@ module.exports = (env, argv) => {
     entry: {
       index: path.join(__dirname, 'src', 'index.ts'),
       background: path.join(__dirname, 'src', 'background.ts'),
-      'content-twitter': path.join(__dirname, 'src', 'content-twitter.ts'),
+      'content-twitter': path.join(__dirname, 'src', 'content-twitter.tsx'),
       manifest: path.join(__dirname, 'src', 'manifest.json'),
     },
     output: {
