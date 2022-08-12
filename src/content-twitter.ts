@@ -63,12 +63,27 @@ const showNode = (node: Node): string => {
   return `${node.nodeName} type=${showNodeType(node.nodeType)}`;
 };
 
+const isElement = (node: Node): node is Element => {
+  return node.nodeType === Node.ELEMENT_NODE;
+};
+
 // observer
 const observerCallback = (records: MutationRecord[]): void => {
   logger.info('mutation observer callback');
   records.forEach((record) => {
     // show record
     showMutationRecord(record);
+    // tweet nodes
+    record.addedNodes.forEach((node) => {
+      // check if node is an element
+      if (!isElement(node)) {
+        return;
+      }
+      // tweet nodes
+      findTweetNodes(node).forEach((node) => {
+        logger.info(`tweet node: ${showNode(node)}`);
+      });
+    });
   });
 };
 
@@ -83,6 +98,25 @@ const showMutationRecord = (record: MutationRecord) => {
   record.removedNodes.forEach((node) => {
     logger.info(`removed node: ${showNode(node)}`);
   });
+};
+
+const findTweetNodes = (element: Element): Element[] => {
+  const nodes = [];
+  const xpathResult = document.evaluate(
+    './/article[@data-testid="tweet"]',
+    element,
+    null,
+    XPathResult.ORDERED_NODE_ITERATOR_TYPE,
+    null
+  );
+  let node: Node | null;
+  while ((node = xpathResult.iterateNext())) {
+    showNode(node);
+    if (isElement(node)) {
+      nodes.push(node);
+    }
+  }
+  return nodes;
 };
 
 // observe body
