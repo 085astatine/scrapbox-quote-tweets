@@ -84,21 +84,17 @@ const showMutationRecord = (record: MutationRecord) => {
     logger.info(`removed node: ${showNode(node)}`);
   });
 };
+
+// observe body
 const observer = new MutationObserver(observerCallback);
 
-// window: load event
-window.addEventListener('load', () => {
-  logger.info('window load event');
-  const xpath = '//section[@aria-labelledby="accessible-list-0"]/div';
-  const node = getNode(xpath);
-  console.log('load event:', node);
-  if (node !== null) {
-    const options = {
-      subtree: true,
-      childList: true,
-    };
-    observer.observe(node, options);
-  }
+window.addEventListener('DOMContentLoaded', () => {
+  logger.info('window DOMContentLoaded event');
+  const options = {
+    subtree: true,
+    childList: true,
+  };
+  observer.observe(document.body, options);
 });
 
 // message: url changed
