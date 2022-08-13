@@ -11,6 +11,8 @@ module.exports = (env, argv) => {
     context: path.join(__dirname),
     entry: {
       index: path.join(__dirname, 'src', 'index.ts'),
+      background: path.join(__dirname, 'src', 'background.ts'),
+      'content-twitter': path.join(__dirname, 'src', 'content-twitter.tsx'),
       manifest: path.join(__dirname, 'src', 'manifest.json'),
     },
     output: {
@@ -21,7 +23,7 @@ module.exports = (env, argv) => {
     module: {
       rules: [
         {
-          test: /\.ts$/,
+          test: /\.tsx?$/,
           use: 'ts-loader',
           exclude: /node_modules/,
         },
@@ -39,7 +41,7 @@ module.exports = (env, argv) => {
       ],
     },
     resolve: {
-      extensions: ['.ts'],
+      extensions: ['.ts', '.tsx'],
     },
     plugins: [
       new ESLintPlugin({

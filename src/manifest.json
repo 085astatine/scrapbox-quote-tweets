@@ -1,5 +1,20 @@
 {
   "__chrome__manifest_version": 3,
   "__firefox__manifest_version": 2,
-  "name": "Scrapbox Copy Tweets"
+  "name": "Scrapbox Copy Tweets",
+
+  "permissions": ["tabs"],
+
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://twitter.com/*"],
+      "run_at": "document_start",
+      "js": ["content-twitter.js"]
+    }
+  ]
 }
