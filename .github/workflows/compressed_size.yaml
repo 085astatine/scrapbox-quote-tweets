@@ -1,0 +1,30 @@
+name: Compressed Size
+
+on:
+  - pull_request
+  - push
+
+jobs:
+  compressed_size:
+    runs-on: ubuntu-latest
+    env:
+      node-version: 18
+
+    steps:
+      # Checkout
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Setup Node.js
+      - name: Setup Node.js ${{ env.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.node-version }}
+          cache: npm
+
+      # Compressed Size Action
+      - name: Compressed Size Action
+        uses: preactjs/compressed-size-action@v2
+        with:
+          build-script: all-production
+          pattern: ./build/**/*.{css,js,json}
