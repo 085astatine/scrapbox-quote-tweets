@@ -1,4 +1,6 @@
 import browser from 'webextension-polyfill';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 import { loggerProvider } from './logger';
 import { Message } from './message';
 
@@ -120,6 +122,10 @@ const findTweetNodes = (element: Element): Element[] => {
   return nodes;
 };
 
+const CopyButton = () => {
+  return <div>React Copy</div>;
+};
+
 const insertCopyButton = (element: Element) => {
   // button group
   const xpathResult = document.evaluate(
@@ -136,7 +142,8 @@ const insertCopyButton = (element: Element) => {
   }
   // insert
   const button = group.appendChild(document.createElement('div'));
-  button.textContent = 'copy';
+  const reactRoot = createRoot(button);
+  reactRoot.render(<CopyButton />);
 };
 
 // observe body
