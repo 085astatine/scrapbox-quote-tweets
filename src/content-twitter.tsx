@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import browser from 'webextension-polyfill';
+import { Copy } from './component/copy';
 import { loggerProvider } from './logger';
 import { Message } from './message';
 
@@ -91,7 +92,7 @@ const observerCallback = (records: MutationRecord[]): void => {
         }
         // render by React
         const reactRoot = createRoot(rootDiv);
-        reactRoot.render(<CopyButton />);
+        reactRoot.render(<Copy />);
       });
     });
   });
@@ -127,10 +128,6 @@ const findTweetNodes = (element: Element): Element[] => {
     }
   }
   return nodes;
-};
-
-const CopyButton = () => {
-  return <div>React Copy</div>;
 };
 
 const reactRootDiv = (element: Element): Element | null => {
