@@ -5,6 +5,7 @@ import { Copy } from './component/copy';
 import { getNode, isElement, showMutationRecord, showNode } from './lib/dom';
 import { loggerProvider } from './lib/logger';
 import { Message } from './lib/message';
+import { parseTweet } from './lib/parse-tweet';
 
 const logger = loggerProvider.getCategory('content-twitter');
 
@@ -30,6 +31,8 @@ const observerCallback = (records: MutationRecord[]): void => {
         if (rootDiv === null) {
           return;
         }
+        // parse tweet
+        parseTweet(node, logger);
         // render by React
         const reactRoot = createRoot(rootDiv);
         reactRoot.render(<Copy />);
