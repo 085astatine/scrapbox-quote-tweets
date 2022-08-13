@@ -12,6 +12,8 @@
     "firefox:production": "TARGET_BROWSER=firefox webpack --mode production",
     "firefox:run": "PATH=./bin:$PATH TARGET_BROWSER=firefox node web-ext-run.mjs",
     "firefox:watch": "TARGET_BROWSER=firefox webpack --watch --mode development",
+    "all-build": "run-p *:build",
+    "all-production": "run-p *:production",
     "clean": "rimraf build",
     "eslint": "eslint src/**/*.ts src/**/*.tsx",
     "prettier:check": "prettier --check src/",
