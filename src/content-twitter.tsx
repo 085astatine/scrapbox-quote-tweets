@@ -9,11 +9,11 @@ const logger = loggerProvider.getCategory('content-twitter');
 logger.info('content script');
 
 // node
-const getNode = (xpath: string): Node | null => {
+const getNode = (xpath: string, parent?: Node): Node | null => {
   logger.info('search node', { xpath });
   const result = document.evaluate(
     xpath,
-    document.body,
+    parent ?? document,
     null,
     XPathResult.FIRST_ORDERED_NODE_TYPE,
     null
@@ -84,7 +84,14 @@ const observerCallback = (records: MutationRecord[]): void => {
       // tweet nodes
       findTweetNodes(node).forEach((node) => {
         logger.info(`tweet node: ${showNode(node)}`);
-        insertCopyButton(node);
+        // react root
+        const rootDiv = reactRootDiv(node);
+        if (rootDiv === null) {
+          return;
+        }
+        // render by React
+        const reactRoot = createRoot(rootDiv);
+        reactRoot.render(<CopyButton />);
       });
     });
   });
@@ -126,7 +133,7 @@ const CopyButton = () => {
   return <div>React Copy</div>;
 };
 
-const insertCopyButton = (element: Element) => {
+const reactRootDiv = (element: Element): Element | null => {
   // button group
   const xpathResult = document.evaluate(
     '(.//div[@role="group"])[last()]',
@@ -138,12 +145,18 @@ const insertCopyButton = (element: Element) => {
   const group = xpathResult.singleNodeValue;
   if (group === null) {
     logger.warn('<div role="group"> is not found');
-    return;
+    return null;
   }
-  // insert
-  const button = group.appendChild(document.createElement('div'));
-  const reactRoot = createRoot(button);
-  reactRoot.render(<CopyButton />);
+  // check if react root exists
+  if (getNode('./div[@scrapbox-copy-tweets="copy"]', group) !== null) {
+    logger.info('root <div/> already exists');
+    return null;
+  }
+  // create react root <div scrapbox-copy-tweets="copy"/>
+  logger.info('create <div scrapbox-copy-tweets="copy"/>');
+  const root = group.appendChild(document.createElement('div'));
+  root.setAttribute('scrapbox-copy-tweets', 'copy');
+  return root;
 };
 
 // observe body
