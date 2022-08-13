@@ -2,8 +2,8 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import browser from 'webextension-polyfill';
 import { Copy } from './component/copy';
-import { loggerProvider } from './logger';
-import { Message } from './message';
+import { loggerProvider } from './lib/logger';
+import { Message } from './lib/message';
 
 const logger = loggerProvider.getCategory('content-twitter');
 

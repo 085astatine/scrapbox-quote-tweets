@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { loggerProvider } from './logger';
+import { loggerProvider } from './lib/logger';
 
 const logger = loggerProvider.getCategory('background');
 
