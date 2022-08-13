@@ -16,7 +16,7 @@ const observerCallback = (records: MutationRecord[]): void => {
   logger.info('mutation observer callback');
   records.forEach((record) => {
     // show record
-    showMutationRecord(record);
+    showMutationRecord(record, logger);
     // tweet nodes
     record.addedNodes.forEach((node) => {
       // check if node is an element
