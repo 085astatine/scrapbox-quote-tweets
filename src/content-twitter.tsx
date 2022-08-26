@@ -2,10 +2,10 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import browser from 'webextension-polyfill';
 import { Copy } from './component/copy';
-import { getNode, isElement, showMutationRecord, showNode } from './lib/dom';
+import { showMutationRecord } from './lib/dom';
+import { findTweets } from './lib/find-tweets';
 import { loggerProvider } from './lib/logger';
 import { Message } from './lib/message';
-import { parseTweet } from './lib/parse-tweet';
 
 const logger = loggerProvider.getCategory('content-twitter');
 
@@ -19,71 +19,13 @@ const observerCallback = (records: MutationRecord[]): void => {
     showMutationRecord(record, logger);
     // tweet nodes
     record.addedNodes.forEach((node) => {
-      // check if node is an element
-      if (!isElement(node)) {
-        return;
-      }
-      // tweet nodes
-      findTweetNodes(node).forEach((node) => {
-        logger.info(`tweet node: ${showNode(node)}`);
-        // react root
-        const rootDiv = reactRootDiv(node);
-        if (rootDiv === null) {
-          return;
-        }
-        // parse tweet
-        const tweetID = parseTweet(node, logger);
+      findTweets(node, logger).forEach((tweet) => {
         // render by React
-        const reactRoot = createRoot(rootDiv);
-        reactRoot.render(<Copy tweetID={tweetID} />);
+        const reactRoot = createRoot(tweet.reactRoot);
+        reactRoot.render(<Copy tweetID={tweet.tweetID} />);
       });
     });
   });
-};
-
-const findTweetNodes = (element: Element): Element[] => {
-  const nodes = [];
-  const xpathResult = document.evaluate(
-    './/article[@data-testid="tweet"]',
-    element,
-    null,
-    XPathResult.ORDERED_NODE_ITERATOR_TYPE,
-    null
-  );
-  let node: Node | null;
-  while ((node = xpathResult.iterateNext())) {
-    showNode(node);
-    if (isElement(node)) {
-      nodes.push(node);
-    }
-  }
-  return nodes;
-};
-
-const reactRootDiv = (element: Element): Element | null => {
-  // button group
-  const xpathResult = document.evaluate(
-    '(.//div[@role="group"])[last()]',
-    element,
-    null,
-    XPathResult.FIRST_ORDERED_NODE_TYPE,
-    null
-  );
-  const group = xpathResult.singleNodeValue;
-  if (group === null) {
-    logger.warn('<div role="group"> is not found');
-    return null;
-  }
-  // check if react root exists
-  if (getNode('./div[@scrapbox-copy-tweets="copy"]', group, logger) !== null) {
-    logger.info('root <div/> already exists');
-    return null;
-  }
-  // create react root <div scrapbox-copy-tweets="copy"/>
-  logger.info('create <div scrapbox-copy-tweets="copy"/>');
-  const root = group.appendChild(document.createElement('div'));
-  root.setAttribute('scrapbox-copy-tweets', 'copy');
-  return root;
 };
 
 // observe body
