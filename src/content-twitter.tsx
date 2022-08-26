@@ -32,10 +32,10 @@ const observerCallback = (records: MutationRecord[]): void => {
           return;
         }
         // parse tweet
-        parseTweet(node, logger);
+        const tweetID = parseTweet(node, logger);
         // render by React
         const reactRoot = createRoot(rootDiv);
-        reactRoot.render(<Copy />);
+        reactRoot.render(<Copy tweetID={tweetID} />);
       });
     });
   });
