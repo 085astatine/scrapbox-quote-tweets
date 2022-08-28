@@ -53,6 +53,21 @@ const findTweetArticles = (node: Node): Element[] => {
   return articles;
 };
 
+interface TweetLink {
+  username: string;
+  id: bigint;
+}
+
+const parseTweetLink = (link: string): TweetLink | null => {
+  const match = link.match(/\/(?<username>\w+)\/status\/(?<id>[0-9]+)/);
+  const username = match?.groups?.username;
+  const id = match?.groups?.id;
+  if (username !== undefined && id !== undefined) {
+    return { username, id: BigInt(id) };
+  }
+  return null;
+};
+
 const parseTweetID = (element: Element, logger: CoreLogger): bigint | null => {
   logger.info('parse tweet');
   // link node
@@ -72,13 +87,12 @@ const parseTweetID = (element: Element, logger: CoreLogger): bigint | null => {
     return null;
   }
   // parse link
-  const linkMatch = link.match(/\/(?<username>\w+)\/status\/(?<id>[0-9]+)/);
-  const tweetID = linkMatch?.groups?.id ?? null;
-  if (tweetID === null) {
+  const tweetLink = parseTweetLink(link);
+  if (tweetLink === null) {
     logger.warn(`failed to match: ${link}`);
     return null;
   }
-  return BigInt(tweetID);
+  return tweetLink.id;
 };
 
 const createRootDiv = (
