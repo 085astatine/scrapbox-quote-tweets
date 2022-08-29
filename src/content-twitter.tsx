@@ -19,7 +19,7 @@ const observerCallback = (records: MutationRecord[]): void => {
     showMutationRecord(record, logger);
     // tweet nodes
     record.addedNodes.forEach((node) => {
-      findTweets(node, logger).forEach((tweet) => {
+      findTweets(node, document.URL, logger).forEach((tweet) => {
         // render by React
         const reactRoot = createRoot(tweet.reactRoot);
         reactRoot.render(<Copy tweetID={tweet.tweetID} />);

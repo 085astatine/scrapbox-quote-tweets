@@ -11,6 +11,7 @@ export interface FindTweetResult {
 
 export const findTweets = (
   node: Node,
+  url: string,
   logger: CoreLogger = defaultLogger
 ): FindTweetResult[] => {
   logger.info('find tweets');
@@ -18,7 +19,7 @@ export const findTweets = (
   // find <article data-testid="tweet"/>
   findTweetArticles(node).forEach((element) => {
     // find TweetID
-    const tweetID = parseTweetID(element, logger);
+    const tweetID = parseTweetID(element, url, logger);
     if (tweetID === null) {
       return;
     }
@@ -33,6 +34,17 @@ export const findTweets = (
     });
   });
   return result;
+};
+
+type URLType = 'twitter' | 'tweet' | 'other';
+
+const matchURLType = (url: string): URLType => {
+  const host = 'https://twitter.com';
+  if (url.startsWith(host)) {
+    const tweetLink = parseTweetLink(url.slice(host.length));
+    return tweetLink !== null ? 'tweet' : 'twitter';
+  }
+  return 'other';
 };
 
 const findTweetArticles = (node: Node): Element[] => {
@@ -68,7 +80,30 @@ const parseTweetLink = (link: string): TweetLink | null => {
   return null;
 };
 
-const parseTweetID = (element: Element, logger: CoreLogger): bigint | null => {
+const parseTweetID = (
+  element: Element,
+  url: string,
+  logger: CoreLogger
+): bigint | null => {
+  const urlType = matchURLType(url);
+  switch (urlType) {
+    case 'twitter':
+      return parseTweetIdInTwitterPage(element, logger);
+    case 'tweet':
+      return parseTweetIdInTweetPage(element, url, logger);
+    case 'other':
+      return null;
+    default: {
+      const _: never = urlType;
+      return _;
+    }
+  }
+};
+
+const parseTweetIdInTwitterPage = (
+  element: Element,
+  logger: CoreLogger
+): bigint | null => {
   logger.info('parse tweet');
   // link node
   const linkNode = getNode(
@@ -93,6 +128,27 @@ const parseTweetID = (element: Element, logger: CoreLogger): bigint | null => {
     return null;
   }
   return tweetLink.id;
+};
+
+const parseTweetIdInTweetPage = (
+  element: Element,
+  url: string,
+  logger: CoreLogger
+): bigint | null => {
+  // get tweet ID from <a href="..."/>
+  const tweetID = parseTweetIdInTwitterPage(element, logger);
+  if (tweetID !== null) {
+    return tweetID;
+  }
+  // get tweet ID from URL
+  const host = 'https://twitter.com';
+  if (url.startsWith(host)) {
+    const tweetLink = parseTweetLink(url.slice(host.length));
+    if (tweetLink !== null) {
+      return tweetLink.id;
+    }
+  }
+  return null;
 };
 
 const createRootDiv = (
