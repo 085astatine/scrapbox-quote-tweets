@@ -58,6 +58,7 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "twitter-api-v2": "^1.12.5",
     "typescript-logging": "^2.0.1",
     "typescript-logging-category-style": "^2.0.1",
     "webextension-polyfill": "^0.9.0"
