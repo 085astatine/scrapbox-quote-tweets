@@ -1,5 +1,6 @@
 const path = require('path');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const WextManifestPlugin = require('wext-manifest-webpack-plugin');
 
 module.exports = (env, argv) => {
@@ -42,12 +43,16 @@ module.exports = (env, argv) => {
     },
     resolve: {
       extensions: ['.js', '.ts', '.tsx'],
+      fallback: {
+        fs: false,
+      },
     },
     plugins: [
       new ESLintPlugin({
         extensions: ['ts'],
         exclude: ['node_modules'],
       }),
+      new NodePolyfillPlugin(),
       new WextManifestPlugin(),
     ],
   };
