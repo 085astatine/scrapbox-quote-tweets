@@ -41,7 +41,7 @@ module.exports = (env, argv) => {
       ],
     },
     resolve: {
-      extensions: ['.ts', '.tsx'],
+      extensions: ['.js', '.ts', '.tsx'],
     },
     plugins: [
       new ESLintPlugin({
