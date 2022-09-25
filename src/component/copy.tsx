@@ -12,7 +12,7 @@ export const Copy: React.FC<CopyProps> = (props) => {
     // send message to background
     browser.runtime.sendMessage({
       type: 'tweet_copy_request',
-      tweetID: props.tweetID,
+      tweetID: `${props.tweetID}`,
     });
   };
   return <div onClick={onClick}>Copy</div>;
