@@ -1,3 +1,4 @@
+import 'error-polyfill';
 import browser from 'webextension-polyfill';
 import { loggerProvider } from './lib/logger';
 import { Message } from './lib/message';
