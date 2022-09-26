@@ -1,4 +1,5 @@
 import 'error-polyfill';
+import { TweetV2LookupResult, TwitterApi } from 'twitter-api-v2';
 import browser from 'webextension-polyfill';
 import { loggerProvider } from './lib/logger';
 import { Message } from './lib/message';
@@ -23,10 +24,26 @@ const urlChangedListener = async (
 
 browser.tabs.onUpdated.addListener(urlChangedListener);
 
+// Twitter API Client
+const createTwitterApiClient = () => {
+  const bearerToken = process.env.BEARER_TOKEN;
+  if (bearerToken === undefined) {
+    return null;
+  }
+  return new TwitterApi(bearerToken, { compression: 'identity' }).v2.readOnly;
+};
+
+const twitterApiClient = createTwitterApiClient();
+
 // Tweet Copy Request
 const tweetCopyRequestListener = (message: Message) => {
   if (message.type === 'tweet_copy_request') {
     logger.info(`tweet copy request: ${message.tweetID}`);
+    if (twitterApiClient !== null) {
+      twitterApiClient
+        .tweets(`${message.tweetID}`)
+        .then((result: TweetV2LookupResult) => console.log(result));
+    }
   }
 };
 

@@ -3,7 +3,7 @@
   "__firefox__manifest_version": 2,
   "name": "Scrapbox Copy Tweets",
 
-  "permissions": ["tabs"],
+  "permissions": ["tabs", "https://api.twitter.com/2/*"],
 
   "background": {
     "scripts": ["background.js"],
