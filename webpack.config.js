@@ -1,4 +1,5 @@
 const path = require('path');
+const DotenvPlugin = require('dotenv-webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const WextManifestPlugin = require('wext-manifest-webpack-plugin');
@@ -48,6 +49,7 @@ module.exports = (env, argv) => {
       },
     },
     plugins: [
+      new DotenvPlugin(),
       new ESLintPlugin({
         extensions: ['ts'],
         exclude: ['node_modules'],
