@@ -30,6 +30,10 @@ module.exports = (env, argv) => {
           exclude: /node_modules/,
         },
         {
+          test: /\.s[ac]ss$/,
+          use: ['style-loader', 'css-loader', 'sass-loader'],
+        },
+        {
           type: 'javascript/auto',
           test: /manifest\.json$/,
           use: {
