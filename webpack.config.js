@@ -34,6 +34,10 @@ module.exports = (env, argv) => {
           use: ['style-loader', 'css-loader', 'sass-loader'],
         },
         {
+          test: /\.svg$/,
+          use: ['@svgr/webpack'],
+        },
+        {
           type: 'javascript/auto',
           test: /manifest\.json$/,
           use: {
