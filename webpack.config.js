@@ -1,4 +1,5 @@
 const path = require('path');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const DotenvPlugin = require('dotenv-webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -50,6 +51,9 @@ module.exports = (env, argv) => {
           exclude: /node_modules/,
         },
       ],
+    },
+    optimization: {
+      minimizer: [new CssMinimizerPlugin()],
     },
     resolve: {
       extensions: ['.js', '.ts', '.tsx'],
