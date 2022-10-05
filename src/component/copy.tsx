@@ -15,5 +15,9 @@ export const Copy: React.FC<CopyProps> = (props) => {
       tweetID: `${props.tweetID}`,
     });
   };
-  return <div onClick={onClick}>Copy</div>;
+  return (
+    <div onClick={onClick}>
+      <button className="copy-button">Copy</button>
+    </div>
+  );
 };

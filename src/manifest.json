@@ -14,7 +14,8 @@
     {
       "matches": ["https://twitter.com/*"],
       "run_at": "document_start",
-      "js": ["content-twitter.js"]
+      "js": ["content-twitter.js"],
+      "css": ["content-twitter.css"]
     }
   ]
 }
