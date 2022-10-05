@@ -1,6 +1,7 @@
 const path = require('path');
 const DotenvPlugin = require('dotenv-webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const WextManifestPlugin = require('wext-manifest-webpack-plugin');
 
@@ -31,7 +32,7 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.s[ac]ss$/,
-          use: ['style-loader', 'css-loader', 'sass-loader'],
+          use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
         },
         {
           test: /\.svg$/,
@@ -62,6 +63,7 @@ module.exports = (env, argv) => {
         extensions: ['ts'],
         exclude: ['node_modules'],
       }),
+      new MiniCssExtractPlugin(),
       new NodePolyfillPlugin(),
       new WextManifestPlugin(),
     ],
