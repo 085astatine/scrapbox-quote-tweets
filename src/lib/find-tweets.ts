@@ -23,7 +23,7 @@ export const findTweets = (
     if (tweetID === null) {
       return;
     }
-    // create <div scrapbox-copy-tweets="copy"/>
+    // create <div class="scrapbox-copy-tweets" />
     const reactRoot = createRootDiv(element, logger);
     if (reactRoot === null) {
       return;
@@ -169,13 +169,13 @@ const createRootDiv = (
     return null;
   }
   // check if react root exists
-  if (getNode('./div[@scrapbox-copy-tweets="copy"]', group, logger) !== null) {
+  if (getNode('./div[@class="scrapbox-copy-tweets"]', group, logger) !== null) {
     logger.info('root <div/> already exists');
     return null;
   }
-  // create react root <div scrapbox-copy-tweets="copy"/>
-  logger.info('create <div scrapbox-copy-tweets="copy"/>');
+  // create react root
+  logger.info('create <div class="scrapbox-copy-tweets" />');
   const root = group.appendChild(document.createElement('div'));
-  root.setAttribute('scrapbox-copy-tweets', 'copy');
+  root.classList.add('scrapbox-copy-tweets');
   return root;
 };
