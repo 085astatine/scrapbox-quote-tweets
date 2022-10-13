@@ -1,3 +1,5 @@
+$fav-color: rgb(249, 24, 128)
+
 .scrapbox-copy-tweets
   display: flex
   flex-basis: auto
@@ -11,6 +13,16 @@
     cursor: pointer
     // size
     font-size: 15px
+    // border
+    border-radius: 50%
+    border-width: 3px
+    border-style: solid
+    border-color: transparent
+    // transition
+    transition-property: border-color
+
+    &:hover
+      border-color: rgba($fav-color, 0.1)
 
     .icon
       // size
