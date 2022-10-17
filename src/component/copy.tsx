@@ -18,11 +18,13 @@ export const Copy: React.FC<CopyProps> = (props) => {
   };
   return (
     <div className="copy-button" role="button" tabIndex={0} onClick={onClick}>
-      <div className="icon">
+      <div className="button">
+        <div className="circle" />
         <ScrapboxIcon
-          viewBox="0 0 200 200"
-          height={undefined}
+          className="logo"
+          viewBox="-29 0 172 172"
           width={undefined}
+          height={undefined}
         />
       </div>
     </div>
