@@ -3,11 +3,11 @@ import browser from 'webextension-polyfill';
 import { TweetCopyResponseMessage } from '../lib/message';
 import ScrapboxIcon from './logo/scrapbox.svg';
 
-export interface CopyProps {
+export interface CopyButtonProps {
   tweetID: bigint | null;
 }
 
-export const Copy: React.FC<CopyProps> = (props) => {
+export const CopyButton: React.FC<CopyButtonProps> = (props) => {
   const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     alert(`tweet ID: ${props.tweetID}`);
