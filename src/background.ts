@@ -1,8 +1,16 @@
 import 'error-polyfill';
-import { TweetV2LookupResult, TwitterApi } from 'twitter-api-v2';
+import {
+  ApiPartialResponseError,
+  ApiRequestError,
+  ApiResponseError,
+  TwitterApi,
+} from 'twitter-api-v2';
 import browser from 'webextension-polyfill';
 import { loggerProvider } from './lib/logger';
-import { TweetCopyRequestMessage } from './lib/message';
+import {
+  TweetCopyRequestMessage,
+  TweetCopyResponseMessage,
+} from './lib/message';
 
 const logger = loggerProvider.getCategory('background');
 
@@ -35,19 +43,56 @@ const createTwitterApiClient = () => {
 
 const twitterApiClient = createTwitterApiClient();
 
+// Twitter API
+type TwitterApiError =
+  | ApiRequestError
+  | ApiPartialResponseError
+  | ApiResponseError;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isTwitterApiError = (error: any): error is TwitterApiError => {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    error?.error === true &&
+    ['request', 'partial-request', 'response'].includes(error?.type)
+  );
+};
+
 // onMessage Listener
 type Message = TweetCopyRequestMessage;
 
-const onMessageListener = (message: Message) => {
+const onMessageListener = async (
+  message: Message
+): Promise<TweetCopyResponseMessage> => {
   switch (message.type) {
     case 'tweet_copy_request': {
       logger.info(`tweet copy request: ${message.tweetID}`);
-      if (twitterApiClient !== null) {
-        twitterApiClient
-          .tweets(`${message.tweetID}`)
-          .then((result: TweetV2LookupResult) => console.log(result));
+      if (twitterApiClient === null) {
+        return {
+          type: 'tweet_copy_response',
+          tweetID: message.tweetID,
+          ok: false,
+          message: 'Twitter API client is not available',
+        };
       }
-      break;
+      try {
+        const result = await twitterApiClient.tweets(`${message.tweetID}`);
+        console.log(result);
+        return {
+          type: 'tweet_copy_response',
+          tweetID: message.tweetID,
+          ok: true,
+        };
+      } catch (error: unknown) {
+        logger.error(`failed in tweet copy request: ${message.tweetID}`);
+        return {
+          type: 'tweet_copy_response',
+          tweetID: message.tweetID,
+          ok: false,
+          message: tweetCopyRequestErrorMessage(error),
+        };
+      }
     }
     default: {
       const _: never = message.type;
@@ -58,3 +103,11 @@ const onMessageListener = (message: Message) => {
 };
 
 browser.runtime.onMessage.addListener(onMessageListener);
+
+// Twiter API error message
+const tweetCopyRequestErrorMessage = (error: unknown): string => {
+  if (isTwitterApiError(error)) {
+    return `Twitter API Error: ${error.type}`;
+  }
+  return 'Unknown Error';
+};
