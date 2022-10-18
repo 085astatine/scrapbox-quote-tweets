@@ -5,7 +5,7 @@ import { Copy } from './component/copy';
 import { showMutationRecord } from './lib/dom';
 import { findTweets } from './lib/find-tweets';
 import { loggerProvider } from './lib/logger';
-import { Message } from './lib/message';
+import { URLChangedMessage } from './lib/message';
 import './style/content-twitter.sass';
 
 const logger = loggerProvider.getCategory('content-twitter');
@@ -41,10 +41,19 @@ window.addEventListener('DOMContentLoaded', () => {
   observer.observe(document.body, options);
 });
 
-// message: url changed
-const urlChangedListener = (message: Message) => {
-  if (message.type == 'url_changed') {
-    logger.info('url changged');
+// onMessage listener
+type Message = URLChangedMessage;
+
+const onMessageListener = (message: Message) => {
+  switch (message.type) {
+    case 'url_changed':
+      logger.info('url changged');
+      break;
+    default: {
+      const _: never = message.type;
+      logger.error(`unexpected message type "${message.type}"`);
+      return _;
+    }
   }
 };
-browser.runtime.onMessage.addListener(urlChangedListener);
+browser.runtime.onMessage.addListener(onMessageListener);

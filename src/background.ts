@@ -2,7 +2,7 @@ import 'error-polyfill';
 import { TweetV2LookupResult, TwitterApi } from 'twitter-api-v2';
 import browser from 'webextension-polyfill';
 import { loggerProvider } from './lib/logger';
-import { Message } from './lib/message';
+import { TweetCopyRequestMessage } from './lib/message';
 
 const logger = loggerProvider.getCategory('background');
 
@@ -35,16 +35,26 @@ const createTwitterApiClient = () => {
 
 const twitterApiClient = createTwitterApiClient();
 
-// Tweet Copy Request
-const tweetCopyRequestListener = (message: Message) => {
-  if (message.type === 'tweet_copy_request') {
-    logger.info(`tweet copy request: ${message.tweetID}`);
-    if (twitterApiClient !== null) {
-      twitterApiClient
-        .tweets(`${message.tweetID}`)
-        .then((result: TweetV2LookupResult) => console.log(result));
+// onMessage Listener
+type Message = TweetCopyRequestMessage;
+
+const onMessageListener = (message: Message) => {
+  switch (message.type) {
+    case 'tweet_copy_request': {
+      logger.info(`tweet copy request: ${message.tweetID}`);
+      if (twitterApiClient !== null) {
+        twitterApiClient
+          .tweets(`${message.tweetID}`)
+          .then((result: TweetV2LookupResult) => console.log(result));
+      }
+      break;
+    }
+    default: {
+      const _: never = message.type;
+      logger.error(`unexpected message type "${message.type}"`);
+      return _;
     }
   }
 };
 
-browser.runtime.onMessage.addListener(tweetCopyRequestListener);
+browser.runtime.onMessage.addListener(onMessageListener);
