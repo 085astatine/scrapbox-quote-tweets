@@ -8,6 +8,9 @@ export interface CopyButtonProps {
 }
 
 export const CopyButton: React.FC<CopyButtonProps> = (props) => {
+  // state
+  const [isCopied, setIsCopied] = React.useState(false);
+  // click
   const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     alert(`tweet ID: ${props.tweetID}`);
@@ -20,13 +23,14 @@ export const CopyButton: React.FC<CopyButtonProps> = (props) => {
       .then((message: TweetCopyResponseMessage) => {
         if (message.type === 'tweet_copy_response') {
           console.log(message);
+          setIsCopied(message.ok);
         }
       });
   };
   return (
     <div className="copy-button" role="button" tabIndex={0} onClick={onClick}>
       <div className="button">
-        <div className="circle" />
+        <div className={isCopied ? 'circle-active' : 'circle-inactive'} />
         <ScrapboxIcon
           className="logo"
           viewBox="-29 0 172 172"

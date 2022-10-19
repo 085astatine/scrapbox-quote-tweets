@@ -1,5 +1,22 @@
 $fav-color: rgb(249, 24, 128)
 
+@mixin circle
+  // layout
+  position: absolute
+  top: 0px
+  right: 0px
+  bottom: 0px
+  left: 0px
+  // circle
+  border-radius: 50%
+  margin: -8px
+  // transition
+  transition-property: background-color, border-color
+  transition-duration: 0.2s
+  // border
+  border-width: 2px
+  border-style: solid
+
 .scrapbox-copy-tweets
   display: flex
   flex-basis: auto
@@ -24,21 +41,19 @@ $fav-color: rgb(249, 24, 128)
       width: 1.5em
       height: 1.5em
 
-      .circle
-        // layout
-        position: absolute
-        top: 0px
-        bottom: 0px
-        left: 0px
-        right: 0px
-        // circle
-        border-radius: 50%
-        margin: -8px
-        // color
+      .circle-inactive
+        @include circle
         background-color: transparent
-        transition-property: background-color
-        transition-duration: 0.2s
+        border-color: transparent
+
+      .circle-active
+        @include circle
+        background-color: rgba($fav-color, 0.1)
+        border-color: rgba($fav-color, 1.0)
 
       &:hover
-        .circle
+        .circle-inactive
           background-color: rgba($fav-color, 0.1)
+
+        .circle-active
+          background-color: transparent
