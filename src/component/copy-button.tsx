@@ -1,5 +1,5 @@
+import { useFloating } from '@floating-ui/react-dom';
 import React from 'react';
-import { usePopper } from 'react-popper';
 import browser from 'webextension-polyfill';
 import { TweetCopyResponseMessage } from '../lib/message';
 import ScrapboxIcon from './logo/scrapbox.svg';
@@ -9,20 +9,10 @@ export interface CopyButtonProps {
 }
 
 export const CopyButton: React.FC<CopyButtonProps> = (props) => {
-  // poper element
-  const [referenceElement, setReferenceElement] =
-    React.useState<HTMLDivElement | null>(null);
-  const [popperElement, setPopperElement] =
-    React.useState<HTMLDivElement | null>(null);
-  const [arrowElement, setArrowElement] = React.useState<HTMLDivElement | null>(
-    null
-  );
   // state
   const [isCopied, setIsCopied] = React.useState(false);
-  // popper
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    modifiers: [{ name: 'arrow', options: { element: arrowElement } }],
-  });
+  // floting
+  const { x, y, reference, floating, strategy } = useFloating();
   // click
   const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -50,7 +40,7 @@ export const CopyButton: React.FC<CopyButtonProps> = (props) => {
         role="button"
         tabIndex={0}
         onClick={onClick}
-        ref={setReferenceElement}>
+        ref={reference}>
         <div className={isCopied ? 'circle-active' : 'circle-inactive'} />
         <ScrapboxIcon
           className="logo"
@@ -59,9 +49,10 @@ export const CopyButton: React.FC<CopyButtonProps> = (props) => {
           height={undefined}
         />
       </div>
-      <div ref={setPopperElement} style={styles.popper} {...attributes.popper}>
-        Popper Element
-        <div ref={setArrowElement} style={styles.arrow} />
+      <div
+        ref={floating}
+        style={{ position: strategy, top: y ?? 0, left: x ?? 0 }}>
+        Tooltip
       </div>
     </div>
   );
