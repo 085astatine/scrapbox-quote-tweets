@@ -1,3 +1,5 @@
+@use 'sass:math'
+
 $fav-color: rgb(249, 24, 128)
 
 @mixin circle
@@ -16,6 +18,17 @@ $fav-color: rgb(249, 24, 128)
   // border
   border-width: 2px
   border-style: solid
+
+@mixin triangle-bottom($width, $height, $color)
+    content: ''
+    width: 0
+    height: 0
+    // border
+    border-style: solid
+    border-width: $height math.div($width, 2) 0px math.div($width, 2)
+    border-color: $color transparent transparent transparent
+    // offset
+    left: math.div(-$width, 2)
 
 .scrapbox-copy-tweets
   display: flex
@@ -57,3 +70,21 @@ $fav-color: rgb(249, 24, 128)
 
         .circle-active
           background-color: transparent
+
+    .tooltip
+      $tooltip-padding: 4px
+      $tooltip-color: rgba(black, 0.5)
+
+      border-radius: 5px
+      padding: $tooltip-padding
+      // text
+      text-align: center
+      white-space: nowrap
+      // color
+      color: white
+      background-color: $tooltip-color
+
+      .arrow:before
+        display: inline-block
+        margin-top: $tooltip-padding
+        @include triangle-bottom(10px, 5px, $tooltip-color)
