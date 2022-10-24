@@ -21,7 +21,7 @@ export interface CopyButtonProps {
   tweetID: string | null;
 }
 
-export const CopyButton: React.FC<CopyButtonProps> = (props) => {
+export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
   // state
   const [isCopied, setIsCopied] = React.useState(false);
   const [tooltipVisibility, setTooltipVisibility] =
@@ -77,26 +77,24 @@ export const CopyButton: React.FC<CopyButtonProps> = (props) => {
   const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     // send message to background
-    logger.info(`[Tweet ID: ${props.tweetID}] copy request`);
+    logger.info(`[Tweet ID: ${tweetID}] copy request`);
     browser.runtime
       .sendMessage({
         type: 'tweet_copy_request',
-        tweetID: `${props.tweetID}`,
+        tweetID,
       })
       .then((message: TweetCopyResponseMessage) => {
         if (message.type === 'tweet_copy_response') {
           setIsCopied(message.ok);
           if (message.ok) {
-            logger.info(
-              `[tweet ID: ${props.tweetID}] copy request is succeeded`
-            );
+            logger.info(`[tweet ID: ${tweetID}] copy request is succeeded`);
             setTooltipMessage({
               type: 'notification',
               message: 'Copied',
             });
           } else {
             logger.error(
-              `[tweet ID: ${props.tweetID}] copy request is failed with "${message.message}"`
+              `[tweet ID: ${tweetID}] copy request is failed with "${message.message}"`
             );
             setTooltipMessage({
               type: 'error',
