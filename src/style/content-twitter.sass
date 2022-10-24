@@ -30,25 +30,6 @@ $fav-color: rgb(249, 24, 128)
     // offset
     left: math.div(-$width, 2)
 
-@mixin cross($width, $color, $hover-color)
-  &:before, &:after
-    content: ''
-    position: absolute
-    top: 50%
-    left: 50%
-    width: $width
-    height: 100%
-    background: $color
-
-  &:hover:before, &:hover:after
-    background: $hover-color
-
-  &:before
-    transform: translate(-50%, -50%) rotate(45deg)
-
-  &:after
-    transform: translate(-50%, -50%) rotate(-45deg)
-
 @keyframes scrapbox-copy-tweets-fade-in
   from
     opacity: 0.0
@@ -129,16 +110,16 @@ $fav-color: rgb(249, 24, 128)
         cursor: text
 
         .close-button
-          @include cross(2px, white, red)
-          display: inline-block
-          position: relative
           // layout
-          width: 10px
-          height: 10px
-          padding: 2px
+          height: 20px
+          width: 20px
           margin-right: 5px
           // cursor
           cursor: pointer
+          // color
+          color: white
+          &:hover
+            color: red
 
       // animation
       &.fade-in

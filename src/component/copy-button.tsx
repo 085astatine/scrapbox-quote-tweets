@@ -4,6 +4,7 @@ import React from 'react';
 import browser from 'webextension-polyfill';
 import { TweetCopyResponseMessage } from '../lib/message';
 import ScrapboxIcon from './icon/scrapbox.svg';
+import CloseIcon from './icon/x.svg';
 
 type TooltipType = 'notification' | 'error';
 type TooltipVisibility = 'none' | 'fade-in' | 'visible' | 'fade-out';
@@ -165,11 +166,14 @@ const TooltipBody: React.FC<TooltipBodyProps> = ({
   }
   return (
     <div className="body">
-      <div
+      <CloseIcon
         className="close-button"
         onClick={onClose}
         role="button"
         tabIndex={0}
+        viewBox="0 0 16 16"
+        width={undefined}
+        height={undefined}
       />
       <span>{message}</span>
     </div>
