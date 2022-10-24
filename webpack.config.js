@@ -14,7 +14,6 @@ module.exports = (env, argv) => {
     devtool: mode === 'production' ? false : 'cheap-source-map',
     context: path.join(__dirname),
     entry: {
-      index: path.join(__dirname, 'src', 'index.ts'),
       background: path.join(__dirname, 'src', 'background.ts'),
       'content-twitter': path.join(__dirname, 'src', 'content-twitter.tsx'),
       manifest: path.join(__dirname, 'src', 'manifest.json'),
