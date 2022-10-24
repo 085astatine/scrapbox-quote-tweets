@@ -2,9 +2,12 @@ import { arrow, offset, shift, useFloating } from '@floating-ui/react-dom';
 import classNames from 'classnames';
 import React from 'react';
 import browser from 'webextension-polyfill';
+import { loggerProvider } from '../lib/logger';
 import { TweetCopyResponseMessage } from '../lib/message';
 import ScrapboxIcon from './icon/scrapbox.svg';
 import CloseIcon from './icon/x.svg';
+
+const logger = loggerProvider.getCategory('copy-button');
 
 type TooltipType = 'notification' | 'error';
 type TooltipVisibility = 'none' | 'fade-in' | 'visible' | 'fade-out';
@@ -73,8 +76,8 @@ export const CopyButton: React.FC<CopyButtonProps> = (props) => {
   // click: copy button
   const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    // alert(`tweet ID: ${props.tweetID}`);
     // send message to background
+    logger.info(`[Tweet ID: ${props.tweetID}] copy request`);
     browser.runtime
       .sendMessage({
         type: 'tweet_copy_request',
@@ -82,14 +85,19 @@ export const CopyButton: React.FC<CopyButtonProps> = (props) => {
       })
       .then((message: TweetCopyResponseMessage) => {
         if (message.type === 'tweet_copy_response') {
-          console.log(message);
           setIsCopied(message.ok);
           if (message.ok) {
+            logger.info(
+              `[tweet ID: ${props.tweetID}] copy request is succeeded`
+            );
             setTooltipMessage({
               type: 'notification',
               message: 'Copied',
             });
           } else {
+            logger.error(
+              `[tweet ID: ${props.tweetID}] copy request is failed with "${message.message}"`
+            );
             setTooltipMessage({
               type: 'error',
               message: message.message,
