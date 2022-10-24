@@ -5,7 +5,13 @@ import browser from 'webextension-polyfill';
 import { TweetCopyResponseMessage } from '../lib/message';
 import ScrapboxIcon from './logo/scrapbox.svg';
 
+type TooltipType = 'notification' | 'error';
 type TooltipVisibility = 'none' | 'fade-in' | 'visible' | 'fade-out';
+
+interface TooltipMessage {
+  type: TooltipType;
+  message: string;
+}
 
 export interface CopyButtonProps {
   tweetID: bigint | null;
@@ -16,6 +22,8 @@ export const CopyButton: React.FC<CopyButtonProps> = (props) => {
   const [isCopied, setIsCopied] = React.useState(false);
   const [tooltipVisibility, setTooltipVisibility] =
     React.useState<TooltipVisibility>('none');
+  const [tooltipMessage, setTooltipMessage] =
+    React.useState<TooltipMessage | null>(null);
   // floting
   const arrowRef = React.useRef(null);
   const {
@@ -42,11 +50,14 @@ export const CopyButton: React.FC<CopyButtonProps> = (props) => {
         return () => clearTimeout(timeoutID);
       }
       case 'visible': {
-        const timeoutID = setTimeout(
-          () => setTooltipVisibility('fade-out'),
-          2000
-        );
-        return () => clearTimeout(timeoutID);
+        if (tooltipMessage?.type === 'notification') {
+          const timeoutID = setTimeout(
+            () => setTooltipVisibility('fade-out'),
+            2000
+          );
+          return () => clearTimeout(timeoutID);
+        }
+        break;
       }
       case 'fade-out': {
         const timeoutID = setTimeout(() => setTooltipVisibility('none'), 200);
@@ -57,8 +68,8 @@ export const CopyButton: React.FC<CopyButtonProps> = (props) => {
         return _;
       }
     }
-  }, [tooltipVisibility]);
-  // click
+  }, [tooltipVisibility, tooltipMessage?.type]);
+  // click: copy button
   const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     // alert(`tweet ID: ${props.tweetID}`);
@@ -72,13 +83,27 @@ export const CopyButton: React.FC<CopyButtonProps> = (props) => {
         if (message.type === 'tweet_copy_response') {
           console.log(message);
           setIsCopied(message.ok);
-          if (!message.ok) {
-            console.log(message.message);
+          if (message.ok) {
+            setTooltipMessage({
+              type: 'notification',
+              message: 'Copied',
+            });
+          } else {
+            setTooltipMessage({
+              type: 'error',
+              message: message.message,
+            });
           }
           setTooltipVisibility('fade-in');
         }
       });
   };
+  // click: tooltip close
+  const onTooltipClose = React.useCallback(() => {
+    if (tooltipMessage?.type === 'error') {
+      setTooltipVisibility('fade-out');
+    }
+  }, [tooltipMessage?.type]);
   return (
     <div className="copy-button">
       <div
@@ -95,7 +120,7 @@ export const CopyButton: React.FC<CopyButtonProps> = (props) => {
           height={undefined}
         />
       </div>
-      {tooltipVisibility !== 'none' ? (
+      {tooltipVisibility !== 'none' && tooltipMessage !== null ? (
         <div
           className={classNames('tooltip', {
             'fade-in': tooltipVisibility === 'fade-in',
@@ -103,7 +128,12 @@ export const CopyButton: React.FC<CopyButtonProps> = (props) => {
           })}
           ref={floating}
           style={{ position: strategy, top: y ?? 0, left: x ?? 0 }}>
-          Tooltip
+          <TooltipBody
+            message={tooltipMessage.message}
+            onClose={
+              tooltipMessage.type === 'error' ? onTooltipClose : undefined
+            }
+          />
           <div
             className="arrow"
             ref={arrowRef}
@@ -117,6 +147,31 @@ export const CopyButton: React.FC<CopyButtonProps> = (props) => {
       ) : (
         <></>
       )}
+    </div>
+  );
+};
+
+interface TooltipBodyProps {
+  message: string;
+  onClose?: () => void;
+}
+
+const TooltipBody: React.FC<TooltipBodyProps> = ({
+  message,
+  onClose = null,
+}) => {
+  if (onClose === null) {
+    return <>{message}</>;
+  }
+  return (
+    <div className="body">
+      <div
+        className="close-button"
+        onClick={onClose}
+        role="button"
+        tabIndex={0}
+      />
+      <span>{message}</span>
     </div>
   );
 };
