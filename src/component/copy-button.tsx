@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React from 'react';
 import browser from 'webextension-polyfill';
 import { TweetCopyResponseMessage } from '../lib/message';
-import ScrapboxIcon from './logo/scrapbox.svg';
+import ScrapboxIcon from './icon/scrapbox.svg';
 
 type TooltipType = 'notification' | 'error';
 type TooltipVisibility = 'none' | 'fade-in' | 'visible' | 'fade-out';
