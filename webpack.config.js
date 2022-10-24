@@ -1,5 +1,9 @@
 const path = require('path');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const DotenvPlugin = require('dotenv-webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const WextManifestPlugin = require('wext-manifest-webpack-plugin');
 
 module.exports = (env, argv) => {
@@ -10,7 +14,6 @@ module.exports = (env, argv) => {
     devtool: mode === 'production' ? false : 'cheap-source-map',
     context: path.join(__dirname),
     entry: {
-      index: path.join(__dirname, 'src', 'index.ts'),
       background: path.join(__dirname, 'src', 'background.ts'),
       'content-twitter': path.join(__dirname, 'src', 'content-twitter.tsx'),
       manifest: path.join(__dirname, 'src', 'manifest.json'),
@@ -28,6 +31,14 @@ module.exports = (env, argv) => {
           exclude: /node_modules/,
         },
         {
+          test: /\.s[ac]ss$/,
+          use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+        },
+        {
+          test: /\.svg$/,
+          use: ['@svgr/webpack'],
+        },
+        {
           type: 'javascript/auto',
           test: /manifest\.json$/,
           use: {
@@ -40,14 +51,23 @@ module.exports = (env, argv) => {
         },
       ],
     },
+    optimization: {
+      minimizer: [new CssMinimizerPlugin()],
+    },
     resolve: {
-      extensions: ['.ts', '.tsx'],
+      extensions: ['.js', '.ts', '.tsx'],
+      fallback: {
+        fs: false,
+      },
     },
     plugins: [
+      new DotenvPlugin(),
       new ESLintPlugin({
         extensions: ['ts'],
         exclude: ['node_modules'],
       }),
+      new MiniCssExtractPlugin(),
+      new NodePolyfillPlugin(),
       new WextManifestPlugin(),
     ],
   };

@@ -1,0 +1,129 @@
+@use 'sass:math'
+
+$fav-color: rgb(249, 24, 128)
+
+@mixin circle
+  // layout
+  position: absolute
+  top: 0px
+  right: 0px
+  bottom: 0px
+  left: 0px
+  // circle
+  border-radius: 50%
+  margin: -8px
+  // transition
+  transition-property: background-color, border-color
+  transition-duration: 0.2s
+  // border
+  border-width: 2px
+  border-style: solid
+
+@mixin triangle-bottom($width, $height, $color)
+    content: ''
+    width: 0
+    height: 0
+    // border
+    border-style: solid
+    border-width: $height math.div($width, 2) 0px math.div($width, 2)
+    border-color: $color transparent transparent transparent
+    // offset
+    left: math.div(-$width, 2)
+
+@keyframes scrapbox-copy-tweets-fade-in
+  from
+    opacity: 0.0
+  to
+    opacity: 1.0
+
+@keyframes scrapbox-copy-tweets-fade-out
+  from
+    opacity: 1.0
+  to
+    opacity: 0.0
+
+.scrapbox-copy-tweets
+  display: flex
+  flex-basis: auto
+  flex-direction: column
+  justify-content: center
+
+  .copy-button
+    // flex
+    flex-shrink: 0
+    // cursor
+    cursor: pointer
+    // size
+    font-size: 15px
+
+    .button
+      // flex
+      display: flex
+      align-items: stretch
+      // position
+      position: relative
+      // size
+      width: 1.5em
+      height: 1.5em
+
+      .circle-inactive
+        @include circle
+        background-color: transparent
+        border-color: transparent
+
+      .circle-active
+        @include circle
+        background-color: rgba($fav-color, 0.1)
+        border-color: rgba($fav-color, 1.0)
+
+      &:hover
+        .circle-inactive
+          background-color: rgba($fav-color, 0.1)
+
+        .circle-active
+          background-color: transparent
+
+    .tooltip
+      $tooltip-padding: 4px
+      $tooltip-color: rgba(black, 0.5)
+
+      // layout
+      border-radius: 5px
+      padding: $tooltip-padding
+      // text
+      text-align: center
+      white-space: nowrap
+      // color
+      color: white
+      background-color: $tooltip-color
+
+      .arrow:before
+        display: inline-block
+        margin-top: $tooltip-padding
+        @include triangle-bottom(10px, 10px, $tooltip-color)
+
+      .body
+        // flex
+        display: inline-flex
+        flex-direction: row
+        // cursor
+        cursor: text
+
+        .close-button
+          // layout
+          height: 20px
+          width: 20px
+          margin-right: 5px
+          // cursor
+          cursor: pointer
+          // color
+          color: white
+          &:hover
+            color: red
+
+      // animation
+      &.fade-in
+        animation: scrapbox-copy-tweets-fade-in 0.2s
+
+      &.fade-out
+        animation: scrapbox-copy-tweets-fade-out 0.2s
