@@ -5,7 +5,7 @@ import { loggerProvider } from './logger';
 const defaultLogger = loggerProvider.getCategory('lib-tweet');
 
 export interface FindTweetResult {
-  tweetID: bigint;
+  tweetID: string;
   reactRoot: Element;
 }
 
@@ -67,7 +67,7 @@ const findTweetArticles = (node: Node): Element[] => {
 
 interface TweetLink {
   username: string;
-  id: bigint;
+  id: string;
 }
 
 const parseTweetLink = (link: string): TweetLink | null => {
@@ -75,7 +75,7 @@ const parseTweetLink = (link: string): TweetLink | null => {
   const username = match?.groups?.username;
   const id = match?.groups?.id;
   if (username !== undefined && id !== undefined) {
-    return { username, id: BigInt(id) };
+    return { username, id };
   }
   return null;
 };
@@ -84,7 +84,7 @@ const parseTweetID = (
   element: Element,
   url: string,
   logger: CoreLogger
-): bigint | null => {
+): string | null => {
   const urlType = matchURLType(url);
   switch (urlType) {
     case 'twitter':
@@ -103,7 +103,7 @@ const parseTweetID = (
 const parseTweetIdInTwitterPage = (
   element: Element,
   logger: CoreLogger
-): bigint | null => {
+): string | null => {
   logger.info('parse tweet');
   // link node
   const linkNode = getNode(
@@ -134,7 +134,7 @@ const parseTweetIdInTweetPage = (
   element: Element,
   url: string,
   logger: CoreLogger
-): bigint | null => {
+): string | null => {
   // get tweet ID from <a href="..."/>
   const tweetID = parseTweetIdInTwitterPage(element, logger);
   if (tweetID !== null) {

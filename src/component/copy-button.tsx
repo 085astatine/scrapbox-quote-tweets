@@ -15,7 +15,7 @@ interface TooltipMessage {
 }
 
 export interface CopyButtonProps {
-  tweetID: bigint | null;
+  tweetID: string | null;
 }
 
 export const CopyButton: React.FC<CopyButtonProps> = (props) => {
