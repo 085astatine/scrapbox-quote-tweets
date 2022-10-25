@@ -34,6 +34,10 @@ jobs:
       - name: ESLint
         run: npm run eslint
 
+      # Stylelint
+      - name: Stylelint
+        run: npm run stylelint:check
+
       # Prettier
       - name: Prettier
         run: npm run prettier:check
