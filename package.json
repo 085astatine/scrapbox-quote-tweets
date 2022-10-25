@@ -17,7 +17,9 @@
     "clean": "rimraf build",
     "eslint": "eslint src/**/*.ts src/**/*.tsx",
     "prettier:check": "prettier --check src/",
-    "prettier:write": "prettier --write src/"
+    "prettier:write": "prettier --write src/",
+    "stylelint:check": "stylelint src/**/*.scss",
+    "stylelint:writer": "stylelint --fix src/**/*.scss"
   },
   "repository": {
     "type": "git",
