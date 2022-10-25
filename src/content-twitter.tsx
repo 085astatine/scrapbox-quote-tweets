@@ -6,7 +6,7 @@ import { showMutationRecord } from './lib/dom';
 import { findTweets } from './lib/find-tweets';
 import { loggerProvider } from './lib/logger';
 import { URLChangedMessage } from './lib/message';
-import './style/content-twitter.sass';
+import './style/content-twitter.scss';
 
 const logger = loggerProvider.getCategory('content-twitter');
 
