@@ -6,11 +6,11 @@
   "scripts": {
     "chrome:build": "TARGET_BROWSER=chrome webpack --mode development",
     "chrome:production": "TARGET_BROWSER=chrome webpack --mode production",
-    "chrome:run": "PATH=./bin:$PATH TARGET_BROWSER=chrome node web-ext-run.mjs",
+    "chrome:run": "PATH=./bin:$PATH TARGET_BROWSER=chrome web-ext run --target=chromium",
     "chrome:watch": "TARGET_BROWSER=chrome webpack --watch --mode development",
     "firefox:build": "TARGET_BROWSER=firefox webpack --mode development",
     "firefox:production": "TARGET_BROWSER=firefox webpack --mode production",
-    "firefox:run": "PATH=./bin:$PATH TARGET_BROWSER=firefox node web-ext-run.mjs",
+    "firefox:run": "PATH=./bin:$PATH TARGET_BROWSER=firefox web-ext run --target=firefox-desktop",
     "firefox:watch": "TARGET_BROWSER=firefox webpack --watch --mode development",
     "all-build": "run-p *:build",
     "all-production": "run-p *:production",
