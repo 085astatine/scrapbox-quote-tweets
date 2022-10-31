@@ -5,6 +5,19 @@ import { Tweet } from './tweet';
 
 const defaultLogger = loggerProvider.getCategory('tweet');
 
+export class ParseTweetError extends Error {
+  readonly tweetID: string;
+
+  constructor(tweetID: string, message: string) {
+    super(message);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ParseTweetError);
+    }
+    this.name = 'ParseTweetError';
+    this.tweetID = tweetID;
+  }
+}
+
 export const parseTweets = (
   response: TweetV2LookupResult,
   logger: CoreLogger = defaultLogger
