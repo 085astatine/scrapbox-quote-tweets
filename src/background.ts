@@ -78,7 +78,9 @@ const onMessageListener = async (
         };
       }
       try {
-        const result = await twitterApiClient.tweets(`${message.tweetID}`);
+        const result = await twitterApiClient.tweets(`${message.tweetID}`, {
+          'tweet.fields': 'created_at',
+        });
         console.log(result);
         console.log(parseTweets(result));
         return {

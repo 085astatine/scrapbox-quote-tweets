@@ -34,7 +34,16 @@ const parseTweet = (
   logger: CoreLogger
 ): Tweet => {
   logger.debug(`parse tweet ${tweet.id}`);
+  const timestamp = parseTimestamp(tweet);
   return {
     id: tweet.id,
+    timestamp,
   };
+};
+
+const parseTimestamp = (tweet: TweetV2): number => {
+  if (tweet.created_at === undefined) {
+    throw new ParseTweetError(tweet.id, 'tweet.created_at is undefined');
+  }
+  return new Date(tweet.created_at).getTime();
 };
