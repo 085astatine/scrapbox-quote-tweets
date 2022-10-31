@@ -11,6 +11,7 @@ import {
   TweetCopyRequestMessage,
   TweetCopyResponseMessage,
 } from './lib/message';
+import { parseTweets } from './lib/parse-tweets';
 
 const logger = loggerProvider.getCategory('background');
 
@@ -79,6 +80,7 @@ const onMessageListener = async (
       try {
         const result = await twitterApiClient.tweets(`${message.tweetID}`);
         console.log(result);
+        console.log(parseTweets(result));
         return {
           type: 'tweet_copy_response',
           tweetID: message.tweetID,
