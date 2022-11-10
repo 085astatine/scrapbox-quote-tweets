@@ -37,12 +37,20 @@ export interface TweetEntityCashtag {
   tag: string;
 }
 
+export interface TweetEntityMention {
+  type: 'mention';
+  text: string;
+  user_id: string;
+  username: string;
+}
+
 export type TweetEntity =
   | TweetEntityText
   | TweetEntityURL
   | TweetEntityMedia
   | TweetEntityHashtag
-  | TweetEntityCashtag;
+  | TweetEntityCashtag
+  | TweetEntityMention;
 
 export interface Tweet {
   id: string;

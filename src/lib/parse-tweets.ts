@@ -2,6 +2,7 @@ import {
   ApiV2Includes,
   MediaObjectV2,
   TweetEntityHashtagV2,
+  TweetEntityMentionV2,
   TweetEntityUrlV2,
   TweetV2,
   TweetV2LookupResult,
@@ -14,6 +15,7 @@ import {
   TweetEntityCashtag,
   TweetEntityHashtag,
   TweetEntityMedia,
+  TweetEntityMention,
   TweetEntityURL,
   User,
 } from './tweet';
@@ -137,6 +139,10 @@ const parseText = (
   // entities.cashtags
   tweet?.entities?.cashtags?.forEach((cashtag) =>
     splitText(text, cashtag, toTweetEntityCashtag, logger)
+  );
+  // entities.mentions
+  tweet?.entities?.mentions?.forEach((mention) =>
+    splitText(text, mention, toTweetEntityMention, logger)
   );
   logger.debug('text entities', text);
   return text.map((entity) => entity.entity);
@@ -291,6 +297,25 @@ const toTweetEntityCashtag: TweetEntityGenerator<
       type: 'cashtag',
       text,
       tag: entity.tag,
+    },
+    start: entity.start,
+    end: entity.end,
+  };
+};
+
+const toTweetEntityMention: TweetEntityGenerator<
+  TweetEntityMentionV2,
+  TweetEntityMention
+> = (
+  text: string,
+  entity: TweetEntityMentionV2
+): TweetEntityWithPosition<TweetEntityMention> => {
+  return {
+    entity: {
+      type: 'mention',
+      text,
+      user_id: entity.id,
+      username: entity.username,
     },
     start: entity.start,
     end: entity.end,
