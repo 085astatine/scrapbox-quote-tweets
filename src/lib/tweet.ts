@@ -25,11 +25,18 @@ export interface TweetEntityHashtag {
   tag: string;
 }
 
+export interface TweetEntityCashtag {
+  type: 'cashtag';
+  text: string;
+  tag: string;
+}
+
 export type TweetEntity =
   | TweetEntityText
   | TweetEntityURL
   | TweetEntityMedia
-  | TweetEntityHashtag;
+  | TweetEntityHashtag
+  | TweetEntityCashtag;
 
 export interface Tweet {
   id: string;

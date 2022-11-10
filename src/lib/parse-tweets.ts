@@ -11,6 +11,7 @@ import { loggerProvider } from './logger';
 import {
   Tweet,
   TweetEntity,
+  TweetEntityCashtag,
   TweetEntityHashtag,
   TweetEntityMedia,
   TweetEntityURL,
@@ -106,6 +107,10 @@ const parseText = (
   // entities.hashtags
   tweet?.entities?.hashtags?.forEach((hashtag) =>
     splitText(text, hashtag, toTweetEntityHashtag, logger)
+  );
+  // entities.cashtags
+  tweet?.entities?.cashtags?.forEach((cashtag) =>
+    splitText(text, cashtag, toTweetEntityCashtag, logger)
   );
   logger.debug('text entities', text);
   return text.map((entity) => entity.entity);
@@ -240,6 +245,24 @@ const toTweetEntityHashtag: TweetEntityGenerator<
   return {
     entity: {
       type: 'hashtag',
+      text,
+      tag: entity.tag,
+    },
+    start: entity.start,
+    end: entity.end,
+  };
+};
+
+const toTweetEntityCashtag: TweetEntityGenerator<
+  TweetEntityHashtagV2,
+  TweetEntityCashtag
+> = (
+  text: string,
+  entity: TweetEntityHashtagV2
+): TweetEntityWithPosition<TweetEntityCashtag> => {
+  return {
+    entity: {
+      type: 'cashtag',
       text,
       tag: entity.tag,
     },
