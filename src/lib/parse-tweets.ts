@@ -1,12 +1,13 @@
 import {
   ApiV2Includes,
+  MediaObjectV2,
   TweetEntityUrlV2,
   TweetV2,
   TweetV2LookupResult,
 } from 'twitter-api-v2';
 import { CoreLogger } from 'typescript-logging';
 import { loggerProvider } from './logger';
-import { Tweet, TweetEntity, TweetEntityURL } from './tweet';
+import { Tweet, TweetEntity, TweetEntityMedia, TweetEntityURL } from './tweet';
 
 const defaultLogger = loggerProvider.getCategory('tweet');
 
@@ -40,7 +41,7 @@ const parseTweet = (
 ): Tweet => {
   logger.debug(`parse tweet ${tweet.id}`);
   const timestamp = parseTimestamp(tweet);
-  const text = parseText(tweet, logger);
+  const text = parseText(tweet, includes, logger);
   return {
     id: tweet.id,
     timestamp,
@@ -70,7 +71,11 @@ type TweetEntityGenerator<ApiEntity extends TweetPosition, Entity> = (
   logger: CoreLogger
 ) => TweetEntityWithPosition<Entity>;
 
-const parseText = (tweet: TweetV2, logger: CoreLogger): TweetEntity[] => {
+const parseText = (
+  tweet: TweetV2,
+  includes: ApiV2Includes | undefined,
+  logger: CoreLogger
+): TweetEntity[] => {
   // text
   const text: TweetEntityWithPosition<TweetEntity>[] = [
     {
@@ -84,7 +89,12 @@ const parseText = (tweet: TweetV2, logger: CoreLogger): TweetEntity[] => {
   ];
   // entities.urls
   tweet?.entities?.urls.forEach((url) =>
-    splitText(text, url, toTweetEntityURL, logger)
+    splitText(
+      text,
+      url,
+      toTweetEntityURL(tweet.id, includes?.media ?? []),
+      logger
+    )
   );
   logger.debug('text entities', text);
   return text.map((entity) => entity.entity);
@@ -151,19 +161,60 @@ const splitText = <ApiEntity extends TweetPosition>(
   entities.splice(sourceIndex, 1, ...splittedEntities);
 };
 
-const toTweetEntityURL: TweetEntityGenerator<
+const toTweetEntityURL = (
+  tweetID: string,
+  media: readonly MediaObjectV2[]
+): TweetEntityGenerator<
   TweetEntityUrlV2,
-  TweetEntityURL
-> = (
-  text: string,
-  data: TweetEntityUrlV2
-): TweetEntityWithPosition<TweetEntityURL> => {
-  return {
-    entity: {
-      type: 'url',
-      text,
-    },
-    start: data.start,
-    end: data.end,
+  TweetEntityURL | TweetEntityMedia
+> => {
+  return (
+    text: string,
+    entity: TweetEntityUrlV2
+  ): TweetEntityWithPosition<TweetEntityURL | TweetEntityMedia> => {
+    // position
+    const position = {
+      start: entity.start,
+      end: entity.end,
+    };
+    // media
+    // @ts-expect-error TweetEntityUrlV2.media_key is not defined
+    const mediaKey: string | undefined = entity.media_key;
+    if (mediaKey !== undefined) {
+      const medium = media.find((medium) => medium.media_key === mediaKey);
+      if (medium === undefined) {
+        throw new ParseTweetError(
+          tweetID,
+          `media_key(${mediaKey}) is not found`
+        );
+      }
+      if (medium.url === undefined) {
+        throw new ParseTweetError(
+          tweetID,
+          `url is not defined at media(media_key=${mediaKey})`
+        );
+      }
+      return {
+        entity: {
+          type: 'media',
+          text,
+          media_type: medium.type,
+          url: medium.url,
+        },
+        ...position,
+      };
+    }
+    // url
+    return {
+      entity: {
+        type: 'url',
+        text,
+        url: entity.expanded_url,
+        display_url: entity.display_url,
+        title: entity.title,
+        description: entity.description,
+      },
+      ...position,
+    };
   };
 };

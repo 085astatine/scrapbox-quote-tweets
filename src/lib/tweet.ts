@@ -6,9 +6,20 @@ export interface TweetEntityText {
 export interface TweetEntityURL {
   type: 'url';
   text: string;
+  url: string;
+  display_url: string;
+  title?: string;
+  description?: string;
 }
 
-export type TweetEntity = TweetEntityText | TweetEntityURL;
+export interface TweetEntityMedia {
+  type: 'media';
+  text: string;
+  media_type: 'animated_gif' | 'photo' | 'video' | string;
+  url: string;
+}
+
+export type TweetEntity = TweetEntityText | TweetEntityURL | TweetEntityMedia;
 
 export interface Tweet {
   id: string;
