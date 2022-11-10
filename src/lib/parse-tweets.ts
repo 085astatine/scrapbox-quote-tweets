@@ -15,6 +15,7 @@ import {
   TweetEntityHashtag,
   TweetEntityMedia,
   TweetEntityURL,
+  User,
 } from './tweet';
 
 const defaultLogger = loggerProvider.getCategory('tweet');
@@ -49,10 +50,12 @@ const parseTweet = (
 ): Tweet => {
   logger.debug(`parse tweet ${tweet.id}`);
   const timestamp = parseTimestamp(tweet);
+  const author = parseAuthor(tweet, includes);
   const text = parseText(tweet, includes, logger);
   return {
     id: tweet.id,
     timestamp,
+    author,
     text,
   };
 };
@@ -62,6 +65,29 @@ const parseTimestamp = (tweet: TweetV2): number => {
     throw new ParseTweetError(tweet.id, 'tweet.created_at is undefined');
   }
   return new Date(tweet.created_at).getTime();
+};
+
+const parseAuthor = (
+  tweet: TweetV2,
+  includes: ApiV2Includes | undefined
+): User => {
+  // author id
+  if (tweet.author_id === undefined) {
+    throw new ParseTweetError(tweet.id, 'tweet.author_id is undefined');
+  }
+  // find user
+  const user = includes?.users?.find((user) => user.id === tweet.author_id);
+  if (user === undefined) {
+    throw new ParseTweetError(
+      tweet.id,
+      `author_id(${tweet.author_id}) is not found`
+    );
+  }
+  return {
+    id: user.id,
+    name: user.name,
+    username: user.username,
+  };
 };
 
 interface TweetPosition {

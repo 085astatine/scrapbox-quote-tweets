@@ -1,3 +1,9 @@
+export interface User {
+  id: string;
+  name: string;
+  username: string;
+}
+
 export interface TweetEntityText {
   type: 'text';
   text: string;
@@ -41,5 +47,6 @@ export type TweetEntity =
 export interface Tweet {
   id: string;
   timestamp: number;
+  author: User;
   text: TweetEntity[];
 }
