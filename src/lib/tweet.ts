@@ -19,7 +19,17 @@ export interface TweetEntityMedia {
   url: string;
 }
 
-export type TweetEntity = TweetEntityText | TweetEntityURL | TweetEntityMedia;
+export interface TweetEntityHashtag {
+  type: 'hashtag';
+  text: string;
+  tag: string;
+}
+
+export type TweetEntity =
+  | TweetEntityText
+  | TweetEntityURL
+  | TweetEntityMedia
+  | TweetEntityHashtag;
 
 export interface Tweet {
   id: string;

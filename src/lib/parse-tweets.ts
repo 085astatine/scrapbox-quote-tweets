@@ -1,13 +1,20 @@
 import {
   ApiV2Includes,
   MediaObjectV2,
+  TweetEntityHashtagV2,
   TweetEntityUrlV2,
   TweetV2,
   TweetV2LookupResult,
 } from 'twitter-api-v2';
 import { CoreLogger } from 'typescript-logging';
 import { loggerProvider } from './logger';
-import { Tweet, TweetEntity, TweetEntityMedia, TweetEntityURL } from './tweet';
+import {
+  Tweet,
+  TweetEntity,
+  TweetEntityHashtag,
+  TweetEntityMedia,
+  TweetEntityURL,
+} from './tweet';
 
 const defaultLogger = loggerProvider.getCategory('tweet');
 
@@ -95,6 +102,10 @@ const parseText = (
       toTweetEntityURL(tweet.id, includes?.media ?? []),
       logger
     )
+  );
+  // entities.hashtags
+  tweet?.entities?.hashtags?.forEach((hashtag) =>
+    splitText(text, hashtag, toTweetEntityHashtag, logger)
   );
   logger.debug('text entities', text);
   return text.map((entity) => entity.entity);
@@ -216,5 +227,23 @@ const toTweetEntityURL = (
       },
       ...position,
     };
+  };
+};
+
+const toTweetEntityHashtag: TweetEntityGenerator<
+  TweetEntityHashtagV2,
+  TweetEntityHashtag
+> = (
+  text: string,
+  entity: TweetEntityHashtagV2
+): TweetEntityWithPosition<TweetEntityHashtag> => {
+  return {
+    entity: {
+      type: 'hashtag',
+      text,
+      tag: entity.tag,
+    },
+    start: entity.start,
+    end: entity.end,
   };
 };
