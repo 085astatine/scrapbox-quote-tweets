@@ -246,6 +246,7 @@ const toTweetEntityURL = (
         entity: {
           type: 'media',
           text,
+          media_key: mediaKey,
           media_type: medium.type,
           url: medium.url,
         },

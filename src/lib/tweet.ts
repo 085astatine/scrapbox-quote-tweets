@@ -21,6 +21,7 @@ export interface TweetEntityURL {
 export interface TweetEntityMedia {
   type: 'media';
   text: string;
+  media_key: string;
   media_type: 'animated_gif' | 'photo' | 'video' | string;
   url: string;
 }
