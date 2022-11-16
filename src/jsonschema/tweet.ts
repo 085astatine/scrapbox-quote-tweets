@@ -74,7 +74,7 @@ export const tweetEntityURLJSONSchema: JSONSchemaType<TweetEntityURL> = {
 
 export const tweetEntityMediaJSONSchema: JSONSchemaType<TweetEntityMedia> = {
   type: 'object',
-  required: ['type', 'text', 'media_key', 'media_type', 'url'],
+  required: ['type', 'text', 'media_key', 'media_type'],
   additionalProperties: false,
   properties: {
     type: {
@@ -92,6 +92,7 @@ export const tweetEntityMediaJSONSchema: JSONSchemaType<TweetEntityMedia> = {
     },
     url: {
       type: 'string',
+      nullable: true,
     },
   },
 };

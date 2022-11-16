@@ -236,10 +236,10 @@ const toTweetEntityURL = (
           `media_key(${mediaKey}) is not found`
         );
       }
-      if (medium.url === undefined) {
+      if (medium.type === 'photo' && medium.url === undefined) {
         throw new ParseTweetError(
           tweetID,
-          `url is not defined at media(media_key=${mediaKey})`
+          `url is not defined at photo media(media_key=${mediaKey})`
         );
       }
       return {

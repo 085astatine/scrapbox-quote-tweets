@@ -23,7 +23,7 @@ export interface TweetEntityMedia {
   text: string;
   media_key: string;
   media_type: 'animated_gif' | 'photo' | 'video' | string;
-  url: string;
+  url?: string;
 }
 
 export interface TweetEntityHashtag {
