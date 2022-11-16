@@ -11,6 +11,11 @@ import {
   User,
 } from '../lib/tweet';
 
+export const usernameJSONSchema: JSONSchemaType<string> = {
+  type: 'string',
+  pattern: '^[a-zA-Z0-9_]{1,15}$',
+};
+
 export const userJSONSchema: JSONSchemaType<User> = {
   type: 'object',
   required: ['id', 'name', 'username'],
@@ -22,9 +27,7 @@ export const userJSONSchema: JSONSchemaType<User> = {
     name: {
       type: 'string',
     },
-    username: {
-      type: 'string',
-    },
+    username: usernameJSONSchema,
   },
 };
 
@@ -151,9 +154,7 @@ export const tweetEntityMentionJSONSchema: JSONSchemaType<TweetEntityMention> =
       user_id: {
         type: 'string',
       },
-      username: {
-        type: 'string',
-      },
+      username: usernameJSONSchema,
     },
   };
 
