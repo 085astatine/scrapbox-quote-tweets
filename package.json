@@ -15,7 +15,7 @@
     "all-build": "run-p *:build",
     "all-production": "run-p *:production",
     "clean": "rimraf build",
-    "eslint": "eslint src/**/*.ts src/**/*.tsx",
+    "eslint": "eslint src/",
     "prettier:check": "prettier --check src/",
     "prettier:write": "prettier --write src/",
     "stylelint:check": "stylelint src/**/*.scss",

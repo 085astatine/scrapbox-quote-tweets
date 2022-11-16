@@ -15,6 +15,7 @@
   "parserOptions": {
     "project": "./tsconfig.eslint.json"
   },
+  "ignorePatterns": ["src/validate-json/*.js"],
   "rules": {
     "require-jsdoc": "off"
   },
