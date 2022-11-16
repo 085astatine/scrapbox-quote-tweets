@@ -23,6 +23,7 @@ export const userJSONSchema: JSONSchemaType<User> = {
   properties: {
     id: {
       type: 'string',
+      pattern: '^[0-9]+$',
     },
     name: {
       type: 'string',
@@ -89,6 +90,7 @@ export const tweetEntityMediaJSONSchema: JSONSchemaType<TweetEntityMedia> = {
     },
     media_key: {
       type: 'string',
+      pattern: '^[0-9_]+$',
     },
     media_type: {
       type: 'string',
@@ -153,6 +155,7 @@ export const tweetEntityMentionJSONSchema: JSONSchemaType<TweetEntityMention> =
       },
       user_id: {
         type: 'string',
+        pattern: '^[0-9]+$',
       },
       username: usernameJSONSchema,
     },
@@ -181,6 +184,7 @@ export const tweetJSONSchema: JSONSchemaType<Tweet> = {
   properties: {
     id: {
       type: 'string',
+      pattern: '^[0-9]+$',
     },
     timestamp: {
       type: 'integer',
