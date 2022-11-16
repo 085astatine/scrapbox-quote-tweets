@@ -19,7 +19,8 @@
     "prettier:check": "prettier --check src/",
     "prettier:write": "prettier --write src/",
     "stylelint:check": "stylelint src/**/*.scss",
-    "stylelint:writer": "stylelint --fix src/**/*.scss"
+    "stylelint:writer": "stylelint --fix src/**/*.scss",
+    "generate-validate-json": "ts-node src/generate-validate-json"
   },
   "repository": {
     "type": "git",
