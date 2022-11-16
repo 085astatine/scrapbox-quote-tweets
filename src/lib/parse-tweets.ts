@@ -1,3 +1,4 @@
+import split from 'graphemesplit';
 import {
   ApiV2Includes,
   MediaObjectV2,
@@ -167,15 +168,14 @@ const splitText = <ApiEntity extends TweetPosition>(
     logger.warn('the source type is not text', source);
   }
   // split text
-  const headText = source.entity.text.slice(0, entity.start - source.start);
-  const bodyText = source.entity.text.slice(
-    entity.start - source.start,
-    entity.end - source.start
-  );
-  const tailText = source.entity.text.slice(
-    entity.end - source.start,
-    source.end - source.start
-  );
+  const text = split(source.entity.text);
+  const headText = text.slice(0, entity.start - source.start).join('');
+  const bodyText = text
+    .slice(entity.start - source.start, entity.end - source.start)
+    .join('');
+  const tailText = text
+    .slice(entity.end - source.start, source.end - source.start)
+    .join('');
   logger.debug('split text', {
     head: headText,
     body: bodyText,
