@@ -14,6 +14,7 @@ export interface TweetEntityURL {
   text: string;
   url: string;
   display_url: string;
+  decoded_url: string;
   title?: string;
   description?: string;
 }

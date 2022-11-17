@@ -36,13 +36,14 @@ const schema11 = {
           },
           {
             type: 'object',
-            required: ['type', 'text', 'url', 'display_url'],
+            required: ['type', 'text', 'url', 'display_url', 'decoded_url'],
             additionalProperties: false,
             properties: {
               type: { type: 'string', const: 'url' },
               text: { type: 'string' },
               url: { type: 'string' },
               display_url: { type: 'string' },
+              decoded_url: { type: 'string' },
               title: { type: 'string', nullable: true },
               description: { type: 'string', nullable: true },
             },
@@ -627,6 +628,22 @@ function validate10(
                     }
                     errors++;
                   }
+                  if (data7.decoded_url === undefined) {
+                    const err30 = {
+                      instancePath: instancePath + '/text/' + i0,
+                      schemaPath: '#/properties/text/items/oneOf/1/required',
+                      keyword: 'required',
+                      params: { missingProperty: 'decoded_url' },
+                      message:
+                        "must have required property '" + 'decoded_url' + "'",
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err30];
+                    } else {
+                      vErrors.push(err30);
+                    }
+                    errors++;
+                  }
                   for (const key3 in data7) {
                     if (
                       !(
@@ -634,11 +651,12 @@ function validate10(
                         key3 === 'text' ||
                         key3 === 'url' ||
                         key3 === 'display_url' ||
+                        key3 === 'decoded_url' ||
                         key3 === 'title' ||
                         key3 === 'description'
                       )
                     ) {
-                      const err30 = {
+                      const err31 = {
                         instancePath: instancePath + '/text/' + i0,
                         schemaPath:
                           '#/properties/text/items/oneOf/1/additionalProperties',
@@ -647,9 +665,9 @@ function validate10(
                         message: 'must NOT have additional properties',
                       };
                       if (vErrors === null) {
-                        vErrors = [err30];
+                        vErrors = [err31];
                       } else {
-                        vErrors.push(err30);
+                        vErrors.push(err31);
                       }
                       errors++;
                     }
@@ -657,7 +675,7 @@ function validate10(
                   if (data7.type !== undefined) {
                     let data10 = data7.type;
                     if (typeof data10 !== 'string') {
-                      const err31 = {
+                      const err32 = {
                         instancePath: instancePath + '/text/' + i0 + '/type',
                         schemaPath:
                           '#/properties/text/items/oneOf/1/properties/type/type',
@@ -666,38 +684,20 @@ function validate10(
                         message: 'must be string',
                       };
                       if (vErrors === null) {
-                        vErrors = [err31];
-                      } else {
-                        vErrors.push(err31);
-                      }
-                      errors++;
-                    }
-                    if ('url' !== data10) {
-                      const err32 = {
-                        instancePath: instancePath + '/text/' + i0 + '/type',
-                        schemaPath:
-                          '#/properties/text/items/oneOf/1/properties/type/const',
-                        keyword: 'const',
-                        params: { allowedValue: 'url' },
-                        message: 'must be equal to constant',
-                      };
-                      if (vErrors === null) {
                         vErrors = [err32];
                       } else {
                         vErrors.push(err32);
                       }
                       errors++;
                     }
-                  }
-                  if (data7.text !== undefined) {
-                    if (typeof data7.text !== 'string') {
+                    if ('url' !== data10) {
                       const err33 = {
-                        instancePath: instancePath + '/text/' + i0 + '/text',
+                        instancePath: instancePath + '/text/' + i0 + '/type',
                         schemaPath:
-                          '#/properties/text/items/oneOf/1/properties/text/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
+                          '#/properties/text/items/oneOf/1/properties/type/const',
+                        keyword: 'const',
+                        params: { allowedValue: 'url' },
+                        message: 'must be equal to constant',
                       };
                       if (vErrors === null) {
                         vErrors = [err33];
@@ -707,12 +707,12 @@ function validate10(
                       errors++;
                     }
                   }
-                  if (data7.url !== undefined) {
-                    if (typeof data7.url !== 'string') {
+                  if (data7.text !== undefined) {
+                    if (typeof data7.text !== 'string') {
                       const err34 = {
-                        instancePath: instancePath + '/text/' + i0 + '/url',
+                        instancePath: instancePath + '/text/' + i0 + '/text',
                         schemaPath:
-                          '#/properties/text/items/oneOf/1/properties/url/type',
+                          '#/properties/text/items/oneOf/1/properties/text/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -725,13 +725,12 @@ function validate10(
                       errors++;
                     }
                   }
-                  if (data7.display_url !== undefined) {
-                    if (typeof data7.display_url !== 'string') {
+                  if (data7.url !== undefined) {
+                    if (typeof data7.url !== 'string') {
                       const err35 = {
-                        instancePath:
-                          instancePath + '/text/' + i0 + '/display_url',
+                        instancePath: instancePath + '/text/' + i0 + '/url',
                         schemaPath:
-                          '#/properties/text/items/oneOf/1/properties/display_url/type',
+                          '#/properties/text/items/oneOf/1/properties/url/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -744,13 +743,13 @@ function validate10(
                       errors++;
                     }
                   }
-                  if (data7.title !== undefined) {
-                    let data14 = data7.title;
-                    if (typeof data14 !== 'string' && data14 !== null) {
+                  if (data7.display_url !== undefined) {
+                    if (typeof data7.display_url !== 'string') {
                       const err36 = {
-                        instancePath: instancePath + '/text/' + i0 + '/title',
+                        instancePath:
+                          instancePath + '/text/' + i0 + '/display_url',
                         schemaPath:
-                          '#/properties/text/items/oneOf/1/properties/title/type',
+                          '#/properties/text/items/oneOf/1/properties/display_url/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -763,14 +762,13 @@ function validate10(
                       errors++;
                     }
                   }
-                  if (data7.description !== undefined) {
-                    let data15 = data7.description;
-                    if (typeof data15 !== 'string' && data15 !== null) {
+                  if (data7.decoded_url !== undefined) {
+                    if (typeof data7.decoded_url !== 'string') {
                       const err37 = {
                         instancePath:
-                          instancePath + '/text/' + i0 + '/description',
+                          instancePath + '/text/' + i0 + '/decoded_url',
                         schemaPath:
-                          '#/properties/text/items/oneOf/1/properties/description/type',
+                          '#/properties/text/items/oneOf/1/properties/decoded_url/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -783,8 +781,47 @@ function validate10(
                       errors++;
                     }
                   }
+                  if (data7.title !== undefined) {
+                    let data15 = data7.title;
+                    if (typeof data15 !== 'string' && data15 !== null) {
+                      const err38 = {
+                        instancePath: instancePath + '/text/' + i0 + '/title',
+                        schemaPath:
+                          '#/properties/text/items/oneOf/1/properties/title/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                      };
+                      if (vErrors === null) {
+                        vErrors = [err38];
+                      } else {
+                        vErrors.push(err38);
+                      }
+                      errors++;
+                    }
+                  }
+                  if (data7.description !== undefined) {
+                    let data16 = data7.description;
+                    if (typeof data16 !== 'string' && data16 !== null) {
+                      const err39 = {
+                        instancePath:
+                          instancePath + '/text/' + i0 + '/description',
+                        schemaPath:
+                          '#/properties/text/items/oneOf/1/properties/description/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                      };
+                      if (vErrors === null) {
+                        vErrors = [err39];
+                      } else {
+                        vErrors.push(err39);
+                      }
+                      errors++;
+                    }
+                  }
                 } else {
-                  const err38 = {
+                  const err40 = {
                     instancePath: instancePath + '/text/' + i0,
                     schemaPath: '#/properties/text/items/oneOf/1/type',
                     keyword: 'type',
@@ -792,9 +829,9 @@ function validate10(
                     message: 'must be object',
                   };
                   if (vErrors === null) {
-                    vErrors = [err38];
+                    vErrors = [err40];
                   } else {
-                    vErrors.push(err38);
+                    vErrors.push(err40);
                   }
                   errors++;
                 }
@@ -805,43 +842,12 @@ function validate10(
                   !Array.isArray(data7)
                 ) {
                   if (data7.type === undefined) {
-                    const err39 = {
+                    const err41 = {
                       instancePath: instancePath + '/text/' + i0,
                       schemaPath: '#/properties/text/items/oneOf/2/required',
                       keyword: 'required',
                       params: { missingProperty: 'type' },
                       message: "must have required property '" + 'type' + "'",
-                    };
-                    if (vErrors === null) {
-                      vErrors = [err39];
-                    } else {
-                      vErrors.push(err39);
-                    }
-                    errors++;
-                  }
-                  if (data7.text === undefined) {
-                    const err40 = {
-                      instancePath: instancePath + '/text/' + i0,
-                      schemaPath: '#/properties/text/items/oneOf/2/required',
-                      keyword: 'required',
-                      params: { missingProperty: 'text' },
-                      message: "must have required property '" + 'text' + "'",
-                    };
-                    if (vErrors === null) {
-                      vErrors = [err40];
-                    } else {
-                      vErrors.push(err40);
-                    }
-                    errors++;
-                  }
-                  if (data7.media_key === undefined) {
-                    const err41 = {
-                      instancePath: instancePath + '/text/' + i0,
-                      schemaPath: '#/properties/text/items/oneOf/2/required',
-                      keyword: 'required',
-                      params: { missingProperty: 'media_key' },
-                      message:
-                        "must have required property '" + 'media_key' + "'",
                     };
                     if (vErrors === null) {
                       vErrors = [err41];
@@ -850,8 +856,39 @@ function validate10(
                     }
                     errors++;
                   }
-                  if (data7.media_type === undefined) {
+                  if (data7.text === undefined) {
                     const err42 = {
+                      instancePath: instancePath + '/text/' + i0,
+                      schemaPath: '#/properties/text/items/oneOf/2/required',
+                      keyword: 'required',
+                      params: { missingProperty: 'text' },
+                      message: "must have required property '" + 'text' + "'",
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err42];
+                    } else {
+                      vErrors.push(err42);
+                    }
+                    errors++;
+                  }
+                  if (data7.media_key === undefined) {
+                    const err43 = {
+                      instancePath: instancePath + '/text/' + i0,
+                      schemaPath: '#/properties/text/items/oneOf/2/required',
+                      keyword: 'required',
+                      params: { missingProperty: 'media_key' },
+                      message:
+                        "must have required property '" + 'media_key' + "'",
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err43];
+                    } else {
+                      vErrors.push(err43);
+                    }
+                    errors++;
+                  }
+                  if (data7.media_type === undefined) {
+                    const err44 = {
                       instancePath: instancePath + '/text/' + i0,
                       schemaPath: '#/properties/text/items/oneOf/2/required',
                       keyword: 'required',
@@ -860,9 +897,9 @@ function validate10(
                         "must have required property '" + 'media_type' + "'",
                     };
                     if (vErrors === null) {
-                      vErrors = [err42];
+                      vErrors = [err44];
                     } else {
-                      vErrors.push(err42);
+                      vErrors.push(err44);
                     }
                     errors++;
                   }
@@ -876,48 +913,13 @@ function validate10(
                         key4 === 'url'
                       )
                     ) {
-                      const err43 = {
+                      const err45 = {
                         instancePath: instancePath + '/text/' + i0,
                         schemaPath:
                           '#/properties/text/items/oneOf/2/additionalProperties',
                         keyword: 'additionalProperties',
                         params: { additionalProperty: key4 },
                         message: 'must NOT have additional properties',
-                      };
-                      if (vErrors === null) {
-                        vErrors = [err43];
-                      } else {
-                        vErrors.push(err43);
-                      }
-                      errors++;
-                    }
-                  }
-                  if (data7.type !== undefined) {
-                    let data16 = data7.type;
-                    if (typeof data16 !== 'string') {
-                      const err44 = {
-                        instancePath: instancePath + '/text/' + i0 + '/type',
-                        schemaPath:
-                          '#/properties/text/items/oneOf/2/properties/type/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
-                      };
-                      if (vErrors === null) {
-                        vErrors = [err44];
-                      } else {
-                        vErrors.push(err44);
-                      }
-                      errors++;
-                    }
-                    if ('media' !== data16) {
-                      const err45 = {
-                        instancePath: instancePath + '/text/' + i0 + '/type',
-                        schemaPath:
-                          '#/properties/text/items/oneOf/2/properties/type/const',
-                        keyword: 'const',
-                        params: { allowedValue: 'media' },
-                        message: 'must be equal to constant',
                       };
                       if (vErrors === null) {
                         vErrors = [err45];
@@ -927,12 +929,13 @@ function validate10(
                       errors++;
                     }
                   }
-                  if (data7.text !== undefined) {
-                    if (typeof data7.text !== 'string') {
+                  if (data7.type !== undefined) {
+                    let data17 = data7.type;
+                    if (typeof data17 !== 'string') {
                       const err46 = {
-                        instancePath: instancePath + '/text/' + i0 + '/text',
+                        instancePath: instancePath + '/text/' + i0 + '/type',
                         schemaPath:
-                          '#/properties/text/items/oneOf/2/properties/text/type',
+                          '#/properties/text/items/oneOf/2/properties/type/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -944,33 +947,29 @@ function validate10(
                       }
                       errors++;
                     }
-                  }
-                  if (data7.media_key !== undefined) {
-                    let data18 = data7.media_key;
-                    if (typeof data18 === 'string') {
-                      if (!pattern3.test(data18)) {
-                        const err47 = {
-                          instancePath:
-                            instancePath + '/text/' + i0 + '/media_key',
-                          schemaPath:
-                            '#/properties/text/items/oneOf/2/properties/media_key/pattern',
-                          keyword: 'pattern',
-                          params: { pattern: '^[0-9_]+$' },
-                          message: 'must match pattern "' + '^[0-9_]+$' + '"',
-                        };
-                        if (vErrors === null) {
-                          vErrors = [err47];
-                        } else {
-                          vErrors.push(err47);
-                        }
-                        errors++;
-                      }
-                    } else {
-                      const err48 = {
-                        instancePath:
-                          instancePath + '/text/' + i0 + '/media_key',
+                    if ('media' !== data17) {
+                      const err47 = {
+                        instancePath: instancePath + '/text/' + i0 + '/type',
                         schemaPath:
-                          '#/properties/text/items/oneOf/2/properties/media_key/type',
+                          '#/properties/text/items/oneOf/2/properties/type/const',
+                        keyword: 'const',
+                        params: { allowedValue: 'media' },
+                        message: 'must be equal to constant',
+                      };
+                      if (vErrors === null) {
+                        vErrors = [err47];
+                      } else {
+                        vErrors.push(err47);
+                      }
+                      errors++;
+                    }
+                  }
+                  if (data7.text !== undefined) {
+                    if (typeof data7.text !== 'string') {
+                      const err48 = {
+                        instancePath: instancePath + '/text/' + i0 + '/text',
+                        schemaPath:
+                          '#/properties/text/items/oneOf/2/properties/text/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -983,32 +982,32 @@ function validate10(
                       errors++;
                     }
                   }
-                  if (data7.media_type !== undefined) {
-                    if (typeof data7.media_type !== 'string') {
-                      const err49 = {
-                        instancePath:
-                          instancePath + '/text/' + i0 + '/media_type',
-                        schemaPath:
-                          '#/properties/text/items/oneOf/2/properties/media_type/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
-                      };
-                      if (vErrors === null) {
-                        vErrors = [err49];
-                      } else {
-                        vErrors.push(err49);
+                  if (data7.media_key !== undefined) {
+                    let data19 = data7.media_key;
+                    if (typeof data19 === 'string') {
+                      if (!pattern3.test(data19)) {
+                        const err49 = {
+                          instancePath:
+                            instancePath + '/text/' + i0 + '/media_key',
+                          schemaPath:
+                            '#/properties/text/items/oneOf/2/properties/media_key/pattern',
+                          keyword: 'pattern',
+                          params: { pattern: '^[0-9_]+$' },
+                          message: 'must match pattern "' + '^[0-9_]+$' + '"',
+                        };
+                        if (vErrors === null) {
+                          vErrors = [err49];
+                        } else {
+                          vErrors.push(err49);
+                        }
+                        errors++;
                       }
-                      errors++;
-                    }
-                  }
-                  if (data7.url !== undefined) {
-                    let data20 = data7.url;
-                    if (typeof data20 !== 'string' && data20 !== null) {
+                    } else {
                       const err50 = {
-                        instancePath: instancePath + '/text/' + i0 + '/url',
+                        instancePath:
+                          instancePath + '/text/' + i0 + '/media_key',
                         schemaPath:
-                          '#/properties/text/items/oneOf/2/properties/url/type',
+                          '#/properties/text/items/oneOf/2/properties/media_key/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -1021,8 +1020,46 @@ function validate10(
                       errors++;
                     }
                   }
+                  if (data7.media_type !== undefined) {
+                    if (typeof data7.media_type !== 'string') {
+                      const err51 = {
+                        instancePath:
+                          instancePath + '/text/' + i0 + '/media_type',
+                        schemaPath:
+                          '#/properties/text/items/oneOf/2/properties/media_type/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                      };
+                      if (vErrors === null) {
+                        vErrors = [err51];
+                      } else {
+                        vErrors.push(err51);
+                      }
+                      errors++;
+                    }
+                  }
+                  if (data7.url !== undefined) {
+                    let data21 = data7.url;
+                    if (typeof data21 !== 'string' && data21 !== null) {
+                      const err52 = {
+                        instancePath: instancePath + '/text/' + i0 + '/url',
+                        schemaPath:
+                          '#/properties/text/items/oneOf/2/properties/url/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                      };
+                      if (vErrors === null) {
+                        vErrors = [err52];
+                      } else {
+                        vErrors.push(err52);
+                      }
+                      errors++;
+                    }
+                  }
                 } else {
-                  const err51 = {
+                  const err53 = {
                     instancePath: instancePath + '/text/' + i0,
                     schemaPath: '#/properties/text/items/oneOf/2/type',
                     keyword: 'type',
@@ -1030,9 +1067,9 @@ function validate10(
                     message: 'must be object',
                   };
                   if (vErrors === null) {
-                    vErrors = [err51];
+                    vErrors = [err53];
                   } else {
-                    vErrors.push(err51);
+                    vErrors.push(err53);
                   }
                   errors++;
                 }
@@ -1043,42 +1080,12 @@ function validate10(
                   !Array.isArray(data7)
                 ) {
                   if (data7.type === undefined) {
-                    const err52 = {
+                    const err54 = {
                       instancePath: instancePath + '/text/' + i0,
                       schemaPath: '#/properties/text/items/oneOf/3/required',
                       keyword: 'required',
                       params: { missingProperty: 'type' },
                       message: "must have required property '" + 'type' + "'",
-                    };
-                    if (vErrors === null) {
-                      vErrors = [err52];
-                    } else {
-                      vErrors.push(err52);
-                    }
-                    errors++;
-                  }
-                  if (data7.text === undefined) {
-                    const err53 = {
-                      instancePath: instancePath + '/text/' + i0,
-                      schemaPath: '#/properties/text/items/oneOf/3/required',
-                      keyword: 'required',
-                      params: { missingProperty: 'text' },
-                      message: "must have required property '" + 'text' + "'",
-                    };
-                    if (vErrors === null) {
-                      vErrors = [err53];
-                    } else {
-                      vErrors.push(err53);
-                    }
-                    errors++;
-                  }
-                  if (data7.tag === undefined) {
-                    const err54 = {
-                      instancePath: instancePath + '/text/' + i0,
-                      schemaPath: '#/properties/text/items/oneOf/3/required',
-                      keyword: 'required',
-                      params: { missingProperty: 'tag' },
-                      message: "must have required property '" + 'tag' + "'",
                     };
                     if (vErrors === null) {
                       vErrors = [err54];
@@ -1087,52 +1094,47 @@ function validate10(
                     }
                     errors++;
                   }
+                  if (data7.text === undefined) {
+                    const err55 = {
+                      instancePath: instancePath + '/text/' + i0,
+                      schemaPath: '#/properties/text/items/oneOf/3/required',
+                      keyword: 'required',
+                      params: { missingProperty: 'text' },
+                      message: "must have required property '" + 'text' + "'",
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err55];
+                    } else {
+                      vErrors.push(err55);
+                    }
+                    errors++;
+                  }
+                  if (data7.tag === undefined) {
+                    const err56 = {
+                      instancePath: instancePath + '/text/' + i0,
+                      schemaPath: '#/properties/text/items/oneOf/3/required',
+                      keyword: 'required',
+                      params: { missingProperty: 'tag' },
+                      message: "must have required property '" + 'tag' + "'",
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err56];
+                    } else {
+                      vErrors.push(err56);
+                    }
+                    errors++;
+                  }
                   for (const key5 in data7) {
                     if (
                       !(key5 === 'type' || key5 === 'text' || key5 === 'tag')
                     ) {
-                      const err55 = {
+                      const err57 = {
                         instancePath: instancePath + '/text/' + i0,
                         schemaPath:
                           '#/properties/text/items/oneOf/3/additionalProperties',
                         keyword: 'additionalProperties',
                         params: { additionalProperty: key5 },
                         message: 'must NOT have additional properties',
-                      };
-                      if (vErrors === null) {
-                        vErrors = [err55];
-                      } else {
-                        vErrors.push(err55);
-                      }
-                      errors++;
-                    }
-                  }
-                  if (data7.type !== undefined) {
-                    let data21 = data7.type;
-                    if (typeof data21 !== 'string') {
-                      const err56 = {
-                        instancePath: instancePath + '/text/' + i0 + '/type',
-                        schemaPath:
-                          '#/properties/text/items/oneOf/3/properties/type/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
-                      };
-                      if (vErrors === null) {
-                        vErrors = [err56];
-                      } else {
-                        vErrors.push(err56);
-                      }
-                      errors++;
-                    }
-                    if ('hashtag' !== data21) {
-                      const err57 = {
-                        instancePath: instancePath + '/text/' + i0 + '/type',
-                        schemaPath:
-                          '#/properties/text/items/oneOf/3/properties/type/const',
-                        keyword: 'const',
-                        params: { allowedValue: 'hashtag' },
-                        message: 'must be equal to constant',
                       };
                       if (vErrors === null) {
                         vErrors = [err57];
@@ -1142,12 +1144,13 @@ function validate10(
                       errors++;
                     }
                   }
-                  if (data7.text !== undefined) {
-                    if (typeof data7.text !== 'string') {
+                  if (data7.type !== undefined) {
+                    let data22 = data7.type;
+                    if (typeof data22 !== 'string') {
                       const err58 = {
-                        instancePath: instancePath + '/text/' + i0 + '/text',
+                        instancePath: instancePath + '/text/' + i0 + '/type',
                         schemaPath:
-                          '#/properties/text/items/oneOf/3/properties/text/type',
+                          '#/properties/text/items/oneOf/3/properties/type/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -1159,16 +1162,14 @@ function validate10(
                       }
                       errors++;
                     }
-                  }
-                  if (data7.tag !== undefined) {
-                    if (typeof data7.tag !== 'string') {
+                    if ('hashtag' !== data22) {
                       const err59 = {
-                        instancePath: instancePath + '/text/' + i0 + '/tag',
+                        instancePath: instancePath + '/text/' + i0 + '/type',
                         schemaPath:
-                          '#/properties/text/items/oneOf/3/properties/tag/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
+                          '#/properties/text/items/oneOf/3/properties/type/const',
+                        keyword: 'const',
+                        params: { allowedValue: 'hashtag' },
+                        message: 'must be equal to constant',
                       };
                       if (vErrors === null) {
                         vErrors = [err59];
@@ -1178,8 +1179,44 @@ function validate10(
                       errors++;
                     }
                   }
+                  if (data7.text !== undefined) {
+                    if (typeof data7.text !== 'string') {
+                      const err60 = {
+                        instancePath: instancePath + '/text/' + i0 + '/text',
+                        schemaPath:
+                          '#/properties/text/items/oneOf/3/properties/text/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                      };
+                      if (vErrors === null) {
+                        vErrors = [err60];
+                      } else {
+                        vErrors.push(err60);
+                      }
+                      errors++;
+                    }
+                  }
+                  if (data7.tag !== undefined) {
+                    if (typeof data7.tag !== 'string') {
+                      const err61 = {
+                        instancePath: instancePath + '/text/' + i0 + '/tag',
+                        schemaPath:
+                          '#/properties/text/items/oneOf/3/properties/tag/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                      };
+                      if (vErrors === null) {
+                        vErrors = [err61];
+                      } else {
+                        vErrors.push(err61);
+                      }
+                      errors++;
+                    }
+                  }
                 } else {
-                  const err60 = {
+                  const err62 = {
                     instancePath: instancePath + '/text/' + i0,
                     schemaPath: '#/properties/text/items/oneOf/3/type',
                     keyword: 'type',
@@ -1187,9 +1224,9 @@ function validate10(
                     message: 'must be object',
                   };
                   if (vErrors === null) {
-                    vErrors = [err60];
+                    vErrors = [err62];
                   } else {
-                    vErrors.push(err60);
+                    vErrors.push(err62);
                   }
                   errors++;
                 }
@@ -1200,42 +1237,12 @@ function validate10(
                   !Array.isArray(data7)
                 ) {
                   if (data7.type === undefined) {
-                    const err61 = {
+                    const err63 = {
                       instancePath: instancePath + '/text/' + i0,
                       schemaPath: '#/properties/text/items/oneOf/4/required',
                       keyword: 'required',
                       params: { missingProperty: 'type' },
                       message: "must have required property '" + 'type' + "'",
-                    };
-                    if (vErrors === null) {
-                      vErrors = [err61];
-                    } else {
-                      vErrors.push(err61);
-                    }
-                    errors++;
-                  }
-                  if (data7.text === undefined) {
-                    const err62 = {
-                      instancePath: instancePath + '/text/' + i0,
-                      schemaPath: '#/properties/text/items/oneOf/4/required',
-                      keyword: 'required',
-                      params: { missingProperty: 'text' },
-                      message: "must have required property '" + 'text' + "'",
-                    };
-                    if (vErrors === null) {
-                      vErrors = [err62];
-                    } else {
-                      vErrors.push(err62);
-                    }
-                    errors++;
-                  }
-                  if (data7.tag === undefined) {
-                    const err63 = {
-                      instancePath: instancePath + '/text/' + i0,
-                      schemaPath: '#/properties/text/items/oneOf/4/required',
-                      keyword: 'required',
-                      params: { missingProperty: 'tag' },
-                      message: "must have required property '" + 'tag' + "'",
                     };
                     if (vErrors === null) {
                       vErrors = [err63];
@@ -1244,52 +1251,47 @@ function validate10(
                     }
                     errors++;
                   }
+                  if (data7.text === undefined) {
+                    const err64 = {
+                      instancePath: instancePath + '/text/' + i0,
+                      schemaPath: '#/properties/text/items/oneOf/4/required',
+                      keyword: 'required',
+                      params: { missingProperty: 'text' },
+                      message: "must have required property '" + 'text' + "'",
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err64];
+                    } else {
+                      vErrors.push(err64);
+                    }
+                    errors++;
+                  }
+                  if (data7.tag === undefined) {
+                    const err65 = {
+                      instancePath: instancePath + '/text/' + i0,
+                      schemaPath: '#/properties/text/items/oneOf/4/required',
+                      keyword: 'required',
+                      params: { missingProperty: 'tag' },
+                      message: "must have required property '" + 'tag' + "'",
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err65];
+                    } else {
+                      vErrors.push(err65);
+                    }
+                    errors++;
+                  }
                   for (const key6 in data7) {
                     if (
                       !(key6 === 'type' || key6 === 'text' || key6 === 'tag')
                     ) {
-                      const err64 = {
+                      const err66 = {
                         instancePath: instancePath + '/text/' + i0,
                         schemaPath:
                           '#/properties/text/items/oneOf/4/additionalProperties',
                         keyword: 'additionalProperties',
                         params: { additionalProperty: key6 },
                         message: 'must NOT have additional properties',
-                      };
-                      if (vErrors === null) {
-                        vErrors = [err64];
-                      } else {
-                        vErrors.push(err64);
-                      }
-                      errors++;
-                    }
-                  }
-                  if (data7.type !== undefined) {
-                    let data24 = data7.type;
-                    if (typeof data24 !== 'string') {
-                      const err65 = {
-                        instancePath: instancePath + '/text/' + i0 + '/type',
-                        schemaPath:
-                          '#/properties/text/items/oneOf/4/properties/type/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
-                      };
-                      if (vErrors === null) {
-                        vErrors = [err65];
-                      } else {
-                        vErrors.push(err65);
-                      }
-                      errors++;
-                    }
-                    if ('cashtag' !== data24) {
-                      const err66 = {
-                        instancePath: instancePath + '/text/' + i0 + '/type',
-                        schemaPath:
-                          '#/properties/text/items/oneOf/4/properties/type/const',
-                        keyword: 'const',
-                        params: { allowedValue: 'cashtag' },
-                        message: 'must be equal to constant',
                       };
                       if (vErrors === null) {
                         vErrors = [err66];
@@ -1299,12 +1301,13 @@ function validate10(
                       errors++;
                     }
                   }
-                  if (data7.text !== undefined) {
-                    if (typeof data7.text !== 'string') {
+                  if (data7.type !== undefined) {
+                    let data25 = data7.type;
+                    if (typeof data25 !== 'string') {
                       const err67 = {
-                        instancePath: instancePath + '/text/' + i0 + '/text',
+                        instancePath: instancePath + '/text/' + i0 + '/type',
                         schemaPath:
-                          '#/properties/text/items/oneOf/4/properties/text/type',
+                          '#/properties/text/items/oneOf/4/properties/type/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -1316,16 +1319,14 @@ function validate10(
                       }
                       errors++;
                     }
-                  }
-                  if (data7.tag !== undefined) {
-                    if (typeof data7.tag !== 'string') {
+                    if ('cashtag' !== data25) {
                       const err68 = {
-                        instancePath: instancePath + '/text/' + i0 + '/tag',
+                        instancePath: instancePath + '/text/' + i0 + '/type',
                         schemaPath:
-                          '#/properties/text/items/oneOf/4/properties/tag/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
+                          '#/properties/text/items/oneOf/4/properties/type/const',
+                        keyword: 'const',
+                        params: { allowedValue: 'cashtag' },
+                        message: 'must be equal to constant',
                       };
                       if (vErrors === null) {
                         vErrors = [err68];
@@ -1335,8 +1336,44 @@ function validate10(
                       errors++;
                     }
                   }
+                  if (data7.text !== undefined) {
+                    if (typeof data7.text !== 'string') {
+                      const err69 = {
+                        instancePath: instancePath + '/text/' + i0 + '/text',
+                        schemaPath:
+                          '#/properties/text/items/oneOf/4/properties/text/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                      };
+                      if (vErrors === null) {
+                        vErrors = [err69];
+                      } else {
+                        vErrors.push(err69);
+                      }
+                      errors++;
+                    }
+                  }
+                  if (data7.tag !== undefined) {
+                    if (typeof data7.tag !== 'string') {
+                      const err70 = {
+                        instancePath: instancePath + '/text/' + i0 + '/tag',
+                        schemaPath:
+                          '#/properties/text/items/oneOf/4/properties/tag/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                      };
+                      if (vErrors === null) {
+                        vErrors = [err70];
+                      } else {
+                        vErrors.push(err70);
+                      }
+                      errors++;
+                    }
+                  }
                 } else {
-                  const err69 = {
+                  const err71 = {
                     instancePath: instancePath + '/text/' + i0,
                     schemaPath: '#/properties/text/items/oneOf/4/type',
                     keyword: 'type',
@@ -1344,9 +1381,9 @@ function validate10(
                     message: 'must be object',
                   };
                   if (vErrors === null) {
-                    vErrors = [err69];
+                    vErrors = [err71];
                   } else {
-                    vErrors.push(err69);
+                    vErrors.push(err71);
                   }
                   errors++;
                 }
@@ -1357,43 +1394,12 @@ function validate10(
                   !Array.isArray(data7)
                 ) {
                   if (data7.type === undefined) {
-                    const err70 = {
+                    const err72 = {
                       instancePath: instancePath + '/text/' + i0,
                       schemaPath: '#/properties/text/items/oneOf/5/required',
                       keyword: 'required',
                       params: { missingProperty: 'type' },
                       message: "must have required property '" + 'type' + "'",
-                    };
-                    if (vErrors === null) {
-                      vErrors = [err70];
-                    } else {
-                      vErrors.push(err70);
-                    }
-                    errors++;
-                  }
-                  if (data7.text === undefined) {
-                    const err71 = {
-                      instancePath: instancePath + '/text/' + i0,
-                      schemaPath: '#/properties/text/items/oneOf/5/required',
-                      keyword: 'required',
-                      params: { missingProperty: 'text' },
-                      message: "must have required property '" + 'text' + "'",
-                    };
-                    if (vErrors === null) {
-                      vErrors = [err71];
-                    } else {
-                      vErrors.push(err71);
-                    }
-                    errors++;
-                  }
-                  if (data7.user_id === undefined) {
-                    const err72 = {
-                      instancePath: instancePath + '/text/' + i0,
-                      schemaPath: '#/properties/text/items/oneOf/5/required',
-                      keyword: 'required',
-                      params: { missingProperty: 'user_id' },
-                      message:
-                        "must have required property '" + 'user_id' + "'",
                     };
                     if (vErrors === null) {
                       vErrors = [err72];
@@ -1402,8 +1408,39 @@ function validate10(
                     }
                     errors++;
                   }
-                  if (data7.username === undefined) {
+                  if (data7.text === undefined) {
                     const err73 = {
+                      instancePath: instancePath + '/text/' + i0,
+                      schemaPath: '#/properties/text/items/oneOf/5/required',
+                      keyword: 'required',
+                      params: { missingProperty: 'text' },
+                      message: "must have required property '" + 'text' + "'",
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err73];
+                    } else {
+                      vErrors.push(err73);
+                    }
+                    errors++;
+                  }
+                  if (data7.user_id === undefined) {
+                    const err74 = {
+                      instancePath: instancePath + '/text/' + i0,
+                      schemaPath: '#/properties/text/items/oneOf/5/required',
+                      keyword: 'required',
+                      params: { missingProperty: 'user_id' },
+                      message:
+                        "must have required property '" + 'user_id' + "'",
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err74];
+                    } else {
+                      vErrors.push(err74);
+                    }
+                    errors++;
+                  }
+                  if (data7.username === undefined) {
+                    const err75 = {
                       instancePath: instancePath + '/text/' + i0,
                       schemaPath: '#/properties/text/items/oneOf/5/required',
                       keyword: 'required',
@@ -1412,9 +1449,9 @@ function validate10(
                         "must have required property '" + 'username' + "'",
                     };
                     if (vErrors === null) {
-                      vErrors = [err73];
+                      vErrors = [err75];
                     } else {
-                      vErrors.push(err73);
+                      vErrors.push(err75);
                     }
                     errors++;
                   }
@@ -1427,48 +1464,13 @@ function validate10(
                         key7 === 'username'
                       )
                     ) {
-                      const err74 = {
+                      const err76 = {
                         instancePath: instancePath + '/text/' + i0,
                         schemaPath:
                           '#/properties/text/items/oneOf/5/additionalProperties',
                         keyword: 'additionalProperties',
                         params: { additionalProperty: key7 },
                         message: 'must NOT have additional properties',
-                      };
-                      if (vErrors === null) {
-                        vErrors = [err74];
-                      } else {
-                        vErrors.push(err74);
-                      }
-                      errors++;
-                    }
-                  }
-                  if (data7.type !== undefined) {
-                    let data27 = data7.type;
-                    if (typeof data27 !== 'string') {
-                      const err75 = {
-                        instancePath: instancePath + '/text/' + i0 + '/type',
-                        schemaPath:
-                          '#/properties/text/items/oneOf/5/properties/type/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
-                      };
-                      if (vErrors === null) {
-                        vErrors = [err75];
-                      } else {
-                        vErrors.push(err75);
-                      }
-                      errors++;
-                    }
-                    if ('mention' !== data27) {
-                      const err76 = {
-                        instancePath: instancePath + '/text/' + i0 + '/type',
-                        schemaPath:
-                          '#/properties/text/items/oneOf/5/properties/type/const',
-                        keyword: 'const',
-                        params: { allowedValue: 'mention' },
-                        message: 'must be equal to constant',
                       };
                       if (vErrors === null) {
                         vErrors = [err76];
@@ -1478,12 +1480,13 @@ function validate10(
                       errors++;
                     }
                   }
-                  if (data7.text !== undefined) {
-                    if (typeof data7.text !== 'string') {
+                  if (data7.type !== undefined) {
+                    let data28 = data7.type;
+                    if (typeof data28 !== 'string') {
                       const err77 = {
-                        instancePath: instancePath + '/text/' + i0 + '/text',
+                        instancePath: instancePath + '/text/' + i0 + '/type',
                         schemaPath:
-                          '#/properties/text/items/oneOf/5/properties/text/type',
+                          '#/properties/text/items/oneOf/5/properties/type/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -1495,32 +1498,29 @@ function validate10(
                       }
                       errors++;
                     }
-                  }
-                  if (data7.user_id !== undefined) {
-                    let data29 = data7.user_id;
-                    if (typeof data29 === 'string') {
-                      if (!pattern0.test(data29)) {
-                        const err78 = {
-                          instancePath:
-                            instancePath + '/text/' + i0 + '/user_id',
-                          schemaPath:
-                            '#/properties/text/items/oneOf/5/properties/user_id/pattern',
-                          keyword: 'pattern',
-                          params: { pattern: '^[0-9]+$' },
-                          message: 'must match pattern "' + '^[0-9]+$' + '"',
-                        };
-                        if (vErrors === null) {
-                          vErrors = [err78];
-                        } else {
-                          vErrors.push(err78);
-                        }
-                        errors++;
-                      }
-                    } else {
-                      const err79 = {
-                        instancePath: instancePath + '/text/' + i0 + '/user_id',
+                    if ('mention' !== data28) {
+                      const err78 = {
+                        instancePath: instancePath + '/text/' + i0 + '/type',
                         schemaPath:
-                          '#/properties/text/items/oneOf/5/properties/user_id/type',
+                          '#/properties/text/items/oneOf/5/properties/type/const',
+                        keyword: 'const',
+                        params: { allowedValue: 'mention' },
+                        message: 'must be equal to constant',
+                      };
+                      if (vErrors === null) {
+                        vErrors = [err78];
+                      } else {
+                        vErrors.push(err78);
+                      }
+                      errors++;
+                    }
+                  }
+                  if (data7.text !== undefined) {
+                    if (typeof data7.text !== 'string') {
+                      const err79 = {
+                        instancePath: instancePath + '/text/' + i0 + '/text',
+                        schemaPath:
+                          '#/properties/text/items/oneOf/5/properties/text/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -1533,21 +1533,18 @@ function validate10(
                       errors++;
                     }
                   }
-                  if (data7.username !== undefined) {
-                    let data30 = data7.username;
+                  if (data7.user_id !== undefined) {
+                    let data30 = data7.user_id;
                     if (typeof data30 === 'string') {
-                      if (!pattern2.test(data30)) {
+                      if (!pattern0.test(data30)) {
                         const err80 = {
                           instancePath:
-                            instancePath + '/text/' + i0 + '/username',
+                            instancePath + '/text/' + i0 + '/user_id',
                           schemaPath:
-                            '#/properties/text/items/oneOf/5/properties/username/pattern',
+                            '#/properties/text/items/oneOf/5/properties/user_id/pattern',
                           keyword: 'pattern',
-                          params: { pattern: '^[a-zA-Z0-9_]{1,15}$' },
-                          message:
-                            'must match pattern "' +
-                            '^[a-zA-Z0-9_]{1,15}$' +
-                            '"',
+                          params: { pattern: '^[0-9]+$' },
+                          message: 'must match pattern "' + '^[0-9]+$' + '"',
                         };
                         if (vErrors === null) {
                           vErrors = [err80];
@@ -1558,10 +1555,9 @@ function validate10(
                       }
                     } else {
                       const err81 = {
-                        instancePath:
-                          instancePath + '/text/' + i0 + '/username',
+                        instancePath: instancePath + '/text/' + i0 + '/user_id',
                         schemaPath:
-                          '#/properties/text/items/oneOf/5/properties/username/type',
+                          '#/properties/text/items/oneOf/5/properties/user_id/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -1574,8 +1570,49 @@ function validate10(
                       errors++;
                     }
                   }
+                  if (data7.username !== undefined) {
+                    let data31 = data7.username;
+                    if (typeof data31 === 'string') {
+                      if (!pattern2.test(data31)) {
+                        const err82 = {
+                          instancePath:
+                            instancePath + '/text/' + i0 + '/username',
+                          schemaPath:
+                            '#/properties/text/items/oneOf/5/properties/username/pattern',
+                          keyword: 'pattern',
+                          params: { pattern: '^[a-zA-Z0-9_]{1,15}$' },
+                          message:
+                            'must match pattern "' +
+                            '^[a-zA-Z0-9_]{1,15}$' +
+                            '"',
+                        };
+                        if (vErrors === null) {
+                          vErrors = [err82];
+                        } else {
+                          vErrors.push(err82);
+                        }
+                        errors++;
+                      }
+                    } else {
+                      const err83 = {
+                        instancePath:
+                          instancePath + '/text/' + i0 + '/username',
+                        schemaPath:
+                          '#/properties/text/items/oneOf/5/properties/username/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                      };
+                      if (vErrors === null) {
+                        vErrors = [err83];
+                      } else {
+                        vErrors.push(err83);
+                      }
+                      errors++;
+                    }
+                  }
                 } else {
-                  const err82 = {
+                  const err84 = {
                     instancePath: instancePath + '/text/' + i0,
                     schemaPath: '#/properties/text/items/oneOf/5/type',
                     keyword: 'type',
@@ -1583,14 +1620,14 @@ function validate10(
                     message: 'must be object',
                   };
                   if (vErrors === null) {
-                    vErrors = [err82];
+                    vErrors = [err84];
                   } else {
-                    vErrors.push(err82);
+                    vErrors.push(err84);
                   }
                   errors++;
                 }
               } else {
-                const err83 = {
+                const err85 = {
                   instancePath: instancePath + '/text/' + i0,
                   schemaPath: '#/properties/text/items/discriminator',
                   keyword: 'discriminator',
@@ -1598,14 +1635,14 @@ function validate10(
                   message: 'value of tag "type" must be in oneOf',
                 };
                 if (vErrors === null) {
-                  vErrors = [err83];
+                  vErrors = [err85];
                 } else {
-                  vErrors.push(err83);
+                  vErrors.push(err85);
                 }
                 errors++;
               }
             } else {
-              const err84 = {
+              const err86 = {
                 instancePath: instancePath + '/text/' + i0,
                 schemaPath: '#/properties/text/items/discriminator',
                 keyword: 'discriminator',
@@ -1613,14 +1650,14 @@ function validate10(
                 message: 'tag "type" must be string',
               };
               if (vErrors === null) {
-                vErrors = [err84];
+                vErrors = [err86];
               } else {
-                vErrors.push(err84);
+                vErrors.push(err86);
               }
               errors++;
             }
           } else {
-            const err85 = {
+            const err87 = {
               instancePath: instancePath + '/text/' + i0,
               schemaPath: '#/properties/text/items/type',
               keyword: 'type',
@@ -1628,15 +1665,15 @@ function validate10(
               message: 'must be object',
             };
             if (vErrors === null) {
-              vErrors = [err85];
+              vErrors = [err87];
             } else {
-              vErrors.push(err85);
+              vErrors.push(err87);
             }
             errors++;
           }
         }
       } else {
-        const err86 = {
+        const err88 = {
           instancePath: instancePath + '/text',
           schemaPath: '#/properties/text/type',
           keyword: 'type',
@@ -1644,15 +1681,15 @@ function validate10(
           message: 'must be array',
         };
         if (vErrors === null) {
-          vErrors = [err86];
+          vErrors = [err88];
         } else {
-          vErrors.push(err86);
+          vErrors.push(err88);
         }
         errors++;
       }
     }
   } else {
-    const err87 = {
+    const err89 = {
       instancePath,
       schemaPath: '#/type',
       keyword: 'type',
@@ -1660,9 +1697,9 @@ function validate10(
       message: 'must be object',
     };
     if (vErrors === null) {
-      vErrors = [err87];
+      vErrors = [err89];
     } else {
-      vErrors.push(err87);
+      vErrors.push(err89);
     }
     errors++;
   }

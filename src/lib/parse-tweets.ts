@@ -1,4 +1,5 @@
 import split from 'graphemesplit';
+import punycode from 'punycode';
 import {
   ApiV2Includes,
   MediaObjectV2,
@@ -260,12 +261,18 @@ const toTweetEntityURL = (
         text,
         url: entity.expanded_url,
         display_url: entity.display_url,
+        decoded_url: decodeURL(entity.expanded_url),
         title: entity.title,
         description: entity.description,
       },
       ...position,
     };
   };
+};
+
+const decodeURL = (url: string): string => {
+  const host = new URL(url).host;
+  return decodeURI(url).replace(host, punycode.toUnicode(host));
 };
 
 const toTweetEntityHashtag: TweetEntityGenerator<

@@ -49,7 +49,7 @@ export const tweetEntityTextJSONSchema: JSONSchemaType<TweetEntityText> = {
 
 export const tweetEntityURLJSONSchema: JSONSchemaType<TweetEntityURL> = {
   type: 'object',
-  required: ['type', 'text', 'url', 'display_url'],
+  required: ['type', 'text', 'url', 'display_url', 'decoded_url'],
   additionalProperties: false,
   properties: {
     type: {
@@ -63,6 +63,9 @@ export const tweetEntityURLJSONSchema: JSONSchemaType<TweetEntityURL> = {
       type: 'string',
     },
     display_url: {
+      type: 'string',
+    },
+    decoded_url: {
       type: 'string',
     },
     title: {
