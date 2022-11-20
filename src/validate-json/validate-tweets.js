@@ -96,6 +96,28 @@ const schema11 = {
           ],
         },
       },
+      annotations: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: [
+            'type',
+            'text',
+            'probability',
+            'annotation_type',
+            'normalized_text',
+          ],
+          additionalProperties: false,
+          properties: {
+            type: { type: 'string', const: 'annotation' },
+            text: { type: 'string' },
+            probability: { type: 'number' },
+            annotation_type: { type: 'string' },
+            normalized_text: { type: 'string' },
+          },
+        },
+        nullable: true,
+      },
     },
   },
 };
@@ -179,7 +201,8 @@ function validate10(
               key0 === 'id' ||
               key0 === 'timestamp' ||
               key0 === 'author' ||
-              key0 === 'text'
+              key0 === 'text' ||
+              key0 === 'annotations'
             )
           ) {
             const err4 = {
@@ -1842,8 +1865,306 @@ function validate10(
             errors++;
           }
         }
+        if (data0.annotations !== undefined) {
+          let data33 = data0.annotations;
+          if (!Array.isArray(data33) && data33 !== null) {
+            const err89 = {
+              instancePath: instancePath + '/' + i0 + '/annotations',
+              schemaPath: '#/items/properties/annotations/type',
+              keyword: 'type',
+              params: { type: 'array' },
+              message: 'must be array',
+            };
+            if (vErrors === null) {
+              vErrors = [err89];
+            } else {
+              vErrors.push(err89);
+            }
+            errors++;
+          }
+          if (Array.isArray(data33)) {
+            const len2 = data33.length;
+            for (let i2 = 0; i2 < len2; i2++) {
+              let data34 = data33[i2];
+              if (
+                data34 &&
+                typeof data34 == 'object' &&
+                !Array.isArray(data34)
+              ) {
+                if (data34.type === undefined) {
+                  const err90 = {
+                    instancePath:
+                      instancePath + '/' + i0 + '/annotations/' + i2,
+                    schemaPath: '#/items/properties/annotations/items/required',
+                    keyword: 'required',
+                    params: { missingProperty: 'type' },
+                    message: "must have required property '" + 'type' + "'",
+                  };
+                  if (vErrors === null) {
+                    vErrors = [err90];
+                  } else {
+                    vErrors.push(err90);
+                  }
+                  errors++;
+                }
+                if (data34.text === undefined) {
+                  const err91 = {
+                    instancePath:
+                      instancePath + '/' + i0 + '/annotations/' + i2,
+                    schemaPath: '#/items/properties/annotations/items/required',
+                    keyword: 'required',
+                    params: { missingProperty: 'text' },
+                    message: "must have required property '" + 'text' + "'",
+                  };
+                  if (vErrors === null) {
+                    vErrors = [err91];
+                  } else {
+                    vErrors.push(err91);
+                  }
+                  errors++;
+                }
+                if (data34.probability === undefined) {
+                  const err92 = {
+                    instancePath:
+                      instancePath + '/' + i0 + '/annotations/' + i2,
+                    schemaPath: '#/items/properties/annotations/items/required',
+                    keyword: 'required',
+                    params: { missingProperty: 'probability' },
+                    message:
+                      "must have required property '" + 'probability' + "'",
+                  };
+                  if (vErrors === null) {
+                    vErrors = [err92];
+                  } else {
+                    vErrors.push(err92);
+                  }
+                  errors++;
+                }
+                if (data34.annotation_type === undefined) {
+                  const err93 = {
+                    instancePath:
+                      instancePath + '/' + i0 + '/annotations/' + i2,
+                    schemaPath: '#/items/properties/annotations/items/required',
+                    keyword: 'required',
+                    params: { missingProperty: 'annotation_type' },
+                    message:
+                      "must have required property '" + 'annotation_type' + "'",
+                  };
+                  if (vErrors === null) {
+                    vErrors = [err93];
+                  } else {
+                    vErrors.push(err93);
+                  }
+                  errors++;
+                }
+                if (data34.normalized_text === undefined) {
+                  const err94 = {
+                    instancePath:
+                      instancePath + '/' + i0 + '/annotations/' + i2,
+                    schemaPath: '#/items/properties/annotations/items/required',
+                    keyword: 'required',
+                    params: { missingProperty: 'normalized_text' },
+                    message:
+                      "must have required property '" + 'normalized_text' + "'",
+                  };
+                  if (vErrors === null) {
+                    vErrors = [err94];
+                  } else {
+                    vErrors.push(err94);
+                  }
+                  errors++;
+                }
+                for (const key8 in data34) {
+                  if (
+                    !(
+                      key8 === 'type' ||
+                      key8 === 'text' ||
+                      key8 === 'probability' ||
+                      key8 === 'annotation_type' ||
+                      key8 === 'normalized_text'
+                    )
+                  ) {
+                    const err95 = {
+                      instancePath:
+                        instancePath + '/' + i0 + '/annotations/' + i2,
+                      schemaPath:
+                        '#/items/properties/annotations/items/additionalProperties',
+                      keyword: 'additionalProperties',
+                      params: { additionalProperty: key8 },
+                      message: 'must NOT have additional properties',
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err95];
+                    } else {
+                      vErrors.push(err95);
+                    }
+                    errors++;
+                  }
+                }
+                if (data34.type !== undefined) {
+                  let data35 = data34.type;
+                  if (typeof data35 !== 'string') {
+                    const err96 = {
+                      instancePath:
+                        instancePath +
+                        '/' +
+                        i0 +
+                        '/annotations/' +
+                        i2 +
+                        '/type',
+                      schemaPath:
+                        '#/items/properties/annotations/items/properties/type/type',
+                      keyword: 'type',
+                      params: { type: 'string' },
+                      message: 'must be string',
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err96];
+                    } else {
+                      vErrors.push(err96);
+                    }
+                    errors++;
+                  }
+                  if ('annotation' !== data35) {
+                    const err97 = {
+                      instancePath:
+                        instancePath +
+                        '/' +
+                        i0 +
+                        '/annotations/' +
+                        i2 +
+                        '/type',
+                      schemaPath:
+                        '#/items/properties/annotations/items/properties/type/const',
+                      keyword: 'const',
+                      params: { allowedValue: 'annotation' },
+                      message: 'must be equal to constant',
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err97];
+                    } else {
+                      vErrors.push(err97);
+                    }
+                    errors++;
+                  }
+                }
+                if (data34.text !== undefined) {
+                  if (typeof data34.text !== 'string') {
+                    const err98 = {
+                      instancePath:
+                        instancePath +
+                        '/' +
+                        i0 +
+                        '/annotations/' +
+                        i2 +
+                        '/text',
+                      schemaPath:
+                        '#/items/properties/annotations/items/properties/text/type',
+                      keyword: 'type',
+                      params: { type: 'string' },
+                      message: 'must be string',
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err98];
+                    } else {
+                      vErrors.push(err98);
+                    }
+                    errors++;
+                  }
+                }
+                if (data34.probability !== undefined) {
+                  let data37 = data34.probability;
+                  if (!(typeof data37 == 'number' && isFinite(data37))) {
+                    const err99 = {
+                      instancePath:
+                        instancePath +
+                        '/' +
+                        i0 +
+                        '/annotations/' +
+                        i2 +
+                        '/probability',
+                      schemaPath:
+                        '#/items/properties/annotations/items/properties/probability/type',
+                      keyword: 'type',
+                      params: { type: 'number' },
+                      message: 'must be number',
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err99];
+                    } else {
+                      vErrors.push(err99);
+                    }
+                    errors++;
+                  }
+                }
+                if (data34.annotation_type !== undefined) {
+                  if (typeof data34.annotation_type !== 'string') {
+                    const err100 = {
+                      instancePath:
+                        instancePath +
+                        '/' +
+                        i0 +
+                        '/annotations/' +
+                        i2 +
+                        '/annotation_type',
+                      schemaPath:
+                        '#/items/properties/annotations/items/properties/annotation_type/type',
+                      keyword: 'type',
+                      params: { type: 'string' },
+                      message: 'must be string',
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err100];
+                    } else {
+                      vErrors.push(err100);
+                    }
+                    errors++;
+                  }
+                }
+                if (data34.normalized_text !== undefined) {
+                  if (typeof data34.normalized_text !== 'string') {
+                    const err101 = {
+                      instancePath:
+                        instancePath +
+                        '/' +
+                        i0 +
+                        '/annotations/' +
+                        i2 +
+                        '/normalized_text',
+                      schemaPath:
+                        '#/items/properties/annotations/items/properties/normalized_text/type',
+                      keyword: 'type',
+                      params: { type: 'string' },
+                      message: 'must be string',
+                    };
+                    if (vErrors === null) {
+                      vErrors = [err101];
+                    } else {
+                      vErrors.push(err101);
+                    }
+                    errors++;
+                  }
+                }
+              } else {
+                const err102 = {
+                  instancePath: instancePath + '/' + i0 + '/annotations/' + i2,
+                  schemaPath: '#/items/properties/annotations/items/type',
+                  keyword: 'type',
+                  params: { type: 'object' },
+                  message: 'must be object',
+                };
+                if (vErrors === null) {
+                  vErrors = [err102];
+                } else {
+                  vErrors.push(err102);
+                }
+                errors++;
+              }
+            }
+          }
+        }
       } else {
-        const err89 = {
+        const err103 = {
           instancePath: instancePath + '/' + i0,
           schemaPath: '#/items/type',
           keyword: 'type',
@@ -1851,15 +2172,15 @@ function validate10(
           message: 'must be object',
         };
         if (vErrors === null) {
-          vErrors = [err89];
+          vErrors = [err103];
         } else {
-          vErrors.push(err89);
+          vErrors.push(err103);
         }
         errors++;
       }
     }
   } else {
-    const err90 = {
+    const err104 = {
       instancePath,
       schemaPath: '#/type',
       keyword: 'type',
@@ -1867,9 +2188,9 @@ function validate10(
       message: 'must be array',
     };
     if (vErrors === null) {
-      vErrors = [err90];
+      vErrors = [err104];
     } else {
-      vErrors.push(err90);
+      vErrors.push(err104);
     }
     errors++;
   }

@@ -14,6 +14,7 @@ import { loggerProvider } from './logger';
 import {
   Tweet,
   TweetEntity,
+  TweetEntityAnnotation,
   TweetEntityCashtag,
   TweetEntityHashtag,
   TweetEntityMedia,
@@ -56,11 +57,13 @@ const parseTweet = (
   const timestamp = parseTimestamp(tweet);
   const author = parseAuthor(tweet, includes);
   const text = parseText(tweet, includes, logger);
+  const annotations = parseAnnotations(tweet);
   return {
     id: tweet.id,
     timestamp,
     author,
     text,
+    annotations,
   };
 };
 
@@ -328,4 +331,17 @@ const toTweetEntityMention: TweetEntityGenerator<
     start: entity.start,
     end: entity.end,
   };
+};
+
+const parseAnnotations = (
+  tweet: TweetV2
+): TweetEntityAnnotation[] | undefined => {
+  const text = split(tweet.text);
+  return tweet?.entities?.annotations?.map((annotation) => ({
+    type: 'annotation',
+    text: text.slice(annotation.start, annotation.end + 1).join(''),
+    probability: annotation.probability,
+    annotation_type: annotation.type,
+    normalized_text: annotation.normalized_text,
+  }));
 };

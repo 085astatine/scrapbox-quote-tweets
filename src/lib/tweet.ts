@@ -46,6 +46,14 @@ export interface TweetEntityMention {
   username: string;
 }
 
+export interface TweetEntityAnnotation {
+  type: 'annotation';
+  text: string;
+  probability: number;
+  annotation_type: string;
+  normalized_text: string;
+}
+
 export type TweetEntity =
   | TweetEntityText
   | TweetEntityURL
@@ -59,4 +67,5 @@ export interface Tweet {
   timestamp: number;
   author: User;
   text: TweetEntity[];
+  annotations?: TweetEntityAnnotation[];
 }

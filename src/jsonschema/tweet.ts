@@ -2,6 +2,7 @@ import { JSONSchemaType } from 'ajv';
 import {
   Tweet,
   TweetEntity,
+  TweetEntityAnnotation,
   TweetEntityCashtag,
   TweetEntityHashtag,
   TweetEntityMedia,
@@ -180,6 +181,37 @@ export const tweetEntityJSONSchema: JSONSchemaType<TweetEntity> = {
   ],
 };
 
+export const tweetEntityAnnotationJSONSchema: JSONSchemaType<TweetEntityAnnotation> =
+  {
+    type: 'object',
+    required: [
+      'type',
+      'text',
+      'probability',
+      'annotation_type',
+      'normalized_text',
+    ],
+    additionalProperties: false,
+    properties: {
+      type: {
+        type: 'string',
+        const: 'annotation',
+      },
+      text: {
+        type: 'string',
+      },
+      probability: {
+        type: 'number',
+      },
+      annotation_type: {
+        type: 'string',
+      },
+      normalized_text: {
+        type: 'string',
+      },
+    },
+  };
+
 export const tweetJSONSchema: JSONSchemaType<Tweet> = {
   type: 'object',
   required: ['id', 'timestamp', 'author', 'text'],
@@ -196,6 +228,11 @@ export const tweetJSONSchema: JSONSchemaType<Tweet> = {
     text: {
       type: 'array',
       items: tweetEntityJSONSchema,
+    },
+    annotations: {
+      type: 'array',
+      items: tweetEntityAnnotationJSONSchema,
+      nullable: true,
     },
   },
 };
