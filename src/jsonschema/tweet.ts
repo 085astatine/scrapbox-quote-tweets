@@ -1,5 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import {
+  ReferencedTweet,
   Tweet,
   TweetEntity,
   TweetEntityAnnotation,
@@ -212,6 +213,22 @@ export const tweetEntityAnnotationJSONSchema: JSONSchemaType<TweetEntityAnnotati
     },
   };
 
+export const referencedTweetJSONSchema: JSONSchemaType<ReferencedTweet> = {
+  type: 'object',
+  required: ['type', 'id'],
+  additionalProperties: false,
+  properties: {
+    type: {
+      type: 'string',
+      enum: ['retweeted', 'quoted', 'replied_to'],
+    },
+    id: {
+      type: 'string',
+      pattern: '^[0-9]+$',
+    },
+  },
+};
+
 export const tweetJSONSchema: JSONSchemaType<Tweet> = {
   type: 'object',
   required: ['id', 'timestamp', 'author', 'text'],
@@ -232,6 +249,11 @@ export const tweetJSONSchema: JSONSchemaType<Tweet> = {
     annotations: {
       type: 'array',
       items: tweetEntityAnnotationJSONSchema,
+      nullable: true,
+    },
+    referenced_tweets: {
+      type: 'array',
+      items: referencedTweetJSONSchema,
       nullable: true,
     },
   },

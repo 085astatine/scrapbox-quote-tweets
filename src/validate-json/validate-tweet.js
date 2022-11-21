@@ -116,6 +116,19 @@ const schema11 = {
       },
       nullable: true,
     },
+    referenced_tweets: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['type', 'id'],
+        additionalProperties: false,
+        properties: {
+          type: { type: 'string', enum: ['retweeted', 'quoted', 'replied_to'] },
+          id: { type: 'string', pattern: '^[0-9]+$' },
+        },
+      },
+      nullable: true,
+    },
   },
 };
 const pattern0 = new RegExp('^[0-9]+$', 'u');
@@ -195,7 +208,8 @@ function validate10(
           key0 === 'timestamp' ||
           key0 === 'author' ||
           key0 === 'text' ||
-          key0 === 'annotations'
+          key0 === 'annotations' ||
+          key0 === 'referenced_tweets'
         )
       ) {
         const err4 = {
@@ -1965,8 +1979,181 @@ function validate10(
         }
       }
     }
+    if (data.referenced_tweets !== undefined) {
+      let data39 = data.referenced_tweets;
+      if (!Array.isArray(data39) && data39 !== null) {
+        const err103 = {
+          instancePath: instancePath + '/referenced_tweets',
+          schemaPath: '#/properties/referenced_tweets/type',
+          keyword: 'type',
+          params: { type: 'array' },
+          message: 'must be array',
+        };
+        if (vErrors === null) {
+          vErrors = [err103];
+        } else {
+          vErrors.push(err103);
+        }
+        errors++;
+      }
+      if (Array.isArray(data39)) {
+        const len2 = data39.length;
+        for (let i2 = 0; i2 < len2; i2++) {
+          let data40 = data39[i2];
+          if (data40 && typeof data40 == 'object' && !Array.isArray(data40)) {
+            if (data40.type === undefined) {
+              const err104 = {
+                instancePath: instancePath + '/referenced_tweets/' + i2,
+                schemaPath: '#/properties/referenced_tweets/items/required',
+                keyword: 'required',
+                params: { missingProperty: 'type' },
+                message: "must have required property '" + 'type' + "'",
+              };
+              if (vErrors === null) {
+                vErrors = [err104];
+              } else {
+                vErrors.push(err104);
+              }
+              errors++;
+            }
+            if (data40.id === undefined) {
+              const err105 = {
+                instancePath: instancePath + '/referenced_tweets/' + i2,
+                schemaPath: '#/properties/referenced_tweets/items/required',
+                keyword: 'required',
+                params: { missingProperty: 'id' },
+                message: "must have required property '" + 'id' + "'",
+              };
+              if (vErrors === null) {
+                vErrors = [err105];
+              } else {
+                vErrors.push(err105);
+              }
+              errors++;
+            }
+            for (const key9 in data40) {
+              if (!(key9 === 'type' || key9 === 'id')) {
+                const err106 = {
+                  instancePath: instancePath + '/referenced_tweets/' + i2,
+                  schemaPath:
+                    '#/properties/referenced_tweets/items/additionalProperties',
+                  keyword: 'additionalProperties',
+                  params: { additionalProperty: key9 },
+                  message: 'must NOT have additional properties',
+                };
+                if (vErrors === null) {
+                  vErrors = [err106];
+                } else {
+                  vErrors.push(err106);
+                }
+                errors++;
+              }
+            }
+            if (data40.type !== undefined) {
+              let data41 = data40.type;
+              if (typeof data41 !== 'string') {
+                const err107 = {
+                  instancePath:
+                    instancePath + '/referenced_tweets/' + i2 + '/type',
+                  schemaPath:
+                    '#/properties/referenced_tweets/items/properties/type/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                };
+                if (vErrors === null) {
+                  vErrors = [err107];
+                } else {
+                  vErrors.push(err107);
+                }
+                errors++;
+              }
+              if (
+                !(
+                  data41 === 'retweeted' ||
+                  data41 === 'quoted' ||
+                  data41 === 'replied_to'
+                )
+              ) {
+                const err108 = {
+                  instancePath:
+                    instancePath + '/referenced_tweets/' + i2 + '/type',
+                  schemaPath:
+                    '#/properties/referenced_tweets/items/properties/type/enum',
+                  keyword: 'enum',
+                  params: {
+                    allowedValues:
+                      schema11.properties.referenced_tweets.items.properties
+                        .type.enum,
+                  },
+                  message: 'must be equal to one of the allowed values',
+                };
+                if (vErrors === null) {
+                  vErrors = [err108];
+                } else {
+                  vErrors.push(err108);
+                }
+                errors++;
+              }
+            }
+            if (data40.id !== undefined) {
+              let data42 = data40.id;
+              if (typeof data42 === 'string') {
+                if (!pattern0.test(data42)) {
+                  const err109 = {
+                    instancePath:
+                      instancePath + '/referenced_tweets/' + i2 + '/id',
+                    schemaPath:
+                      '#/properties/referenced_tweets/items/properties/id/pattern',
+                    keyword: 'pattern',
+                    params: { pattern: '^[0-9]+$' },
+                    message: 'must match pattern "' + '^[0-9]+$' + '"',
+                  };
+                  if (vErrors === null) {
+                    vErrors = [err109];
+                  } else {
+                    vErrors.push(err109);
+                  }
+                  errors++;
+                }
+              } else {
+                const err110 = {
+                  instancePath:
+                    instancePath + '/referenced_tweets/' + i2 + '/id',
+                  schemaPath:
+                    '#/properties/referenced_tweets/items/properties/id/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                };
+                if (vErrors === null) {
+                  vErrors = [err110];
+                } else {
+                  vErrors.push(err110);
+                }
+                errors++;
+              }
+            }
+          } else {
+            const err111 = {
+              instancePath: instancePath + '/referenced_tweets/' + i2,
+              schemaPath: '#/properties/referenced_tweets/items/type',
+              keyword: 'type',
+              params: { type: 'object' },
+              message: 'must be object',
+            };
+            if (vErrors === null) {
+              vErrors = [err111];
+            } else {
+              vErrors.push(err111);
+            }
+            errors++;
+          }
+        }
+      }
+    }
   } else {
-    const err103 = {
+    const err112 = {
       instancePath,
       schemaPath: '#/type',
       keyword: 'type',
@@ -1974,9 +2161,9 @@ function validate10(
       message: 'must be object',
     };
     if (vErrors === null) {
-      vErrors = [err103];
+      vErrors = [err112];
     } else {
-      vErrors.push(err103);
+      vErrors.push(err112);
     }
     errors++;
   }

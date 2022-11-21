@@ -62,10 +62,16 @@ export type TweetEntity =
   | TweetEntityCashtag
   | TweetEntityMention;
 
+export interface ReferencedTweet {
+  type: 'retweeted' | 'quoted' | 'replied_to';
+  id: string;
+}
+
 export interface Tweet {
   id: string;
   timestamp: number;
   author: User;
   text: TweetEntity[];
   annotations?: TweetEntityAnnotation[];
+  referenced_tweets?: ReferencedTweet[];
 }
