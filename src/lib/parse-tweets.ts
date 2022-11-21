@@ -12,6 +12,7 @@ import {
 import { CoreLogger } from 'typescript-logging';
 import { loggerProvider } from './logger';
 import {
+  ReferencedTweet,
   Tweet,
   TweetEntity,
   TweetEntityAnnotation,
@@ -43,9 +44,16 @@ export const parseTweets = (
   logger: CoreLogger = defaultLogger
 ): Tweet[] => {
   logger.debug('parse tweets', response);
-  return response.data.map((tweet) =>
-    parseTweet(tweet, response.includes, logger)
+  const tweets: Tweet[] = [];
+  // .tweet
+  response.data.forEach((tweet) =>
+    tweets.push(parseTweet(tweet, response.includes, logger))
   );
+  // .includes.tweets
+  response.includes?.tweets?.forEach((tweet) =>
+    tweets.push(parseTweet(tweet, response.includes, logger))
+  );
+  return tweets;
 };
 
 const parseTweet = (
@@ -58,12 +66,14 @@ const parseTweet = (
   const author = parseAuthor(tweet, includes);
   const text = parseText(tweet, includes, logger);
   const annotations = parseAnnotations(tweet);
+  const referencedTweets = parseReferencedTweets(tweet);
   return {
     id: tweet.id,
     timestamp,
     author,
     text,
     annotations,
+    referenced_tweets: referencedTweets,
   };
 };
 
@@ -343,5 +353,14 @@ const parseAnnotations = (
     probability: annotation.probability,
     annotation_type: annotation.type,
     normalized_text: annotation.normalized_text,
+  }));
+};
+
+const parseReferencedTweets = (
+  tweet: TweetV2
+): ReferencedTweet[] | undefined => {
+  return tweet.referenced_tweets?.map((referenced) => ({
+    type: referenced.type,
+    id: referenced.id,
   }));
 };

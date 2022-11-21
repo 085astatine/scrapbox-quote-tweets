@@ -79,7 +79,12 @@ const onMessageListener = async (
       }
       try {
         const result = await twitterApiClient.tweets(`${message.tweetID}`, {
-          expansions: ['attachments.media_keys', 'author_id'],
+          expansions: [
+            'attachments.media_keys',
+            'author_id',
+            'referenced_tweets.id',
+            'referenced_tweets.id.author_id',
+          ],
           'media.fields': 'url',
           'tweet.fields': ['created_at', 'entities'],
           'user.fields': ['name', 'username'],
