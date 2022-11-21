@@ -129,7 +129,7 @@ const parseText = (
     },
   ];
   // entities.urls
-  tweet?.entities?.urls.forEach((url) =>
+  tweet.entities?.urls?.forEach((url) =>
     splitText(
       text,
       url,
@@ -138,15 +138,15 @@ const parseText = (
     )
   );
   // entities.hashtags
-  tweet?.entities?.hashtags?.forEach((hashtag) =>
+  tweet.entities?.hashtags?.forEach((hashtag) =>
     splitText(text, hashtag, toTweetEntityHashtag, logger)
   );
   // entities.cashtags
-  tweet?.entities?.cashtags?.forEach((cashtag) =>
+  tweet.entities?.cashtags?.forEach((cashtag) =>
     splitText(text, cashtag, toTweetEntityCashtag, logger)
   );
   // entities.mentions
-  tweet?.entities?.mentions?.forEach((mention) =>
+  tweet.entities?.mentions?.forEach((mention) =>
     splitText(text, mention, toTweetEntityMention, logger)
   );
   logger.debug('text entities', text);
@@ -337,7 +337,7 @@ const parseAnnotations = (
   tweet: TweetV2
 ): TweetEntityAnnotation[] | undefined => {
   const text = split(tweet.text);
-  return tweet?.entities?.annotations?.map((annotation) => ({
+  return tweet.entities?.annotations?.map((annotation) => ({
     type: 'annotation',
     text: text.slice(annotation.start, annotation.end + 1).join(''),
     probability: annotation.probability,
