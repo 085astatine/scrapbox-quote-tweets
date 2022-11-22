@@ -3,6 +3,7 @@ import {
   ApiPartialResponseError,
   ApiRequestError,
   ApiResponseError,
+  TweetV2LookupResult,
   TwitterApi,
 } from 'twitter-api-v2';
 import browser from 'webextension-polyfill';
@@ -42,39 +43,17 @@ const onMessageListener = async (
 ): Promise<TweetCopyResponseMessage> => {
   switch (message.type) {
     case 'tweet_copy_request': {
-      logger.info(`tweet copy request: ${message.tweetID}`);
-      if (twitterApiClient === null) {
-        return tweetCopyFailureMessage(
-          message.tweetID,
-          'Twitter API client is not available'
-        );
-      }
-      try {
-        const result = await twitterApiClient.tweets(`${message.tweetID}`, {
-          expansions: [
-            'attachments.media_keys',
-            'author_id',
-            'referenced_tweets.id',
-            'referenced_tweets.id.author_id',
-          ],
-          'media.fields': 'url',
-          'tweet.fields': ['created_at', 'entities'],
-          'user.fields': ['name', 'username'],
-        });
-        console.log(result);
-        console.log(parseTweets(result));
-        return {
-          type: 'tweet_copy_response',
-          tweetID: message.tweetID,
-          ok: true,
-        };
-      } catch (error: unknown) {
-        logger.error(`failed in tweet copy request: ${message.tweetID}`);
-        return tweetCopyFailureMessage(
-          message.tweetID,
-          tweetCopyRequestErrorMessage(error)
-        );
-      }
+      return requestTweetsLookup(message.tweetID)
+        .then((response) => {
+          console.log(response);
+          console.log(parseTweets(response));
+          return {
+            type: 'tweet_copy_response',
+            tweetID: message.tweetID,
+            ok: true,
+          } as const;
+        })
+        .catch((error: TweetCopyFailureMessage) => error);
     }
     default: {
       const _: never = message.type;
@@ -85,6 +64,37 @@ const onMessageListener = async (
 };
 
 browser.runtime.onMessage.addListener(onMessageListener);
+
+// Request Tweets Lookup
+const requestTweetsLookup = async (
+  tweetID: string
+): Promise<TweetV2LookupResult> => {
+  logger.info(`tweet copy request: ${tweetID}`);
+  if (twitterApiClient === null) {
+    return Promise.reject(
+      tweetCopyFailureMessage(tweetID, 'Twitter API client is not available')
+    );
+  }
+  try {
+    const result = await twitterApiClient.tweets(tweetID, {
+      expansions: [
+        'attachments.media_keys',
+        'author_id',
+        'referenced_tweets.id',
+        'referenced_tweets.id.author_id',
+      ],
+      'media.fields': 'url',
+      'tweet.fields': ['created_at', 'entities'],
+      'user.fields': ['name', 'username'],
+    });
+    return Promise.resolve(result);
+  } catch (error: unknown) {
+    logger.error(`failed in tweet copy request: ${tweetID}`);
+    return Promise.reject(
+      tweetCopyFailureMessage(tweetID, tweetCopyRequestErrorMessage(error))
+    );
+  }
+};
 
 // Twitter API Client
 const createTwitterApiClient = () => {
