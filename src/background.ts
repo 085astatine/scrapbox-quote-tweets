@@ -34,33 +34,6 @@ const urlChangedListener = async (
 
 browser.tabs.onUpdated.addListener(urlChangedListener);
 
-// Twitter API Client
-const createTwitterApiClient = () => {
-  const bearerToken = process.env.BEARER_TOKEN;
-  if (bearerToken === undefined) {
-    return null;
-  }
-  return new TwitterApi(bearerToken, { compression: 'identity' }).v2.readOnly;
-};
-
-const twitterApiClient = createTwitterApiClient();
-
-// Twitter API
-type TwitterApiError =
-  | ApiRequestError
-  | ApiPartialResponseError
-  | ApiResponseError;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isTwitterApiError = (error: any): error is TwitterApiError => {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    error?.error === true &&
-    ['request', 'partial-request', 'response'].includes(error?.type)
-  );
-};
-
 // onMessage Listener
 type Message = TweetCopyRequestMessage;
 
@@ -113,7 +86,33 @@ const onMessageListener = async (
 
 browser.runtime.onMessage.addListener(onMessageListener);
 
-// Twiter API error message
+// Twitter API Client
+const createTwitterApiClient = () => {
+  const bearerToken = process.env.BEARER_TOKEN;
+  if (bearerToken === undefined) {
+    return null;
+  }
+  return new TwitterApi(bearerToken, { compression: 'identity' }).v2.readOnly;
+};
+
+const twitterApiClient = createTwitterApiClient();
+
+// Twitter API Error
+type TwitterApiError =
+  | ApiRequestError
+  | ApiPartialResponseError
+  | ApiResponseError;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isTwitterApiError = (error: any): error is TwitterApiError => {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    error?.error === true &&
+    ['request', 'partial-request', 'response'].includes(error?.type)
+  );
+};
+
 const tweetCopyRequestErrorMessage = (error: unknown): string => {
   if (isTwitterApiError(error)) {
     return `Twitter API Error: ${error.type}`;
