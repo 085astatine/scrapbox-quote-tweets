@@ -8,6 +8,7 @@ import {
 import browser from 'webextension-polyfill';
 import { loggerProvider } from './lib/logger';
 import {
+  TweetCopyFailureMessage,
   TweetCopyRequestMessage,
   TweetCopyResponseMessage,
 } from './lib/message';
@@ -70,12 +71,10 @@ const onMessageListener = async (
     case 'tweet_copy_request': {
       logger.info(`tweet copy request: ${message.tweetID}`);
       if (twitterApiClient === null) {
-        return {
-          type: 'tweet_copy_response',
-          tweetID: message.tweetID,
-          ok: false,
-          message: 'Twitter API client is not available',
-        };
+        return tweetCopyFailureMessage(
+          message.tweetID,
+          'Twitter API client is not available'
+        );
       }
       try {
         const result = await twitterApiClient.tweets(`${message.tweetID}`, {
@@ -98,12 +97,10 @@ const onMessageListener = async (
         };
       } catch (error: unknown) {
         logger.error(`failed in tweet copy request: ${message.tweetID}`);
-        return {
-          type: 'tweet_copy_response',
-          tweetID: message.tweetID,
-          ok: false,
-          message: tweetCopyRequestErrorMessage(error),
-        };
+        return tweetCopyFailureMessage(
+          message.tweetID,
+          tweetCopyRequestErrorMessage(error)
+        );
       }
     }
     default: {
@@ -122,4 +119,17 @@ const tweetCopyRequestErrorMessage = (error: unknown): string => {
     return `Twitter API Error: ${error.type}`;
   }
   return 'Unknown Error';
+};
+
+// create TweetCopyFailureMessage
+const tweetCopyFailureMessage = (
+  tweetID: string,
+  message: string
+): TweetCopyFailureMessage => {
+  return {
+    type: 'tweet_copy_response',
+    tweetID,
+    ok: false,
+    message,
+  };
 };
