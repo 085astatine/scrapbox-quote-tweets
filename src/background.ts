@@ -3,14 +3,17 @@ import {
   ApiPartialResponseError,
   ApiRequestError,
   ApiResponseError,
+  TweetV2LookupResult,
   TwitterApi,
 } from 'twitter-api-v2';
 import browser from 'webextension-polyfill';
 import { loggerProvider } from './lib/logger';
 import {
+  TweetCopyFailureMessage,
   TweetCopyRequestMessage,
   TweetCopyResponseMessage,
 } from './lib/message';
+import { parseTweets } from './lib/parse-tweets';
 
 const logger = loggerProvider.getCategory('background');
 
@@ -32,6 +35,67 @@ const urlChangedListener = async (
 
 browser.tabs.onUpdated.addListener(urlChangedListener);
 
+// onMessage Listener
+type Message = TweetCopyRequestMessage;
+
+const onMessageListener = async (
+  message: Message
+): Promise<TweetCopyResponseMessage> => {
+  switch (message.type) {
+    case 'tweet_copy_request': {
+      return requestTweetsLookup(message.tweetID)
+        .then((response) => {
+          console.log(response);
+          console.log(parseTweets(response));
+          return {
+            type: 'tweet_copy_response',
+            tweetID: message.tweetID,
+            ok: true,
+          } as const;
+        })
+        .catch((error: TweetCopyFailureMessage) => error);
+    }
+    default: {
+      const _: never = message.type;
+      logger.error(`unexpected message type "${message.type}"`);
+      return _;
+    }
+  }
+};
+
+browser.runtime.onMessage.addListener(onMessageListener);
+
+// Request Tweets Lookup
+const requestTweetsLookup = async (
+  tweetID: string
+): Promise<TweetV2LookupResult> => {
+  logger.info(`tweet copy request: ${tweetID}`);
+  if (twitterApiClient === null) {
+    return Promise.reject(
+      tweetCopyFailureMessage(tweetID, 'Twitter API client is not available')
+    );
+  }
+  try {
+    const result = await twitterApiClient.tweets(tweetID, {
+      expansions: [
+        'attachments.media_keys',
+        'author_id',
+        'referenced_tweets.id',
+        'referenced_tweets.id.author_id',
+      ],
+      'media.fields': 'url',
+      'tweet.fields': ['created_at', 'entities'],
+      'user.fields': ['name', 'username'],
+    });
+    return Promise.resolve(result);
+  } catch (error: unknown) {
+    logger.error(`failed in tweet copy request: ${tweetID}`);
+    return Promise.reject(
+      tweetCopyFailureMessage(tweetID, tweetCopyRequestErrorMessage(error))
+    );
+  }
+};
+
 // Twitter API Client
 const createTwitterApiClient = () => {
   const bearerToken = process.env.BEARER_TOKEN;
@@ -43,7 +107,7 @@ const createTwitterApiClient = () => {
 
 const twitterApiClient = createTwitterApiClient();
 
-// Twitter API
+// Twitter API Error
 type TwitterApiError =
   | ApiRequestError
   | ApiPartialResponseError
@@ -59,55 +123,22 @@ const isTwitterApiError = (error: any): error is TwitterApiError => {
   );
 };
 
-// onMessage Listener
-type Message = TweetCopyRequestMessage;
-
-const onMessageListener = async (
-  message: Message
-): Promise<TweetCopyResponseMessage> => {
-  switch (message.type) {
-    case 'tweet_copy_request': {
-      logger.info(`tweet copy request: ${message.tweetID}`);
-      if (twitterApiClient === null) {
-        return {
-          type: 'tweet_copy_response',
-          tweetID: message.tweetID,
-          ok: false,
-          message: 'Twitter API client is not available',
-        };
-      }
-      try {
-        const result = await twitterApiClient.tweets(`${message.tweetID}`);
-        console.log(result);
-        return {
-          type: 'tweet_copy_response',
-          tweetID: message.tweetID,
-          ok: true,
-        };
-      } catch (error: unknown) {
-        logger.error(`failed in tweet copy request: ${message.tweetID}`);
-        return {
-          type: 'tweet_copy_response',
-          tweetID: message.tweetID,
-          ok: false,
-          message: tweetCopyRequestErrorMessage(error),
-        };
-      }
-    }
-    default: {
-      const _: never = message.type;
-      logger.error(`unexpected message type "${message.type}"`);
-      return _;
-    }
-  }
-};
-
-browser.runtime.onMessage.addListener(onMessageListener);
-
-// Twiter API error message
 const tweetCopyRequestErrorMessage = (error: unknown): string => {
   if (isTwitterApiError(error)) {
     return `Twitter API Error: ${error.type}`;
   }
   return 'Unknown Error';
+};
+
+// create TweetCopyFailureMessage
+const tweetCopyFailureMessage = (
+  tweetID: string,
+  message: string
+): TweetCopyFailureMessage => {
+  return {
+    type: 'tweet_copy_response',
+    tweetID,
+    ok: false,
+    message,
+  };
 };
