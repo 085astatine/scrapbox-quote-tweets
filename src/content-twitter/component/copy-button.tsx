@@ -2,10 +2,10 @@ import { arrow, offset, shift, useFloating } from '@floating-ui/react-dom';
 import classNames from 'classnames';
 import React from 'react';
 import browser from 'webextension-polyfill';
-import { loggerProvider } from '../lib/logger';
-import { TweetCopyResponseMessage } from '../lib/message';
-import ScrapboxIcon from './icon/scrapbox.svg';
-import CloseIcon from './icon/x.svg';
+import ScrapboxIcon from '../../icon/scrapbox.svg';
+import CloseIcon from '../../icon/x.svg';
+import { loggerProvider } from '../../lib/logger';
+import { TweetCopyResponseMessage } from '../../lib/message';
 
 const logger = loggerProvider.getCategory('copy-button');
 

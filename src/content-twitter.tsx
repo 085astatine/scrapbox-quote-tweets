@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import browser from 'webextension-polyfill';
-import { CopyButton } from './component/copy-button';
+import { CopyButton } from './content-twitter/component/copy-button';
 import { showMutationRecord } from './lib/dom';
 import { findTweets } from './lib/find-tweets';
 import { loggerProvider } from './lib/logger';
