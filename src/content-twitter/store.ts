@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
-import { State, stateSlice } from './state';
+import { State, reducer } from './state';
 
 const middlewares: Middleware<State>[] = [];
 
@@ -15,7 +15,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 export const store = configureStore({
-  reducer: stateSlice.reducer,
+  reducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(...middlewares),
 });

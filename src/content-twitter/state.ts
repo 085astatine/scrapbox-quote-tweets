@@ -33,7 +33,7 @@ export interface UpdateButtonState {
   state: ButtonState;
 }
 
-export const stateSlice = createSlice({
+const stateSlice = createSlice({
   name: 'button',
   initialState: {} as State,
   reducers: {
@@ -42,3 +42,6 @@ export const stateSlice = createSlice({
     },
   },
 });
+
+export const reducer = stateSlice.reducer;
+export const { update } = stateSlice.actions;

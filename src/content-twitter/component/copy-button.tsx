@@ -1,11 +1,15 @@
 import { arrow, offset, shift, useFloating } from '@floating-ui/react-dom';
 import classNames from 'classnames';
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import browser from 'webextension-polyfill';
 import ScrapboxIcon from '../../icon/scrapbox.svg';
 import CloseIcon from '../../icon/x.svg';
 import { loggerProvider } from '../../lib/logger';
 import { TweetCopyResponseMessage } from '../../lib/message';
+import { toTweetIDKey } from '../../lib/tweet-id-key';
+import { State } from '../state';
+import { update } from '../state';
 
 const logger = loggerProvider.getCategory('copy-button');
 
@@ -18,10 +22,17 @@ interface TooltipMessage {
 }
 
 export interface CopyButtonProps {
-  tweetID: string | null;
+  tweetID: string;
 }
 
 export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
+  // redux
+  const selector = React.useCallback(
+    (state: State) => state[toTweetIDKey(tweetID)],
+    [tweetID]
+  );
+  const buttonState = useSelector(selector);
+  const dispatch = useDispatch();
   // state
   const [isCopied, setIsCopied] = React.useState(false);
   const [tooltipVisibility, setTooltipVisibility] =
@@ -88,6 +99,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
           setIsCopied(message.ok);
           if (message.ok) {
             logger.info(`[tweet ID: ${tweetID}] copy request is succeeded`);
+            dispatch(update({ tweetID, state: { state: 'success' } }));
             setTooltipMessage({
               type: 'notification',
               message: 'Copied',
@@ -100,6 +112,12 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
               type: 'error',
               message: message.message,
             });
+            dispatch(
+              update({
+                tweetID,
+                state: { state: 'failure', message: message.message },
+              })
+            );
           }
           setTooltipVisibility('fade-in');
         }

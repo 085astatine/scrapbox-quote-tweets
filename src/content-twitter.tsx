@@ -1,7 +1,9 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
 import browser from 'webextension-polyfill';
 import { CopyButton } from './content-twitter/component/copy-button';
+import { store } from './content-twitter/store';
 import { showMutationRecord } from './lib/dom';
 import { findTweets } from './lib/find-tweets';
 import { loggerProvider } from './lib/logger';
@@ -23,7 +25,11 @@ const observerCallback = (records: MutationRecord[]): void => {
       findTweets(node, document.URL, logger).forEach((tweet) => {
         // render by React
         const reactRoot = createRoot(tweet.reactRoot);
-        reactRoot.render(<CopyButton tweetID={tweet.tweetID} />);
+        reactRoot.render(
+          <Provider store={store}>
+            <CopyButton tweetID={tweet.tweetID} />
+          </Provider>
+        );
       });
     });
   });
