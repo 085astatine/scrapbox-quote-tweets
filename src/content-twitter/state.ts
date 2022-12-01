@@ -1,4 +1,5 @@
-import { TweetIDKey } from '../lib/tweet-id-key';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { TweetIDKey, toTweetIDKey } from '../lib/tweet-id-key';
 
 export interface ButtonStateNone {
   state: 'none';
@@ -26,3 +27,18 @@ export type ButtonState =
 export interface State {
   [key: TweetIDKey]: ButtonState;
 }
+
+export interface UpdateButtonState {
+  tweetID: string;
+  state: ButtonState;
+}
+
+export const stateSlice = createSlice({
+  name: 'button',
+  initialState: {} as State,
+  reducers: {
+    update(state: State, action: PayloadAction<UpdateButtonState>) {
+      state[toTweetIDKey(action.payload.tweetID)] = action.payload.state;
+    },
+  },
+});
