@@ -40,8 +40,14 @@ const stateSlice = createSlice({
     update(state: State, action: PayloadAction<UpdateButtonState>) {
       state[toTweetIDKey(action.payload.tweetID)] = action.payload.state;
     },
+    touch(state: State, action: PayloadAction<string>) {
+      const key = toTweetIDKey(action.payload);
+      if (!(key in state)) {
+        state[key] = { state: 'none' };
+      }
+    },
   },
 });
 
 export const reducer = stateSlice.reducer;
-export const { update: updateAction } = stateSlice.actions;
+export const { update: updateAction, touch: touchAction } = stateSlice.actions;

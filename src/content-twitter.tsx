@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import browser from 'webextension-polyfill';
 import { CopyButton } from './content-twitter/component/copy-button';
-import { updateAction } from './content-twitter/state';
+import { touchAction, updateAction } from './content-twitter/state';
 import { store } from './content-twitter/store';
 import { showMutationRecord } from './lib/dom';
 import { findTweets } from './lib/find-tweets';
@@ -24,6 +24,8 @@ const observerCallback = (records: MutationRecord[]): void => {
     // tweet nodes
     record.addedNodes.forEach((node) => {
       findTweets(node, document.URL, logger).forEach((tweet) => {
+        // update store
+        store.dispatch(touchAction(tweet.tweetID));
         // render by React
         const reactRoot = createRoot(tweet.reactRoot);
         reactRoot.render(
