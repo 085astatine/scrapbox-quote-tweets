@@ -43,7 +43,7 @@ const onMessageListener = async (
 ): Promise<TweetCopyResponseMessage> => {
   switch (message.type) {
     case 'tweet_copy_request': {
-      return requestTweetsLookup(message.tweetID)
+      const response = await requestTweetsLookup(message.tweetID)
         .then((response) => {
           console.log(response);
           console.log(parseTweets(response));
@@ -54,6 +54,8 @@ const onMessageListener = async (
           } as const;
         })
         .catch((error: TweetCopyFailureMessage) => error);
+      sendMessageToAllContentTwitter(response);
+      return response;
     }
     default: {
       const _: never = message.type;
@@ -141,4 +143,18 @@ const tweetCopyFailureMessage = (
     ok: false,
     message,
   };
+};
+
+// Send Message to All content-twitter
+const sendMessageToAllContentTwitter = async (
+  message: TweetCopyResponseMessage
+) => {
+  browser.tabs.query({ url: 'https://twitter.com/*' }).then((tabs) => {
+    tabs.forEach((tab) => {
+      if (tab.id !== undefined) {
+        logger.debug('send message to tab', { id: tab.id, url: tab.url });
+        browser.tabs.sendMessage(tab.id, message);
+      }
+    });
+  });
 };
