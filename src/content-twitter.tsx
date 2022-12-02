@@ -3,11 +3,12 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import browser from 'webextension-polyfill';
 import { CopyButton } from './content-twitter/component/copy-button';
+import { update } from './content-twitter/state';
 import { store } from './content-twitter/store';
 import { showMutationRecord } from './lib/dom';
 import { findTweets } from './lib/find-tweets';
 import { loggerProvider } from './lib/logger';
-import { URLChangedMessage } from './lib/message';
+import { TweetCopyResponseMessage, URLChangedMessage } from './lib/message';
 import './style/content-twitter.scss';
 
 const logger = loggerProvider.getCategory('content-twitter');
@@ -48,16 +49,23 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // onMessage listener
-type Message = URLChangedMessage;
+type Message = URLChangedMessage | TweetCopyResponseMessage;
 
 const onMessageListener = (message: Message) => {
   switch (message.type) {
     case 'url_changed':
       logger.info('url changged');
       break;
+    case 'tweet_copy_response': {
+      const state = message.ok
+        ? { state: 'success' as const }
+        : { state: 'failure' as const, message: message.message };
+      store.dispatch(update({ tweetID: message.tweetID, state }));
+      break;
+    }
     default: {
-      const _: never = message.type;
-      logger.error(`unexpected message type "${message.type}"`);
+      const _: never = message;
+      logger.error(`unexpected message "${message}"`);
       return _;
     }
   }
