@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import browser from 'webextension-polyfill';
 import { CopyButton } from './content-twitter/component/copy-button';
-import { update } from './content-twitter/state';
+import { updateAction } from './content-twitter/state';
 import { store } from './content-twitter/store';
 import { showMutationRecord } from './lib/dom';
 import { findTweets } from './lib/find-tweets';
@@ -60,7 +60,7 @@ const onMessageListener = (message: Message) => {
       const state = message.ok
         ? { state: 'success' as const }
         : { state: 'failure' as const, message: message.message };
-      store.dispatch(update({ tweetID: message.tweetID, state }));
+      store.dispatch(updateAction({ tweetID: message.tweetID, state }));
       break;
     }
     default: {

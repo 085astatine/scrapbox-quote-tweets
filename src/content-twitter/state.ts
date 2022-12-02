@@ -44,4 +44,4 @@ const stateSlice = createSlice({
 });
 
 export const reducer = stateSlice.reducer;
-export const { update } = stateSlice.actions;
+export const { update: updateAction } = stateSlice.actions;

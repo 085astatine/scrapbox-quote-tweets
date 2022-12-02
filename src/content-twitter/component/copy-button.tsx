@@ -9,7 +9,7 @@ import { loggerProvider } from '../../lib/logger';
 import { TweetCopyResponseMessage } from '../../lib/message';
 import { toTweetIDKey } from '../../lib/tweet-id-key';
 import { State } from '../state';
-import { update } from '../state';
+import { updateAction } from '../state';
 
 const logger = loggerProvider.getCategory('copy-button');
 
@@ -99,7 +99,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
           setIsCopied(message.ok);
           if (message.ok) {
             logger.info(`[tweet ID: ${tweetID}] copy request is succeeded`);
-            dispatch(update({ tweetID, state: { state: 'success' } }));
+            dispatch(updateAction({ tweetID, state: { state: 'success' } }));
             setTooltipMessage({
               type: 'notification',
               message: 'Copied',
@@ -113,7 +113,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
               message: message.message,
             });
             dispatch(
-              update({
+              updateAction({
                 tweetID,
                 state: { state: 'failure', message: message.message },
               })
