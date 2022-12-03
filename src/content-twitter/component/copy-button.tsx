@@ -35,7 +35,6 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
   const buttonState = useSelector(selector);
   const dispatch = useDispatch();
   // state
-  const [isCopied, setIsCopied] = React.useState(false);
   const [tooltipVisibility, setTooltipVisibility] =
     React.useState<TooltipVisibility>('none');
   const [tooltipMessage, setTooltipMessage] =
@@ -97,7 +96,6 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
       })
       .then((message: TweetCopyResponseMessage) => {
         if (message.type === 'tweet_copy_response') {
-          setIsCopied(message.ok);
           if (message.ok) {
             logger.info(`[tweet ID: ${tweetID}] copy request is succeeded`);
             dispatch(
@@ -140,7 +138,12 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
         tabIndex={0}
         onClick={onClick}
         ref={reference}>
-        <div className={isCopied ? 'circle-active' : 'circle-inactive'} />
+        <div
+          className={classNames({
+            'circle-active': buttonState.state === 'success',
+            'circle-inactive': buttonState.state !== 'success',
+          })}
+        />
         <ScrapboxIcon
           className="logo"
           viewBox="-29 0 172 172"
