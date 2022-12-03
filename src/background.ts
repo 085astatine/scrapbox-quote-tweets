@@ -39,12 +39,10 @@ browser.tabs.onUpdated.addListener(urlChangedListener);
 // onMessage Listener
 type Message = TweetCopyRequestMessage;
 
-const onMessageListener = async (
-  message: Message
-): Promise<TweetCopyResponseMessage> => {
+const onMessageListener = async (message: Message): Promise<void> => {
   switch (message.type) {
     case 'tweet_copy_request': {
-      const response = await requestTweetsLookup(message.tweetID)
+      requestTweetsLookup(message.tweetID)
         .then((response) => {
           console.log(response);
           console.log(parseTweets(response));
@@ -54,9 +52,9 @@ const onMessageListener = async (
             ok: true,
           } as const;
         })
-        .catch((error: TweetCopyFailureMessage) => error);
-      sendMessageToAllContentTwitter(response);
-      return response;
+        .catch((error: TweetCopyFailureMessage) => error)
+        .then((response) => sendMessageToAllContentTwitter(response));
+      break;
     }
     default: {
       const _: never = message.type;

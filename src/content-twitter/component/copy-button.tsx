@@ -6,7 +6,6 @@ import browser from 'webextension-polyfill';
 import ScrapboxIcon from '../../icon/scrapbox.svg';
 import CloseIcon from '../../icon/x.svg';
 import { loggerProvider } from '../../lib/logger';
-import { TweetCopyResponseMessage } from '../../lib/message';
 import { TweetID } from '../../lib/tweet';
 import { toTweetIDKey } from '../../lib/tweet-id-key';
 import { State } from '../state';
@@ -34,11 +33,6 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
   );
   const buttonState = useSelector(selector);
   const dispatch = useDispatch();
-  // state
-  const [tooltipVisibility, setTooltipVisibility] =
-    React.useState<TooltipVisibility>('none');
-  const [tooltipMessage, setTooltipMessage] =
-    React.useState<TooltipMessage | null>(null);
   // floting
   const arrowRef = React.useRef(null);
   const {
@@ -52,6 +46,21 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     placement: 'top',
     middleware: [offset(10), shift(), arrow({ element: arrowRef })],
   });
+  // state
+  const [isClicked, setIsClicked] = React.useState(false);
+  const [tooltipVisibility, setTooltipVisibility] =
+    React.useState<TooltipVisibility>('none');
+  // tooltip
+  const tooltipMessage: TooltipMessage | null = !isClicked
+    ? null
+    : buttonState.state === 'success'
+    ? { type: 'notification', message: 'Copied' }
+    : buttonState.state === 'failure'
+    ? { type: 'error', message: buttonState.message }
+    : null;
+  if (tooltipMessage !== null && tooltipVisibility === 'none') {
+    setTooltipVisibility('fade-in');
+  }
   // effect: tooltip visibility
   React.useEffect(() => {
     switch (tooltipVisibility) {
@@ -75,7 +84,10 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
         break;
       }
       case 'fade-out': {
-        const timeoutID = setTimeout(() => setTooltipVisibility('none'), 200);
+        const timeoutID = setTimeout(() => {
+          setIsClicked(false);
+          setTooltipVisibility('none');
+        }, 200);
         return () => clearTimeout(timeoutID);
       }
       default: {
@@ -87,42 +99,17 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
   // click: copy button
   const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
+    // set state
+    setIsClicked(true);
+    dispatch(
+      updateAction({ tweetIDs: [tweetID], state: { state: 'in-progress' } })
+    );
     // send message to background
     logger.info(`[Tweet ID: ${tweetID}] copy request`);
-    browser.runtime
-      .sendMessage({
-        type: 'tweet_copy_request',
-        tweetID,
-      })
-      .then((message: TweetCopyResponseMessage) => {
-        if (message.type === 'tweet_copy_response') {
-          if (message.ok) {
-            logger.info(`[tweet ID: ${tweetID}] copy request is succeeded`);
-            dispatch(
-              updateAction({ tweetIDs: [tweetID], state: { state: 'success' } })
-            );
-            setTooltipMessage({
-              type: 'notification',
-              message: 'Copied',
-            });
-          } else {
-            logger.error(
-              `[tweet ID: ${tweetID}] copy request is failed with "${message.message}"`
-            );
-            setTooltipMessage({
-              type: 'error',
-              message: message.message,
-            });
-            dispatch(
-              updateAction({
-                tweetIDs: [tweetID],
-                state: { state: 'failure', message: message.message },
-              })
-            );
-          }
-          setTooltipVisibility('fade-in');
-        }
-      });
+    browser.runtime.sendMessage({
+      type: 'tweet_copy_request',
+      tweetID,
+    });
   };
   // click: tooltip close
   const onTooltipClose = React.useCallback(() => {
