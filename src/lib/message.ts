@@ -11,14 +11,14 @@ export interface TweetCopyRequestMessage {
 
 export interface TweetCopySuccessMessage {
   type: 'TweetCopy/Response';
-  tweetID: TweetID;
   ok: true;
+  tweetIDs: TweetID[];
 }
 
 export interface TweetCopyFailureMessage {
   type: 'TweetCopy/Response';
-  tweetID: TweetID;
   ok: false;
+  tweetID: TweetID;
   message: string;
 }
 

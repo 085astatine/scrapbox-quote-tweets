@@ -59,10 +59,24 @@ const onMessageListener = (message: Message) => {
       logger.info('url changged');
       break;
     case 'TweetCopy/Response': {
-      const state = message.ok
-        ? { state: 'success' as const }
-        : { state: 'failure' as const, message: message.message };
-      store.dispatch(updateAction({ tweetIDs: [message.tweetID], state }));
+      if (message.ok) {
+        store.dispatch(
+          updateAction({
+            tweetIDs: message.tweetIDs,
+            state: { state: 'success' },
+          })
+        );
+      } else {
+        store.dispatch(
+          updateAction({
+            tweetIDs: [message.tweetID],
+            state: {
+              state: 'failure',
+              message: message.message,
+            },
+          })
+        );
+      }
       break;
     }
     default: {

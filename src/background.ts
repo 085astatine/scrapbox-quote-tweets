@@ -45,10 +45,11 @@ const onMessageListener = async (message: Message): Promise<void> => {
       requestTweetsLookup(message.tweetID)
         .then((response) => {
           console.log(response);
-          console.log(parseTweets(response));
+          const tweets = parseTweets(response);
+          console.log(tweets);
           return {
             type: 'TweetCopy/Response',
-            tweetID: message.tweetID,
+            tweetIDs: tweets.map((tweet) => tweet.id),
             ok: true,
           } as const;
         })
