@@ -127,8 +127,9 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
         ref={reference}>
         <div
           className={classNames({
+            'circle-inactive': ['none', 'error'].includes(buttonState.state),
+            'circle-in-progress': buttonState.state === 'in-progress',
             'circle-active': buttonState.state === 'success',
-            'circle-inactive': buttonState.state !== 'success',
           })}
         />
         <ScrapboxIcon
