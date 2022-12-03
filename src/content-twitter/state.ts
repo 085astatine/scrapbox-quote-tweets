@@ -30,7 +30,7 @@ export interface State {
 }
 
 export interface UpdateButtonState {
-  tweetID: TweetID;
+  tweetIDs: TweetID[];
   state: ButtonState;
 }
 
@@ -39,13 +39,18 @@ const stateSlice = createSlice({
   initialState: {} as State,
   reducers: {
     update(state: State, action: PayloadAction<UpdateButtonState>) {
-      state[toTweetIDKey(action.payload.tweetID)] = action.payload.state;
+      action.payload.tweetIDs.forEach(
+        (tweetID) => (state[toTweetIDKey(tweetID)] = action.payload.state)
+      );
     },
-    touch(state: State, action: PayloadAction<TweetID>) {
-      const key = toTweetIDKey(action.payload);
-      if (!(key in state)) {
-        state[key] = { state: 'none' };
-      }
+    touch(state: State, action: PayloadAction<TweetID[]>) {
+      action.payload
+        .map((tweetID) => toTweetIDKey(tweetID))
+        .forEach((key) => {
+          if (!(key in state)) {
+            state[key] = { state: 'none' };
+          }
+        });
     },
   },
 });

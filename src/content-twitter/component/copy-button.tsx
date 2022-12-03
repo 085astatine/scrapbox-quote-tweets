@@ -100,7 +100,9 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
           setIsCopied(message.ok);
           if (message.ok) {
             logger.info(`[tweet ID: ${tweetID}] copy request is succeeded`);
-            dispatch(updateAction({ tweetID, state: { state: 'success' } }));
+            dispatch(
+              updateAction({ tweetIDs: [tweetID], state: { state: 'success' } })
+            );
             setTooltipMessage({
               type: 'notification',
               message: 'Copied',
@@ -115,7 +117,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
             });
             dispatch(
               updateAction({
-                tweetID,
+                tweetIDs: [tweetID],
                 state: { state: 'failure', message: message.message },
               })
             );

@@ -25,7 +25,7 @@ const observerCallback = (records: MutationRecord[]): void => {
     record.addedNodes.forEach((node) => {
       findTweets(node, document.URL, logger).forEach((tweet) => {
         // update store
-        store.dispatch(touchAction(tweet.tweetID));
+        store.dispatch(touchAction([tweet.tweetID]));
         // render by React
         const reactRoot = createRoot(tweet.reactRoot);
         reactRoot.render(
@@ -62,7 +62,7 @@ const onMessageListener = (message: Message) => {
       const state = message.ok
         ? { state: 'success' as const }
         : { state: 'failure' as const, message: message.message };
-      store.dispatch(updateAction({ tweetID: message.tweetID, state }));
+      store.dispatch(updateAction({ tweetIDs: [message.tweetID], state }));
       break;
     }
     default: {
