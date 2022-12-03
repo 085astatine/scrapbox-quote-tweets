@@ -1,11 +1,14 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
 import browser from 'webextension-polyfill';
-import { CopyButton } from './component/copy-button';
+import { CopyButton } from './content-twitter/component/copy-button';
+import { touchAction, updateAction } from './content-twitter/state';
+import { store } from './content-twitter/store';
 import { showMutationRecord } from './lib/dom';
 import { findTweets } from './lib/find-tweets';
 import { loggerProvider } from './lib/logger';
-import { URLChangedMessage } from './lib/message';
+import { TweetCopyResponseMessage, URLChangedMessage } from './lib/message';
 import './style/content-twitter.scss';
 
 const logger = loggerProvider.getCategory('content-twitter');
@@ -21,9 +24,15 @@ const observerCallback = (records: MutationRecord[]): void => {
     // tweet nodes
     record.addedNodes.forEach((node) => {
       findTweets(node, document.URL, logger).forEach((tweet) => {
+        // update store
+        store.dispatch(touchAction([tweet.tweetID]));
         // render by React
         const reactRoot = createRoot(tweet.reactRoot);
-        reactRoot.render(<CopyButton tweetID={tweet.tweetID} />);
+        reactRoot.render(
+          <Provider store={store}>
+            <CopyButton tweetID={tweet.tweetID} />
+          </Provider>
+        );
       });
     });
   });
@@ -42,16 +51,37 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // onMessage listener
-type Message = URLChangedMessage;
+type Message = URLChangedMessage | TweetCopyResponseMessage;
 
 const onMessageListener = (message: Message) => {
   switch (message.type) {
-    case 'url_changed':
+    case 'URL/Changed':
       logger.info('url changged');
       break;
+    case 'TweetCopy/Response': {
+      if (message.ok) {
+        store.dispatch(
+          updateAction({
+            tweetIDs: message.tweetIDs,
+            state: { state: 'success' },
+          })
+        );
+      } else {
+        store.dispatch(
+          updateAction({
+            tweetIDs: [message.tweetID],
+            state: {
+              state: 'failure',
+              message: message.message,
+            },
+          })
+        );
+      }
+      break;
+    }
     default: {
-      const _: never = message.type;
-      logger.error(`unexpected message type "${message.type}"`);
+      const _: never = message;
+      logger.error(`unexpected message "${message}"`);
       return _;
     }
   }

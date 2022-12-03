@@ -1,11 +1,12 @@
 import { CoreLogger } from 'typescript-logging';
 import { getNode, isElement } from './dom';
 import { loggerProvider } from './logger';
+import { TweetID } from './tweet';
 
 const defaultLogger = loggerProvider.getCategory('lib-tweet');
 
 export interface FindTweetResult {
-  tweetID: string;
+  tweetID: TweetID;
   reactRoot: Element;
 }
 
@@ -67,7 +68,7 @@ const findTweetArticles = (node: Node): Element[] => {
 
 interface TweetLink {
   username: string;
-  id: string;
+  id: TweetID;
 }
 
 const parseTweetLink = (link: string): TweetLink | null => {
@@ -103,7 +104,7 @@ const parseTweetID = (
 const parseTweetIdInTwitterPage = (
   element: Element,
   logger: CoreLogger
-): string | null => {
+): TweetID | null => {
   logger.info('parse tweet');
   // link node
   const linkNode = getNode(
@@ -134,7 +135,7 @@ const parseTweetIdInTweetPage = (
   element: Element,
   url: string,
   logger: CoreLogger
-): string | null => {
+): TweetID | null => {
   // get tweet ID from <a href="..."/>
   const tweetID = parseTweetIdInTwitterPage(element, logger);
   if (tweetID !== null) {

@@ -1,11 +1,15 @@
 import { arrow, offset, shift, useFloating } from '@floating-ui/react-dom';
 import classNames from 'classnames';
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import browser from 'webextension-polyfill';
-import { loggerProvider } from '../lib/logger';
-import { TweetCopyResponseMessage } from '../lib/message';
-import ScrapboxIcon from './icon/scrapbox.svg';
-import CloseIcon from './icon/x.svg';
+import ScrapboxIcon from '../../icon/scrapbox.svg';
+import CloseIcon from '../../icon/x.svg';
+import { loggerProvider } from '../../lib/logger';
+import { TweetID } from '../../lib/tweet';
+import { toTweetIDKey } from '../../lib/tweet-id-key';
+import { State } from '../state';
+import { updateAction } from '../state';
 
 const logger = loggerProvider.getCategory('copy-button');
 
@@ -18,16 +22,17 @@ interface TooltipMessage {
 }
 
 export interface CopyButtonProps {
-  tweetID: string | null;
+  tweetID: TweetID;
 }
 
 export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
-  // state
-  const [isCopied, setIsCopied] = React.useState(false);
-  const [tooltipVisibility, setTooltipVisibility] =
-    React.useState<TooltipVisibility>('none');
-  const [tooltipMessage, setTooltipMessage] =
-    React.useState<TooltipMessage | null>(null);
+  // redux
+  const selector = React.useCallback(
+    (state: State) => state[toTweetIDKey(tweetID)],
+    [tweetID]
+  );
+  const buttonState = useSelector(selector);
+  const dispatch = useDispatch();
   // floting
   const arrowRef = React.useRef(null);
   const {
@@ -41,6 +46,21 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     placement: 'top',
     middleware: [offset(10), shift(), arrow({ element: arrowRef })],
   });
+  // state
+  const [isClicked, setIsClicked] = React.useState(false);
+  const [tooltipVisibility, setTooltipVisibility] =
+    React.useState<TooltipVisibility>('none');
+  // tooltip
+  const tooltipMessage: TooltipMessage | null = !isClicked
+    ? null
+    : buttonState.state === 'success'
+    ? { type: 'notification', message: 'Copied' }
+    : buttonState.state === 'failure'
+    ? { type: 'error', message: buttonState.message }
+    : null;
+  if (tooltipMessage !== null && tooltipVisibility === 'none') {
+    setTooltipVisibility('fade-in');
+  }
   // effect: tooltip visibility
   React.useEffect(() => {
     switch (tooltipVisibility) {
@@ -64,7 +84,10 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
         break;
       }
       case 'fade-out': {
-        const timeoutID = setTimeout(() => setTooltipVisibility('none'), 200);
+        const timeoutID = setTimeout(() => {
+          setIsClicked(false);
+          setTooltipVisibility('none');
+        }, 200);
         return () => clearTimeout(timeoutID);
       }
       default: {
@@ -76,34 +99,17 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
   // click: copy button
   const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
+    // set state
+    setIsClicked(true);
+    dispatch(
+      updateAction({ tweetIDs: [tweetID], state: { state: 'in-progress' } })
+    );
     // send message to background
     logger.info(`[Tweet ID: ${tweetID}] copy request`);
-    browser.runtime
-      .sendMessage({
-        type: 'tweet_copy_request',
-        tweetID,
-      })
-      .then((message: TweetCopyResponseMessage) => {
-        if (message.type === 'tweet_copy_response') {
-          setIsCopied(message.ok);
-          if (message.ok) {
-            logger.info(`[tweet ID: ${tweetID}] copy request is succeeded`);
-            setTooltipMessage({
-              type: 'notification',
-              message: 'Copied',
-            });
-          } else {
-            logger.error(
-              `[tweet ID: ${tweetID}] copy request is failed with "${message.message}"`
-            );
-            setTooltipMessage({
-              type: 'error',
-              message: message.message,
-            });
-          }
-          setTooltipVisibility('fade-in');
-        }
-      });
+    browser.runtime.sendMessage({
+      type: 'TweetCopy/Request',
+      tweetID,
+    });
   };
   // click: tooltip close
   const onTooltipClose = React.useCallback(() => {
@@ -119,7 +125,13 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
         tabIndex={0}
         onClick={onClick}
         ref={reference}>
-        <div className={isCopied ? 'circle-active' : 'circle-inactive'} />
+        <div
+          className={classNames({
+            'circle-inactive': ['none', 'error'].includes(buttonState.state),
+            'circle-in-progress': buttonState.state === 'in-progress',
+            'circle-active': buttonState.state === 'success',
+          })}
+        />
         <ScrapboxIcon
           className="logo"
           viewBox="-29 0 172 172"

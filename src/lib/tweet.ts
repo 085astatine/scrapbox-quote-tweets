@@ -1,3 +1,5 @@
+export type TweetID = string;
+
 export interface User {
   id: string;
   name: string;
@@ -64,11 +66,11 @@ export type TweetEntity =
 
 export interface ReferencedTweet {
   type: 'retweeted' | 'quoted' | 'replied_to';
-  id: string;
+  id: TweetID;
 }
 
 export interface Tweet {
-  id: string;
+  id: TweetID;
   timestamp: number;
   author: User;
   text: TweetEntity[];

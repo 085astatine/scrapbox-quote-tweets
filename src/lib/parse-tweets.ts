@@ -21,15 +21,16 @@ import {
   TweetEntityMedia,
   TweetEntityMention,
   TweetEntityURL,
+  TweetID,
   User,
 } from './tweet';
 
 const defaultLogger = loggerProvider.getCategory('tweet');
 
 export class ParseTweetError extends Error {
-  readonly tweetID: string;
+  readonly tweetID: TweetID;
 
-  constructor(tweetID: string, message: string) {
+  constructor(tweetID: TweetID, message: string) {
     super(message);
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, ParseTweetError);
@@ -224,7 +225,7 @@ const splitText = <ApiEntity extends TweetPosition>(
 };
 
 const toTweetEntityURL = (
-  tweetID: string,
+  tweetID: TweetID,
   media: readonly MediaObjectV2[]
 ): TweetEntityGenerator<
   TweetEntityUrlV2,
