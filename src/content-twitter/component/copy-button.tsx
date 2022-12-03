@@ -107,7 +107,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     // send message to background
     logger.info(`[Tweet ID: ${tweetID}] copy request`);
     browser.runtime.sendMessage({
-      type: 'tweet_copy_request',
+      type: 'TweetCopy/Request',
       tweetID,
     });
   };

@@ -1,22 +1,22 @@
 import { TweetID } from './tweet';
 
 export interface URLChangedMessage {
-  type: 'url_changed';
+  type: 'URL/Changed';
 }
 
 export interface TweetCopyRequestMessage {
-  type: 'tweet_copy_request';
+  type: 'TweetCopy/Request';
   tweetID: TweetID;
 }
 
 export interface TweetCopySuccessMessage {
-  type: 'tweet_copy_response';
+  type: 'TweetCopy/Response';
   tweetID: TweetID;
   ok: true;
 }
 
 export interface TweetCopyFailureMessage {
-  type: 'tweet_copy_response';
+  type: 'TweetCopy/Response';
   tweetID: TweetID;
   ok: false;
   message: string;

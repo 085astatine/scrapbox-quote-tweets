@@ -55,10 +55,10 @@ type Message = URLChangedMessage | TweetCopyResponseMessage;
 
 const onMessageListener = (message: Message) => {
   switch (message.type) {
-    case 'url_changed':
+    case 'URL/Changed':
       logger.info('url changged');
       break;
-    case 'tweet_copy_response': {
+    case 'TweetCopy/Response': {
       const state = message.ok
         ? { state: 'success' as const }
         : { state: 'failure' as const, message: message.message };

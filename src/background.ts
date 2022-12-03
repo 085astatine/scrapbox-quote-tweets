@@ -30,7 +30,7 @@ const urlChangedListener = async (
   if ('url' in changeInfo) {
     const tabID = tab?.id ?? browser.tabs.TAB_ID_NONE;
     logger.info(`send URL changed message to tab ${tabID}`);
-    browser.tabs.sendMessage(tabID, { type: 'url_changed' });
+    browser.tabs.sendMessage(tabID, { type: 'URL/Changed' });
   }
 };
 
@@ -41,13 +41,13 @@ type Message = TweetCopyRequestMessage;
 
 const onMessageListener = async (message: Message): Promise<void> => {
   switch (message.type) {
-    case 'tweet_copy_request': {
+    case 'TweetCopy/Request': {
       requestTweetsLookup(message.tweetID)
         .then((response) => {
           console.log(response);
           console.log(parseTweets(response));
           return {
-            type: 'tweet_copy_response',
+            type: 'TweetCopy/Response',
             tweetID: message.tweetID,
             ok: true,
           } as const;
@@ -137,7 +137,7 @@ const tweetCopyFailureMessage = (
   message: string
 ): TweetCopyFailureMessage => {
   return {
-    type: 'tweet_copy_response',
+    type: 'TweetCopy/Response',
     tweetID,
     ok: false,
     message,
