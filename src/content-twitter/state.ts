@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { TweetID } from '../lib/tweet';
 import { TweetIDKey, toTweetIDKey } from '../lib/tweet-id-key';
 
 export interface ButtonStateNone {
@@ -29,7 +30,7 @@ export interface State {
 }
 
 export interface UpdateButtonState {
-  tweetID: string;
+  tweetID: TweetID;
   state: ButtonState;
 }
 
@@ -40,7 +41,7 @@ const stateSlice = createSlice({
     update(state: State, action: PayloadAction<UpdateButtonState>) {
       state[toTweetIDKey(action.payload.tweetID)] = action.payload.state;
     },
-    touch(state: State, action: PayloadAction<string>) {
+    touch(state: State, action: PayloadAction<TweetID>) {
       const key = toTweetIDKey(action.payload);
       if (!(key in state)) {
         state[key] = { state: 'none' };

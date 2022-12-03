@@ -1,6 +1,8 @@
-export type TweetIDKey = `tweet_${string}`;
+import { TweetID } from './tweet';
 
-export const toTweetIDKey = (tweetID: string): TweetIDKey => {
+export type TweetIDKey = `tweet_${TweetID}`;
+
+export const toTweetIDKey = (tweetID: TweetID): TweetIDKey => {
   return `tweet_${tweetID}`;
 };
 

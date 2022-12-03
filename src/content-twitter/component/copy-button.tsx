@@ -7,6 +7,7 @@ import ScrapboxIcon from '../../icon/scrapbox.svg';
 import CloseIcon from '../../icon/x.svg';
 import { loggerProvider } from '../../lib/logger';
 import { TweetCopyResponseMessage } from '../../lib/message';
+import { TweetID } from '../../lib/tweet';
 import { toTweetIDKey } from '../../lib/tweet-id-key';
 import { State } from '../state';
 import { updateAction } from '../state';
@@ -22,7 +23,7 @@ interface TooltipMessage {
 }
 
 export interface CopyButtonProps {
-  tweetID: string;
+  tweetID: TweetID;
 }
 
 export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {

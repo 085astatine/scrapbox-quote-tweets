@@ -14,6 +14,7 @@ import {
   TweetCopyResponseMessage,
 } from './lib/message';
 import { parseTweets } from './lib/parse-tweets';
+import { TweetID } from './lib/tweet';
 
 const logger = loggerProvider.getCategory('background');
 
@@ -69,7 +70,7 @@ browser.runtime.onMessage.addListener(onMessageListener);
 
 // Request Tweets Lookup
 const requestTweetsLookup = async (
-  tweetID: string
+  tweetID: TweetID
 ): Promise<TweetV2LookupResult> => {
   logger.info(`tweet copy request: ${tweetID}`);
   if (twitterApiClient === null) {
@@ -134,7 +135,7 @@ const tweetCopyRequestErrorMessage = (error: unknown): string => {
 
 // create TweetCopyFailureMessage
 const tweetCopyFailureMessage = (
-  tweetID: string,
+  tweetID: TweetID,
   message: string
 ): TweetCopyFailureMessage => {
   return {
