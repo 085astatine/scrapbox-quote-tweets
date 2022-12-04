@@ -15,6 +15,7 @@ import {
 } from './lib/message';
 import { parseTweets } from './lib/parse-tweets';
 import { Tweet, TweetID } from './lib/tweet';
+import validateTweets from './validate-json/validate-tweets';
 
 const logger = loggerProvider.getCategory('background');
 
@@ -44,6 +45,7 @@ const onMessageListener = async (message: Message): Promise<void> => {
     case 'TweetCopy/Request': {
       requestTweetsLookup(message.tweetID)
         .then((response) => parseTweetLookupResult(message.tweetID, response))
+        .then((tweets) => validateTweetsWithJSONSchema(message.tweetID, tweets))
         .then((tweets) => {
           console.log(tweets);
           return {
@@ -146,6 +148,18 @@ const parseTweetLookupResult = (
       tweetCopyFailureMessage(tweetID, 'Failed to parse tweet')
     );
   }
+};
+
+// validate with JSON Schema
+const validateTweetsWithJSONSchema = (
+  tweetID: TweetID,
+  tweets: Tweet[]
+): Promise<Tweet[]> => {
+  logger.info(`validate with JSON Schema: ${tweetID}`);
+  if (validateTweets(tweets)) {
+    return Promise.resolve(tweets);
+  }
+  return Promise.reject(tweetCopyFailureMessage(tweetID, 'Validation Error'));
 };
 
 // create TweetCopyFailureMessage
