@@ -44,6 +44,7 @@ type Message = TweetCopyRequestMessage;
 const onMessageListener = async (message: Message): Promise<void> => {
   switch (message.type) {
     case 'TweetCopy/Request':
+      logger.info(`[${message.tweetID}] tweet copy request`);
       requestTweetsLookup(message.tweetID)
         .then((response) => parseTweetLookupResult(message.tweetID, response))
         .then((tweets) => validateTweetsWithJSONSchema(message.tweetID, tweets))
@@ -65,7 +66,7 @@ browser.runtime.onMessage.addListener(onMessageListener);
 const requestTweetsLookup = async (
   tweetID: TweetID
 ): Promise<TweetV2LookupResult> => {
-  logger.info(`tweet copy request: ${tweetID}`);
+  logger.debug(`[${tweetID}] API request`);
   if (twitterApiClient === null) {
     return Promise.reject(
       tweetCopyFailureMessage(tweetID, 'Twitter API client is not available')
@@ -83,9 +84,10 @@ const requestTweetsLookup = async (
       'tweet.fields': ['created_at', 'entities'],
       'user.fields': ['name', 'username'],
     });
+    logger.debug(`[${tweetID}]: API request result`, result);
     return Promise.resolve(result);
   } catch (error: unknown) {
-    logger.error(`failed in tweet copy request: ${tweetID}`);
+    logger.error(`[${tweetID}] failed in API request`);
     return Promise.reject(
       tweetCopyFailureMessage(tweetID, tweetCopyRequestErrorMessage(error))
     );
@@ -131,12 +133,13 @@ const parseTweetLookupResult = (
   tweetID: TweetID,
   response: TweetV2LookupResult
 ): Promise<Tweet[]> => {
-  logger.info(`parse tweet ${tweetID}`);
+  logger.debug(`[${tweetID}] parse`);
   try {
     const tweets = parseTweets(response);
+    logger.debug(`[${tweetID}] parse result`, tweets);
     return Promise.resolve(tweets);
   } catch (error: unknown) {
-    logger.error(`failed in parse tweet ${tweetID} with "${error}"`);
+    logger.error(`[${tweetID}] failed in parse with "${error}"`);
     return Promise.reject(
       tweetCopyFailureMessage(tweetID, 'Failed to parse tweet')
     );
@@ -148,10 +151,11 @@ const validateTweetsWithJSONSchema = (
   tweetID: TweetID,
   tweets: Tweet[]
 ): Promise<Tweet[]> => {
-  logger.info(`validate with JSON Schema: ${tweetID}`);
+  logger.debug(`[${tweetID}] JSON Schema validation`);
   if (validateTweets(tweets)) {
     return Promise.resolve(tweets);
   }
+  logger.error(`[${tweetID}] failed in validation`, validateTweets.errors);
   return Promise.reject(tweetCopyFailureMessage(tweetID, 'Validation Error'));
 };
 
