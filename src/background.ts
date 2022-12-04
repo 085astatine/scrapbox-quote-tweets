@@ -12,6 +12,7 @@ import {
   TweetCopyFailureMessage,
   TweetCopyRequestMessage,
   TweetCopyResponseMessage,
+  TweetCopySuccessMessage,
 } from './lib/message';
 import { parseTweets } from './lib/parse-tweets';
 import { Tweet, TweetID } from './lib/tweet';
@@ -42,22 +43,14 @@ type Message = TweetCopyRequestMessage;
 
 const onMessageListener = async (message: Message): Promise<void> => {
   switch (message.type) {
-    case 'TweetCopy/Request': {
+    case 'TweetCopy/Request':
       requestTweetsLookup(message.tweetID)
         .then((response) => parseTweetLookupResult(message.tweetID, response))
         .then((tweets) => validateTweetsWithJSONSchema(message.tweetID, tweets))
-        .then((tweets) => {
-          console.log(tweets);
-          return {
-            type: 'TweetCopy/Response',
-            tweetIDs: tweets.map((tweet) => tweet.id),
-            ok: true,
-          } as const;
-        })
+        .then((tweets) => tweetCopySuccessMessage(tweets))
         .catch((error: TweetCopyFailureMessage) => error)
         .then((response) => sendMessageToAllContentTwitter(response));
       break;
-    }
     default: {
       const _: never = message.type;
       logger.error(`unexpected message type "${message.type}"`);
@@ -162,6 +155,15 @@ const validateTweetsWithJSONSchema = (
   return Promise.reject(tweetCopyFailureMessage(tweetID, 'Validation Error'));
 };
 
+// create TweetCopySuccessMessage
+const tweetCopySuccessMessage = (tweets: Tweet[]): TweetCopySuccessMessage => {
+  return {
+    type: 'TweetCopy/Response',
+    ok: true,
+    tweetIDs: tweets.map((tweet) => tweet.id),
+  };
+};
+
 // create TweetCopyFailureMessage
 const tweetCopyFailureMessage = (
   tweetID: TweetID,
@@ -169,8 +171,8 @@ const tweetCopyFailureMessage = (
 ): TweetCopyFailureMessage => {
   return {
     type: 'TweetCopy/Response',
-    tweetID,
     ok: false,
+    tweetID,
     message,
   };
 };
