@@ -14,7 +14,7 @@ import {
   TweetCopyResponseMessage,
 } from './lib/message';
 import { parseTweets } from './lib/parse-tweets';
-import { TweetID } from './lib/tweet';
+import { Tweet, TweetID } from './lib/tweet';
 
 const logger = loggerProvider.getCategory('background');
 
@@ -43,9 +43,8 @@ const onMessageListener = async (message: Message): Promise<void> => {
   switch (message.type) {
     case 'TweetCopy/Request': {
       requestTweetsLookup(message.tweetID)
-        .then((response) => {
-          console.log(response);
-          const tweets = parseTweets(response);
+        .then((response) => parseTweetLookupResult(message.tweetID, response))
+        .then((tweets) => {
           console.log(tweets);
           return {
             type: 'TweetCopy/Response',
@@ -130,6 +129,23 @@ const tweetCopyRequestErrorMessage = (error: unknown): string => {
     return `Twitter API Error: ${error.type}`;
   }
   return 'Unknown Error';
+};
+
+// Parse Tweet Lookup Result
+const parseTweetLookupResult = (
+  tweetID: TweetID,
+  response: TweetV2LookupResult
+): Promise<Tweet[]> => {
+  logger.info(`parse tweet ${tweetID}`);
+  try {
+    const tweets = parseTweets(response);
+    return Promise.resolve(tweets);
+  } catch (error: unknown) {
+    logger.error(`failed in parse tweet ${tweetID} with "${error}"`);
+    return Promise.reject(
+      tweetCopyFailureMessage(tweetID, 'Failed to parse tweet')
+    );
+  }
 };
 
 // create TweetCopyFailureMessage
