@@ -1,11 +1,89 @@
-import { LogLevel } from 'typescript-logging';
+import { LogLevel as _LogLevel } from 'typescript-logging';
 import { CategoryProvider } from 'typescript-logging-category-style';
 
 const config = {
-  level: process.env.NODE_ENV == 'production' ? LogLevel.Error : LogLevel.Info,
+  level:
+    process.env.NODE_ENV == 'production' ? _LogLevel.Error : _LogLevel.Info,
 };
 
 export const loggerProvider = CategoryProvider.createProvider(
   'scrapbox-copy-tweets',
   config
 );
+
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+
+export interface LoggerOption {
+  level?: LogLevel;
+  collapsed?: boolean;
+}
+
+export class Logger {
+  private level: LogLevel;
+  private collapsed: boolean;
+
+  constructor(option?: LoggerOption) {
+    // destruct options
+    const { level, collapsed } = {
+      level:
+        process.env.NODE_ENV === 'production'
+          ? ('warn' as const)
+          : ('debug' as const),
+      collapsed: true,
+      ...option,
+    };
+    this.level = level;
+    this.collapsed = collapsed;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private log(level: LogLevel, message: string, ...args: any[]): void {
+    // check log level
+    if (priority(this.level) > priority(level)) {
+      return;
+    }
+    console[level](message, args);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public debug(message: string, ...args: any[]): void {
+    this.log('debug', message, ...args);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public info(message: string, ...args: any[]): void {
+    this.log('info', message, ...args);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public warn(message: string, ...args: any[]): void {
+    this.log('warn', message, ...args);
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public error(message: string, ...args: any[]): void {
+    this.log('error', message, ...args);
+  }
+}
+
+const priority = (level: LogLevel) => {
+  switch (level) {
+    case 'debug':
+      return 0;
+    case 'info':
+      return 1;
+    case 'warn':
+      return 2;
+    case 'error':
+      return 3;
+    default: {
+      const _: never = level;
+      return _;
+    }
+  }
+};
+
+export const createLogger = (option?: LoggerOption) => {
+  return new Logger(option);
+};
+
+export const logger = createLogger();
