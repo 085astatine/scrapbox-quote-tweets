@@ -55,7 +55,11 @@ export class Logger {
     }
     // args
     for (const arg of args) {
-      console[level](arg);
+      try {
+        console[level](JSON.stringify(arg, null, 2));
+      } catch (error: unknown) {
+        console[level](arg);
+      }
     }
     // group end
     console.groupEnd();
