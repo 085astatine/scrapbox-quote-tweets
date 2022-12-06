@@ -90,8 +90,6 @@
     "redux": "^4.2.0",
     "redux-logger": "^3.0.6",
     "twitter-api-v2": "^1.12.9",
-    "typescript-logging": "^2.0.2",
-    "typescript-logging-category-style": "^2.0.2",
     "webextension-polyfill": "^0.10.0"
   }
 }
