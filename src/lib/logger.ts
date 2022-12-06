@@ -42,10 +42,15 @@ export class Logger {
     }
     // args
     for (const arg of args) {
-      try {
-        console[level](JSON.stringify(arg, null, 2));
-      } catch (error: unknown) {
+      // error
+      if (arg instanceof Error) {
         console[level](arg);
+      } else {
+        try {
+          console[level](JSON.stringify(arg, null, 2));
+        } catch (error: unknown) {
+          console[level](arg);
+        }
       }
     }
     // group end
