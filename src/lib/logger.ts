@@ -42,7 +42,23 @@ export class Logger {
     if (priority(this.level) > priority(level)) {
       return;
     }
-    console[level](message, args);
+    // single message
+    if (args.length === 0) {
+      console[level](message);
+      return;
+    }
+    // group
+    if (this.collapsed) {
+      console.groupCollapsed(message);
+    } else {
+      console.group(message);
+    }
+    // args
+    for (const arg of args) {
+      console[level](arg);
+    }
+    // group end
+    console.groupEnd();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
