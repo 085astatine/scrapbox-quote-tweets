@@ -9,8 +9,7 @@ import {
   TweetV2,
   TweetV2LookupResult,
 } from 'twitter-api-v2';
-import { CoreLogger } from 'typescript-logging';
-import { loggerProvider } from './logger';
+import { Logger, logger as defaultLogger } from './logger';
 import {
   ReferencedTweet,
   Tweet,
@@ -24,8 +23,6 @@ import {
   TweetID,
   User,
 } from './tweet';
-
-const defaultLogger = loggerProvider.getCategory('tweet');
 
 export class ParseTweetError extends Error {
   readonly tweetID: TweetID;
@@ -42,7 +39,7 @@ export class ParseTweetError extends Error {
 
 export const parseTweets = (
   response: TweetV2LookupResult,
-  logger: CoreLogger = defaultLogger
+  logger: Logger = defaultLogger
 ): Tweet[] => {
   logger.debug('parse tweets', response);
   const tweets: Tweet[] = [];
@@ -60,7 +57,7 @@ export const parseTweets = (
 const parseTweet = (
   tweet: TweetV2,
   includes: ApiV2Includes | undefined,
-  logger: CoreLogger
+  logger: Logger
 ): Tweet => {
   logger.debug(`parse tweet ${tweet.id}`);
   const timestamp = parseTimestamp(tweet);
@@ -120,13 +117,13 @@ interface TweetEntityWithPosition<Entity> extends TweetPosition {
 type TweetEntityGenerator<ApiEntity extends TweetPosition, Entity> = (
   text: string,
   data: ApiEntity,
-  logger: CoreLogger
+  logger: Logger
 ) => TweetEntityWithPosition<Entity>;
 
 const parseText = (
   tweet: TweetV2,
   includes: ApiV2Includes | undefined,
-  logger: CoreLogger
+  logger: Logger
 ): TweetEntity[] => {
   // text
   const text: TweetEntityWithPosition<TweetEntity>[] = [
@@ -168,7 +165,7 @@ const splitText = <ApiEntity extends TweetPosition>(
   entities: TweetEntityWithPosition<TweetEntity>[],
   entity: ApiEntity,
   generator: TweetEntityGenerator<ApiEntity, TweetEntity>,
-  logger: CoreLogger
+  logger: Logger
 ) => {
   // find the source entity that includes target
   const source = entities.find(

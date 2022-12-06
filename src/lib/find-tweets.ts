@@ -1,9 +1,6 @@
-import { CoreLogger } from 'typescript-logging';
 import { getNode, isElement } from './dom';
-import { loggerProvider } from './logger';
+import { Logger, logger as defaultLogger } from './logger';
 import { TweetID } from './tweet';
-
-const defaultLogger = loggerProvider.getCategory('lib-tweet');
 
 export interface FindTweetResult {
   tweetID: TweetID;
@@ -13,7 +10,7 @@ export interface FindTweetResult {
 export const findTweets = (
   node: Node,
   url: string,
-  logger: CoreLogger = defaultLogger
+  logger: Logger = defaultLogger
 ): FindTweetResult[] => {
   logger.info('find tweets');
   const result: FindTweetResult[] = [];
@@ -84,7 +81,7 @@ const parseTweetLink = (link: string): TweetLink | null => {
 const parseTweetID = (
   element: Element,
   url: string,
-  logger: CoreLogger
+  logger: Logger
 ): string | null => {
   const urlType = matchURLType(url);
   switch (urlType) {
@@ -103,7 +100,7 @@ const parseTweetID = (
 
 const parseTweetIdInTwitterPage = (
   element: Element,
-  logger: CoreLogger
+  logger: Logger
 ): TweetID | null => {
   logger.info('parse tweet');
   // link node
@@ -134,7 +131,7 @@ const parseTweetIdInTwitterPage = (
 const parseTweetIdInTweetPage = (
   element: Element,
   url: string,
-  logger: CoreLogger
+  logger: Logger
 ): TweetID | null => {
   // get tweet ID from <a href="..."/>
   const tweetID = parseTweetIdInTwitterPage(element, logger);
@@ -152,10 +149,7 @@ const parseTweetIdInTweetPage = (
   return null;
 };
 
-const createRootDiv = (
-  element: Element,
-  logger: CoreLogger
-): Element | null => {
+const createRootDiv = (element: Element, logger: Logger): Element | null => {
   // button group
   const xpathResult = document.evaluate(
     '(.//div[@role="group"])[last()]',

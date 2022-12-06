@@ -1,13 +1,10 @@
-import { CoreLogger } from 'typescript-logging';
-import { loggerProvider } from './logger';
-
-const defaultLogger = loggerProvider.getCategory('lib-dom');
+import { Logger, logger as defaultLogger } from './logger';
 
 // node
 export const getNode = (
   xpath: string,
   parent?: Node,
-  logger: CoreLogger = defaultLogger
+  logger: Logger = defaultLogger
 ): Node | null => {
   logger.debug(`search node: ${xpath}`);
   const result = document.evaluate(
@@ -72,7 +69,7 @@ export const isElement = (node: Node): node is Element => {
 // mutation record
 export const showMutationRecord = (
   record: MutationRecord,
-  logger: CoreLogger = defaultLogger
+  logger: Logger = defaultLogger
 ) => {
   // .type
   logger.debug(`record type: ${record.type}`);

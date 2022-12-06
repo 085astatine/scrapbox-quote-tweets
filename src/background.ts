@@ -7,7 +7,7 @@ import {
   TwitterApi,
 } from 'twitter-api-v2';
 import browser from 'webextension-polyfill';
-import { loggerProvider } from './lib/logger';
+import { logger } from './lib/logger';
 import {
   TweetCopyFailureMessage,
   TweetCopyRequestMessage,
@@ -17,8 +17,6 @@ import {
 import { parseTweets } from './lib/parse-tweets';
 import { Tweet, TweetID } from './lib/tweet';
 import validateTweets from './validate-json/validate-tweets';
-
-const logger = loggerProvider.getCategory('background');
 
 logger.info('background script');
 

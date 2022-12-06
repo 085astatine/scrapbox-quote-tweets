@@ -7,11 +7,9 @@ import { touchAction, updateAction } from './content-twitter/state';
 import { store } from './content-twitter/store';
 import { showMutationRecord } from './lib/dom';
 import { findTweets } from './lib/find-tweets';
-import { loggerProvider } from './lib/logger';
+import { logger } from './lib/logger';
 import { TweetCopyResponseMessage, URLChangedMessage } from './lib/message';
 import './style/content-twitter.scss';
-
-const logger = loggerProvider.getCategory('content-twitter');
 
 logger.info('content script');
 
