@@ -12,12 +12,13 @@ export const findTweets = (
   url: string,
   logger: Logger = defaultLogger
 ): FindTweetResult[] => {
-  logger.info('find tweets');
   const result: FindTweetResult[] = [];
   // find <article data-testid="tweet"/>
   findTweetArticles(node).forEach((element) => {
+    logger.info('find <article data-test-id="tweet" />');
     // find TweetID
-    const tweetID = parseTweetID(element, url, logger);
+    const tweetID = parseTweetID(element, url);
+    logger.info(`tweet ID ${tweetID}`);
     if (tweetID === null) {
       return;
     }
@@ -78,17 +79,13 @@ const parseTweetLink = (link: string): TweetLink | null => {
   return null;
 };
 
-const parseTweetID = (
-  element: Element,
-  url: string,
-  logger: Logger
-): string | null => {
+const parseTweetID = (element: Element, url: string): string | null => {
   const urlType = matchURLType(url);
   switch (urlType) {
     case 'twitter':
-      return parseTweetIdInTwitterPage(element, logger);
+      return parseTweetIdInTwitterPage(element);
     case 'tweet':
-      return parseTweetIdInTweetPage(element, url, logger);
+      return parseTweetIdInTweetPage(element, url);
     case 'other':
       return null;
     default: {
@@ -98,31 +95,19 @@ const parseTweetID = (
   }
 };
 
-const parseTweetIdInTwitterPage = (
-  element: Element,
-  logger: Logger
-): TweetID | null => {
-  logger.info('parse tweet');
+const parseTweetIdInTwitterPage = (element: Element): TweetID | null => {
   // link node
-  const linkNode = getNode(
-    './/a[./time and @role="link"]/@href',
-    element,
-    logger
-  );
+  const linkNode = getNode('.//a[./time and @role="link"]/@href', element);
   if (linkNode === null) {
-    logger.info('tweet link is not found');
     return null;
   }
   const link = linkNode.nodeValue;
-  logger.info(`tweet link: ${link}`);
   if (link === null) {
-    logger.info('tweet link is null');
     return null;
   }
   // parse link
   const tweetLink = parseTweetLink(link);
   if (tweetLink === null) {
-    logger.warn(`failed to match: ${link}`);
     return null;
   }
   return tweetLink.id;
@@ -130,11 +115,10 @@ const parseTweetIdInTwitterPage = (
 
 const parseTweetIdInTweetPage = (
   element: Element,
-  url: string,
-  logger: Logger
+  url: string
 ): TweetID | null => {
   // get tweet ID from <a href="..."/>
-  const tweetID = parseTweetIdInTwitterPage(element, logger);
+  const tweetID = parseTweetIdInTwitterPage(element);
   if (tweetID !== null) {
     return tweetID;
   }
@@ -164,8 +148,8 @@ const createRootDiv = (element: Element, logger: Logger): Element | null => {
     return null;
   }
   // check if react root exists
-  if (getNode('./div[@class="scrapbox-copy-tweets"]', group, logger) !== null) {
-    logger.info('root <div/> already exists');
+  if (getNode('./div[@class="scrapbox-copy-tweets"]', group) !== null) {
+    logger.info('<div classse="scrapbox-copy-tweets:" /> already exists');
     return null;
   }
   // create react root

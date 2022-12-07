@@ -26,10 +26,8 @@ const urlChangedListener = async (
   changeInfo: browser.Tabs.OnUpdatedChangeInfoType,
   tab: browser.Tabs.Tab
 ) => {
-  logger.debug(`tab ID: ${tabID}, URL: ${tab.url}`, changeInfo);
   if ('url' in changeInfo) {
     const tabID = tab?.id ?? browser.tabs.TAB_ID_NONE;
-    logger.info(`send URL changed message to tab ${tabID}`);
     browser.tabs.sendMessage(tabID, { type: 'URL/Changed' });
   }
 };
@@ -64,8 +62,8 @@ browser.runtime.onMessage.addListener(onMessageListener);
 const requestTweetsLookup = async (
   tweetID: TweetID
 ): Promise<TweetV2LookupResult> => {
-  logger.debug(`[${tweetID}] API request`);
   if (twitterApiClient === null) {
+    logger.error('Twitter API client is null');
     return Promise.reject(
       tweetCopyFailureMessage(tweetID, 'Twitter API client is not available')
     );
@@ -82,7 +80,7 @@ const requestTweetsLookup = async (
       'tweet.fields': ['created_at', 'entities'],
       'user.fields': ['name', 'username'],
     });
-    logger.debug(`[${tweetID}]: API request result`, result);
+    logger.debug(`[${tweetID}] API request result`, result);
     return Promise.resolve(result);
   } catch (error: unknown) {
     logger.error(`[${tweetID}] failed in API request`);
@@ -131,13 +129,12 @@ const parseTweetLookupResult = (
   tweetID: TweetID,
   response: TweetV2LookupResult
 ): Promise<Tweet[]> => {
-  logger.debug(`[${tweetID}] parse`);
   try {
     const tweets = parseTweets(response);
     logger.debug(`[${tweetID}] parse result`, tweets);
     return Promise.resolve(tweets);
   } catch (error: unknown) {
-    logger.error(`[${tweetID}] failed in parse with "${error}"`);
+    logger.error(`[${tweetID}] failed in parse`, error);
     return Promise.reject(
       tweetCopyFailureMessage(tweetID, 'Failed to parse tweet')
     );
@@ -184,9 +181,12 @@ const sendMessageToAllContentTwitter = async (
   message: TweetCopyResponseMessage
 ) => {
   browser.tabs.query({ url: 'https://twitter.com/*' }).then((tabs) => {
+    logger.debug('send message to tabs', {
+      message,
+      tabs: tabs.map(({ index, id, url }) => ({ index, id, url })),
+    });
     tabs.forEach((tab) => {
       if (tab.id !== undefined) {
-        logger.debug('send message to tab', { id: tab.id, url: tab.url });
         browser.tabs.sendMessage(tab.id, message);
       }
     });

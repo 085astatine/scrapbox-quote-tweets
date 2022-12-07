@@ -1,12 +1,5 @@
-import { Logger, logger as defaultLogger } from './logger';
-
 // node
-export const getNode = (
-  xpath: string,
-  parent?: Node,
-  logger: Logger = defaultLogger
-): Node | null => {
-  logger.debug(`search node: ${xpath}`);
+export const getNode = (xpath: string, parent?: Node): Node | null => {
   const result = document.evaluate(
     xpath,
     parent ?? document,
@@ -14,13 +7,7 @@ export const getNode = (
     XPathResult.FIRST_ORDERED_NODE_TYPE,
     null
   );
-  const node = result.singleNodeValue;
-  if (node !== null) {
-    logger.debug(`node: ${showNode(node)}`);
-  } else {
-    logger.debug('node is not found');
-  }
-  return node;
+  return result.singleNodeValue;
 };
 
 export const nodeTypeToString = (nodeType: number): string => {

@@ -53,9 +53,9 @@ window.addEventListener('DOMContentLoaded', () => {
 type Message = URLChangedMessage | TweetCopyResponseMessage;
 
 const onMessageListener = (message: Message) => {
+  logger.debug('on message', message);
   switch (message.type) {
     case 'URL/Changed':
-      logger.info('url changged');
       break;
     case 'TweetCopy/Response': {
       if (message.ok) {
