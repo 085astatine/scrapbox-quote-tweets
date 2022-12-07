@@ -66,19 +66,19 @@ export const isElement = (node: Node): node is Element => {
   return node.nodeType === Node.ELEMENT_NODE;
 };
 
+export interface MutationRecordInfo {
+  type: string;
+  addedNodes: string[];
+  removedNodes: string[];
+}
+
 // mutation record
-export const showMutationRecord = (
-  record: MutationRecord,
-  logger: Logger = defaultLogger
-) => {
-  // .type
-  logger.debug(`record type: ${record.type}`);
-  // .addedNodes
-  record.addedNodes.forEach((node) => {
-    logger.debug(`added node: ${showNode(node)}`);
-  });
-  // .removedNodes
-  record.removedNodes.forEach((node) => {
-    logger.debug(`removed node: ${showNode(node)}`);
-  });
+export const mutationRecordInfo = (
+  record: MutationRecord
+): MutationRecordInfo => {
+  return {
+    type: `${record.type}`,
+    addedNodes: Array.from(record.addedNodes, (node) => showNode(node)),
+    removedNodes: Array.from(record.removedNodes, (node) => showNode(node)),
+  };
 };

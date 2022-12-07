@@ -5,7 +5,7 @@ import browser from 'webextension-polyfill';
 import { CopyButton } from './content-twitter/component/copy-button';
 import { touchAction, updateAction } from './content-twitter/state';
 import { store } from './content-twitter/store';
-import { showMutationRecord } from './lib/dom';
+import { mutationRecordInfo } from './lib/dom';
 import { findTweets } from './lib/find-tweets';
 import { logger } from './lib/logger';
 import { TweetCopyResponseMessage, URLChangedMessage } from './lib/message';
@@ -15,10 +15,11 @@ logger.info('content script');
 
 // observer
 const observerCallback = (records: MutationRecord[]): void => {
-  logger.info('mutation observer callback');
+  logger.debug(
+    'Mutation Records',
+    records.map((record) => mutationRecordInfo(record))
+  );
   records.forEach((record) => {
-    // show record
-    showMutationRecord(record, logger);
     // tweet nodes
     record.addedNodes.forEach((node) => {
       findTweets(node, document.URL, logger).forEach((tweet) => {
