@@ -1,15 +1,5 @@
-import { CoreLogger } from 'typescript-logging';
-import { loggerProvider } from './logger';
-
-const defaultLogger = loggerProvider.getCategory('lib-dom');
-
 // node
-export const getNode = (
-  xpath: string,
-  parent?: Node,
-  logger: CoreLogger = defaultLogger
-): Node | null => {
-  logger.debug(`search node: ${xpath}`);
+export const getNode = (xpath: string, parent?: Node): Node | null => {
   const result = document.evaluate(
     xpath,
     parent ?? document,
@@ -17,13 +7,7 @@ export const getNode = (
     XPathResult.FIRST_ORDERED_NODE_TYPE,
     null
   );
-  const node = result.singleNodeValue;
-  if (node !== null) {
-    logger.debug(`node: ${showNode(node)}`);
-  } else {
-    logger.debug('node is not found');
-  }
-  return node;
+  return result.singleNodeValue;
 };
 
 export const nodeTypeToString = (nodeType: number): string => {
@@ -69,19 +53,19 @@ export const isElement = (node: Node): node is Element => {
   return node.nodeType === Node.ELEMENT_NODE;
 };
 
+export interface MutationRecordInfo {
+  type: string;
+  addedNodes: string[];
+  removedNodes: string[];
+}
+
 // mutation record
-export const showMutationRecord = (
-  record: MutationRecord,
-  logger: CoreLogger = defaultLogger
-) => {
-  // .type
-  logger.debug(`record type: ${record.type}`);
-  // .addedNodes
-  record.addedNodes.forEach((node) => {
-    logger.debug(`added node: ${showNode(node)}`);
-  });
-  // .removedNodes
-  record.removedNodes.forEach((node) => {
-    logger.debug(`removed node: ${showNode(node)}`);
-  });
+export const mutationRecordInfo = (
+  record: MutationRecord
+): MutationRecordInfo => {
+  return {
+    type: `${record.type}`,
+    addedNodes: Array.from(record.addedNodes, (node) => showNode(node)),
+    removedNodes: Array.from(record.removedNodes, (node) => showNode(node)),
+  };
 };

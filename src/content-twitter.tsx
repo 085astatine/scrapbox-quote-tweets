@@ -5,22 +5,21 @@ import browser from 'webextension-polyfill';
 import { CopyButton } from './content-twitter/component/copy-button';
 import { touchAction, updateAction } from './content-twitter/state';
 import { store } from './content-twitter/store';
-import { showMutationRecord } from './lib/dom';
+import { mutationRecordInfo } from './lib/dom';
 import { findTweets } from './lib/find-tweets';
-import { loggerProvider } from './lib/logger';
+import { logger } from './lib/logger';
 import { TweetCopyResponseMessage, URLChangedMessage } from './lib/message';
 import './style/content-twitter.scss';
-
-const logger = loggerProvider.getCategory('content-twitter');
 
 logger.info('content script');
 
 // observer
 const observerCallback = (records: MutationRecord[]): void => {
-  logger.info('mutation observer callback');
+  logger.debug(
+    'Mutation Records',
+    records.map((record) => mutationRecordInfo(record))
+  );
   records.forEach((record) => {
-    // show record
-    showMutationRecord(record, logger);
     // tweet nodes
     record.addedNodes.forEach((node) => {
       findTweets(node, document.URL, logger).forEach((tweet) => {
@@ -54,9 +53,9 @@ window.addEventListener('DOMContentLoaded', () => {
 type Message = URLChangedMessage | TweetCopyResponseMessage;
 
 const onMessageListener = (message: Message) => {
+  logger.debug('on message', message);
   switch (message.type) {
     case 'URL/Changed':
-      logger.info('url changged');
       break;
     case 'TweetCopy/Response': {
       if (message.ok) {

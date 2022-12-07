@@ -5,13 +5,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import browser from 'webextension-polyfill';
 import ScrapboxIcon from '../../icon/scrapbox.svg';
 import CloseIcon from '../../icon/x.svg';
-import { loggerProvider } from '../../lib/logger';
+import { logger } from '../../lib/logger';
 import { TweetID } from '../../lib/tweet';
 import { toTweetIDKey } from '../../lib/tweet-id-key';
 import { State } from '../state';
 import { updateAction } from '../state';
-
-const logger = loggerProvider.getCategory('copy-button');
 
 type TooltipType = 'notification' | 'error';
 type TooltipVisibility = 'none' | 'fade-in' | 'visible' | 'fade-out';
