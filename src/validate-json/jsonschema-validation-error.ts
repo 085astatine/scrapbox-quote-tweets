@@ -1,4 +1,5 @@
 import { ErrorObject } from 'ajv';
+import betterAjvErrors from 'better-ajv-errors';
 
 export class JSONSchemaValidationError extends Error {
   readonly schema: object;
@@ -8,7 +9,7 @@ export class JSONSchemaValidationError extends Error {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(schema: object, data: any, errors: ErrorObject[]) {
-    super();
+    super(betterAjvErrors(schema, data, errors, { indent: 2 }));
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, JSONSchemaValidationError);
     }
