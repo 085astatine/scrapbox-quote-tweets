@@ -9,3 +9,8 @@ export const toTweetIDKey = (tweetID: TweetID): TweetIDKey => {
 export const isTweetIDKey = (key: string): key is TweetIDKey => {
   return key.match(/^tweet_\d+$/) !== null;
 };
+
+export const toTweetID = (key: TweetIDKey): string => {
+  // 'tweet_'.length === 6
+  return key.substring(6);
+};
