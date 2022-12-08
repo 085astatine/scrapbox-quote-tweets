@@ -107,24 +107,12 @@ const createTwitterApiClient = () => {
 
 const twitterApiClient = createTwitterApiClient();
 
-// Twitter API Error
-type TwitterApiError =
-  | ApiRequestError
-  | ApiPartialResponseError
-  | ApiResponseError;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isTwitterApiError = (error: any): error is TwitterApiError => {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    error?.error === true &&
-    ['request', 'partial-request', 'response'].includes(error?.type)
-  );
-};
-
 const tweetCopyRequestErrorMessage = (error: unknown): string => {
-  if (isTwitterApiError(error)) {
+  if (
+    error instanceof ApiRequestError ||
+    error instanceof ApiResponseError ||
+    error instanceof ApiPartialResponseError
+  ) {
     return `Twitter API Error: ${error.type}`;
   }
   return 'Unknown Error';
