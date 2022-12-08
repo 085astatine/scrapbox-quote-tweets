@@ -107,6 +107,16 @@ const createTwitterApiClient = () => {
 
 const twitterApiClient = createTwitterApiClient();
 
+class InvalidTwitterAPIClientError extends Error {
+  constructor() {
+    super();
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, InvalidTwitterAPIClientError);
+    }
+    this.name = 'InvalidTwitterAPIClientError';
+  }
+}
+
 const tweetCopyRequestErrorMessage = (error: unknown): string => {
   if (
     error instanceof ApiRequestError ||
