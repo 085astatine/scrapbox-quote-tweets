@@ -20,6 +20,12 @@ import validateTweets from './validate-json/validate-tweets';
 
 logger.info('background script');
 
+// Clear storage.local (in development)
+if (process.env.NODE_ENV !== 'production') {
+  logger.debug('claer storage.local');
+  browser.storage.local.clear();
+}
+
 // URL Changed
 const urlChangedListener = async (
   tabID: number,
