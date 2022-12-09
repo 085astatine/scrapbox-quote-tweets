@@ -30,6 +30,27 @@ export const savedTweetIDs = async (): Promise<TweetID[]> => {
     );
 };
 
+export const loadTweets = async (): Promise<Tweet[]> => {
+  // load from storage
+  const tweets = await browser.storage.local.get().then((record) =>
+    Object.entries(record).reduce<Tweet[]>((tweets, [key, value]) => {
+      if (isTweetIDKey(key)) {
+        tweets.push(value);
+      }
+      return tweets;
+    }, [])
+  );
+  // JSON Schema valication
+  if (!validateTweets(tweets)) {
+    throw new JSONSchemaValidationError(
+      tweetsJSONSchema,
+      tweets,
+      validateTweets.errors
+    );
+  }
+  return Promise.resolve(tweets);
+};
+
 export const loadTweet = async (tweetID: TweetID): Promise<Tweet | null> => {
   // load from storage
   const key = toTweetIDKey(tweetID);
