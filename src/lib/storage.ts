@@ -1,6 +1,7 @@
 import browser from 'webextension-polyfill';
-import { tweetsJSONSchema } from '../jsonschema/tweet';
+import { tweetJSONSchema, tweetsJSONSchema } from '../jsonschema/tweet';
 import { JSONSchemaValidationError } from '../validate-json/jsonschema-validation-error';
+import validateTweet from '../validate-json/validate-tweet';
 import validateTweets from '../validate-json/validate-tweets';
 import { logger } from './logger';
 import { Tweet, TweetID } from './tweet';
@@ -27,6 +28,26 @@ export const savedTweetIDs = async (): Promise<TweetID[]> => {
     .then((records) =>
       Object.keys(records).filter(isTweetIDKey).map(toTweetID)
     );
+};
+
+export const loadTweet = async (tweetID: TweetID): Promise<Tweet | null> => {
+  // load from storage
+  const key = toTweetIDKey(tweetID);
+  const tweet = await browser.storage.local
+    .get(key)
+    .then((record) => record[key]);
+  if (tweet === undefined) {
+    return Promise.resolve(null);
+  }
+  // JSON Schema validation
+  if (!validateTweet(tweet)) {
+    throw new JSONSchemaValidationError(
+      tweetJSONSchema,
+      tweet,
+      validateTweet.errors
+    );
+  }
+  return Promise.resolve(tweet);
 };
 
 export const dumpStorage = async (): Promise<void> => {
