@@ -22,6 +22,19 @@ export const saveTweets = async (tweets: Tweet[]): Promise<void> => {
   );
 };
 
+export const saveTweet = async (tweet: Tweet): Promise<void> => {
+  // JSON Schema validation
+  if (!validateTweet(tweet)) {
+    throw new JSONSchemaValidationError(
+      tweetJSONSchema,
+      tweet,
+      validateTweet.errors
+    );
+  }
+  // set to storage
+  await browser.storage.local.set({ [toTweetIDKey(tweet.id)]: tweet });
+};
+
 export const savedTweetIDs = async (): Promise<TweetID[]> => {
   return await browser.storage.local
     .get()
