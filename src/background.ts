@@ -15,7 +15,7 @@ import {
   TweetCopySuccessMessage,
 } from './lib/message';
 import { ParseTweetError, parseTweets } from './lib/parse-tweets';
-import { saveTweets } from './lib/storage';
+import { clearStorage, saveTweets } from './lib/storage';
 import { Tweet, TweetID } from './lib/tweet';
 import { JSONSchemaValidationError } from './validate-json/jsonschema-validation-error';
 
@@ -23,8 +23,8 @@ logger.info('background script');
 
 // Clear storage.local (in development)
 if (process.env.NODE_ENV !== 'production') {
-  logger.debug('claer storage.local');
-  browser.storage.local.clear();
+  logger.debug('claer storage');
+  clearStorage();
 }
 
 // URL Changed

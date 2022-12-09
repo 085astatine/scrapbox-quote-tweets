@@ -91,6 +91,10 @@ export const deleteTweets = async (tweetIDs?: TweetID[]): Promise<void> => {
   await browser.storage.local.remove(tweetIDs ?? (await savedTweetIDs()));
 };
 
+export const clearStorage = async (): Promise<void> => {
+  await browser.storage.local.clear();
+};
+
 export const dumpStorage = async (): Promise<void> => {
   const data = await browser.storage.local.get();
   logger.debug('dump storage', data);
