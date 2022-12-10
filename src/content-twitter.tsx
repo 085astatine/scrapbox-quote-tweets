@@ -9,6 +9,7 @@ import { mutationRecordInfo } from './lib/dom';
 import { findTweets } from './lib/find-tweets';
 import { logger } from './lib/logger';
 import { TweetCopyResponseMessage, URLChangedMessage } from './lib/message';
+import { savedTweetIDs } from './lib/storage';
 import './style/content-twitter.scss';
 
 logger.info('content script');
@@ -42,11 +43,22 @@ const observer = new MutationObserver(observerCallback);
 
 window.addEventListener('DOMContentLoaded', () => {
   logger.info('window DOMContentLoaded event');
+  // Mutation Observer
   const options = {
     subtree: true,
     childList: true,
   };
   observer.observe(document.body, options);
+  // Load saved TweetIDs from storage
+  savedTweetIDs().then((tweetIDs) => {
+    logger.debug('Saved tweet IDs', tweetIDs);
+    store.dispatch(
+      updateAction({
+        tweetIDs,
+        state: { state: 'success' },
+      })
+    );
+  });
 });
 
 // onMessage listener

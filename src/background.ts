@@ -14,11 +14,18 @@ import {
   TweetCopyResponseMessage,
   TweetCopySuccessMessage,
 } from './lib/message';
-import { parseTweets } from './lib/parse-tweets';
+import { ParseTweetError, parseTweets } from './lib/parse-tweets';
+import { clearStorage, saveTweets } from './lib/storage';
 import { Tweet, TweetID } from './lib/tweet';
-import validateTweets from './validate-json/validate-tweets';
+import { JSONSchemaValidationError } from './validate-json/jsonschema-validation-error';
 
 logger.info('background script');
+
+// Clear storage.local (in development)
+if (process.env.NODE_ENV !== 'production') {
+  logger.debug('claer storage');
+  clearStorage();
+}
 
 // URL Changed
 const urlChangedListener = async (
@@ -43,10 +50,10 @@ const onMessageListener = async (message: Message): Promise<void> => {
       logger.info(`[${message.tweetID}] tweet copy request`);
       requestTweetsLookup(message.tweetID)
         .then((response) => parseTweetLookupResult(message.tweetID, response))
-        .then((tweets) => validateTweetsWithJSONSchema(message.tweetID, tweets))
+        .then((tweets) => saveTweetsToStorage(tweets))
         .then((tweets) => tweetCopySuccessMessage(tweets))
-        .catch((error: TweetCopyFailureMessage) => error)
-        .then((response) => sendMessageToAllContentTwitter(response));
+        .catch((error) => handleTweetCopyRequestError(message.tweetID, error))
+        .then((message) => sendMessageToAllContentTwitter(message));
       break;
     default: {
       const _: never = message.type;
@@ -64,30 +71,21 @@ const requestTweetsLookup = async (
 ): Promise<TweetV2LookupResult> => {
   if (twitterApiClient === null) {
     logger.error('Twitter API client is null');
-    return Promise.reject(
-      tweetCopyFailureMessage(tweetID, 'Twitter API client is not available')
-    );
+    throw new InvalidTwitterAPIClientError();
   }
-  try {
-    const result = await twitterApiClient.tweets(tweetID, {
-      expansions: [
-        'attachments.media_keys',
-        'author_id',
-        'referenced_tweets.id',
-        'referenced_tweets.id.author_id',
-      ],
-      'media.fields': 'url',
-      'tweet.fields': ['created_at', 'entities'],
-      'user.fields': ['name', 'username'],
-    });
-    logger.debug(`[${tweetID}] API request result`, result);
-    return Promise.resolve(result);
-  } catch (error: unknown) {
-    logger.error(`[${tweetID}] failed in API request`);
-    return Promise.reject(
-      tweetCopyFailureMessage(tweetID, tweetCopyRequestErrorMessage(error))
-    );
-  }
+  const result = await twitterApiClient.tweets(tweetID, {
+    expansions: [
+      'attachments.media_keys',
+      'author_id',
+      'referenced_tweets.id',
+      'referenced_tweets.id.author_id',
+    ],
+    'media.fields': 'url',
+    'tweet.fields': ['created_at', 'entities'],
+    'user.fields': ['name', 'username'],
+  });
+  logger.debug(`[${tweetID}] API request result`, result);
+  return Promise.resolve(result);
 };
 
 // Twitter API Client
@@ -101,57 +99,62 @@ const createTwitterApiClient = () => {
 
 const twitterApiClient = createTwitterApiClient();
 
-// Twitter API Error
-type TwitterApiError =
-  | ApiRequestError
-  | ApiPartialResponseError
-  | ApiResponseError;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isTwitterApiError = (error: any): error is TwitterApiError => {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    error?.error === true &&
-    ['request', 'partial-request', 'response'].includes(error?.type)
-  );
-};
-
-const tweetCopyRequestErrorMessage = (error: unknown): string => {
-  if (isTwitterApiError(error)) {
-    return `Twitter API Error: ${error.type}`;
+class InvalidTwitterAPIClientError extends Error {
+  constructor() {
+    super();
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, InvalidTwitterAPIClientError);
+    }
+    this.name = 'InvalidTwitterAPIClientError';
   }
-  return 'Unknown Error';
-};
+}
 
 // Parse Tweet Lookup Result
 const parseTweetLookupResult = (
   tweetID: TweetID,
   response: TweetV2LookupResult
 ): Promise<Tweet[]> => {
-  try {
-    const tweets = parseTweets(response);
-    logger.debug(`[${tweetID}] parse result`, tweets);
-    return Promise.resolve(tweets);
-  } catch (error: unknown) {
-    logger.error(`[${tweetID}] failed in parse`, error);
-    return Promise.reject(
-      tweetCopyFailureMessage(tweetID, 'Failed to parse tweet')
-    );
-  }
+  const tweets = parseTweets(response);
+  logger.debug(`[${tweetID}] parse result`, tweets);
+  return Promise.resolve(tweets);
 };
 
-// validate with JSON Schema
-const validateTweetsWithJSONSchema = (
+// Save to Storage
+const saveTweetsToStorage = async (tweets: Tweet[]): Promise<Tweet[]> => {
+  await saveTweets(tweets);
+  return Promise.resolve(tweets);
+};
+
+// handle error in TweetCopy/Request
+const handleTweetCopyRequestError = (
   tweetID: TweetID,
-  tweets: Tweet[]
-): Promise<Tweet[]> => {
-  logger.debug(`[${tweetID}] JSON Schema validation`);
-  if (validateTweets(tweets)) {
-    return Promise.resolve(tweets);
+  error: unknown
+): TweetCopyFailureMessage => {
+  // Invalid Twitter API Client Error
+  if (error instanceof InvalidTwitterAPIClientError) {
+    return tweetCopyFailureMessage(tweetID, 'Invalid Twitter API Client');
   }
-  logger.error(`[${tweetID}] failed in validation`, validateTweets.errors);
-  return Promise.reject(tweetCopyFailureMessage(tweetID, 'Validation Error'));
+  // Twitter API Error
+  if (
+    error instanceof ApiRequestError ||
+    error instanceof ApiResponseError ||
+    error instanceof ApiPartialResponseError
+  ) {
+    logger.error(`[${tweetID}] failed in Twitter API`, error);
+    return tweetCopyFailureMessage(tweetID, `Twitter API Error: ${error.type}`);
+  }
+  // Parse Error
+  if (error instanceof ParseTweetError) {
+    logger.error(`[${tweetID}] failed in parse`, error);
+    return tweetCopyFailureMessage(tweetID, 'Failed to Parse Tweet');
+  }
+  // Validation Error
+  if (error instanceof JSONSchemaValidationError) {
+    logger.error(`[${tweetID}] faild in JSON Schema validation`, error);
+    return tweetCopyFailureMessage(tweetID, 'Validation Error');
+  }
+  logger.error(`[${tweetID}] unknown error`, error);
+  return tweetCopyFailureMessage(tweetID, 'Unknown Error');
 };
 
 // create TweetCopySuccessMessage
