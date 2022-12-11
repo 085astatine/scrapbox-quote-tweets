@@ -16,6 +16,11 @@
       "run_at": "document_start",
       "js": ["content-twitter.js"],
       "css": ["content-twitter.css"]
+    },
+    {
+      "matches": ["https://scrapbox.io/*"],
+      "run_at": "document_start",
+      "js": ["content-scrapbox.js"]
     }
   ]
 }

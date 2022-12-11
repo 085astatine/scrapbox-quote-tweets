@@ -15,6 +15,7 @@ module.exports = (env, argv) => {
     context: path.join(__dirname),
     entry: {
       background: path.join(__dirname, 'src', 'background.ts'),
+      'content-scrapbox': path.join(__dirname, 'src', 'content-scrapbox.tsx'),
       'content-twitter': path.join(__dirname, 'src', 'content-twitter.tsx'),
       manifest: path.join(__dirname, 'src', 'manifest.json'),
     },
