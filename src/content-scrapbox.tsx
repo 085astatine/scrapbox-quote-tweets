@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { Root } from './content-scrapbox/component/root';
 import { getElement, mutationRecordInfo } from './lib/dom';
 import { logger } from './lib/logger';
 
@@ -29,7 +30,7 @@ const observerCallback = (records: MutationRecord[]): void => {
         return;
       }
       const reactRoot = createRoot(rootDiv);
-      reactRoot.render(<button>Twitter</button>);
+      reactRoot.render(<Root />);
     });
   });
 };
