@@ -1,4 +1,6 @@
-import { getNode, mutationRecordInfo } from './lib/dom';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { getElement, mutationRecordInfo } from './lib/dom';
 import { logger } from './lib/logger';
 
 logger.info('content scrapbox');
@@ -18,9 +20,33 @@ const observerCallback = (records: MutationRecord[]): void => {
   logger.debug('mutation records', records.map(mutationRecordInfo));
   records.forEach((record) => {
     record.addedNodes.forEach((node) => {
-      const pageMenuNode = getNode('.//div[@class="page-menu"]', node);
-      console.log('page menu node', pageMenuNode);
+      const pageMenuNode = getElement('.//div[@class="page-menu"]', node);
+      if (pageMenuNode === null) {
+        return;
+      }
+      const rootDiv = createReactRoot(pageMenuNode);
+      if (rootDiv === null) {
+        return;
+      }
+      const reactRoot = createRoot(rootDiv);
+      reactRoot.render(<button>Twitter</button>);
     });
   });
 };
 const mutationObserver = new MutationObserver(observerCallback);
+
+// create React root
+const createReactRoot = (element: Element): Element | null => {
+  // check if root already exists
+  if (getElement('./div[@class="scrapbox-copy-tweets"]', element) !== null) {
+    logger.info('<div class="scrapbox-copy-tweets" /> already exists');
+    return null;
+  }
+  // find random jump button
+  const random = getElement('./a[i[@class="kamon kamon-switch"]]', element);
+  // crate <div class="scrapbox-copy-tweets" />
+  logger.info('create <div class="scrapbox-copy-tweets" />');
+  const root = element.insertBefore(document.createElement('div'), random);
+  root.classList.add('scrapbox-copy-tweets');
+  return root;
+};
