@@ -39,15 +39,16 @@ const mutationObserver = new MutationObserver(observerCallback);
 // create React root
 const createReactRoot = (element: Element): Element | null => {
   // check if root already exists
-  if (getElement('./div[@class="scrapbox-copy-tweets"]', element) !== null) {
-    logger.info('<div class="scrapbox-copy-tweets" /> already exists');
+  if (getElement('./div[@id="scrapbox-copy-tweets"]', element) !== null) {
+    logger.info('<div id="scrapbox-copy-tweets" /> already exists');
     return null;
   }
   // find random jump button
   const random = getElement('./a[i[@class="kamon kamon-switch"]]', element);
   // crate <div class="scrapbox-copy-tweets" />
-  logger.info('create <div class="scrapbox-copy-tweets" />');
+  logger.info('create <div id="scrapbox-copy-tweets" />');
   const root = element.insertBefore(document.createElement('div'), random);
-  root.classList.add('scrapbox-copy-tweets');
+  root.id = 'scrapbox-copy-tweets';
+  root.classList.add('dropdown');
   return root;
 };
