@@ -53,6 +53,14 @@ export const isElement = (node: Node): node is Element => {
   return node.nodeType === Node.ELEMENT_NODE;
 };
 
+export const getElement = (xpath: string, parent?: Node): Element | null => {
+  const node = getNode(xpath, parent);
+  if (node !== null && isElement(node)) {
+    return node;
+  }
+  return null;
+};
+
 export interface MutationRecordInfo {
   type: string;
   addedNodes: string[];
