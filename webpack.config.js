@@ -64,7 +64,7 @@ module.exports = (env, argv) => {
     plugins: [
       new DotenvPlugin(),
       new ESLintPlugin({
-        extensions: ['ts'],
+        extensions: ['ts', 'tsx'],
         exclude: ['node_modules'],
       }),
       new MiniCssExtractPlugin(),
