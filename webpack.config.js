@@ -71,5 +71,8 @@ module.exports = (env, argv) => {
       new NodePolyfillPlugin(),
       new WextManifestPlugin(),
     ],
+    performance: {
+      hints: false,
+    },
   };
 };
