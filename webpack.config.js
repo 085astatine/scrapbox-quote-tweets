@@ -2,6 +2,7 @@ const path = require('path');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const DotenvPlugin = require('dotenv-webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const HtmlPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const WextManifestPlugin = require('wext-manifest-webpack-plugin');
@@ -17,6 +18,7 @@ module.exports = (env, argv) => {
       background: './src/background.ts',
       'content-scrapbox': './src/content-scrapbox.tsx',
       'content-twitter': './src/content-twitter.tsx',
+      options: './src/options.tsx',
       manifest: './src/manifest.json',
     },
     output: {
@@ -66,6 +68,11 @@ module.exports = (env, argv) => {
       new ESLintPlugin({
         extensions: ['ts', 'tsx'],
         exclude: ['node_modules'],
+      }),
+      new HtmlPlugin({
+        filename: 'options.html',
+        template: 'src/options.html',
+        chunks: ['options'],
       }),
       new MiniCssExtractPlugin(),
       new NodePolyfillPlugin(),
