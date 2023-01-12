@@ -12,12 +12,12 @@ module.exports = (env, argv) => {
   return {
     mode: mode,
     devtool: mode === 'production' ? false : 'cheap-source-map',
-    context: path.join(__dirname),
+    context: __dirname,
     entry: {
-      background: path.join(__dirname, 'src', 'background.ts'),
-      'content-scrapbox': path.join(__dirname, 'src', 'content-scrapbox.tsx'),
-      'content-twitter': path.join(__dirname, 'src', 'content-twitter.tsx'),
-      manifest: path.join(__dirname, 'src', 'manifest.json'),
+      background: './src/background.ts',
+      'content-scrapbox': './src/content-scrapbox.tsx',
+      'content-twitter': './src/content-twitter.tsx',
+      manifest: './src/manifest.json',
     },
     output: {
       path: path.join(__dirname, 'build', browser),
