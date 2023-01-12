@@ -26,5 +26,5 @@ jobs:
       - name: Compressed Size Action
         uses: preactjs/compressed-size-action@v2
         with:
-          build-script: all-production
+          build-script: build:production
           pattern: ./build/production/**/*.{css,js,json}
