@@ -10,7 +10,7 @@
     "chrome:watch": "TARGET_BROWSER=chrome webpack --watch --mode development",
     "firefox:build": "TARGET_BROWSER=firefox webpack --mode development",
     "firefox:production": "TARGET_BROWSER=firefox webpack --mode production",
-    "firefox:run": "PATH=./bin:$PATH TARGET_BROWSER=firefox web-ext run --target=firefox-desktop --source-dir=build/development/firefox",
+    "firefox:run": "TARGET_BROWSER=firefox web-ext run --target=firefox-desktop --source-dir=build/development/firefox",
     "firefox:watch": "TARGET_BROWSER=firefox webpack --watch --mode development",
     "all-build": "run-p *:build",
     "all-production": "run-p *:production",
