@@ -7,20 +7,20 @@ const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const WextManifestPlugin = require('wext-manifest-webpack-plugin');
 
 module.exports = (env, argv) => {
-  const mode = argv?.mode || 'development';
+  const mode = argv.mode ?? 'development';
   const browser = process.env.TARGET_BROWSER;
   return {
     mode: mode,
     devtool: mode === 'production' ? false : 'cheap-source-map',
-    context: path.join(__dirname),
+    context: __dirname,
     entry: {
-      background: path.join(__dirname, 'src', 'background.ts'),
-      'content-scrapbox': path.join(__dirname, 'src', 'content-scrapbox.tsx'),
-      'content-twitter': path.join(__dirname, 'src', 'content-twitter.tsx'),
-      manifest: path.join(__dirname, 'src', 'manifest.json'),
+      background: './src/background.ts',
+      'content-scrapbox': './src/content-scrapbox.tsx',
+      'content-twitter': './src/content-twitter.tsx',
+      manifest: './src/manifest.json',
     },
     output: {
-      path: path.join(__dirname, 'build', browser),
+      path: path.join(__dirname, 'build', mode, browser),
       filename: '[name].js',
       clean: true,
     },
@@ -64,12 +64,15 @@ module.exports = (env, argv) => {
     plugins: [
       new DotenvPlugin(),
       new ESLintPlugin({
-        extensions: ['ts'],
+        extensions: ['ts', 'tsx'],
         exclude: ['node_modules'],
       }),
       new MiniCssExtractPlugin(),
       new NodePolyfillPlugin(),
       new WextManifestPlugin(),
     ],
+    performance: {
+      hints: false,
+    },
   };
 };

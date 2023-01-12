@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
     "strict": true,
+    "module": "commonjs",
     "rootDir": "src",
+    "typeRoots": ["node_modules/@types"],
     "esModuleInterop": true,
     "jsx": "react",
-    "typeRoots": ["node_modules/@types"]
+    "target": "es6"
   },
   "include": ["src/**/*"]
 }
