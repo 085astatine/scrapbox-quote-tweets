@@ -7,7 +7,7 @@ const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const WextManifestPlugin = require('wext-manifest-webpack-plugin');
 
 module.exports = (env, argv) => {
-  const mode = argv?.mode || 'development';
+  const mode = argv.mode ?? 'development';
   const browser = process.env.TARGET_BROWSER;
   return {
     mode: mode,
@@ -20,7 +20,7 @@ module.exports = (env, argv) => {
       manifest: './src/manifest.json',
     },
     output: {
-      path: path.join(__dirname, 'build', browser),
+      path: path.join(__dirname, 'build', mode, browser),
       filename: '[name].js',
       clean: true,
     },
