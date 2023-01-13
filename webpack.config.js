@@ -16,6 +16,7 @@ module.exports = (env, argv) => {
     context: __dirname,
     entry: {
       background: './src/background.ts',
+      clipboard: './src/clipboard.tsx',
       'content-scrapbox': './src/content-scrapbox.tsx',
       'content-twitter': './src/content-twitter.tsx',
       options: './src/options.tsx',
@@ -68,6 +69,11 @@ module.exports = (env, argv) => {
       new ESLintPlugin({
         extensions: ['ts', 'tsx'],
         exclude: ['node_modules'],
+      }),
+      new HtmlPlugin({
+        filename: 'clipboard.html',
+        template: 'src/clipboard.html',
+        chunks: ['clipboard'],
       }),
       new HtmlPlugin({
         filename: 'options.html',
