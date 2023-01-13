@@ -22,5 +22,10 @@
       "run_at": "document_start",
       "js": ["content-scrapbox.js"]
     }
-  ]
+  ],
+
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  }
 }
