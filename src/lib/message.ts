@@ -4,6 +4,10 @@ export interface URLChangedMessage {
   type: 'URL/Changed';
 }
 
+export interface ClipboardOpenRequestMessage {
+  type: 'Clipboard/OpenRequest';
+}
+
 export interface TweetCopyRequestMessage {
   type: 'TweetCopy/Request';
   tweetID: TweetID;
