@@ -9,6 +9,7 @@ import {
 import browser from 'webextension-polyfill';
 import { logger } from './lib/logger';
 import {
+  ClipboardOpenRequestMessage,
   TweetCopyFailureMessage,
   TweetCopyRequestMessage,
   TweetCopyResponseMessage,
@@ -42,10 +43,12 @@ const urlChangedListener = async (
 browser.tabs.onUpdated.addListener(urlChangedListener);
 
 // onMessage Listener
-type Message = TweetCopyRequestMessage;
+type Message = ClipboardOpenRequestMessage | TweetCopyRequestMessage;
 
 const onMessageListener = async (message: Message): Promise<void> => {
   switch (message.type) {
+    case 'Clipboard/OpenRequest':
+      break;
     case 'TweetCopy/Request':
       logger.info(`[${message.tweetID}] tweet copy request`);
       requestTweetsLookup(message.tweetID)
@@ -56,8 +59,8 @@ const onMessageListener = async (message: Message): Promise<void> => {
         .then((message) => sendMessageToAllContentTwitter(message));
       break;
     default: {
-      const _: never = message.type;
-      logger.error(`unexpected message type "${message.type}"`);
+      const _: never = message;
+      logger.error('unexpected message', message);
       return _;
     }
   }
