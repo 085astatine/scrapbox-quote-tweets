@@ -7,6 +7,7 @@ import {
   TwitterApi,
 } from 'twitter-api-v2';
 import browser from 'webextension-polyfill';
+import { setupClipboardWindows } from './lib/clipboard';
 import { logger } from './lib/logger';
 import {
   ClipboardOpenRequestMessage,
@@ -45,9 +46,14 @@ browser.tabs.onUpdated.addListener(urlChangedListener);
 // onMessage Listener
 type Message = ClipboardOpenRequestMessage | TweetCopyRequestMessage;
 
-const onMessageListener = async (message: Message): Promise<void> => {
+const onMessageListener = async (
+  message: Message,
+  sender: browser.Runtime.MessageSender
+): Promise<void> => {
+  logger.debug('on message', { message, sender });
   switch (message.type) {
     case 'Clipboard/OpenRequest':
+      clipboards.open(sender.tab?.id);
       break;
     case 'TweetCopy/Request':
       logger.info(`[${message.tweetID}] tweet copy request`);
@@ -67,6 +73,9 @@ const onMessageListener = async (message: Message): Promise<void> => {
 };
 
 browser.runtime.onMessage.addListener(onMessageListener);
+
+// Clipboard
+const clipboards = setupClipboardWindows();
 
 // Request Tweets Lookup
 const requestTweetsLookup = async (
