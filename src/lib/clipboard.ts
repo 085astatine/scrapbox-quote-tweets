@@ -29,6 +29,23 @@ export const setupClipboardWindows = () => {
           }
         });
     },
+    async close(tabID: number | undefined): Promise<void> {
+      logger.debug(`close clipboard in tab(ID=${tabID})`);
+      const target = clipboards.find((clipboard) => clipboard.tabID === tabID);
+      if (target === undefined) {
+        return;
+      }
+      // close the clipboard window
+      browser.windows.remove(target.windowID);
+      // activate the parent tab
+      browser.tabs.update(target.parentTabID, { active: true });
+      // focus on the window with the parent tab
+      browser.tabs.get(target.parentTabID).then((tab) => {
+        if (tab.windowId !== undefined) {
+          browser.windows.update(tab.windowId, { focused: true });
+        }
+      });
+    },
     onTabRemoved(tabID: number): void {
       const targets = clipboards.reduceRight((targets, clipboard, index) => {
         if (clipboard.parentTabID === tabID || clipboard.tabID === tabID) {

@@ -8,6 +8,10 @@ export interface ClipboardOpenRequestMessage {
   type: 'Clipboard/OpenRequest';
 }
 
+export interface ClipboardCloseRequestMessage {
+  type: 'Clipboard/CloseRequest';
+}
+
 export interface TweetCopyRequestMessage {
   type: 'TweetCopy/Request';
   tweetID: TweetID;
