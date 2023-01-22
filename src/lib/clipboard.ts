@@ -29,6 +29,23 @@ export const setupClipboardWindows = () => {
           }
         });
     },
+    onTabRemoved(tabID: number): void {
+      const targets = clipboards.reduceRight((targets, clipboard, index) => {
+        if (clipboard.parentTabID === tabID || clipboard.tabID === tabID) {
+          targets.push({ index, clipboard });
+        }
+        return targets;
+      }, [] as { index: number; clipboard: ClipboardWindow }[]);
+      targets.forEach((target) => {
+        // remove from list
+        clipboards.splice(target.index, 1);
+        // remove windows with paernt tab is removed
+        if (target.clipboard.parentTabID === tabID) {
+          logger.debug('remove clipboard', target.clipboard);
+          browser.windows.remove(target.clipboard.windowID);
+        }
+      });
+    },
   };
 };
 

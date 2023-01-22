@@ -71,8 +71,18 @@ const onMessageListener = async (
     }
   }
 };
-
 browser.runtime.onMessage.addListener(onMessageListener);
+
+// Tab onRemoved
+const onTabRemovedListener = (
+  tabID: number,
+  removedInfo: browser.Tabs.OnRemovedRemoveInfoType
+) => {
+  logger.debug(`Tab onRemoved (tab ID=${tabID})`, removedInfo);
+  // clipboard windows
+  clipboards.onTabRemoved(tabID);
+};
+browser.tabs.onRemoved.addListener(onTabRemovedListener);
 
 // Clipboard
 const clipboards = setupClipboardWindows();
