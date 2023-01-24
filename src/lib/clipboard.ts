@@ -1,13 +1,19 @@
 import browser from 'webextension-polyfill';
 import { logger } from './logger';
 
-export interface ClipboardWindow {
+interface ClipboardWindow {
   parentTabID: number;
   windowID: number;
   tabID: number;
 }
 
-export const setupClipboardWindows = () => {
+export interface ClipboardWindows {
+  open(parentTabID: number | undefined): Promise<void>;
+  close(tabID: number | undefined): Promise<void>;
+  onTabRemoved(tabID: number): void;
+}
+
+export const setupClipboardWindows = (): ClipboardWindows => {
   const clipboards: ClipboardWindow[] = [];
 
   return {
