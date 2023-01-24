@@ -5,6 +5,16 @@ export interface LoggerOption {
   collapsed?: boolean;
 }
 
+const defaultLoggerOption = (): Required<LoggerOption> => {
+  return {
+    level:
+      process.env.NODE_ENV === 'production'
+        ? ('warn' as const)
+        : ('debug' as const),
+    collapsed: true,
+  };
+};
+
 export class Logger {
   private level: LogLevel;
   private collapsed: boolean;
@@ -12,11 +22,7 @@ export class Logger {
   constructor(option?: LoggerOption) {
     // destruct options
     const { level, collapsed } = {
-      level:
-        process.env.NODE_ENV === 'production'
-          ? ('warn' as const)
-          : ('debug' as const),
-      collapsed: true,
+      ...defaultLoggerOption(),
       ...option,
     };
     this.level = level;
