@@ -7,8 +7,11 @@ import {
   TwitterApi,
 } from 'twitter-api-v2';
 import browser from 'webextension-polyfill';
+import { setupClipboardWindows } from './lib/clipboard';
 import { logger } from './lib/logger';
 import {
+  ClipboardCloseRequestMessage,
+  ClipboardOpenRequestMessage,
   TweetCopyFailureMessage,
   TweetCopyRequestMessage,
   TweetCopyResponseMessage,
@@ -42,10 +45,23 @@ const urlChangedListener = async (
 browser.tabs.onUpdated.addListener(urlChangedListener);
 
 // onMessage Listener
-type Message = TweetCopyRequestMessage;
+type Message =
+  | ClipboardCloseRequestMessage
+  | ClipboardOpenRequestMessage
+  | TweetCopyRequestMessage;
 
-const onMessageListener = async (message: Message): Promise<void> => {
+const onMessageListener = async (
+  message: Message,
+  sender: browser.Runtime.MessageSender
+): Promise<void> => {
+  logger.debug('on message', { message, sender });
   switch (message.type) {
+    case 'Clipboard/OpenRequest':
+      clipboards.open(sender.tab?.id);
+      break;
+    case 'Clipboard/CloseRequest':
+      clipboards.close(sender.tab?.id);
+      break;
     case 'TweetCopy/Request':
       logger.info(`[${message.tweetID}] tweet copy request`);
       requestTweetsLookup(message.tweetID)
@@ -56,14 +72,27 @@ const onMessageListener = async (message: Message): Promise<void> => {
         .then((message) => sendMessageToAllContentTwitter(message));
       break;
     default: {
-      const _: never = message.type;
-      logger.error(`unexpected message type "${message.type}"`);
+      const _: never = message;
+      logger.error('unexpected message', message);
       return _;
     }
   }
 };
-
 browser.runtime.onMessage.addListener(onMessageListener);
+
+// Tab onRemoved
+const onTabRemovedListener = (
+  tabID: number,
+  removedInfo: browser.Tabs.OnRemovedRemoveInfoType
+) => {
+  logger.debug(`Tab onRemoved (tab ID=${tabID})`, removedInfo);
+  // clipboard windows
+  clipboards.onTabRemoved(tabID);
+};
+browser.tabs.onRemoved.addListener(onTabRemovedListener);
+
+// Clipboard
+const clipboards = setupClipboardWindows();
 
 // Request Tweets Lookup
 const requestTweetsLookup = async (
