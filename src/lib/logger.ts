@@ -15,24 +15,26 @@ const defaultLoggerOption = (): Required<LoggerOption> => {
   };
 };
 
-export class Logger {
-  private level: LogLevel;
-  private collapsed: boolean;
+export interface Logger {
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  debug(message: string, ...args: any[]): void;
+  info(message: string, ...args: any[]): void;
+  warn(message: string, ...args: any[]): void;
+  error(message: string, ...args: any[]): void;
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+}
 
-  constructor(option?: LoggerOption) {
-    // destruct options
-    const { level, collapsed } = {
-      ...defaultLoggerOption(),
-      ...option,
-    };
-    this.level = level;
-    this.collapsed = collapsed;
-  }
+export const createLogger = (option?: LoggerOption) => {
+  // destruct options
+  const config = {
+    ...defaultLoggerOption(),
+    ...option,
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private log(level: LogLevel, message: string, ...args: any[]): void {
+  const log = (level: LogLevel, message: string, ...args: any[]): void => {
     // check log level
-    if (priority(this.level) > priority(level)) {
+    if (priority(config.level) > priority(level)) {
       return;
     }
     // single message
@@ -41,7 +43,7 @@ export class Logger {
       return;
     }
     // group
-    if (this.collapsed) {
+    if (config.collapsed) {
       console.groupCollapsed(message);
     } else {
       console.group(message);
@@ -61,27 +63,27 @@ export class Logger {
     }
     // group end
     console.groupEnd();
-  }
+  };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public debug(message: string, ...args: any[]): void {
-    this.log('debug', message, ...args);
-  }
+  return {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    debug(message: string, ...args: any[]): void {
+      log('debug', message, ...args);
+    },
+    info(message: string, ...args: any[]): void {
+      log('info', message, ...args);
+    },
+    warn(message: string, ...args: any[]): void {
+      log('warn', message, ...args);
+    },
+    error(message: string, ...args: any[]): void {
+      log('error', message, ...args);
+    },
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+  };
+};
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public info(message: string, ...args: any[]): void {
-    this.log('info', message, ...args);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public warn(message: string, ...args: any[]): void {
-    this.log('warn', message, ...args);
-  }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public error(message: string, ...args: any[]): void {
-    this.log('error', message, ...args);
-  }
-}
+export const logger = createLogger();
 
 const priority = (level: LogLevel) => {
   switch (level) {
@@ -99,9 +101,3 @@ const priority = (level: LogLevel) => {
     }
   }
 };
-
-export const createLogger = (option?: LoggerOption) => {
-  return new Logger(option);
-};
-
-export const logger = createLogger();
