@@ -28,4 +28,22 @@ describe('is-jsonable', () => {
   test('array/nested', () => {
     expect(isJSONable(['foo', ['bar', 'baz']])).toBe(true);
   });
+  test('array/cyclic/tail', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const value: any[] = ['foo'];
+    value.push(value);
+    expect(isJSONable(value)).toBe(false);
+  });
+  test('array/cyclic/head', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const value: any[] = ['foo'];
+    value.unshift(value);
+    expect(isJSONable(value)).toBe(false);
+  });
+  test('array/cyclic/middle', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const value: any[] = ['foo'];
+    value.push(value, 'baz');
+    expect(isJSONable(value)).toBe(false);
+  });
 });

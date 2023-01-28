@@ -9,6 +9,13 @@ export type JSONableValue =
   | { [key: string]: JSONableValue };
 
 export const isJSONable = (value: any): value is JSONableValue => {
+  return isJSONableImpl(value, []);
+};
+
+const isJSONableImpl = (
+  value: any,
+  objects: object[]
+): value is JSONableValue => {
   switch (typeof value) {
     case 'boolean':
       return true;
@@ -17,11 +24,18 @@ export const isJSONable = (value: any): value is JSONableValue => {
     case 'number':
       return !Number.isNaN(value);
     case 'object':
+      // null
       if (value === null) {
         return true;
       }
+      // cyclic object
+      if (objects.indexOf(value) !== -1) {
+        return false;
+      }
+      objects.push(value);
+      // array
       if (Array.isArray(value)) {
-        return value.every(isJSONable);
+        return value.every((element) => isJSONableImpl(element, objects));
       }
       return false;
     default:
