@@ -22,6 +22,12 @@ describe('is-jsonable', () => {
   test('number/NaN', () => {
     expect(isJSONable(Number.NaN)).toBe(false);
   });
+  test('symbol', () => {
+    expect(isJSONable(Symbol.iterator)).toBe(false);
+  });
+  test('function', () => {
+    expect(isJSONable(() => 'foo')).toBe(false);
+  });
   test('array', () => {
     expect(isJSONable([null, true, 'foo', 42])).toBe(true);
   });
@@ -45,5 +51,28 @@ describe('is-jsonable', () => {
     const value: any[] = ['foo'];
     value.push(value, 'baz');
     expect(isJSONable(value)).toBe(false);
+  });
+  test('object', () => {
+    expect(isJSONable({ foo: 'foo', bar: 'bar' })).toBe(true);
+  });
+  test('object/empty', () => {
+    expect(isJSONable({})).toBe(true);
+    // eslint-disable-next-line no-new-object
+    expect(isJSONable(new Object())).toBe(true);
+    expect(isJSONable(Object.create(null))).toBe(true);
+  });
+  test('object/cyclic', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const value: any = {};
+    value['self'] = value;
+    expect(isJSONable(value)).toBe(false);
+  });
+  test('object/symbol_key', () => {
+    const symbol = Symbol();
+    expect(isJSONable({ [symbol]: 'foo' })).toBe(true);
+  });
+  test('class', () => {
+    class Foo {}
+    expect(isJSONable(new Foo())).toBe(false);
   });
 });

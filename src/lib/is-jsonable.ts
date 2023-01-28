@@ -23,7 +23,7 @@ const isJSONableImpl = (
       return true;
     case 'number':
       return !Number.isNaN(value);
-    case 'object':
+    case 'object': {
       // null
       if (value === null) {
         return true;
@@ -37,7 +37,15 @@ const isJSONableImpl = (
       if (Array.isArray(value)) {
         return value.every((element) => isJSONableImpl(element, objects));
       }
+      // object
+      const prototype = Object.getPrototypeOf(value);
+      if (prototype === null || prototype === Object.prototype) {
+        return Object.values(value).every((value) =>
+          isJSONableImpl(value, objects)
+        );
+      }
       return false;
+    }
     default:
       return false;
   }
