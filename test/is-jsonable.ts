@@ -22,4 +22,10 @@ describe('is-jsonable', () => {
   test('number/NaN', () => {
     expect(isJSONable(Number.NaN)).toBe(false);
   });
+  test('array', () => {
+    expect(isJSONable([null, true, 'foo', 42])).toBe(true);
+  });
+  test('array/nested', () => {
+    expect(isJSONable(['foo', ['bar', 'baz']])).toBe(true);
+  });
 });

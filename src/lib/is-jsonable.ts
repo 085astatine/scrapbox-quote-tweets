@@ -20,6 +20,9 @@ export const isJSONable = (value: any): value is JSONableValue => {
       if (value === null) {
         return true;
       }
+      if (Array.isArray(value)) {
+        return value.every(isJSONable);
+      }
       return false;
     default:
       return false;
