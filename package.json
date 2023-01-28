@@ -16,6 +16,7 @@
     "firefox:watch": "TARGET_BROWSER=firefox webpack --watch --mode development",
     "build": "run-p *:build",
     "build:production": "run-p *:build:production",
+    "test": "jest",
     "clean": "rimraf build",
     "eslint": "eslint src/",
     "prettier:check": "prettier --check src/",
