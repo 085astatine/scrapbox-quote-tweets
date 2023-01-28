@@ -49,3 +49,7 @@ jobs:
       # Production Build
       - name: Production Build ${{ matrix.browser }}
         run: npm run ${{ matrix.browser }}:build:production
+
+      # Test
+      - name: Test
+        run: npm run test
