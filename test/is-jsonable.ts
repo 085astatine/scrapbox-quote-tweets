@@ -34,6 +34,14 @@ describe('is-jsonable', () => {
   test('array/nested', () => {
     expect(isJSONable(['foo', ['bar', 'baz']])).toBe(true);
   });
+  test('array/same_array', () => {
+    const array = ['foo', 'bar'];
+    expect(isJSONable([array, array])).toBe(true);
+  });
+  test('array/same_object', () => {
+    const object = { foo: 'foo' };
+    expect(isJSONable([object, object])).toBe(true);
+  });
   test('array/cyclic/tail', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const value: any[] = ['foo'];
@@ -61,6 +69,9 @@ describe('is-jsonable', () => {
     expect(isJSONable(new Object())).toBe(true);
     expect(isJSONable(Object.create(null))).toBe(true);
   });
+  test('object/nested', () => {
+    expect(isJSONable({ foo: { bar: 'baz' } })).toBe(true);
+  });
   test('object/cyclic', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const value: any = {};
@@ -70,6 +81,14 @@ describe('is-jsonable', () => {
   test('object/symbol_key', () => {
     const symbol = Symbol();
     expect(isJSONable({ [symbol]: 'foo' })).toBe(true);
+  });
+  test('array/same_array', () => {
+    const array = ['foo', 'bar'];
+    expect(isJSONable({ foo: array, bar: array })).toBe(true);
+  });
+  test('object/same_object', () => {
+    const object = { foo: 'foo' };
+    expect(isJSONable({ bar: object, baz: object })).toBe(true);
   });
   test('class', () => {
     class Foo {}

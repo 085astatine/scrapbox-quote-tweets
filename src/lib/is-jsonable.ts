@@ -35,13 +35,13 @@ const isJSONableImpl = (
       objects.push(value);
       // array
       if (Array.isArray(value)) {
-        return value.every((element) => isJSONableImpl(element, objects));
+        return value.every((element) => isJSONableImpl(element, [...objects]));
       }
       // object
       const prototype = Object.getPrototypeOf(value);
       if (prototype === null || prototype === Object.prototype) {
         return Object.values(value).every((value) =>
-          isJSONableImpl(value, objects)
+          isJSONableImpl(value, [...objects])
         );
       }
       return false;
