@@ -1,3 +1,5 @@
+import { isJSONable } from './is-jsonable';
+
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 export interface LoggerOption {
@@ -50,15 +52,14 @@ export const createLogger = (option?: LoggerOption) => {
     }
     // args
     for (const arg of args) {
-      // error
-      if (arg instanceof Error) {
-        console[level](arg);
-      } else {
+      if (isJSONable(arg)) {
         try {
           console[level](JSON.stringify(arg, null, 2));
         } catch (error: unknown) {
           console[level](arg);
         }
+      } else {
+        console[level](arg);
       }
     }
     // group end
