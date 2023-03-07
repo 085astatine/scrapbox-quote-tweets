@@ -35,6 +35,20 @@ export const parseTweetTemplate = (
   };
 };
 
+export class UnexpectedPlaceholderError extends Error {
+  readonly field: string;
+  readonly fields: readonly string[];
+
+  constructor(field: string, fields: readonly string[]) {
+    super();
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, UnexpectedPlaceholderError);
+    }
+    this.field = field;
+    this.fields = fields;
+  }
+}
+
 const parsePlaceholders = <Field extends string>(
   template: string,
   fields: readonly Field[]
@@ -49,6 +63,9 @@ const parsePlaceholders = <Field extends string>(
       }
       const field = match?.groups?.field;
       if (field !== undefined) {
+        if (!isField(field, fields)) {
+          throw new UnexpectedPlaceholderError(field, fields);
+        }
         elements.push({ type: 'placeholder', field: field as Field });
         tail = tail.slice((match.index ?? 0) + match[0].length);
       }
@@ -58,6 +75,13 @@ const parsePlaceholders = <Field extends string>(
     }
   }
   return elements;
+};
+
+const isField = <Field extends string>(
+  field: string,
+  fields: readonly Field[]
+): field is Field => {
+  return (fields as readonly string[]).includes(field);
 };
 
 const tweetFields: readonly TweetField[] = [
