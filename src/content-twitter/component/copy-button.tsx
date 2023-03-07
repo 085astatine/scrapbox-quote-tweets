@@ -147,9 +147,9 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
           style={{ position: strategy, top: y ?? 0, left: x ?? 0 }}>
           <TooltipBody
             message={tooltipMessage.message}
-            onClose={
-              tooltipMessage.type === 'error' ? onTooltipClose : undefined
-            }
+            {...(tooltipMessage.type === 'error'
+              ? { onClose: onTooltipClose }
+              : {})}
           />
           <div
             className="arrow"
