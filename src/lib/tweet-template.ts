@@ -35,6 +35,31 @@ export const parseTweetTemplate = (
   };
 };
 
+const parsePlaceholders = <Field extends string>(
+  template: string,
+  fields: readonly Field[]
+): TemplateElement<Field>[] => {
+  const elements: TemplateElement<Field>[] = [];
+  let tail = template;
+  while (tail.length > 0) {
+    const match = tail.match(/(?<!\\)\$\{(?<field>.+?)\}/);
+    if (match !== null) {
+      if (match.index !== 0) {
+        elements.push({ type: 'text', text: tail.slice(0, match.index) });
+      }
+      const field = match?.groups?.field;
+      if (field !== undefined) {
+        elements.push({ type: 'placeholder', field: field as Field });
+        tail = tail.slice((match.index ?? 0) + match[0].length);
+      }
+    } else {
+      elements.push({ type: 'text', text: tail });
+      tail = '';
+    }
+  }
+  return elements;
+};
+
 const tweetFields: readonly TweetField[] = [
   'tweet.id',
   'tweet.timestamp',
@@ -44,10 +69,5 @@ const tweetFields: readonly TweetField[] = [
 ];
 
 const parseTweet = (template: string): TemplateElement<TweetField>[] => {
-  return [
-    {
-      type: 'text',
-      text: template,
-    },
-  ];
+  return parsePlaceholders(template, tweetFields);
 };
