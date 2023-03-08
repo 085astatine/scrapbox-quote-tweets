@@ -1,3 +1,5 @@
+import difflib from 'difflib';
+
 export interface TweetTemplate {
   tweet: string;
 }
@@ -38,14 +40,23 @@ export const parseTweetTemplate = (
 export class UnexpectedPlaceholderError extends Error {
   readonly field: string;
   readonly fields: readonly string[];
+  readonly maybe: readonly string[];
 
   constructor(field: string, fields: readonly string[]) {
-    super();
+    const maybe = difflib.getCloseMatches(field, fields as string[]);
+    let message = `"${field}" is not assignable to a placeholder.`;
+    if (maybe.length > 0) {
+      message += ` Did you mean ${maybe
+        .map((field) => `"${field}"`)
+        .join(' / ')}?`;
+    }
+    super(message);
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, UnexpectedPlaceholderError);
     }
     this.field = field;
     this.fields = fields;
+    this.maybe = maybe;
   }
 }
 

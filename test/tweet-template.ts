@@ -34,6 +34,7 @@ describe('tweet-template/tweet', () => {
       expect(error).toBeInstanceOf(UnexpectedPlaceholderError);
       if (error instanceof UnexpectedPlaceholderError) {
         expect(error.field).toBe('user.usrname');
+        expect(error.maybe).toStrictEqual(['user.username', 'user.name']);
       }
     }
   });
