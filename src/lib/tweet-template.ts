@@ -95,3 +95,7 @@ const tweetFields: readonly TweetField[] = [
 const parseTweet = (template: string): TemplateElement<TweetField>[] => {
   return parsePlaceholders(template, tweetFields);
 };
+
+export const tweetTemplateParser = {
+  tweet: parseTweet,
+};
