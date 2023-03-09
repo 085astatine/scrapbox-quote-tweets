@@ -5,10 +5,10 @@ import {
 
 describe('tweet-template/tweet', () => {
   test('parse', () => {
-    const template = '>[${tweet.id} @${user.username}]';
+    const template = '>[${tweet.url} @${user.username}]';
     const expected = [
       { type: 'text', text: '>[' },
-      { type: 'placeholder', field: 'tweet.id' },
+      { type: 'placeholder', field: 'tweet.url' },
       { type: 'text', text: ' @' },
       { type: 'placeholder', field: 'user.username' },
       { type: 'text', text: ']' },
@@ -16,16 +16,16 @@ describe('tweet-template/tweet', () => {
     expect(tweetTemplateParser.tweet(template)).toStrictEqual(expected);
   });
   test('excaped_placeholder', () => {
-    const template = '>[\\${tweet.id} @${user.username}]';
+    const template = '>[\\${tweet.url} @${user.username}]';
     const expected = [
-      { type: 'text', text: '>[\\${tweet.id} @' },
+      { type: 'text', text: '>[\\${tweet.url} @' },
       { type: 'placeholder', field: 'user.username' },
       { type: 'text', text: ']' },
     ];
     expect(tweetTemplateParser.tweet(template)).toStrictEqual(expected);
   });
   test('unexpected_field', () => {
-    const template = '>[${tweet.id} @${user.usrname}]';
+    const template = '>[${tweet.url} @${user.usrname}]';
     try {
       expect(tweetTemplateParser.tweet(template)).toThrow(
         UnexpectedPlaceholderError

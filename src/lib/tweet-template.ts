@@ -19,6 +19,7 @@ export type TemplateElement<Field extends string> =
   | TemplateElementPlaceholder<Field>;
 
 export type TweetField =
+  | 'tweet.url'
   | 'tweet.id'
   | 'tweet.timestamp'
   | 'user.id'
@@ -96,6 +97,7 @@ const isField = <Field extends string>(
 };
 
 const tweetFields: readonly TweetField[] = [
+  'tweet.url',
   'tweet.id',
   'tweet.timestamp',
   'user.id',

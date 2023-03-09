@@ -26,6 +26,8 @@ const fillTweetTemplateElement = (
       return templateElement.text;
     case 'placeholder':
       switch (templateElement.field) {
+        case 'tweet.url':
+          return `https://twitter.com/${tweet.author.username}/status/${tweet.id}`;
         case 'tweet.id':
           return tweet.id;
         case 'tweet.timestamp':
