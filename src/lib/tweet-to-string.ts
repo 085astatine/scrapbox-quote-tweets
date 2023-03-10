@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { Tweet } from './tweet';
 import {
   TemplateElement,
@@ -31,13 +32,27 @@ const fillTweetTemplateElement = (
         case 'tweet.id':
           return tweet.id;
         case 'tweet.timestamp':
-          return `${tweet.timestamp}`;
+          return tweet.timestamp.toString();
         case 'user.id':
           return tweet.author.id;
         case 'user.name':
           return tweet.author.name;
         case 'user.username':
           return tweet.author.username;
+        case 'date.iso':
+          return moment(tweet.timestamp).toISOString(true);
+        case 'date.year':
+          return moment(tweet.timestamp).format('YYYY');
+        case 'date.month':
+          return moment(tweet.timestamp).format('MM');
+        case 'date.day':
+          return moment(tweet.timestamp).format('DD');
+        case 'date.hours':
+          return moment(tweet.timestamp).format('HH');
+        case 'date.minutes':
+          return moment(tweet.timestamp).format('mm');
+        case 'date.seconds':
+          return moment(tweet.timestamp).format('ss');
         default: {
           const _: never = templateElement.field;
           return _;

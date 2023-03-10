@@ -24,7 +24,14 @@ export type TweetField =
   | 'tweet.timestamp'
   | 'user.id'
   | 'user.name'
-  | 'user.username';
+  | 'user.username'
+  | 'date.iso'
+  | 'date.year'
+  | 'date.month'
+  | 'date.day'
+  | 'date.hours'
+  | 'date.minutes'
+  | 'date.seconds';
 
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
@@ -103,6 +110,13 @@ const tweetFields: readonly TweetField[] = [
   'user.id',
   'user.name',
   'user.username',
+  'date.iso',
+  'date.year',
+  'date.month',
+  'date.day',
+  'date.hours',
+  'date.minutes',
+  'date.seconds',
 ];
 
 const parseTweet = (template: string): TemplateElement<TweetField>[] => {
