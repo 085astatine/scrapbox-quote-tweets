@@ -21,7 +21,6 @@ export type TemplateElement<Field extends string> =
 export type TweetField =
   | 'tweet.url'
   | 'tweet.id'
-  | 'tweet.timestamp'
   | 'user.id'
   | 'user.name'
   | 'user.username'
@@ -31,7 +30,8 @@ export type TweetField =
   | 'date.day'
   | 'date.hours'
   | 'date.minutes'
-  | 'date.seconds';
+  | 'date.seconds'
+  | 'date.timestamp';
 
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
@@ -106,7 +106,6 @@ const isField = <Field extends string>(
 const tweetFields: readonly TweetField[] = [
   'tweet.url',
   'tweet.id',
-  'tweet.timestamp',
   'user.id',
   'user.name',
   'user.username',
@@ -117,6 +116,7 @@ const tweetFields: readonly TweetField[] = [
   'date.hours',
   'date.minutes',
   'date.seconds',
+  'date.timestamp',
 ];
 
 const parseTweet = (template: string): TemplateElement<TweetField>[] => {

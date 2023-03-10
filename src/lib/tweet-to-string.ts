@@ -31,8 +31,6 @@ const fillTweetTemplateElement = (
           return `https://twitter.com/${tweet.author.username}/status/${tweet.id}`;
         case 'tweet.id':
           return tweet.id;
-        case 'tweet.timestamp':
-          return tweet.timestamp.toString();
         case 'user.id':
           return tweet.author.id;
         case 'user.name':
@@ -53,6 +51,8 @@ const fillTweetTemplateElement = (
           return moment(tweet.timestamp).format('mm');
         case 'date.seconds':
           return moment(tweet.timestamp).format('ss');
+        case 'date.timestamp':
+          return tweet.timestamp.toString();
         default: {
           const _: never = templateElement.field;
           return _;
