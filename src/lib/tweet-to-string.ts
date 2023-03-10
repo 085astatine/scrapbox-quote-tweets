@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Tweet } from './tweet';
 import {
   TemplateElement,
@@ -38,19 +38,19 @@ const fillTweetTemplateElement = (
         case 'user.username':
           return tweet.author.username;
         case 'date.iso':
-          return moment(tweet.timestamp).toISOString(true);
+          return dayjs(tweet.timestamp).format();
         case 'date.year':
-          return moment(tweet.timestamp).format('YYYY');
+          return dayjs(tweet.timestamp).format('YYYY');
         case 'date.month':
-          return moment(tweet.timestamp).format('MM');
+          return dayjs(tweet.timestamp).format('MM');
         case 'date.day':
-          return moment(tweet.timestamp).format('DD');
+          return dayjs(tweet.timestamp).format('DD');
         case 'date.hours':
-          return moment(tweet.timestamp).format('HH');
+          return dayjs(tweet.timestamp).format('HH');
         case 'date.minutes':
-          return moment(tweet.timestamp).format('mm');
+          return dayjs(tweet.timestamp).format('mm');
         case 'date.seconds':
-          return moment(tweet.timestamp).format('ss');
+          return dayjs(tweet.timestamp).format('ss');
         case 'date.timestamp':
           return tweet.timestamp.toString();
         default: {
