@@ -70,8 +70,10 @@ const parseTweet = (
     timestamp,
     author,
     text,
-    annotations,
-    referenced_tweets: referencedTweets,
+    ...(annotations !== undefined ? { annotations } : {}),
+    ...(referencedTweets !== undefined
+      ? { referenced_tweets: referencedTweets }
+      : {}),
   };
 };
 
@@ -260,7 +262,7 @@ const toTweetEntityURL = (
           text,
           media_key: mediaKey,
           media_type: medium.type,
-          url: medium.url,
+          ...(medium.url !== undefined ? { url: medium.url } : {}),
         },
         ...position,
       };
@@ -273,8 +275,10 @@ const toTweetEntityURL = (
         url: entity.expanded_url,
         display_url: entity.display_url,
         decoded_url: decodeURL(entity.expanded_url),
-        title: entity.title,
-        description: entity.description,
+        ...(entity.title !== undefined ? { title: entity.title } : {}),
+        ...(entity.description !== undefined
+          ? { description: entity.description }
+          : {}),
       },
       ...position,
     };
