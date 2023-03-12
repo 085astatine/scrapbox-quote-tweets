@@ -1,6 +1,7 @@
-import { Tweet, TweetEntity } from './tweet';
+import { Tweet, TweetEntity, TweetEntityText } from './tweet';
 import { toDate } from './tweet-date';
 import {
+  EntityTextField,
   ParsedTweetTemplate,
   TemplateElement,
   TweetField,
@@ -76,7 +77,34 @@ const fillTweetEntity = (
   template: ParsedTweetTemplate
 ): string => {
   switch (entity.type) {
+    case 'text':
+      return template.entity.text
+        .map((element) => fillTweetEntityText(element, entity))
+        .join('');
     default:
       return entity.text;
+  }
+};
+
+const fillTweetEntityText = (
+  templateElement: TemplateElement<EntityTextField>,
+  entity: TweetEntityText
+): string => {
+  switch (templateElement.type) {
+    case 'text':
+      return templateElement.text;
+    case 'placeholder':
+      switch (templateElement.field) {
+        case 'text':
+          return entity.text;
+        default: {
+          const _: never = templateElement.field;
+          return _;
+        }
+      }
+    default: {
+      const _: never = templateElement;
+      return _;
+    }
   }
 };
