@@ -58,4 +58,38 @@ describe('tweet-to-string/tweet', () => {
       'date.timestamp: 1330873445000'
     );
   });
+  test('date.iso(utc)', () => {
+    const template = {
+      tweet: 'date.iso: ${date.iso}',
+      timezone: 'UTC',
+    };
+    expect(tweetToString(tweet, template)).toBe(
+      'date.iso: 2012-03-04T15:04:05Z'
+    );
+  });
+  test('date.iso(Asia/Tokyp)', () => {
+    const template = {
+      tweet: 'date.iso: ${date.iso}',
+      timezone: 'Asia/Tokyo',
+    };
+    expect(tweetToString(tweet, template)).toBe(
+      'date.iso: 2012-03-05T00:04:05+09:00'
+    );
+  });
+  test('date(UTC)', () => {
+    const template = {
+      tweet:
+        'date: ${date.year}/${date.month}/${date.day} ${date.hours}:${date.minutes}:${date.seconds}',
+      timezone: 'UTC',
+    };
+    expect(tweetToString(tweet, template)).toBe('date: 2012/03/04 15:04:05');
+  });
+  test('date(Asia/Tokyo)', () => {
+    const template = {
+      tweet:
+        'date: ${date.year}/${date.month}/${date.day} ${date.hours}:${date.minutes}:${date.seconds}',
+      timezone: 'Asia/Tokyo',
+    };
+    expect(tweetToString(tweet, template)).toBe('date: 2012/03/05 00:04:05');
+  });
 });
