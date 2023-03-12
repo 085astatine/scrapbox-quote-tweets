@@ -3,6 +3,9 @@ import { validateTimezone } from './tweet-date';
 
 export interface TweetTemplate {
   tweet: string;
+  entity: {
+    text: string;
+  };
   timezone?: string;
 }
 
@@ -36,8 +39,13 @@ export type TweetField =
   | 'date.seconds'
   | 'date.timestamp';
 
+export type EntityTextField = 'text';
+
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
+  entity: {
+    text: readonly TemplateElement<EntityTextField>[];
+  };
   timezone?: string;
 }
 
@@ -50,6 +58,9 @@ export const parseTweetTemplate = (
   }
   return {
     tweet: parseTweet(template.tweet),
+    entity: {
+      text: parseEntityText(template.entity.text),
+    },
     ...(template.timezone !== undefined ? { timezone: template.timezone } : {}),
   };
 };
@@ -133,6 +144,17 @@ const parseTweet = (template: string): TemplateElement<TweetField>[] => {
   return parsePlaceholders(template, tweetFields);
 };
 
+const entityTextFields: readonly EntityTextField[] = ['text'];
+
+const parseEntityText = (
+  template: string
+): TemplateElement<EntityTextField>[] => {
+  return parsePlaceholders(template, entityTextFields);
+};
+
 export const tweetTemplateParser = {
   tweet: parseTweet,
+  entity: {
+    text: parseEntityText,
+  },
 };
