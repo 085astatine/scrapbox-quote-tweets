@@ -23,7 +23,7 @@ describe('tweet-date/validate', () => {
     } catch (error: unknown) {
       expect(error).toBeInstanceOf(InvalidTimezoneError);
       if (error instanceof InvalidTimezoneError) {
-        expect(error.timezone).toEqual(timezone);
+        expect(error.timezone).toBe(timezone);
       }
     }
   });
