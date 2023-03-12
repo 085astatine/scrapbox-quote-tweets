@@ -1,7 +1,9 @@
 import difflib from 'difflib';
+import { validateTimezone } from './tweet-date';
 
 export interface TweetTemplate {
   tweet: string;
+  timezone?: string;
 }
 
 export interface TemplateElementText {
@@ -35,13 +37,19 @@ export type TweetField =
 
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
+  timezone?: string;
 }
 
 export const parseTweetTemplate = (
   template: TweetTemplate
 ): ParsedTweetTemplate => {
+  // validate timezone
+  if (template.timezone !== undefined) {
+    validateTimezone(template.timezone);
+  }
   return {
     tweet: parseTweet(template.tweet),
+    ...(template.timezone !== undefined ? { timezone: template.timezone } : {}),
   };
 };
 

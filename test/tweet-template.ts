@@ -27,7 +27,7 @@ describe('tweet-template/tweet', () => {
   test('unexpected_field', () => {
     const template = '>[${tweet.url} @${user.usrname}]';
     try {
-      expect(tweetTemplateParser.tweet(template)).toThrow(
+      expect(() => tweetTemplateParser.tweet(template)).toThrow(
         UnexpectedPlaceholderError
       );
     } catch (error: unknown) {

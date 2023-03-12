@@ -1,6 +1,7 @@
-import moment from 'moment';
 import { Tweet } from './tweet';
+import { toDate } from './tweet-date';
 import {
+  ParsedTweetTemplate,
   TemplateElement,
   TweetField,
   TweetTemplate,
@@ -13,14 +14,15 @@ export const tweetToString = (
 ): string => {
   const parsedTemplate = parseTweetTemplate(template);
   const filledOutTemplate = parsedTemplate.tweet
-    .map((element) => fillTweetTemplateElement(element, tweet))
+    .map((element) => fillTweetTemplateElement(element, tweet, parsedTemplate))
     .join('');
   return filledOutTemplate;
 };
 
 const fillTweetTemplateElement = (
   templateElement: TemplateElement<TweetField>,
-  tweet: Tweet
+  tweet: Tweet,
+  template: ParsedTweetTemplate
 ): string => {
   switch (templateElement.type) {
     case 'text':
@@ -38,19 +40,19 @@ const fillTweetTemplateElement = (
         case 'user.username':
           return tweet.author.username;
         case 'date.iso':
-          return moment(tweet.timestamp).toISOString(true);
+          return toDate(tweet.timestamp, template.timezone).format();
         case 'date.year':
-          return moment(tweet.timestamp).format('YYYY');
+          return toDate(tweet.timestamp, template.timezone).format('YYYY');
         case 'date.month':
-          return moment(tweet.timestamp).format('MM');
+          return toDate(tweet.timestamp, template.timezone).format('MM');
         case 'date.day':
-          return moment(tweet.timestamp).format('DD');
+          return toDate(tweet.timestamp, template.timezone).format('DD');
         case 'date.hours':
-          return moment(tweet.timestamp).format('HH');
+          return toDate(tweet.timestamp, template.timezone).format('HH');
         case 'date.minutes':
-          return moment(tweet.timestamp).format('mm');
+          return toDate(tweet.timestamp, template.timezone).format('mm');
         case 'date.seconds':
-          return moment(tweet.timestamp).format('ss');
+          return toDate(tweet.timestamp, template.timezone).format('ss');
         case 'date.timestamp':
           return tweet.timestamp.toString();
         default: {
