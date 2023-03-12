@@ -1,4 +1,4 @@
-import { Tweet } from './tweet';
+import { Tweet, TweetEntity } from './tweet';
 import { toDate } from './tweet-date';
 import {
   ParsedTweetTemplate,
@@ -33,6 +33,10 @@ const fillTweetTemplateElement = (
           return `https://twitter.com/${tweet.author.username}/status/${tweet.id}`;
         case 'tweet.id':
           return tweet.id;
+        case 'tweet.text':
+          return tweet.text
+            .map((entity) => fillTweetEntity(entity, template))
+            .join('');
         case 'user.id':
           return tweet.author.id;
         case 'user.name':
@@ -64,5 +68,15 @@ const fillTweetTemplateElement = (
       const _: never = templateElement;
       return _;
     }
+  }
+};
+
+const fillTweetEntity = (
+  entity: TweetEntity,
+  template: ParsedTweetTemplate
+): string => {
+  switch (entity.type) {
+    default:
+      return entity.text;
   }
 };
