@@ -182,4 +182,46 @@ describe('tweet-to-string/entity', () => {
       ].join('\n')
     );
   });
+  test('hashtag', () => {
+    const text = {
+      text: [
+        {
+          type: 'hashtag' as const,
+          text: '#Twitter',
+          tag: 'Twitter',
+        },
+      ],
+    };
+    const template = { ...baseTemplate };
+    template.entity = {
+      ...template.entity,
+      ...{
+        hashtag: ['text: "${text}"', 'tag: "${tag}"'].join('\n'),
+      },
+    };
+    expect(tweetToString({ ...tweet, ...text }, template)).toBe(
+      ['text: "#Twitter"', 'tag: "Twitter"'].join('\n')
+    );
+  });
+  test('cashtag', () => {
+    const text = {
+      text: [
+        {
+          type: 'cashtag' as const,
+          text: '$TWTR',
+          tag: 'TWTR',
+        },
+      ],
+    };
+    const template = { ...baseTemplate };
+    template.entity = {
+      ...template.entity,
+      ...{
+        cashtag: ['text: "${text}"', 'tag: "${tag}"'].join('\n'),
+      },
+    };
+    expect(tweetToString({ ...tweet, ...text }, template)).toBe(
+      ['text: "$TWTR"', 'tag: "TWTR"'].join('\n')
+    );
+  });
 });

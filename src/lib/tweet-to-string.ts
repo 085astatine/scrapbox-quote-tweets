@@ -1,6 +1,15 @@
-import { Tweet, TweetEntity, TweetEntityText, TweetEntityURL } from './tweet';
+import {
+  Tweet,
+  TweetEntity,
+  TweetEntityCashtag,
+  TweetEntityHashtag,
+  TweetEntityText,
+  TweetEntityURL,
+} from './tweet';
 import { toDate } from './tweet-date';
 import {
+  EntityCashtagField,
+  EntityHashtagField,
   EntityTextField,
   EntityURLField,
   ParsedTweetTemplate,
@@ -80,6 +89,14 @@ const fillTweetEntity = (
       return template.entity.url
         .map((element) => fillTweetEntityURL(element, entity))
         .join('');
+    case 'hashtag':
+      return template.entity.hashtag
+        .map((element) => fillTweetEntityHashtag(element, entity))
+        .join('');
+    case 'cashtag':
+      return template.entity.cashtag
+        .map((element) => fillTweetEntityCashtag(element, entity))
+        .join('');
     default:
       return entity.text;
   }
@@ -123,6 +140,44 @@ const fillTweetEntityURL = (
           return entity.title ?? '';
         case 'description':
           return entity.description ?? '';
+      }
+  }
+  ((_: never) => _)(templateElement);
+  return '';
+};
+
+const fillTweetEntityHashtag = (
+  templateElement: TemplateElement<EntityHashtagField>,
+  entity: TweetEntityHashtag
+): string => {
+  switch (templateElement.type) {
+    case 'text':
+      return templateElement.text;
+    case 'placeholder':
+      switch (templateElement.field) {
+        case 'text':
+          return entity.text;
+        case 'tag':
+          return entity.tag;
+      }
+  }
+  ((_: never) => _)(templateElement);
+  return '';
+};
+
+const fillTweetEntityCashtag = (
+  templateElement: TemplateElement<EntityCashtagField>,
+  entity: TweetEntityCashtag
+): string => {
+  switch (templateElement.type) {
+    case 'text':
+      return templateElement.text;
+    case 'placeholder':
+      switch (templateElement.field) {
+        case 'text':
+          return entity.text;
+        case 'tag':
+          return entity.tag;
       }
   }
   ((_: never) => _)(templateElement);
