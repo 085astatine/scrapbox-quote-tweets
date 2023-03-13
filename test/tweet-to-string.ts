@@ -22,6 +22,7 @@ describe('tweet-to-string/tweet', () => {
       url: '[${decoded_url} ${title}]',
       hashtag: '#${tag}',
       cashtag: '$${tag}',
+      mention: '@${username}',
     },
   };
   test('tweet.id', () => {
@@ -129,6 +130,7 @@ describe('tweet-to-string/entity', () => {
       url: '[${decoded_url} ${title}]',
       hashtag: '#${tag}',
       cashtag: '$${tag}',
+      mention: '@${username}',
     },
   };
   test('text', () => {

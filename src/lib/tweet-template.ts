@@ -8,6 +8,7 @@ export interface TweetTemplate {
     url: string;
     hashtag: string;
     cashtag: string;
+    mention: string;
   };
   timezone?: string;
 }
@@ -58,6 +59,8 @@ const entityHashtagFields = ['text', 'tag'] as const;
 
 const entityCashtagFields = ['text', 'tag'] as const;
 
+const entityMentionFields = ['text', 'user_id', 'username'] as const;
+
 export type TweetField = typeof tweetFields[number];
 
 export type EntityTextField = typeof entityTextFields[number];
@@ -68,6 +71,8 @@ export type EntityHashtagField = typeof entityHashtagFields[number];
 
 export type EntityCashtagField = typeof entityCashtagFields[number];
 
+export type EntityMentionField = typeof entityMentionFields[number];
+
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
   entity: {
@@ -75,6 +80,7 @@ export interface ParsedTweetTemplate {
     url: readonly TemplateElement<EntityURLField>[];
     hashtag: readonly TemplateElement<EntityHashtagField>[];
     cashtag: readonly TemplateElement<EntityCashtagField>[];
+    mention: readonly TemplateElement<EntityMentionField>[];
   };
   timezone?: string;
 }
@@ -95,6 +101,7 @@ export const parseTweetTemplate = (
       url: parser.entity.url(template.entity.url),
       hashtag: parser.entity.hashtag(template.entity.hashtag),
       cashtag: parser.entity.cashtag(template.entity.cashtag),
+      mention: parser.entity.mention(template.entity.mention),
     },
     ...(template.timezone !== undefined ? { timezone: template.timezone } : {}),
   };
@@ -171,5 +178,6 @@ export const tweetTemplateParser = {
     url: fieldParser(entityURLFields),
     hashtag: fieldParser(entityHashtagFields),
     cashtag: fieldParser(entityCashtagFields),
+    mention: fieldParser(entityMentionFields),
   },
 } as const;
