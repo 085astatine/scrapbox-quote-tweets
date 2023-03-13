@@ -108,3 +108,34 @@ describe('tweet-to-string/tweet', () => {
     );
   });
 });
+
+describe('tweet-to-string/entity', () => {
+  const tweet = {
+    id: '1234567890123456789',
+    timestamp: 1330873445000,
+    author: {
+      id: '1234567890',
+      name: 'User Name',
+      username: 'username',
+    },
+  };
+  const baseTemplate = {
+    tweet: '${tweet.text}',
+    entity: {
+      text: '${text}',
+    },
+  };
+  test('text', () => {
+    const text = {
+      text: [{ type: 'text' as const, text: 'This is the test text.' }],
+    };
+    const template = { ...baseTemplate };
+    template.entity = {
+      ...baseTemplate.entity,
+      ...{ text: 'text: "${text}"' },
+    };
+    expect(tweetToString({ ...tweet, ...text }, template)).toBe(
+      'text: "This is the test text."'
+    );
+  });
+});
