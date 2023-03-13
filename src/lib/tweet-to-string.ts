@@ -60,16 +60,10 @@ const fillTweetTemplateElement = (
           return toDate(tweet.timestamp, template.timezone).format('ss');
         case 'date.timestamp':
           return tweet.timestamp.toString();
-        default: {
-          const _: never = templateElement.field;
-          return _;
-        }
       }
-    default: {
-      const _: never = templateElement;
-      return _;
-    }
   }
+  ((_: never) => _)(templateElement);
+  return '';
 };
 
 const fillTweetEntity = (
@@ -97,14 +91,8 @@ const fillTweetEntityText = (
       switch (templateElement.field) {
         case 'text':
           return entity.text;
-        default: {
-          const _: never = templateElement.field;
-          return _;
-        }
       }
-    default: {
-      const _: never = templateElement;
-      return _;
-    }
   }
+  ((_: never) => _)(templateElement);
+  return '';
 };
