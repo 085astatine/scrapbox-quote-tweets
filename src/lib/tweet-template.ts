@@ -23,23 +23,28 @@ export type TemplateElement<Field extends string> =
   | TemplateElementText
   | TemplateElementPlaceholder<Field>;
 
-export type TweetField =
-  | 'tweet.url'
-  | 'tweet.id'
-  | 'tweet.text'
-  | 'user.id'
-  | 'user.name'
-  | 'user.username'
-  | 'date.iso'
-  | 'date.year'
-  | 'date.month'
-  | 'date.day'
-  | 'date.hours'
-  | 'date.minutes'
-  | 'date.seconds'
-  | 'date.timestamp';
+const tweetFields = [
+  'tweet.url',
+  'tweet.id',
+  'tweet.text',
+  'user.id',
+  'user.name',
+  'user.username',
+  'date.iso',
+  'date.year',
+  'date.month',
+  'date.day',
+  'date.hours',
+  'date.minutes',
+  'date.seconds',
+  'date.timestamp',
+] as const;
 
-export type EntityTextField = 'text';
+const entityTextFields = ['text'] as const;
+
+export type TweetField = typeof tweetFields[number];
+
+export type EntityTextField = typeof entityTextFields[number];
 
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
@@ -124,25 +129,6 @@ const isField = <Field extends string>(
 ): field is Field => {
   return (fields as readonly string[]).includes(field);
 };
-
-const tweetFields: readonly TweetField[] = [
-  'tweet.url',
-  'tweet.id',
-  'tweet.text',
-  'user.id',
-  'user.name',
-  'user.username',
-  'date.iso',
-  'date.year',
-  'date.month',
-  'date.day',
-  'date.hours',
-  'date.minutes',
-  'date.seconds',
-  'date.timestamp',
-];
-
-const entityTextFields: readonly EntityTextField[] = ['text'];
 
 const fieldParser = <Field extends string>(
   fields: readonly Field[]
