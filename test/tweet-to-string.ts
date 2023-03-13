@@ -19,6 +19,7 @@ describe('tweet-to-string/tweet', () => {
   const entityTemplate = {
     entity: {
       text: '${text}',
+      url: '[${decoded_url} ${title}]',
     },
   };
   test('tweet.id', () => {
@@ -123,6 +124,7 @@ describe('tweet-to-string/entity', () => {
     tweet: '${tweet.text}',
     entity: {
       text: '${text}',
+      url: '[${decoded_url} ${title}]',
     },
   };
   test('text', () => {
