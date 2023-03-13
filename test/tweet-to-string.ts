@@ -20,6 +20,8 @@ describe('tweet-to-string/tweet', () => {
     entity: {
       text: '${text}',
       url: '[${decoded_url} ${title}]',
+      hashtag: '#${tag}',
+      cashtag: '$${tag}',
     },
   };
   test('tweet.id', () => {
@@ -125,6 +127,8 @@ describe('tweet-to-string/entity', () => {
     entity: {
       text: '${text}',
       url: '[${decoded_url} ${title}]',
+      hashtag: '#${tag}',
+      cashtag: '$${tag}',
     },
   };
   test('text', () => {

@@ -6,6 +6,8 @@ export interface TweetTemplate {
   entity: {
     text: string;
     url: string;
+    hashtag: string;
+    cashtag: string;
   };
   timezone?: string;
 }
@@ -52,17 +54,27 @@ const entityURLFields = [
   'description',
 ] as const;
 
+const entityHashtagFields = ['text', 'tag'] as const;
+
+const entityCashtagFields = ['text', 'tag'] as const;
+
 export type TweetField = typeof tweetFields[number];
 
 export type EntityTextField = typeof entityTextFields[number];
 
 export type EntityURLField = typeof entityURLFields[number];
 
+export type EntityHashtagField = typeof entityHashtagFields[number];
+
+export type EntityCashtagField = typeof entityCashtagFields[number];
+
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
   entity: {
     text: readonly TemplateElement<EntityTextField>[];
     url: readonly TemplateElement<EntityURLField>[];
+    hashtag: readonly TemplateElement<EntityHashtagField>[];
+    cashtag: readonly TemplateElement<EntityCashtagField>[];
   };
   timezone?: string;
 }
@@ -81,6 +93,8 @@ export const parseTweetTemplate = (
     entity: {
       text: parser.entity.text(template.entity.text),
       url: parser.entity.url(template.entity.url),
+      hashtag: parser.entity.hashtag(template.entity.hashtag),
+      cashtag: parser.entity.cashtag(template.entity.cashtag),
     },
     ...(template.timezone !== undefined ? { timezone: template.timezone } : {}),
   };
@@ -155,5 +169,7 @@ export const tweetTemplateParser = {
   entity: {
     text: fieldParser(entityTextFields),
     url: fieldParser(entityURLFields),
+    hashtag: fieldParser(entityHashtagFields),
+    cashtag: fieldParser(entityCashtagFields),
   },
 } as const;
