@@ -118,9 +118,9 @@ describe('tweet-to-string/entity', () => {
     id: '1234567890123456789',
     timestamp: 1330873445000,
     author: {
-      id: '1234567890',
-      name: 'User Name',
-      username: 'username',
+      id: '1111111111',
+      name: 'Alice',
+      username: 'alice',
     },
   };
   const baseTemplate = {
@@ -224,6 +224,32 @@ describe('tweet-to-string/entity', () => {
     };
     expect(tweetToString({ ...tweet, ...text }, template)).toBe(
       ['text: "$TWTR"', 'tag: "TWTR"'].join('\n')
+    );
+  });
+  test('mention', () => {
+    const text = {
+      text: [
+        {
+          type: 'mention' as const,
+          text: '@bob',
+          user_id: '2222222222',
+          username: 'bob',
+        },
+      ],
+    };
+    const template = { ...baseTemplate };
+    template.entity = {
+      ...template.entity,
+      ...{
+        mention: [
+          'text: "${text}"',
+          'user_id: "${user_id}"',
+          'username: "${username}"',
+        ].join('\n'),
+      },
+    };
+    expect(tweetToString({ ...tweet, ...text }, template)).toBe(
+      ['text: "@bob"', 'user_id: "2222222222"', 'username: "bob"'].join('\n')
     );
   });
 });

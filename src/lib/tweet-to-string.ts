@@ -3,6 +3,7 @@ import {
   TweetEntity,
   TweetEntityCashtag,
   TweetEntityHashtag,
+  TweetEntityMention,
   TweetEntityText,
   TweetEntityURL,
 } from './tweet';
@@ -10,6 +11,7 @@ import { toDate } from './tweet-date';
 import {
   EntityCashtagField,
   EntityHashtagField,
+  EntityMentionField,
   EntityTextField,
   EntityURLField,
   ParsedTweetTemplate,
@@ -97,6 +99,10 @@ const fillTweetEntity = (
       return template.entity.cashtag
         .map((element) => fillTweetEntityCashtag(element, entity))
         .join('');
+    case 'mention':
+      return template.entity.mention
+        .map((element) => fillTweetEntityMention(element, entity))
+        .join('');
     default:
       return entity.text;
   }
@@ -178,6 +184,27 @@ const fillTweetEntityCashtag = (
           return entity.text;
         case 'tag':
           return entity.tag;
+      }
+  }
+  ((_: never) => _)(templateElement);
+  return '';
+};
+
+const fillTweetEntityMention = (
+  templateElement: TemplateElement<EntityMentionField>,
+  entity: TweetEntityMention
+): string => {
+  switch (templateElement.type) {
+    case 'text':
+      return templateElement.text;
+    case 'placeholder':
+      switch (templateElement.field) {
+        case 'text':
+          return entity.text;
+        case 'user_id':
+          return entity.user_id;
+        case 'username':
+          return entity.username;
       }
   }
   ((_: never) => _)(templateElement);
