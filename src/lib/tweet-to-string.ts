@@ -1,7 +1,8 @@
-import { Tweet, TweetEntity, TweetEntityText } from './tweet';
+import { Tweet, TweetEntity, TweetEntityText, TweetEntityURL } from './tweet';
 import { toDate } from './tweet-date';
 import {
   EntityTextField,
+  EntityURLField,
   ParsedTweetTemplate,
   TemplateElement,
   TweetField,
@@ -75,6 +76,10 @@ const fillTweetEntity = (
       return template.entity.text
         .map((element) => fillTweetEntityText(element, entity))
         .join('');
+    case 'url':
+      return template.entity.url
+        .map((element) => fillTweetEntityURL(element, entity))
+        .join('');
     default:
       return entity.text;
   }
@@ -91,6 +96,33 @@ const fillTweetEntityText = (
       switch (templateElement.field) {
         case 'text':
           return entity.text;
+      }
+  }
+  ((_: never) => _)(templateElement);
+  return '';
+};
+
+const fillTweetEntityURL = (
+  templateElement: TemplateElement<EntityURLField>,
+  entity: TweetEntityURL
+): string => {
+  switch (templateElement.type) {
+    case 'text':
+      return templateElement.text;
+    case 'placeholder':
+      switch (templateElement.field) {
+        case 'text':
+          return entity.text;
+        case 'url':
+          return entity.url;
+        case 'display_url':
+          return entity.display_url;
+        case 'decoded_url':
+          return entity.decoded_url;
+        case 'title':
+          return entity.title ?? '';
+        case 'description':
+          return entity.description ?? '';
       }
   }
   ((_: never) => _)(templateElement);

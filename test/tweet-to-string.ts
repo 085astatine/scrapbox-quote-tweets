@@ -140,4 +140,42 @@ describe('tweet-to-string/entity', () => {
       'text: "This is the test text."'
     );
   });
+  test('url', () => {
+    const text = {
+      text: [
+        {
+          type: 'url' as const,
+          text: 'https://t.co/XXXXXXXXXX',
+          url: 'https://example.com/sample/index.html',
+          display_url: 'example.com/sample/i...',
+          decoded_url: 'https://example.com/sample/index.html',
+          title: 'Example.com',
+        },
+      ],
+    };
+    const template = { ...baseTemplate };
+    template.entity = {
+      ...template.entity,
+      ...{
+        url: [
+          'text: "${text}"',
+          'url: "${url}"',
+          'display_url: "${display_url}"',
+          'decoded_url: "${decoded_url}"',
+          'title: "${title}"',
+          'description: "${description}"',
+        ].join('\n'),
+      },
+    };
+    expect(tweetToString({ ...tweet, ...text }, template)).toBe(
+      [
+        'text: "https://t.co/XXXXXXXXXX"',
+        'url: "https://example.com/sample/index.html"',
+        'display_url: "example.com/sample/i..."',
+        'decoded_url: "https://example.com/sample/index.html"',
+        'title: "Example.com"',
+        'description: ""',
+      ].join('\n')
+    );
+  });
 });
