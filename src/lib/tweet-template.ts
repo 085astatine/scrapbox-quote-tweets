@@ -157,4 +157,4 @@ export const tweetTemplateParser = {
   entity: {
     text: parseEntityText,
   },
-};
+} as const;
