@@ -56,10 +56,12 @@ export const parseTweetTemplate = (
   if (template.timezone !== undefined) {
     validateTimezone(template.timezone);
   }
+  // parse template
+  const parser = tweetTemplateParser;
   return {
-    tweet: parseTweet(template.tweet),
+    tweet: parser.tweet(template.tweet),
     entity: {
-      text: parseEntityText(template.entity.text),
+      text: parser.entity.text(template.entity.text),
     },
     ...(template.timezone !== undefined ? { timezone: template.timezone } : {}),
   };
@@ -140,21 +142,17 @@ const tweetFields: readonly TweetField[] = [
   'date.timestamp',
 ];
 
-const parseTweet = (template: string): TemplateElement<TweetField>[] => {
-  return parsePlaceholders(template, tweetFields);
-};
-
 const entityTextFields: readonly EntityTextField[] = ['text'];
 
-const parseEntityText = (
-  template: string
-): TemplateElement<EntityTextField>[] => {
-  return parsePlaceholders(template, entityTextFields);
+const fieldParser = <Field extends string>(
+  fields: readonly Field[]
+): ((template: string) => TemplateElement<Field>[]) => {
+  return (template: string) => parsePlaceholders(template, fields);
 };
 
 export const tweetTemplateParser = {
-  tweet: parseTweet,
+  tweet: fieldParser(tweetFields),
   entity: {
-    text: parseEntityText,
+    text: fieldParser(entityTextFields),
   },
 } as const;
