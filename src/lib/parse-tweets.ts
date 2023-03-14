@@ -166,7 +166,12 @@ const parseText = (
   );
   // entities.mentions
   tweet.entities?.mentions?.forEach((mention) =>
-    splitText(text, mention, entityMentionParser(), logger)
+    splitText(
+      text,
+      mention,
+      entityMentionParser(tweet.id, includes?.users ?? []),
+      logger
+    )
   );
   logger.debug('text entities', text);
   return text.map((entity) => entity.entity);
@@ -339,23 +344,24 @@ const entityCashtagParser = (): TweetEntityGenerator<
   };
 };
 
-const entityMentionParser = (): TweetEntityGenerator<
-  TweetEntityMentionV2,
-  TweetEntityMention
-> => {
+const entityMentionParser = (
+  tweetID: TweetID,
+  users: readonly UserV2[]
+): TweetEntityGenerator<TweetEntityMentionV2, TweetEntityMention> => {
   return (
     text: string,
     entity: TweetEntityMentionV2
   ): TweetEntityWithPosition<TweetEntityMention> => {
+    // find user
+    const user = findUser(entity.id, users);
+    if (user === null) {
+      throw new ParseTweetError(tweetID, `user_id(${entity.id}) is not found`);
+    }
     return {
       entity: {
         type: 'mention',
         text,
-        user: {
-          id: entity.id,
-          name: '', // TODO
-          username: entity.username,
-        },
+        user,
       },
       start: entity.start,
       end: entity.end,
