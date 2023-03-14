@@ -3,6 +3,13 @@ import { validateTimezone } from './tweet-date';
 
 export interface TweetTemplate {
   tweet: string;
+  entity: {
+    text: string;
+    url: string;
+    hashtag: string;
+    cashtag: string;
+    mention: string;
+  };
   timezone?: string;
 }
 
@@ -20,23 +27,61 @@ export type TemplateElement<Field extends string> =
   | TemplateElementText
   | TemplateElementPlaceholder<Field>;
 
-export type TweetField =
-  | 'tweet.url'
-  | 'tweet.id'
-  | 'user.id'
-  | 'user.name'
-  | 'user.username'
-  | 'date.iso'
-  | 'date.year'
-  | 'date.month'
-  | 'date.day'
-  | 'date.hours'
-  | 'date.minutes'
-  | 'date.seconds'
-  | 'date.timestamp';
+const tweetFields = [
+  'tweet.url',
+  'tweet.id',
+  'tweet.text',
+  'user.id',
+  'user.name',
+  'user.username',
+  'date.iso',
+  'date.year',
+  'date.month',
+  'date.day',
+  'date.hours',
+  'date.minutes',
+  'date.seconds',
+  'date.timestamp',
+] as const;
+
+const entityTextFields = ['text'] as const;
+
+const entityURLFields = [
+  'text',
+  'url',
+  'display_url',
+  'decoded_url',
+  'title',
+  'description',
+] as const;
+
+const entityHashtagFields = ['text', 'tag'] as const;
+
+const entityCashtagFields = ['text', 'tag'] as const;
+
+const entityMentionFields = ['text', 'user_id', 'username'] as const;
+
+export type TweetField = typeof tweetFields[number];
+
+export type EntityTextField = typeof entityTextFields[number];
+
+export type EntityURLField = typeof entityURLFields[number];
+
+export type EntityHashtagField = typeof entityHashtagFields[number];
+
+export type EntityCashtagField = typeof entityCashtagFields[number];
+
+export type EntityMentionField = typeof entityMentionFields[number];
 
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
+  entity: {
+    text: readonly TemplateElement<EntityTextField>[];
+    url: readonly TemplateElement<EntityURLField>[];
+    hashtag: readonly TemplateElement<EntityHashtagField>[];
+    cashtag: readonly TemplateElement<EntityCashtagField>[];
+    mention: readonly TemplateElement<EntityMentionField>[];
+  };
   timezone?: string;
 }
 
@@ -47,8 +92,17 @@ export const parseTweetTemplate = (
   if (template.timezone !== undefined) {
     validateTimezone(template.timezone);
   }
+  // parse template
+  const parser = tweetTemplateParser;
   return {
-    tweet: parseTweet(template.tweet),
+    tweet: parser.tweet(template.tweet),
+    entity: {
+      text: parser.entity.text(template.entity.text),
+      url: parser.entity.url(template.entity.url),
+      hashtag: parser.entity.hashtag(template.entity.hashtag),
+      cashtag: parser.entity.cashtag(template.entity.cashtag),
+      mention: parser.entity.mention(template.entity.mention),
+    },
     ...(template.timezone !== undefined ? { timezone: template.timezone } : {}),
   };
 };
@@ -111,26 +165,19 @@ const isField = <Field extends string>(
   return (fields as readonly string[]).includes(field);
 };
 
-const tweetFields: readonly TweetField[] = [
-  'tweet.url',
-  'tweet.id',
-  'user.id',
-  'user.name',
-  'user.username',
-  'date.iso',
-  'date.year',
-  'date.month',
-  'date.day',
-  'date.hours',
-  'date.minutes',
-  'date.seconds',
-  'date.timestamp',
-];
-
-const parseTweet = (template: string): TemplateElement<TweetField>[] => {
-  return parsePlaceholders(template, tweetFields);
+const fieldParser = <Field extends string>(
+  fields: readonly Field[]
+): ((template: string) => TemplateElement<Field>[]) => {
+  return (template: string) => parsePlaceholders(template, fields);
 };
 
 export const tweetTemplateParser = {
-  tweet: parseTweet,
-};
+  tweet: fieldParser(tweetFields),
+  entity: {
+    text: fieldParser(entityTextFields),
+    url: fieldParser(entityURLFields),
+    hashtag: fieldParser(entityHashtagFields),
+    cashtag: fieldParser(entityCashtagFields),
+    mention: fieldParser(entityMentionFields),
+  },
+} as const;
