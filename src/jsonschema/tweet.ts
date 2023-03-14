@@ -148,7 +148,7 @@ export const tweetEntityCashtagJSONSchema: JSONSchemaType<TweetEntityCashtag> =
 export const tweetEntityMentionJSONSchema: JSONSchemaType<TweetEntityMention> =
   {
     type: 'object',
-    required: ['type', 'text', 'user_id', 'username'],
+    required: ['type', 'text', 'user'],
     additionalProperties: false,
     properties: {
       type: {
@@ -158,11 +158,7 @@ export const tweetEntityMentionJSONSchema: JSONSchemaType<TweetEntityMention> =
       text: {
         type: 'string',
       },
-      user_id: {
-        type: 'string',
-        pattern: '^[0-9]+$',
-      },
-      username: usernameJSONSchema,
+      user: userJSONSchema,
     },
   };
 

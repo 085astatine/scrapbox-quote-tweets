@@ -59,7 +59,12 @@ const entityHashtagFields = ['text', 'tag'] as const;
 
 const entityCashtagFields = ['text', 'tag'] as const;
 
-const entityMentionFields = ['text', 'user_id', 'username'] as const;
+const entityMentionFields = [
+  'text',
+  'user.id',
+  'user.name',
+  'user.username',
+] as const;
 
 export type TweetField = typeof tweetFields[number];
 

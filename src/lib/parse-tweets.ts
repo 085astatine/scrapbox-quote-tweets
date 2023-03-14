@@ -8,6 +8,7 @@ import {
   TweetEntityUrlV2,
   TweetV2,
   TweetV2LookupResult,
+  UserV2,
 } from 'twitter-api-v2';
 import { Logger, logger as defaultLogger } from './logger';
 import {
@@ -93,12 +94,20 @@ const parseAuthor = (
     throw new ParseTweetError(tweet.id, 'tweet.author_id is undefined');
   }
   // find user
-  const user = includes?.users?.find((user) => user.id === tweet.author_id);
-  if (user === undefined) {
+  const user = findUser(tweet.author_id, includes?.users ?? []);
+  if (user === null) {
     throw new ParseTweetError(
       tweet.id,
       `author_id(${tweet.author_id}) is not found`
     );
+  }
+  return user;
+};
+
+const findUser = (userID: string, users: readonly UserV2[]): User | null => {
+  const user = users.find((user) => user.id === userID);
+  if (user === undefined) {
+    return null;
   }
   return {
     id: user.id,
@@ -143,21 +152,26 @@ const parseText = (
     splitText(
       text,
       url,
-      toTweetEntityURL(tweet.id, includes?.media ?? []),
+      entityURLParser(tweet.id, includes?.media ?? []),
       logger
     )
   );
   // entities.hashtags
   tweet.entities?.hashtags?.forEach((hashtag) =>
-    splitText(text, hashtag, toTweetEntityHashtag, logger)
+    splitText(text, hashtag, entityHashtagParser(), logger)
   );
   // entities.cashtags
   tweet.entities?.cashtags?.forEach((cashtag) =>
-    splitText(text, cashtag, toTweetEntityCashtag, logger)
+    splitText(text, cashtag, entityCashtagParser(), logger)
   );
   // entities.mentions
   tweet.entities?.mentions?.forEach((mention) =>
-    splitText(text, mention, toTweetEntityMention, logger)
+    splitText(
+      text,
+      mention,
+      entityMentionParser(tweet.id, includes?.users ?? []),
+      logger
+    )
   );
   logger.debug('text entities', text);
   return text.map((entity) => entity.entity);
@@ -223,7 +237,7 @@ const splitText = <ApiEntity extends TweetPosition>(
   entities.splice(sourceIndex, 1, ...splittedEntities);
 };
 
-const toTweetEntityURL = (
+const entityURLParser = (
   tweetID: TweetID,
   media: readonly MediaObjectV2[]
 ): TweetEntityGenerator<
@@ -290,58 +304,68 @@ const decodeURL = (url: string): string => {
   return decodeURI(url).replace(host, punycode.toUnicode(host));
 };
 
-const toTweetEntityHashtag: TweetEntityGenerator<
+const entityHashtagParser = (): TweetEntityGenerator<
   TweetEntityHashtagV2,
   TweetEntityHashtag
-> = (
-  text: string,
-  entity: TweetEntityHashtagV2
-): TweetEntityWithPosition<TweetEntityHashtag> => {
-  return {
-    entity: {
-      type: 'hashtag',
-      text,
-      tag: entity.tag,
-    },
-    start: entity.start,
-    end: entity.end,
+> => {
+  return (
+    text: string,
+    entity: TweetEntityHashtagV2
+  ): TweetEntityWithPosition<TweetEntityHashtag> => {
+    return {
+      entity: {
+        type: 'hashtag',
+        text,
+        tag: entity.tag,
+      },
+      start: entity.start,
+      end: entity.end,
+    };
   };
 };
 
-const toTweetEntityCashtag: TweetEntityGenerator<
+const entityCashtagParser = (): TweetEntityGenerator<
   TweetEntityHashtagV2,
   TweetEntityCashtag
-> = (
-  text: string,
-  entity: TweetEntityHashtagV2
-): TweetEntityWithPosition<TweetEntityCashtag> => {
-  return {
-    entity: {
-      type: 'cashtag',
-      text,
-      tag: entity.tag,
-    },
-    start: entity.start,
-    end: entity.end,
+> => {
+  return (
+    text: string,
+    entity: TweetEntityHashtagV2
+  ): TweetEntityWithPosition<TweetEntityCashtag> => {
+    return {
+      entity: {
+        type: 'cashtag',
+        text,
+        tag: entity.tag,
+      },
+      start: entity.start,
+      end: entity.end,
+    };
   };
 };
 
-const toTweetEntityMention: TweetEntityGenerator<
-  TweetEntityMentionV2,
-  TweetEntityMention
-> = (
-  text: string,
-  entity: TweetEntityMentionV2
-): TweetEntityWithPosition<TweetEntityMention> => {
-  return {
-    entity: {
-      type: 'mention',
-      text,
-      user_id: entity.id,
-      username: entity.username,
-    },
-    start: entity.start,
-    end: entity.end,
+const entityMentionParser = (
+  tweetID: TweetID,
+  users: readonly UserV2[]
+): TweetEntityGenerator<TweetEntityMentionV2, TweetEntityMention> => {
+  return (
+    text: string,
+    entity: TweetEntityMentionV2
+  ): TweetEntityWithPosition<TweetEntityMention> => {
+    // find user
+    const user = findUser(entity.id, users);
+    if (user === null) {
+      throw new ParseTweetError(tweetID, `user_id(${entity.id}) is not found`);
+    }
+    return {
+      entity: {
+        type: 'mention',
+        text,
+        user,
+      },
+      start: entity.start,
+      end: entity.end,
+    };
   };
 };
 

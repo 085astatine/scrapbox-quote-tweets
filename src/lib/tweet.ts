@@ -44,8 +44,7 @@ export interface TweetEntityCashtag {
 export interface TweetEntityMention {
   type: 'mention';
   text: string;
-  user_id: string;
-  username: string;
+  user: User;
 }
 
 export interface TweetEntityAnnotation {
