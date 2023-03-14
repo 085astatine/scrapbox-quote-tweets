@@ -8,6 +8,7 @@ import {
   TweetEntityUrlV2,
   TweetV2,
   TweetV2LookupResult,
+  UserV2,
 } from 'twitter-api-v2';
 import { Logger, logger as defaultLogger } from './logger';
 import {
@@ -93,12 +94,20 @@ const parseAuthor = (
     throw new ParseTweetError(tweet.id, 'tweet.author_id is undefined');
   }
   // find user
-  const user = includes?.users?.find((user) => user.id === tweet.author_id);
-  if (user === undefined) {
+  const user = findUser(tweet.author_id, includes?.users ?? []);
+  if (user === null) {
     throw new ParseTweetError(
       tweet.id,
       `author_id(${tweet.author_id}) is not found`
     );
+  }
+  return user;
+};
+
+const findUser = (userID: string, users: readonly UserV2[]): User | null => {
+  const user = users.find((user) => user.id === userID);
+  if (user === undefined) {
+    return null;
   }
   return {
     id: user.id,
