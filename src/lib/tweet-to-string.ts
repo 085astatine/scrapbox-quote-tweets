@@ -202,9 +202,9 @@ const fillTweetEntityMention = (
         case 'text':
           return entity.text;
         case 'user_id':
-          return entity.user_id;
+          return entity.user.id;
         case 'username':
-          return entity.username;
+          return entity.user.username;
       }
   }
   ((_: never) => _)(templateElement);

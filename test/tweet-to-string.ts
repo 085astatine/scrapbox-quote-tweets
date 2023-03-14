@@ -232,8 +232,11 @@ describe('tweet-to-string/entity', () => {
         {
           type: 'mention' as const,
           text: '@bob',
-          user_id: '2222222222',
-          username: 'bob',
+          user: {
+            id: '2222222222',
+            name: 'Bob',
+            username: 'bob',
+          },
         },
       ],
     };

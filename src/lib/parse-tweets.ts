@@ -351,8 +351,11 @@ const entityMentionParser = (): TweetEntityGenerator<
       entity: {
         type: 'mention',
         text,
-        user_id: entity.id,
-        username: entity.username,
+        user: {
+          id: entity.id,
+          name: '', // TODO
+          username: entity.username,
+        },
       },
       start: entity.start,
       end: entity.end,
