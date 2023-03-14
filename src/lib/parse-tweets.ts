@@ -152,21 +152,21 @@ const parseText = (
     splitText(
       text,
       url,
-      toTweetEntityURL(tweet.id, includes?.media ?? []),
+      entityURLParser(tweet.id, includes?.media ?? []),
       logger
     )
   );
   // entities.hashtags
   tweet.entities?.hashtags?.forEach((hashtag) =>
-    splitText(text, hashtag, toTweetEntityHashtag, logger)
+    splitText(text, hashtag, entityHashtagParser(), logger)
   );
   // entities.cashtags
   tweet.entities?.cashtags?.forEach((cashtag) =>
-    splitText(text, cashtag, toTweetEntityCashtag, logger)
+    splitText(text, cashtag, entityCashtagParser(), logger)
   );
   // entities.mentions
   tweet.entities?.mentions?.forEach((mention) =>
-    splitText(text, mention, toTweetEntityMention, logger)
+    splitText(text, mention, entityMentionParser(), logger)
   );
   logger.debug('text entities', text);
   return text.map((entity) => entity.entity);
@@ -232,7 +232,7 @@ const splitText = <ApiEntity extends TweetPosition>(
   entities.splice(sourceIndex, 1, ...splittedEntities);
 };
 
-const toTweetEntityURL = (
+const entityURLParser = (
   tweetID: TweetID,
   media: readonly MediaObjectV2[]
 ): TweetEntityGenerator<
@@ -299,58 +299,64 @@ const decodeURL = (url: string): string => {
   return decodeURI(url).replace(host, punycode.toUnicode(host));
 };
 
-const toTweetEntityHashtag: TweetEntityGenerator<
+const entityHashtagParser = (): TweetEntityGenerator<
   TweetEntityHashtagV2,
   TweetEntityHashtag
-> = (
-  text: string,
-  entity: TweetEntityHashtagV2
-): TweetEntityWithPosition<TweetEntityHashtag> => {
-  return {
-    entity: {
-      type: 'hashtag',
-      text,
-      tag: entity.tag,
-    },
-    start: entity.start,
-    end: entity.end,
+> => {
+  return (
+    text: string,
+    entity: TweetEntityHashtagV2
+  ): TweetEntityWithPosition<TweetEntityHashtag> => {
+    return {
+      entity: {
+        type: 'hashtag',
+        text,
+        tag: entity.tag,
+      },
+      start: entity.start,
+      end: entity.end,
+    };
   };
 };
 
-const toTweetEntityCashtag: TweetEntityGenerator<
+const entityCashtagParser = (): TweetEntityGenerator<
   TweetEntityHashtagV2,
   TweetEntityCashtag
-> = (
-  text: string,
-  entity: TweetEntityHashtagV2
-): TweetEntityWithPosition<TweetEntityCashtag> => {
-  return {
-    entity: {
-      type: 'cashtag',
-      text,
-      tag: entity.tag,
-    },
-    start: entity.start,
-    end: entity.end,
+> => {
+  return (
+    text: string,
+    entity: TweetEntityHashtagV2
+  ): TweetEntityWithPosition<TweetEntityCashtag> => {
+    return {
+      entity: {
+        type: 'cashtag',
+        text,
+        tag: entity.tag,
+      },
+      start: entity.start,
+      end: entity.end,
+    };
   };
 };
 
-const toTweetEntityMention: TweetEntityGenerator<
+const entityMentionParser = (): TweetEntityGenerator<
   TweetEntityMentionV2,
   TweetEntityMention
-> = (
-  text: string,
-  entity: TweetEntityMentionV2
-): TweetEntityWithPosition<TweetEntityMention> => {
-  return {
-    entity: {
-      type: 'mention',
-      text,
-      user_id: entity.id,
-      username: entity.username,
-    },
-    start: entity.start,
-    end: entity.end,
+> => {
+  return (
+    text: string,
+    entity: TweetEntityMentionV2
+  ): TweetEntityWithPosition<TweetEntityMention> => {
+    return {
+      entity: {
+        type: 'mention',
+        text,
+        user_id: entity.id,
+        username: entity.username,
+      },
+      start: entity.start,
+      end: entity.end,
+    };
   };
 };
 
