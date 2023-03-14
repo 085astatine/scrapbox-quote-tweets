@@ -22,7 +22,7 @@ describe('tweet-to-string/tweet', () => {
       url: '[${decoded_url} ${title}]',
       hashtag: '#${tag}',
       cashtag: '$${tag}',
-      mention: '@${username}',
+      mention: '@${user.username}',
     },
   };
   test('tweet.id', () => {
@@ -130,7 +130,7 @@ describe('tweet-to-string/entity', () => {
       url: '[${decoded_url} ${title}]',
       hashtag: '#${tag}',
       cashtag: '$${tag}',
-      mention: '@${username}',
+      mention: '@${user.username}',
     },
   };
   test('text', () => {
@@ -246,13 +246,19 @@ describe('tweet-to-string/entity', () => {
       ...{
         mention: [
           'text: "${text}"',
-          'user_id: "${user_id}"',
-          'username: "${username}"',
+          'user.id: "${user.id}"',
+          'user.name: "${user.name}"',
+          'user.username: "${user.username}"',
         ].join('\n'),
       },
     };
     expect(tweetToString({ ...tweet, ...text }, template)).toBe(
-      ['text: "@bob"', 'user_id: "2222222222"', 'username: "bob"'].join('\n')
+      [
+        'text: "@bob"',
+        'user.id: "2222222222"',
+        'user.name: "Bob"',
+        'user.username: "bob"',
+      ].join('\n')
     );
   });
 });

@@ -201,9 +201,11 @@ const fillTweetEntityMention = (
       switch (templateElement.field) {
         case 'text':
           return entity.text;
-        case 'user_id':
+        case 'user.id':
           return entity.user.id;
-        case 'username':
+        case 'user.name':
+          return entity.user.name;
+        case 'user.username':
           return entity.user.username;
       }
   }
