@@ -204,7 +204,7 @@ const fillTweetEntityMention = (
         case 'user.id':
           return entity.user.id;
         case 'user.name':
-          return entity.user.name;
+          return entity.user.name ?? '';
         case 'user.username':
           return entity.user.username;
       }

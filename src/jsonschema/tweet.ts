@@ -158,7 +158,22 @@ export const tweetEntityMentionJSONSchema: JSONSchemaType<TweetEntityMention> =
       text: {
         type: 'string',
       },
-      user: userJSONSchema,
+      user: {
+        type: 'object',
+        required: ['id', 'username'],
+        additionalProperties: false,
+        properties: {
+          id: {
+            type: 'string',
+            pattern: '^[0-9]+$',
+          },
+          name: {
+            type: 'string',
+            nullable: true,
+          },
+          username: usernameJSONSchema,
+        },
+      },
     },
   };
 
