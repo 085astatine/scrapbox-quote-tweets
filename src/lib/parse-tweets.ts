@@ -353,10 +353,10 @@ const entityMentionParser = (
     entity: TweetEntityMentionV2
   ): TweetEntityWithPosition<TweetEntityMention> => {
     // find user
-    const user = findUser(entity.id, users);
-    if (user === null) {
-      throw new ParseTweetError(tweetID, `user_id(${entity.id}) is not found`);
-    }
+    const user = findUser(entity.id, users) ?? {
+      id: entity.id,
+      username: entity.username,
+    };
     return {
       entity: {
         type: 'mention',
