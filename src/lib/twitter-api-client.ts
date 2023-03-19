@@ -1,6 +1,13 @@
-import { TweetV2LookupResult, TwitterApi } from 'twitter-api-v2';
+import {
+  ApiPartialResponseError,
+  ApiRequestError,
+  ApiResponseError,
+  TweetV2LookupResult,
+  TwitterApi,
+} from 'twitter-api-v2';
+import { JSONSchemaValidationError } from '../validate-json/jsonschema-validation-error';
 import { logger } from './logger';
-import { parseTweets } from './parse-tweets';
+import { ParseTweetError, parseTweets } from './parse-tweets';
 import { storage } from './storage';
 import { Tweet, TweetID } from './tweet';
 
@@ -73,6 +80,36 @@ export const twitterAPIClient = () => {
     await storage.tweets.save(tweets);
     return Promise.resolve(tweets);
   };
+  // error massage when requesting tweets
+  const requestTweetsErrorMessage = (
+    tweetIDs: TweetID[],
+    error: unknown
+  ): string => {
+    // Twitter API Error
+    if (
+      error instanceof ApiRequestError ||
+      error instanceof ApiResponseError ||
+      error instanceof ApiPartialResponseError
+    ) {
+      logger.error(`[${tweetIDs.join(',')}] failed in Twitter API`, error);
+      return `Twitter API Error: ${error.type}`;
+    }
+    // Parse Error
+    if (error instanceof ParseTweetError) {
+      logger.error(`[${tweetIDs.join(',')}] failed in parse`, error);
+      return 'Failed to Parse Tweet';
+    }
+    // Validation Error
+    if (error instanceof JSONSchemaValidationError) {
+      logger.error(
+        `[${tweetIDs.join(',')}] Failed in JSON Schema validation`,
+        error
+      );
+      return 'Validation Error';
+    }
+    logger.error(`[${tweetIDs.join(',')}] unknown error`, error);
+    return 'Unknown Error';
+  };
 
   // request tweets
   const requestTweets = async (tweetIDs: TweetID[]): Promise<void> =>
@@ -82,6 +119,14 @@ export const twitterAPIClient = () => {
       .then((tweets) =>
         listeners.forEach((listener) =>
           listener.onRequestTweetsSuccess?.(tweets)
+        )
+      )
+      .catch((error) =>
+        listeners.forEach((listener) =>
+          listener.onRequestTweetsFailure?.(
+            tweetIDs,
+            requestTweetsErrorMessage(tweetIDs, error)
+          )
         )
       );
   return {
