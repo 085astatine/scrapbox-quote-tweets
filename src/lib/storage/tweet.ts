@@ -1,11 +1,10 @@
 import browser from 'webextension-polyfill';
-import { tweetJSONSchema, tweetsJSONSchema } from '../jsonschema/tweet';
-import { JSONSchemaValidationError } from '../validate-json/jsonschema-validation-error';
-import validateTweet from '../validate-json/validate-tweet';
-import validateTweets from '../validate-json/validate-tweets';
-import { logger } from './logger';
-import { Tweet, TweetID } from './tweet';
-import { isTweetIDKey, toTweetID, toTweetIDKey } from './tweet-id-key';
+import { tweetJSONSchema, tweetsJSONSchema } from '../../jsonschema/tweet';
+import { JSONSchemaValidationError } from '../../validate-json/jsonschema-validation-error';
+import validateTweet from '../../validate-json/validate-tweet';
+import validateTweets from '../../validate-json/validate-tweets';
+import { Tweet, TweetID } from '../tweet';
+import { isTweetIDKey, toTweetID, toTweetIDKey } from '../tweet-id-key';
 
 export const saveTweets = async (tweets: Tweet[]): Promise<void> => {
   // JSON Schema validation
@@ -88,14 +87,12 @@ export const loadTweet = async (tweetID: TweetID): Promise<Tweet | null> => {
 
 export const deleteTweets = async (tweetIDs?: TweetID[]): Promise<void> => {
   // remove from storage
-  await browser.storage.local.remove(tweetIDs ?? (await savedTweetIDs()));
+  await browser.storage.local.remove(
+    (tweetIDs ?? (await savedTweetIDs())).map(toTweetIDKey)
+  );
 };
 
-export const clearStorage = async (): Promise<void> => {
-  await browser.storage.local.clear();
-};
-
-export const dumpStorage = async (): Promise<void> => {
-  const data = await browser.storage.local.get();
-  logger.debug('dump storage', data);
+export const deleteTweet = async (tweetID: TweetID): Promise<void> => {
+  // remove from storage
+  await browser.storage.local.remove(toTweetIDKey(tweetID));
 };
