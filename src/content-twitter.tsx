@@ -8,7 +8,7 @@ import { store } from './content-twitter/store';
 import { mutationRecordInfo } from './lib/dom';
 import { findTweets } from './lib/find-tweets';
 import { logger } from './lib/logger';
-import { TweetCopyResponseMessage, URLChangedMessage } from './lib/message';
+import { TweetCopyResponseMessage } from './lib/message';
 import { storage } from './lib/storage';
 import './style/content-twitter.scss';
 
@@ -62,13 +62,11 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // onMessage listener
-type Message = URLChangedMessage | TweetCopyResponseMessage;
+type Message = TweetCopyResponseMessage;
 
 const onMessageListener = (message: Message) => {
   logger.debug('on message', message);
   switch (message.type) {
-    case 'URL/Changed':
-      break;
     case 'TweetCopy/Response': {
       if (message.ok) {
         store.dispatch(
@@ -91,7 +89,7 @@ const onMessageListener = (message: Message) => {
       break;
     }
     default: {
-      const _: never = message;
+      const _: never = message.type;
       logger.error(`unexpected message "${message}"`);
       return _;
     }

@@ -30,20 +30,6 @@ if (process.env.NODE_ENV !== 'production') {
   storage.clear();
 }
 
-// URL Changed
-const urlChangedListener = async (
-  tabID: number,
-  changeInfo: browser.Tabs.OnUpdatedChangeInfoType,
-  tab: browser.Tabs.Tab
-) => {
-  if ('url' in changeInfo) {
-    const tabID = tab?.id ?? browser.tabs.TAB_ID_NONE;
-    browser.tabs.sendMessage(tabID, { type: 'URL/Changed' });
-  }
-};
-
-browser.tabs.onUpdated.addListener(urlChangedListener);
-
 // onMessage Listener
 type Message =
   | ClipboardCloseRequestMessage

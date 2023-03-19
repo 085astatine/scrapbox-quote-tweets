@@ -1,9 +1,5 @@
 import { TweetID } from './tweet';
 
-export interface URLChangedMessage {
-  type: 'URL/Changed';
-}
-
 export interface ClipboardOpenRequestMessage {
   type: 'Clipboard/OpenRequest';
 }
