@@ -4,9 +4,19 @@ import { parseTweets } from './parse-tweets';
 import { storage } from './storage';
 import { Tweet, TweetID } from './tweet';
 
+export interface TwitterAPIClientListener {
+  onRequestTweetsSuccess?: (tweets: Tweet[]) => Promise<void>;
+  onRequestTweetsFailure?: (
+    tweetIDs: TweetID[],
+    message: string
+  ) => Promise<void>;
+}
+
 export const twitterAPIClient = () => {
   // client
   let client = new TwitterApi().v2.readOnly;
+  // listener
+  const listeners: TwitterAPIClientListener[] = [];
 
   // setup client
   const setup = async (): Promise<void> => {
@@ -15,6 +25,19 @@ export const twitterAPIClient = () => {
     const bearerToken = await storage.auth.bearerToken.load();
     if (bearerToken !== null) {
       client = new TwitterApi(bearerToken, config).v2.readOnly;
+    }
+  };
+
+  // add listener
+  const addListener = (listener: TwitterAPIClientListener): void => {
+    listeners.push(listener);
+  };
+
+  // remove listener
+  const removeListener = (listener: TwitterAPIClientListener): void => {
+    const index = listeners.lastIndexOf(listener);
+    if (index === -1) {
+      listeners.splice(index, 1);
     }
   };
 
@@ -58,6 +81,8 @@ export const twitterAPIClient = () => {
       .then(saveTweetsToStorage);
   return {
     setup,
+    addListener,
+    removeListener,
     requestTweets,
   } as const;
 };
