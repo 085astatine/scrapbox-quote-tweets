@@ -23,13 +23,13 @@ export const storage = {
   clear: clearStorage,
   dump: dumpStorage,
   tweet: {
-    load: loadTweet,
     save: saveTweet,
+    load: loadTweet,
     delete: deleteTweet,
   },
   tweets: {
-    load: loadTweets,
     save: saveTweets,
+    load: loadTweets,
     delete: deleteTweets,
     savedIDs: savedTweetIDs,
   },
