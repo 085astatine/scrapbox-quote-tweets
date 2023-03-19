@@ -1,7 +1,6 @@
 import browser from 'webextension-polyfill';
 import { logger } from '../logger';
-
-export {
+import {
   deleteTweets,
   loadTweet,
   loadTweets,
@@ -10,11 +9,26 @@ export {
   savedTweetIDs,
 } from './tweet';
 
-export const clearStorage = async (): Promise<void> => {
+const clearStorage = async (): Promise<void> => {
   await browser.storage.local.clear();
 };
 
-export const dumpStorage = async (): Promise<void> => {
+const dumpStorage = async (): Promise<void> => {
   const data = await browser.storage.local.get();
   logger.debug('dump storage', data);
 };
+
+export const storage = {
+  clear: clearStorage,
+  dump: dumpStorage,
+  tweet: {
+    load: loadTweet,
+    save: saveTweet,
+  },
+  tweets: {
+    load: loadTweets,
+    save: saveTweets,
+    delete: deleteTweets,
+    savedIDs: savedTweetIDs,
+  },
+} as const;

@@ -18,7 +18,7 @@ import {
   TweetCopySuccessMessage,
 } from './lib/message';
 import { ParseTweetError, parseTweets } from './lib/parse-tweets';
-import { clearStorage, saveTweets } from './lib/storage';
+import { storage } from './lib/storage';
 import { Tweet, TweetID } from './lib/tweet';
 import { JSONSchemaValidationError } from './validate-json/jsonschema-validation-error';
 
@@ -27,7 +27,7 @@ logger.info('background script');
 // Clear storage.local (in development)
 if (process.env.NODE_ENV !== 'production') {
   logger.debug('claer storage');
-  clearStorage();
+  storage.clear();
 }
 
 // URL Changed
@@ -150,7 +150,7 @@ const parseTweetLookupResult = (
 
 // Save to Storage
 const saveTweetsToStorage = async (tweets: Tweet[]): Promise<Tweet[]> => {
-  await saveTweets(tweets);
+  await storage.tweets.save(tweets);
   return Promise.resolve(tweets);
 };
 

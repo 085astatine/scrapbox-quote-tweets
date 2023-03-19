@@ -9,7 +9,7 @@ import { mutationRecordInfo } from './lib/dom';
 import { findTweets } from './lib/find-tweets';
 import { logger } from './lib/logger';
 import { TweetCopyResponseMessage, URLChangedMessage } from './lib/message';
-import { savedTweetIDs } from './lib/storage';
+import { storage } from './lib/storage';
 import './style/content-twitter.scss';
 
 logger.info('content script');
@@ -50,7 +50,7 @@ window.addEventListener('DOMContentLoaded', () => {
   };
   observer.observe(document.body, options);
   // Load saved TweetIDs from storage
-  savedTweetIDs().then((tweetIDs) => {
+  storage.tweets.savedIDs().then((tweetIDs) => {
     logger.debug('Saved tweet IDs', tweetIDs);
     store.dispatch(
       updateAction({
