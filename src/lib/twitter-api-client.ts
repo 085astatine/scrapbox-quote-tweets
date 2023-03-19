@@ -75,10 +75,15 @@ export const twitterAPIClient = () => {
   };
 
   // request tweets
-  const requestTweets = async (tweetIDs: TweetID[]): Promise<Tweet[]> =>
+  const requestTweets = async (tweetIDs: TweetID[]): Promise<void> =>
     requestTweetsLookup(tweetIDs)
       .then((response) => parseTweetLookupResult(tweetIDs, response))
-      .then(saveTweetsToStorage);
+      .then(saveTweetsToStorage)
+      .then((tweets) =>
+        listeners.forEach((listener) =>
+          listener.onRequestTweetsSuccess?.(tweets)
+        )
+      );
   return {
     setup,
     addListener,

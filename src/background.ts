@@ -56,9 +56,7 @@ const onMessageListener = async (
       logger.info(`[${message.tweetID}] tweet copy request`);
       twitterClient
         .requestTweets([message.tweetID])
-        .then((tweets) => tweetCopySuccessMessage(tweets))
-        .catch((error) => handleTweetCopyRequestError(message.tweetID, error))
-        .then((message) => sendMessageToAllContentTwitter(message));
+        .catch((error) => handleTweetCopyRequestError(message.tweetID, error));
       break;
     default: {
       const _: never = message;
@@ -86,6 +84,10 @@ const clipboards = setupClipboardWindows();
 // Twitter API Client
 const twitterClient = twitterAPIClient();
 twitterClient.setup();
+twitterClient.addListener({
+  onRequestTweetsSuccess: async (tweets: Tweet[]) =>
+    sendMessageToAllContentTwitter(tweetCopySuccessMessage(tweets)),
+});
 
 // handle error in TweetCopy/Request
 const handleTweetCopyRequestError = (
