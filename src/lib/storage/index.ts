@@ -1,6 +1,7 @@
 import browser from 'webextension-polyfill';
 import { logger } from '../logger';
 import {
+  deleteTweet,
   deleteTweets,
   loadTweet,
   loadTweets,
@@ -24,6 +25,7 @@ export const storage = {
   tweet: {
     load: loadTweet,
     save: saveTweet,
+    delete: deleteTweet,
   },
   tweets: {
     load: loadTweets,
