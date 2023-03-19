@@ -101,20 +101,23 @@ const handleTweetCopyRequestError = (
     error instanceof ApiPartialResponseError
   ) {
     logger.error(`[${tweetID}] failed in Twitter API`, error);
-    return tweetCopyFailureMessage(tweetID, `Twitter API Error: ${error.type}`);
+    return tweetCopyFailureMessage(
+      [tweetID],
+      `Twitter API Error: ${error.type}`
+    );
   }
   // Parse Error
   if (error instanceof ParseTweetError) {
     logger.error(`[${tweetID}] failed in parse`, error);
-    return tweetCopyFailureMessage(tweetID, 'Failed to Parse Tweet');
+    return tweetCopyFailureMessage([tweetID], 'Failed to Parse Tweet');
   }
   // Validation Error
   if (error instanceof JSONSchemaValidationError) {
     logger.error(`[${tweetID}] faild in JSON Schema validation`, error);
-    return tweetCopyFailureMessage(tweetID, 'Validation Error');
+    return tweetCopyFailureMessage([tweetID], 'Validation Error');
   }
   logger.error(`[${tweetID}] unknown error`, error);
-  return tweetCopyFailureMessage(tweetID, 'Unknown Error');
+  return tweetCopyFailureMessage([tweetID], 'Unknown Error');
 };
 
 // create TweetCopySuccessMessage
@@ -128,13 +131,13 @@ const tweetCopySuccessMessage = (tweets: Tweet[]): TweetCopySuccessMessage => {
 
 // create TweetCopyFailureMessage
 const tweetCopyFailureMessage = (
-  tweetID: TweetID,
+  tweetIDs: TweetID[],
   message: string
 ): TweetCopyFailureMessage => {
   return {
     type: 'TweetCopy/Response',
     ok: false,
-    tweetID,
+    tweetIDs,
     message,
   };
 };

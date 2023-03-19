@@ -22,7 +22,7 @@ export interface TweetCopySuccessMessage {
 export interface TweetCopyFailureMessage {
   type: 'TweetCopy/Response';
   ok: false;
-  tweetID: TweetID;
+  tweetIDs: TweetID[];
   message: string;
 }
 

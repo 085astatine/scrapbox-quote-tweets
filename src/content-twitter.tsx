@@ -78,7 +78,7 @@ const onMessageListener = (message: Message) => {
       } else {
         store.dispatch(
           updateAction({
-            tweetIDs: [message.tweetID],
+            tweetIDs: message.tweetIDs,
             state: {
               state: 'failure',
               message: message.message,
