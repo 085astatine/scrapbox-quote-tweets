@@ -10,6 +10,7 @@ const WextManifestPlugin = require('wext-manifest-webpack-plugin');
 module.exports = (env, argv) => {
   const mode = argv.mode ?? 'development';
   const browser = process.env.TARGET_BROWSER;
+  process.env.NODE_ENV = mode;
   return {
     mode: mode,
     devtool: mode === 'production' ? false : 'cheap-source-map',
