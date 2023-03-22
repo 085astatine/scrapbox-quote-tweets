@@ -25,6 +25,17 @@ if (process.env.NODE_ENV !== 'production') {
   if (bearerToken !== undefined) {
     storage.auth.bearerToken.save(bearerToken);
   }
+  // login to twitter
+  if (process.env.TWITTER_AUTH_TOKEN_COOKIE !== undefined) {
+    logger.debug('set auth_token to coockies');
+    browser.cookies.set({
+      name: 'auth_token',
+      value: process.env.TWITTER_AUTH_TOKEN_COOKIE,
+      domain: '.twitter.com',
+      path: '/',
+      url: 'https://twitter.com',
+    });
+  }
 }
 
 // onMessage Listener

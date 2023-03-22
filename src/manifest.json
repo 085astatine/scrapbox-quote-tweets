@@ -3,8 +3,13 @@
   "name": "Scrapbox Copy Tweets",
   "version": "_",
 
-  "permissions": ["storage", "tabs"],
-  "host_permissions": ["https://api.twitter.com/2/*"],
+  "__prod__permissions": ["storage", "tabs"],
+  "__dev__permissions": ["cookies", "storage", "tabs"],
+  "__prod__host_permissions": ["https://api.twitter.com/2/*"],
+  "__dev__host_permissions": [
+    "https://twitter.com/*",
+    "https://api.twitter.com/2/*"
+  ],
 
   "__chrome__background": {
     "service_worker": "background.js",
