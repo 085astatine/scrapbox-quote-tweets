@@ -131,3 +131,21 @@ const sendMessageToAllContentTwitter = async (
     });
   });
 };
+
+// browser action
+browser.action.onClicked.addListener(async () => {
+  logger.debug('browser.action.onClicked');
+  // request permision
+  browser.permissions.request({
+    origins: [
+      'https://api.twitter.com/*',
+      'https://twitter.com/*',
+      'https://scrapbox.io/*',
+    ],
+  });
+  // open popup
+  browser.action.setPopup({ popup: browser.runtime.getURL('popup.html') });
+  browser.action.openPopup();
+  // reset popup to re-fire this event
+  browser.action.setPopup({ popup: null });
+});

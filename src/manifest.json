@@ -33,9 +33,7 @@
     }
   ],
 
-  "action": {
-    "default_popup": "popup.html"
-  },
+  "action": {},
 
   "options_ui": {
     "page": "options.html",
