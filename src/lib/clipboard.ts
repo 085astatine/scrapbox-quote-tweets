@@ -2,7 +2,7 @@ import browser from 'webextension-polyfill';
 import { logger } from './logger';
 
 interface ClipboardWindow {
-  parentTabID: number;
+  parentTabID: number | undefined;
   windowID: number;
   tabID: number;
 }
@@ -19,9 +19,6 @@ export const setupClipboardWindows = (): ClipboardWindows => {
   // open clipboard
   const open = async (parentTabID: number | undefined): Promise<void> => {
     logger.debug(`open clipboard in tab(ID=${parentTabID})`);
-    if (parentTabID === undefined) {
-      return;
-    }
     // create clipboard window
     return browser.windows
       .create({
@@ -39,7 +36,7 @@ export const setupClipboardWindows = (): ClipboardWindows => {
   const close = async (tabID: number | undefined): Promise<void> => {
     logger.debug(`close clipboard in tab(ID=${tabID})`);
     const target = clipboards.find((clipboard) => clipboard.tabID === tabID);
-    if (target === undefined) {
+    if (target?.parentTabID === undefined) {
       return;
     }
     // close the clipboard window
