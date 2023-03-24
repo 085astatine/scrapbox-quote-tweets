@@ -133,24 +133,26 @@ const sendMessageToAllContentTwitter = async (
 };
 
 // browser action
-browser.action.onClicked.addListener(
-  async (
-    tab: browser.Tabs.Tab,
-    info: browser.Action.OnClickData | undefined
-  ) => {
-    logger.debug('browser.action.onClicked', { tab, info });
-    // request permision
-    browser.permissions.request({
-      origins: [
-        'https://api.twitter.com/*',
-        'https://twitter.com/*',
-        'https://scrapbox.io/*',
-      ],
-    });
-    // open popup
-    browser.action.setPopup({ popup: browser.runtime.getURL('popup.html') });
-    browser.action.openPopup();
-    // reset popup to re-fire this event
-    browser.action.setPopup({ popup: null });
-  }
-);
+if (process.env.TARGET_BROWSER === 'firefox') {
+  browser.action.onClicked.addListener(
+    async (
+      tab: browser.Tabs.Tab,
+      info: browser.Action.OnClickData | undefined
+    ) => {
+      logger.debug('browser.action.onClicked', { tab, info });
+      // request permision
+      browser.permissions.request({
+        origins: [
+          'https://api.twitter.com/*',
+          'https://twitter.com/*',
+          'https://scrapbox.io/*',
+        ],
+      });
+      // open popup
+      browser.action.setPopup({ popup: browser.runtime.getURL('popup.html') });
+      browser.action.openPopup();
+      // reset popup to re-fire this event
+      browser.action.setPopup({ popup: null });
+    }
+  );
+}

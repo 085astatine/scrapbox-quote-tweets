@@ -67,7 +67,9 @@ module.exports = (env, argv) => {
       },
     },
     plugins: [
-      new DotenvPlugin(),
+      new DotenvPlugin({
+        systemvars: true,
+      }),
       new ESLintPlugin({
         extensions: ['ts', 'tsx'],
         exclude: ['node_modules'],
