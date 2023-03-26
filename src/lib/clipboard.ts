@@ -10,6 +10,7 @@ interface ClipboardWindow {
 export interface ClipboardWindows {
   open(parentTabID: number | undefined): Promise<void>;
   close(tabID: number | undefined): Promise<void>;
+  closeAll(): Promise<void>;
   onTabRemoved(tabID: number): void;
 }
 
@@ -50,6 +51,13 @@ export const setupClipboardWindows = (): ClipboardWindows => {
       }
     });
   };
+  // close all clipboards
+  const closeAll = async (): Promise<void> => {
+    logger.debug('close all clipboards');
+    clipboards.forEach((clipboard) => {
+      browser.windows.remove(clipboard.windowID);
+    });
+  };
   // browser.tabs.onTabRemoved
   const onTabRemoved = (tabID: number): void => {
     const targets = clipboards.reduceRight<
@@ -76,6 +84,7 @@ export const setupClipboardWindows = (): ClipboardWindows => {
   return {
     open,
     close,
+    closeAll,
     onTabRemoved,
   } as const;
 };
