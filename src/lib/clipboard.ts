@@ -52,12 +52,17 @@ export const setupClipboardWindows = (): ClipboardWindows => {
   };
   // browser.tabs.onTabRemoved
   const onTabRemoved = (tabID: number): void => {
-    const targets = clipboards.reduceRight((targets, clipboard, index) => {
+    const targets = clipboards.reduceRight<
+      {
+        index: number;
+        clipboard: ClipboardWindow;
+      }[]
+    >((targets, clipboard, index) => {
       if (clipboard.parentTabID === tabID || clipboard.tabID === tabID) {
         targets.push({ index, clipboard });
       }
       return targets;
-    }, [] as { index: number; clipboard: ClipboardWindow }[]);
+    }, []);
     targets.forEach((target) => {
       // remove from list
       clipboards.splice(target.index, 1);
