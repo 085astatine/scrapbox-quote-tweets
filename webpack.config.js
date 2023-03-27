@@ -21,6 +21,7 @@ module.exports = (env, argv) => {
       'content-scrapbox': './src/content-scrapbox.tsx',
       'content-twitter': './src/content-twitter.tsx',
       options: './src/options.tsx',
+      popup: './src/popup.tsx',
       manifest: './src/manifest.json',
     },
     output: {
@@ -66,7 +67,9 @@ module.exports = (env, argv) => {
       },
     },
     plugins: [
-      new DotenvPlugin(),
+      new DotenvPlugin({
+        systemvars: true,
+      }),
       new ESLintPlugin({
         extensions: ['ts', 'tsx'],
         exclude: ['node_modules'],
@@ -80,6 +83,11 @@ module.exports = (env, argv) => {
         filename: 'options.html',
         template: 'src/options.html',
         chunks: ['options'],
+      }),
+      new HtmlPlugin({
+        filename: 'popup.html',
+        template: 'src/popup.html',
+        chunks: ['popup'],
       }),
       new MiniCssExtractPlugin(),
       new NodePolyfillPlugin(),

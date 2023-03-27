@@ -3,6 +3,7 @@ import browser from 'webextension-polyfill';
 import { setupClipboardWindows } from './lib/clipboard';
 import { logger } from './lib/logger';
 import {
+  ClipboardCloseAllRequestMessage,
   ClipboardCloseRequestMessage,
   ClipboardOpenRequestMessage,
   TweetCopyFailureMessage,
@@ -41,6 +42,7 @@ if (process.env.NODE_ENV !== 'production') {
 // onMessage Listener
 type Message =
   | ClipboardCloseRequestMessage
+  | ClipboardCloseAllRequestMessage
   | ClipboardOpenRequestMessage
   | TweetCopyRequestMessage;
 
@@ -55,6 +57,9 @@ const onMessageListener = async (
       break;
     case 'Clipboard/CloseRequest':
       clipboards.close(sender.tab?.id);
+      break;
+    case 'Clipboard/CloseAllRequest':
+      clipboards.closeAll();
       break;
     case 'TweetCopy/Request':
       logger.info(`[${message.tweetID}] tweet copy request`);
@@ -131,3 +136,28 @@ const sendMessageToAllContentTwitter = async (
     });
   });
 };
+
+// browser action
+if (process.env.TARGET_BROWSER === 'firefox') {
+  browser.action.onClicked.addListener(
+    async (
+      tab: browser.Tabs.Tab,
+      info: browser.Action.OnClickData | undefined
+    ) => {
+      logger.debug('browser.action.onClicked', { tab, info });
+      // request permision
+      browser.permissions.request({
+        origins: [
+          'https://api.twitter.com/*',
+          'https://twitter.com/*',
+          'https://scrapbox.io/*',
+        ],
+      });
+      // open popup
+      browser.action.setPopup({ popup: browser.runtime.getURL('popup.html') });
+      browser.action.openPopup();
+      // reset popup to re-fire this event
+      browser.action.setPopup({ popup: null });
+    }
+  );
+}
