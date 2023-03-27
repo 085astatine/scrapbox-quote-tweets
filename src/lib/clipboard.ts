@@ -2,9 +2,9 @@ import browser from 'webextension-polyfill';
 import { logger } from './logger';
 
 interface ClipboardWindow {
-  parentTabID: number | undefined;
   windowID: number;
   tabID: number;
+  parentTabID?: number;
 }
 
 export interface ClipboardWindows {
@@ -29,7 +29,10 @@ export const setupClipboardWindows = (): ClipboardWindows => {
       .then((window) => {
         const windowID = getWindowID(window);
         if (windowID !== undefined) {
-          clipboards.push({ parentTabID, ...windowID });
+          clipboards.push({
+            ...windowID,
+            ...(parentTabID !== undefined ? { parentTabID } : {}),
+          });
         }
       });
   };
