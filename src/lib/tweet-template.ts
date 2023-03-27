@@ -66,17 +66,17 @@ const entityMentionFields = [
   'user.username',
 ] as const;
 
-export type TweetField = typeof tweetFields[number];
+export type TweetField = (typeof tweetFields)[number];
 
-export type EntityTextField = typeof entityTextFields[number];
+export type EntityTextField = (typeof entityTextFields)[number];
 
-export type EntityURLField = typeof entityURLFields[number];
+export type EntityURLField = (typeof entityURLFields)[number];
 
-export type EntityHashtagField = typeof entityHashtagFields[number];
+export type EntityHashtagField = (typeof entityHashtagFields)[number];
 
-export type EntityCashtagField = typeof entityCashtagFields[number];
+export type EntityCashtagField = (typeof entityCashtagFields)[number];
 
-export type EntityMentionField = typeof entityMentionFields[number];
+export type EntityMentionField = (typeof entityMentionFields)[number];
 
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
