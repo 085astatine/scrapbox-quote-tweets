@@ -3,6 +3,7 @@ import browser from 'webextension-polyfill';
 import { setupClipboardWindows } from './lib/clipboard';
 import { logger } from './lib/logger';
 import {
+  ClipboardCloseAllRequestMessage,
   ClipboardCloseRequestMessage,
   ClipboardOpenRequestMessage,
   TweetCopyFailureMessage,
@@ -41,6 +42,7 @@ if (process.env.NODE_ENV !== 'production') {
 // onMessage Listener
 type Message =
   | ClipboardCloseRequestMessage
+  | ClipboardCloseAllRequestMessage
   | ClipboardOpenRequestMessage
   | TweetCopyRequestMessage;
 
@@ -55,6 +57,9 @@ const onMessageListener = async (
       break;
     case 'Clipboard/CloseRequest':
       clipboards.close(sender.tab?.id);
+      break;
+    case 'Clipboard/CloseAllRequest':
+      clipboards.closeAll();
       break;
     case 'TweetCopy/Request':
       logger.info(`[${message.tweetID}] tweet copy request`);
