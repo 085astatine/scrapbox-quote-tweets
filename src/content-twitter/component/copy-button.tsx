@@ -27,7 +27,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
   // redux
   const selector = React.useCallback(
     (state: State) => state[toTweetIDKey(tweetID)],
-    [tweetID]
+    [tweetID],
   );
   const buttonState = useSelector(selector);
   const dispatch = useDispatch();
@@ -67,7 +67,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
       case 'fade-in': {
         const timeoutID = setTimeout(
           () => setTooltipVisibility('visible'),
-          200
+          200,
         );
         return () => clearTimeout(timeoutID);
       }
@@ -75,7 +75,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
         if (tooltipMessage?.type === 'notification') {
           const timeoutID = setTimeout(
             () => setTooltipVisibility('fade-out'),
-            2000
+            2000,
           );
           return () => clearTimeout(timeoutID);
         }
@@ -100,7 +100,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     // set state
     setIsClicked(true);
     dispatch(
-      updateAction({ tweetIDs: [tweetID], state: { state: 'in-progress' } })
+      updateAction({ tweetIDs: [tweetID], state: { state: 'in-progress' } }),
     );
     // send message to background
     logger.info(`[Tweet ID: ${tweetID}] copy request`);

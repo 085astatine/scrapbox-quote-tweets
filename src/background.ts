@@ -48,7 +48,7 @@ type Message =
 
 const onMessageListener = async (
   message: Message,
-  sender: browser.Runtime.MessageSender
+  sender: browser.Runtime.MessageSender,
 ): Promise<void> => {
   logger.debug('on message', { message, sender });
   switch (message.type) {
@@ -77,7 +77,7 @@ browser.runtime.onMessage.addListener(onMessageListener);
 // Tab onRemoved
 const onTabRemovedListener = (
   tabID: number,
-  removedInfo: browser.Tabs.OnRemovedRemoveInfoType
+  removedInfo: browser.Tabs.OnRemovedRemoveInfoType,
 ) => {
   logger.debug(`Tab onRemoved (tab ID=${tabID})`, removedInfo);
   // clipboard windows
@@ -110,7 +110,7 @@ const tweetCopySuccessMessage = (tweets: Tweet[]): TweetCopySuccessMessage => {
 // create TweetCopyFailureMessage
 const tweetCopyFailureMessage = (
   tweetIDs: TweetID[],
-  message: string
+  message: string,
 ): TweetCopyFailureMessage => {
   return {
     type: 'TweetCopy/Response',
@@ -122,7 +122,7 @@ const tweetCopyFailureMessage = (
 
 // Send Message to All content-twitter
 const sendMessageToAllContentTwitter = async (
-  message: TweetCopyResponseMessage
+  message: TweetCopyResponseMessage,
 ) => {
   browser.tabs.query({ url: 'https://twitter.com/*' }).then((tabs) => {
     logger.debug('send message to tabs', {
@@ -142,7 +142,7 @@ if (process.env.TARGET_BROWSER === 'firefox') {
   browser.action.onClicked.addListener(
     async (
       tab: browser.Tabs.Tab,
-      info: browser.Action.OnClickData | undefined
+      info: browser.Action.OnClickData | undefined,
     ) => {
       logger.debug('browser.action.onClicked', { tab, info });
       // request permision
@@ -158,6 +158,6 @@ if (process.env.TARGET_BROWSER === 'firefox') {
       browser.action.openPopup();
       // reset popup to re-fire this event
       browser.action.setPopup({ popup: null });
-    }
+    },
   );
 }

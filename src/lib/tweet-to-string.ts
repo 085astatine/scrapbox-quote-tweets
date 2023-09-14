@@ -23,7 +23,7 @@ import {
 
 export const tweetToString = (
   tweet: Tweet,
-  template: TweetTemplate
+  template: TweetTemplate,
 ): string => {
   const parsedTemplate = parseTweetTemplate(template);
   const filledOutTemplate = parsedTemplate.tweet
@@ -35,7 +35,7 @@ export const tweetToString = (
 const fillTweetTemplateElement = (
   templateElement: TemplateElement<TweetField>,
   tweet: Tweet,
-  template: ParsedTweetTemplate
+  template: ParsedTweetTemplate,
 ): string => {
   switch (templateElement.type) {
     case 'text':
@@ -80,7 +80,7 @@ const fillTweetTemplateElement = (
 
 const fillTweetEntity = (
   entity: TweetEntity,
-  template: ParsedTweetTemplate
+  template: ParsedTweetTemplate,
 ): string => {
   switch (entity.type) {
     case 'text':
@@ -110,7 +110,7 @@ const fillTweetEntity = (
 
 const fillTweetEntityText = (
   templateElement: TemplateElement<EntityTextField>,
-  entity: TweetEntityText
+  entity: TweetEntityText,
 ): string => {
   switch (templateElement.type) {
     case 'text':
@@ -127,7 +127,7 @@ const fillTweetEntityText = (
 
 const fillTweetEntityURL = (
   templateElement: TemplateElement<EntityURLField>,
-  entity: TweetEntityURL
+  entity: TweetEntityURL,
 ): string => {
   switch (templateElement.type) {
     case 'text':
@@ -154,7 +154,7 @@ const fillTweetEntityURL = (
 
 const fillTweetEntityHashtag = (
   templateElement: TemplateElement<EntityHashtagField>,
-  entity: TweetEntityHashtag
+  entity: TweetEntityHashtag,
 ): string => {
   switch (templateElement.type) {
     case 'text':
@@ -173,7 +173,7 @@ const fillTweetEntityHashtag = (
 
 const fillTweetEntityCashtag = (
   templateElement: TemplateElement<EntityCashtagField>,
-  entity: TweetEntityCashtag
+  entity: TweetEntityCashtag,
 ): string => {
   switch (templateElement.type) {
     case 'text':
@@ -192,7 +192,7 @@ const fillTweetEntityCashtag = (
 
 const fillTweetEntityMention = (
   templateElement: TemplateElement<EntityMentionField>,
-  entity: TweetEntityMention
+  entity: TweetEntityMention,
 ): string => {
   switch (templateElement.type) {
     case 'text':

@@ -30,7 +30,7 @@ describe('tweet-to-string/tweet', () => {
       tweet: 'tweet.id: ${tweet.id}',
     };
     expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'tweet.id: 1234567890123456789'
+      'tweet.id: 1234567890123456789',
     );
   });
   test('tweet.url', () => {
@@ -38,7 +38,7 @@ describe('tweet-to-string/tweet', () => {
       tweet: 'tweet.url: ${tweet.url}',
     };
     expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'tweet.url: https://twitter.com/username/status/1234567890123456789'
+      'tweet.url: https://twitter.com/username/status/1234567890123456789',
     );
   });
   test('user.id', () => {
@@ -46,7 +46,7 @@ describe('tweet-to-string/tweet', () => {
       tweet: 'user.id: ${user.id}',
     };
     expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'user.id: 1234567890'
+      'user.id: 1234567890',
     );
   });
   test('user.name', () => {
@@ -54,7 +54,7 @@ describe('tweet-to-string/tweet', () => {
       tweet: 'user.name: ${user.name}',
     };
     expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'user.name: User Name'
+      'user.name: User Name',
     );
   });
   test('user.username', () => {
@@ -62,7 +62,7 @@ describe('tweet-to-string/tweet', () => {
       tweet: 'user.username: ${user.username}',
     };
     expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'user.username: username'
+      'user.username: username',
     );
   });
   test('date.timestamp', () => {
@@ -70,7 +70,7 @@ describe('tweet-to-string/tweet', () => {
       tweet: 'date.timestamp: ${date.timestamp}',
     };
     expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'date.timestamp: 1330873445000'
+      'date.timestamp: 1330873445000',
     );
   });
   test('date.iso(utc)', () => {
@@ -79,7 +79,7 @@ describe('tweet-to-string/tweet', () => {
       timezone: 'UTC',
     };
     expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'date.iso: 2012-03-04T15:04:05Z'
+      'date.iso: 2012-03-04T15:04:05Z',
     );
   });
   test('date.iso(Asia/Tokyp)', () => {
@@ -88,7 +88,7 @@ describe('tweet-to-string/tweet', () => {
       timezone: 'Asia/Tokyo',
     };
     expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'date.iso: 2012-03-05T00:04:05+09:00'
+      'date.iso: 2012-03-05T00:04:05+09:00',
     );
   });
   test('date(UTC)', () => {
@@ -98,7 +98,7 @@ describe('tweet-to-string/tweet', () => {
       timezone: 'UTC',
     };
     expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'date: 2012/03/04 15:04:05'
+      'date: 2012/03/04 15:04:05',
     );
   });
   test('date(Asia/Tokyo)', () => {
@@ -108,7 +108,7 @@ describe('tweet-to-string/tweet', () => {
       timezone: 'Asia/Tokyo',
     };
     expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'date: 2012/03/05 00:04:05'
+      'date: 2012/03/05 00:04:05',
     );
   });
 });
@@ -143,7 +143,7 @@ describe('tweet-to-string/entity', () => {
       ...{ text: 'text: "${text}"' },
     };
     expect(tweetToString({ ...tweet, ...text }, template)).toBe(
-      'text: "This is the test text."'
+      'text: "This is the test text."',
     );
   });
   test('url', () => {
@@ -181,7 +181,7 @@ describe('tweet-to-string/entity', () => {
         'decoded_url: "https://example.com/sample/index.html"',
         'title: "Example.com"',
         'description: ""',
-      ].join('\n')
+      ].join('\n'),
     );
   });
   test('hashtag', () => {
@@ -202,7 +202,7 @@ describe('tweet-to-string/entity', () => {
       },
     };
     expect(tweetToString({ ...tweet, ...text }, template)).toBe(
-      ['text: "#Twitter"', 'tag: "Twitter"'].join('\n')
+      ['text: "#Twitter"', 'tag: "Twitter"'].join('\n'),
     );
   });
   test('cashtag', () => {
@@ -223,7 +223,7 @@ describe('tweet-to-string/entity', () => {
       },
     };
     expect(tweetToString({ ...tweet, ...text }, template)).toBe(
-      ['text: "$TWTR"', 'tag: "TWTR"'].join('\n')
+      ['text: "$TWTR"', 'tag: "TWTR"'].join('\n'),
     );
   });
   test('mention', () => {
@@ -258,7 +258,7 @@ describe('tweet-to-string/entity', () => {
         'user.id: "2222222222"',
         'user.name: "Bob"',
         'user.username: "bob"',
-      ].join('\n')
+      ].join('\n'),
     );
   });
 });

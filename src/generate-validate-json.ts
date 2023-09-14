@@ -8,7 +8,7 @@ const generate = <T>(
   schema: JSONSchemaType<T>,
   output: string,
   typename: string,
-  importCode: string
+  importCode: string,
 ) => {
   console.log(`generate: ${typename}`);
   // directory
@@ -27,7 +27,7 @@ const generate = <T>(
   const validate = ajv.compile(schema);
   fs.writeFileSync(
     path.join(directory, `${output}.js`),
-    standaloneCode(ajv, validate)
+    standaloneCode(ajv, validate),
   );
   // generate .d.ts
   const code: string[] = [];
@@ -45,12 +45,12 @@ generate(
   tweetJSONSchema,
   'validate-tweet',
   'Tweet',
-  "import { Tweet } from '../lib/tweet'"
+  "import { Tweet } from '../lib/tweet'",
 );
 // Tweet[]
 generate(
   tweetsJSONSchema,
   'validate-tweets',
   'Tweet[]',
-  "import { Tweet } from '../lib/tweet'"
+  "import { Tweet } from '../lib/tweet'",
 );

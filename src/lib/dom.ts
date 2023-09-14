@@ -5,7 +5,7 @@ export const getNode = (xpath: string, parent?: Node): Node | null => {
     parent ?? document,
     null,
     XPathResult.FIRST_ORDERED_NODE_TYPE,
-    null
+    null,
   );
   return result.singleNodeValue;
 };
@@ -69,7 +69,7 @@ export interface MutationRecordInfo {
 
 // mutation record
 export const mutationRecordInfo = (
-  record: MutationRecord
+  record: MutationRecord,
 ): MutationRecordInfo => {
   return {
     type: `${record.type}`,

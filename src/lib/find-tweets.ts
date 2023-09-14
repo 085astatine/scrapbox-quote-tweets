@@ -10,7 +10,7 @@ export interface FindTweetResult {
 export const findTweets = (
   node: Node,
   url: string,
-  logger: Logger = defaultLogger
+  logger: Logger = defaultLogger,
 ): FindTweetResult[] => {
   const result: FindTweetResult[] = [];
   // find <article data-testid="tweet"/>
@@ -53,7 +53,7 @@ const findTweetArticles = (node: Node): Element[] => {
     node,
     null,
     XPathResult.ORDERED_NODE_ITERATOR_TYPE,
-    null
+    null,
   );
   let article: Node | null;
   while ((article = xpathResult.iterateNext())) {
@@ -115,7 +115,7 @@ const parseTweetIdInTwitterPage = (element: Element): TweetID | null => {
 
 const parseTweetIdInTweetPage = (
   element: Element,
-  url: string
+  url: string,
 ): TweetID | null => {
   // get tweet ID from <a href="..."/>
   const tweetID = parseTweetIdInTwitterPage(element);
@@ -140,7 +140,7 @@ const createRootDiv = (element: Element, logger: Logger): Element | null => {
     element,
     null,
     XPathResult.FIRST_ORDERED_NODE_TYPE,
-    null
+    null,
   );
   const group = xpathResult.singleNodeValue;
   if (group === null) {
