@@ -1,4 +1,10 @@
-import { arrow, offset, shift, useFloating } from '@floating-ui/react-dom';
+import {
+  FloatingArrow,
+  arrow,
+  offset,
+  shift,
+  useFloating,
+} from '@floating-ui/react';
 import classNames from 'classnames';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -33,14 +39,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
   const dispatch = useDispatch();
   // floting
   const arrowRef = React.useRef(null);
-  const {
-    x,
-    y,
-    reference,
-    floating,
-    strategy,
-    middlewareData: { arrow: { x: arrowX, y: arrowY } = {} },
-  } = useFloating({
+  const { refs, floatingStyles, context } = useFloating({
     placement: 'top',
     middleware: [offset(10), shift(), arrow({ element: arrowRef })],
   });
@@ -122,7 +121,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
         role="button"
         tabIndex={0}
         onClick={onClick}
-        ref={reference}>
+        ref={refs.setReference}>
         <div
           className={classNames({
             'circle-inactive': ['none', 'error'].includes(buttonState.state),
@@ -143,23 +142,15 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
             'fade-in': tooltipVisibility === 'fade-in',
             'fade-out': tooltipVisibility === 'fade-out',
           })}
-          ref={floating}
-          style={{ position: strategy, top: y ?? 0, left: x ?? 0 }}>
+          ref={refs.setFloating}
+          style={floatingStyles}>
           <TooltipBody
             message={tooltipMessage.message}
             {...(tooltipMessage.type === 'error'
               ? { onClose: onTooltipClose }
               : {})}
           />
-          <div
-            className="arrow"
-            ref={arrowRef}
-            style={{
-              position: strategy,
-              top: arrowY !== null ? `${arrowY}px` : '',
-              left: arrowX !== null ? `${arrowX}px` : '',
-            }}
-          />
+          <FloatingArrow className="arrow" ref={arrowRef} context={context} />
         </div>
       ) : (
         <></>
