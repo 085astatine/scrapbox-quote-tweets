@@ -83,6 +83,7 @@
     "wext-manifest-webpack-plugin": "^1.2.1"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.25.4",
     "@floating-ui/react-dom": "^2.0.2",
     "@reduxjs/toolkit": "^1.9.5",
     "ajv": "^8.12.0",
