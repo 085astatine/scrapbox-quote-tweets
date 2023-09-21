@@ -40,7 +40,7 @@ const stateSlice = createSlice({
   reducers: {
     update(state: State, action: PayloadAction<UpdateButtonState>) {
       action.payload.tweetIDs.forEach(
-        (tweetID) => (state[toTweetIDKey(tweetID)] = action.payload.state)
+        (tweetID) => (state[toTweetIDKey(tweetID)] = action.payload.state),
       );
     },
     touch(state: State, action: PayloadAction<TweetID[]>) {

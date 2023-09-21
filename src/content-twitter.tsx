@@ -18,7 +18,7 @@ logger.info('content script');
 const observerCallback = (records: MutationRecord[]): void => {
   logger.debug(
     'Mutation Records',
-    records.map((record) => mutationRecordInfo(record))
+    records.map((record) => mutationRecordInfo(record)),
   );
   records.forEach((record) => {
     // tweet nodes
@@ -31,7 +31,7 @@ const observerCallback = (records: MutationRecord[]): void => {
         reactRoot.render(
           <Provider store={store}>
             <CopyButton tweetID={tweet.tweetID} />
-          </Provider>
+          </Provider>,
         );
       });
     });
@@ -56,7 +56,7 @@ window.addEventListener('DOMContentLoaded', () => {
       updateAction({
         tweetIDs,
         state: { state: 'success' },
-      })
+      }),
     );
   });
 });
@@ -73,7 +73,7 @@ const onMessageListener = (message: Message) => {
           updateAction({
             tweetIDs: message.tweetIDs,
             state: { state: 'success' },
-          })
+          }),
         );
       } else {
         store.dispatch(
@@ -83,7 +83,7 @@ const onMessageListener = (message: Message) => {
               state: 'failure',
               message: message.message,
             },
-          })
+          }),
         );
       }
       break;

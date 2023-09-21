@@ -40,17 +40,17 @@ export class ParseTweetError extends Error {
 
 export const parseTweets = (
   response: TweetV2LookupResult,
-  logger: Logger = defaultLogger
+  logger: Logger = defaultLogger,
 ): Tweet[] => {
   logger.debug('parse tweets', response);
   const tweets: Tweet[] = [];
   // .tweet
   response.data.forEach((tweet) =>
-    tweets.push(parseTweet(tweet, response.includes, logger))
+    tweets.push(parseTweet(tweet, response.includes, logger)),
   );
   // .includes.tweets
   response.includes?.tweets?.forEach((tweet) =>
-    tweets.push(parseTweet(tweet, response.includes, logger))
+    tweets.push(parseTweet(tweet, response.includes, logger)),
   );
   return tweets;
 };
@@ -58,7 +58,7 @@ export const parseTweets = (
 const parseTweet = (
   tweet: TweetV2,
   includes: ApiV2Includes | undefined,
-  logger: Logger
+  logger: Logger,
 ): Tweet => {
   logger.debug(`parse tweet ${tweet.id}`);
   const timestamp = parseTimestamp(tweet);
@@ -87,7 +87,7 @@ const parseTimestamp = (tweet: TweetV2): number => {
 
 const parseAuthor = (
   tweet: TweetV2,
-  includes: ApiV2Includes | undefined
+  includes: ApiV2Includes | undefined,
 ): User => {
   // author id
   if (tweet.author_id === undefined) {
@@ -98,7 +98,7 @@ const parseAuthor = (
   if (user === null) {
     throw new ParseTweetError(
       tweet.id,
-      `author_id(${tweet.author_id}) is not found`
+      `author_id(${tweet.author_id}) is not found`,
     );
   }
   return user;
@@ -128,13 +128,13 @@ interface TweetEntityWithPosition<Entity> extends TweetPosition {
 type TweetEntityGenerator<ApiEntity extends TweetPosition, Entity> = (
   text: string,
   data: ApiEntity,
-  logger: Logger
+  logger: Logger,
 ) => TweetEntityWithPosition<Entity>;
 
 const parseText = (
   tweet: TweetV2,
   includes: ApiV2Includes | undefined,
-  logger: Logger
+  logger: Logger,
 ): TweetEntity[] => {
   // text
   const text: TweetEntityWithPosition<TweetEntity>[] = [
@@ -153,16 +153,16 @@ const parseText = (
       text,
       url,
       entityURLParser(tweet.id, includes?.media ?? []),
-      logger
-    )
+      logger,
+    ),
   );
   // entities.hashtags
   tweet.entities?.hashtags?.forEach((hashtag) =>
-    splitText(text, hashtag, entityHashtagParser(), logger)
+    splitText(text, hashtag, entityHashtagParser(), logger),
   );
   // entities.cashtags
   tweet.entities?.cashtags?.forEach((cashtag) =>
-    splitText(text, cashtag, entityCashtagParser(), logger)
+    splitText(text, cashtag, entityCashtagParser(), logger),
   );
   // entities.mentions
   tweet.entities?.mentions?.forEach((mention) =>
@@ -170,8 +170,8 @@ const parseText = (
       text,
       mention,
       entityMentionParser(tweet.id, includes?.users ?? []),
-      logger
-    )
+      logger,
+    ),
   );
   logger.debug('text entities', text);
   return text.map((entity) => entity.entity);
@@ -181,11 +181,11 @@ const splitText = <ApiEntity extends TweetPosition>(
   entities: TweetEntityWithPosition<TweetEntity>[],
   entity: ApiEntity,
   generator: TweetEntityGenerator<ApiEntity, TweetEntity>,
-  logger: Logger
+  logger: Logger,
 ) => {
   // find the source entity that includes target
   const source = entities.find(
-    (source) => source.start <= entity.start && entity.end <= source.end
+    (source) => source.start <= entity.start && entity.end <= source.end,
   );
   if (source === undefined) {
     return;
@@ -239,14 +239,14 @@ const splitText = <ApiEntity extends TweetPosition>(
 
 const entityURLParser = (
   tweetID: TweetID,
-  media: readonly MediaObjectV2[]
+  media: readonly MediaObjectV2[],
 ): TweetEntityGenerator<
   TweetEntityUrlV2,
   TweetEntityURL | TweetEntityMedia
 > => {
   return (
     text: string,
-    entity: TweetEntityUrlV2
+    entity: TweetEntityUrlV2,
   ): TweetEntityWithPosition<TweetEntityURL | TweetEntityMedia> => {
     // position
     const position = {
@@ -261,13 +261,13 @@ const entityURLParser = (
       if (medium === undefined) {
         throw new ParseTweetError(
           tweetID,
-          `media_key(${mediaKey}) is not found`
+          `media_key(${mediaKey}) is not found`,
         );
       }
       if (medium.type === 'photo' && medium.url === undefined) {
         throw new ParseTweetError(
           tweetID,
-          `url is not defined at photo media(media_key=${mediaKey})`
+          `url is not defined at photo media(media_key=${mediaKey})`,
         );
       }
       return {
@@ -310,7 +310,7 @@ const entityHashtagParser = (): TweetEntityGenerator<
 > => {
   return (
     text: string,
-    entity: TweetEntityHashtagV2
+    entity: TweetEntityHashtagV2,
   ): TweetEntityWithPosition<TweetEntityHashtag> => {
     return {
       entity: {
@@ -330,7 +330,7 @@ const entityCashtagParser = (): TweetEntityGenerator<
 > => {
   return (
     text: string,
-    entity: TweetEntityHashtagV2
+    entity: TweetEntityHashtagV2,
   ): TweetEntityWithPosition<TweetEntityCashtag> => {
     return {
       entity: {
@@ -346,11 +346,11 @@ const entityCashtagParser = (): TweetEntityGenerator<
 
 const entityMentionParser = (
   tweetID: TweetID,
-  users: readonly UserV2[]
+  users: readonly UserV2[],
 ): TweetEntityGenerator<TweetEntityMentionV2, TweetEntityMention> => {
   return (
     text: string,
-    entity: TweetEntityMentionV2
+    entity: TweetEntityMentionV2,
   ): TweetEntityWithPosition<TweetEntityMention> => {
     // find user
     const user = findUser(entity.id, users) ?? {
@@ -370,7 +370,7 @@ const entityMentionParser = (
 };
 
 const parseAnnotations = (
-  tweet: TweetV2
+  tweet: TweetV2,
 ): TweetEntityAnnotation[] | undefined => {
   const text = split(tweet.text);
   return tweet.entities?.annotations?.map((annotation) => ({
@@ -383,7 +383,7 @@ const parseAnnotations = (
 };
 
 const parseReferencedTweets = (
-  tweet: TweetV2
+  tweet: TweetV2,
 ): ReferencedTweet[] | undefined => {
   return tweet.referenced_tweets?.map((referenced) => ({
     type: referenced.type,

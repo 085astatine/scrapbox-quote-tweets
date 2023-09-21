@@ -91,7 +91,7 @@ export interface ParsedTweetTemplate {
 }
 
 export const parseTweetTemplate = (
-  template: TweetTemplate
+  template: TweetTemplate,
 ): ParsedTweetTemplate => {
   // validate timezone
   if (template.timezone !== undefined) {
@@ -137,7 +137,7 @@ export class UnexpectedPlaceholderError extends Error {
 
 const parsePlaceholders = <Field extends string>(
   template: string,
-  fields: readonly Field[]
+  fields: readonly Field[],
 ): TemplateElement<Field>[] => {
   const elements: TemplateElement<Field>[] = [];
   let tail = template;
@@ -165,13 +165,13 @@ const parsePlaceholders = <Field extends string>(
 
 const isField = <Field extends string>(
   field: string,
-  fields: readonly Field[]
+  fields: readonly Field[],
 ): field is Field => {
   return (fields as readonly string[]).includes(field);
 };
 
 const fieldParser = <Field extends string>(
-  fields: readonly Field[]
+  fields: readonly Field[],
 ): ((template: string) => TemplateElement<Field>[]) => {
   return (template: string) => parsePlaceholders(template, fields);
 };

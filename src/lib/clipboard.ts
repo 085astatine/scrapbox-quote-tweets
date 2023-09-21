@@ -93,7 +93,7 @@ export const setupClipboardWindows = (): ClipboardWindows => {
 };
 
 const getWindowID = (
-  window: browser.Windows.Window
+  window: browser.Windows.Window,
 ): Pick<ClipboardWindow, 'windowID' | 'tabID'> | undefined => {
   const windowID = window.id;
   const tabID = window.tabs?.[0]?.id;

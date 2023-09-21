@@ -15,7 +15,7 @@ export interface TwitterAPIClientListener {
   onRequestTweetsSuccess?: (tweets: Tweet[]) => Promise<void>;
   onRequestTweetsFailure?: (
     tweetIDs: TweetID[],
-    message: string
+    message: string,
   ) => Promise<void>;
 }
 
@@ -50,7 +50,7 @@ export const twitterAPIClient = () => {
 
   // request tweets
   const requestTweetsLookup = async (
-    tweetIDs: TweetID[]
+    tweetIDs: TweetID[],
   ): Promise<TweetV2LookupResult> => {
     const result = await client.tweets(tweetIDs, {
       expansions: [
@@ -69,7 +69,7 @@ export const twitterAPIClient = () => {
   // parse tweets
   const parseTweetLookupResult = async (
     tweetIDs: TweetID[],
-    response: TweetV2LookupResult
+    response: TweetV2LookupResult,
   ): Promise<Tweet[]> => {
     const tweets = parseTweets(response);
     logger.debug(`[${tweetIDs.join(', ')}] parse result`, tweets);
@@ -83,7 +83,7 @@ export const twitterAPIClient = () => {
   // error massage when requesting tweets
   const requestTweetsErrorMessage = (
     tweetIDs: TweetID[],
-    error: unknown
+    error: unknown,
   ): string => {
     // Twitter API Error
     if (
@@ -103,7 +103,7 @@ export const twitterAPIClient = () => {
     if (error instanceof JSONSchemaValidationError) {
       logger.error(
         `[${tweetIDs.join(',')}] Failed in JSON Schema validation`,
-        error
+        error,
       );
       return 'Validation Error';
     }
@@ -117,17 +117,18 @@ export const twitterAPIClient = () => {
       .then((response) => parseTweetLookupResult(tweetIDs, response))
       .then(saveTweetsToStorage)
       .then((tweets) =>
-        listeners.forEach((listener) =>
-          listener.onRequestTweetsSuccess?.(tweets)
-        )
+        listeners.forEach(
+          (listener) => listener.onRequestTweetsSuccess?.(tweets),
+        ),
       )
       .catch((error) =>
-        listeners.forEach((listener) =>
-          listener.onRequestTweetsFailure?.(
-            tweetIDs,
-            requestTweetsErrorMessage(tweetIDs, error)
-          )
-        )
+        listeners.forEach(
+          (listener) =>
+            listener.onRequestTweetsFailure?.(
+              tweetIDs,
+              requestTweetsErrorMessage(tweetIDs, error),
+            ),
+        ),
       );
   return {
     setup,

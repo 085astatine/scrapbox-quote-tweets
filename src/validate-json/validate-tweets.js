@@ -153,7 +153,7 @@ const pattern2 = new RegExp('^[a-zA-Z0-9_]{1,15}$', 'u');
 const pattern3 = new RegExp('^[0-9_]+$', 'u');
 function validate10(
   data,
-  { instancePath = '', parentData, parentDataProperty, rootData = data } = {}
+  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
   let vErrors = null;
   let errors = 0;

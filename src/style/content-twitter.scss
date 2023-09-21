@@ -132,11 +132,11 @@ $fav-color: rgb(249, 24, 128);
       color: white;
       background-color: $tooltip-color;
 
-      .arrow:before {
-        display: inline-block;
-        margin-top: $tooltip-padding;
-        @include triangle-bottom(10px, 10px, $tooltip-color);
+      .arrow {
+        fill: $tooltip-color;
+        stroke: $tooltip-color;
       }
+
       .body {
         // flex
         display: inline-flex;

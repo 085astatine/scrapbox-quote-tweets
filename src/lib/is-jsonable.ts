@@ -14,7 +14,7 @@ export const isJSONable = (value: any): value is JSONableValue => {
 
 const isJSONableImpl = (
   value: any,
-  objects: object[]
+  objects: object[],
 ): value is JSONableValue => {
   switch (typeof value) {
     case 'boolean':
@@ -41,7 +41,7 @@ const isJSONableImpl = (
       const prototype = Object.getPrototypeOf(value);
       if (prototype === null || prototype === Object.prototype) {
         return Object.values(value).every((value) =>
-          isJSONableImpl(value, [...objects])
+          isJSONableImpl(value, [...objects]),
         );
       }
       return false;
