@@ -2,7 +2,7 @@ import {
   InvalidTimezoneError,
   isValidTimezone,
   validateTimezone,
-} from '../src/lib/tweet-date';
+} from '../src/lib/tweet/tweet-date';
 
 describe('tweet-date/validate', () => {
   test('UTC', () => {
