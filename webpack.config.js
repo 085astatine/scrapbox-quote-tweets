@@ -18,7 +18,7 @@ module.exports = (env, argv) => {
     entry: {
       background: './src/background.ts',
       clipboard: './src/clipboard.tsx',
-      'content-scrapbox': './src/content-scrapbox.tsx',
+      'content-scrapbox': './src/content-scrapbox/index.tsx',
       'content-twitter': './src/content-twitter/index.tsx',
       options: './src/options.tsx',
       popup: './src/popup.tsx',
