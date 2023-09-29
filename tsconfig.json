@@ -2,7 +2,11 @@
   "compilerOptions": {
     "exactOptionalPropertyTypes": true,
     "strict": true,
+    "baseUrl": "./",
     "module": "commonjs",
+    "paths": {
+      "@lib/*": ["src/lib/*"]
+    },
     "rootDir": "src",
     "typeRoots": ["node_modules/@types"],
     "esModuleInterop": true,

@@ -1,6 +1,6 @@
-import { getNode, isElement } from '../../lib/dom';
-import { Logger, logger as defaultLogger } from '../../lib/logger';
-import { TweetID } from '../../lib/tweet';
+import { getNode, isElement } from '@lib/dom';
+import { Logger, logger as defaultLogger } from '@lib/logger';
+import { TweetID } from '@lib/tweet';
 
 export interface FindTweetResult {
   tweetID: TweetID;

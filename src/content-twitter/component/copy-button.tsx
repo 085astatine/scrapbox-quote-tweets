@@ -9,11 +9,11 @@ import classNames from 'classnames';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import browser from 'webextension-polyfill';
+import { logger } from '@lib/logger';
+import { TweetID } from '@lib/tweet';
+import { toTweetIDKey } from '@lib/tweet-id-key';
 import ScrapboxIcon from '../../icon/scrapbox.svg';
 import CloseIcon from '../../icon/x.svg';
-import { logger } from '../../lib/logger';
-import { TweetID } from '../../lib/tweet';
-import { toTweetIDKey } from '../../lib/tweet-id-key';
 import { State } from '../state';
 import { updateAction } from '../state';
 

@@ -70,6 +70,9 @@ module.exports = (env, argv) => {
       minimizer: [new CssMinimizerPlugin()],
     },
     resolve: {
+      alias: {
+        '@lib': path.join(__dirname, 'src', 'lib'),
+      },
       extensions: ['.js', '.ts', '.tsx'],
       fallback: {
         fs: false,

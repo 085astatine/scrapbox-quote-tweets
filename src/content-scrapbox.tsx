@@ -1,8 +1,8 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { getElement, mutationRecordInfo } from '@lib/dom';
+import { logger } from '@lib/logger';
 import { Root } from './content-scrapbox/component/root';
-import { getElement, mutationRecordInfo } from './lib/dom';
-import { logger } from './lib/logger';
 
 logger.info('content scrapbox');
 

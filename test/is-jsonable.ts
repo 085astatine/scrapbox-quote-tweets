@@ -1,4 +1,4 @@
-import { isJSONable } from '../src/lib/is-jsonable';
+import { isJSONable } from '@lib/is-jsonable';
 
 describe('is-jsonable', () => {
   test('null', () => {

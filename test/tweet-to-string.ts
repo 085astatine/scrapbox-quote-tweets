@@ -1,4 +1,4 @@
-import { tweetToString } from '../src/lib/tweet/tweet-to-string';
+import { tweetToString } from '@lib/tweet/tweet-to-string';
 
 describe('tweet-to-string/tweet', () => {
   const tweet = {
