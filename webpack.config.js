@@ -19,7 +19,7 @@ module.exports = (env, argv) => {
       background: './src/background.ts',
       clipboard: './src/clipboard.tsx',
       'content-scrapbox': './src/content-scrapbox.tsx',
-      'content-twitter': './src/content-twitter.tsx',
+      'content-twitter': './src/content-twitter/index.tsx',
       options: './src/options.tsx',
       popup: './src/popup.tsx',
       manifest: './src/manifest.json',
