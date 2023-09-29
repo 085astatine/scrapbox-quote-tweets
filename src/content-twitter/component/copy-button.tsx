@@ -14,8 +14,7 @@ import { TweetID } from '@lib/tweet';
 import { toTweetIDKey } from '@lib/tweet-id-key';
 import ScrapboxIcon from '@icon/scrapbox.svg';
 import CloseIcon from '@icon/x.svg';
-import { State } from '../state';
-import { updateAction } from '../state';
+import { State, updateAction } from '../state';
 
 type TooltipType = 'notification' | 'error';
 type TooltipVisibility = 'none' | 'fade-in' | 'visible' | 'fade-out';
