@@ -5,6 +5,7 @@
     "baseUrl": "./",
     "module": "commonjs",
     "paths": {
+      "@icon/*": ["src/icon/*"],
       "@lib/*": ["src/lib/*"]
     },
     "rootDir": "src",
