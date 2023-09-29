@@ -11,7 +11,7 @@ import {
   TweetEntityText,
   TweetEntityURL,
   User,
-} from '../lib/tweet';
+} from '@lib/tweet';
 
 export const usernameJSONSchema: JSONSchemaType<string> = {
   type: 'string',

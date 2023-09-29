@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Root } from './options/component/root';
-import './style/options.scss';
+import { Root } from './component/root';
+import './index.scss';
 
 const root = document.getElementById('root');
 if (root !== null) {

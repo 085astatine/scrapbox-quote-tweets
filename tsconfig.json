@@ -2,7 +2,12 @@
   "compilerOptions": {
     "exactOptionalPropertyTypes": true,
     "strict": true,
+    "baseUrl": "./",
     "module": "commonjs",
+    "paths": {
+      "@icon/*": ["src/icon/*"],
+      "@lib/*": ["src/lib/*"]
+    },
     "rootDir": "src",
     "typeRoots": ["node_modules/@types"],
     "esModuleInterop": true,

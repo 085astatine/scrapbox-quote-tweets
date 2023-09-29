@@ -20,18 +20,6 @@ $fav-color: rgb(249, 24, 128);
   border-style: solid;
 }
 
-@mixin triangle-bottom($width, $height, $color) {
-  content: '';
-  width: 0;
-  height: 0;
-  // border
-  border-style: solid;
-  border-width: $height math.div($width, 2) 0px math.div($width, 2);
-  border-color: $color transparent transparent transparent;
-  // offset
-  left: math.div(-$width, 2);
-}
-
 @keyframes scrapbox-copy-tweets-fade-in {
   from {
     opacity: 0;

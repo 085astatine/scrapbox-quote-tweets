@@ -2,15 +2,15 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import browser from 'webextension-polyfill';
-import { CopyButton } from './content-twitter/component/copy-button';
-import { touchAction, updateAction } from './content-twitter/state';
-import { store } from './content-twitter/store';
-import { mutationRecordInfo } from './lib/dom';
+import { mutationRecordInfo } from '@lib/dom';
+import { logger } from '@lib/logger';
+import { TweetCopyResponseMessage } from '@lib/message';
+import { storage } from '@lib/storage';
+import { CopyButton } from './component/copy-button';
+import './index.scss';
 import { findTweets } from './lib/find-tweets';
-import { logger } from './lib/logger';
-import { TweetCopyResponseMessage } from './lib/message';
-import { storage } from './lib/storage';
-import './style/content-twitter.scss';
+import { touchAction, updateAction } from './state';
+import { store } from './store';
 
 logger.info('content script');
 

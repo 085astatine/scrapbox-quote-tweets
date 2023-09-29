@@ -45,12 +45,12 @@ generate(
   tweetJSONSchema,
   'validate-tweet',
   'Tweet',
-  "import { Tweet } from '../lib/tweet'",
+  "import { Tweet } from '@lib/tweet'",
 );
 // Tweet[]
 generate(
   tweetsJSONSchema,
   'validate-tweets',
   'Tweet[]',
-  "import { Tweet } from '../lib/tweet'",
+  "import { Tweet } from '@lib/tweet'",
 );

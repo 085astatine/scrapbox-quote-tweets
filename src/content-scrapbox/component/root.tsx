@@ -1,6 +1,6 @@
 import React from 'react';
 import browser from 'webextension-polyfill';
-import TwitterIcon from '../../icon/twitter.svg';
+import TwitterIcon from '@icon/twitter.svg';
 
 export const Root = () => {
   const onClick = async () => {
