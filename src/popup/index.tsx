@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Root } from './clipboard/component/root';
-import './style/clipboard.scss';
+import '../style/popup.scss';
+import { Root } from './component/root';
 
 const root = document.getElementById('root');
 if (root !== null) {

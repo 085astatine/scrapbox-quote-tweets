@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Root } from './popup/component/root';
-import './style/popup.scss';
+import '../style/options.scss';
+import { Root } from './component/root';
 
 const root = document.getElementById('root');
 if (root !== null) {

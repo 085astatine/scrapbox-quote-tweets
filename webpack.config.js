@@ -17,11 +17,11 @@ module.exports = (env, argv) => {
     context: __dirname,
     entry: {
       background: './src/background.ts',
-      clipboard: './src/clipboard.tsx',
+      clipboard: './src/clipboard/index.tsx',
       'content-scrapbox': './src/content-scrapbox/index.tsx',
       'content-twitter': './src/content-twitter/index.tsx',
-      options: './src/options.tsx',
-      popup: './src/popup.tsx',
+      options: './src/options/index.tsx',
+      popup: './src/popup/index.tsx',
       manifest: './src/manifest.json',
     },
     output: {
@@ -89,17 +89,17 @@ module.exports = (env, argv) => {
       }),
       new HtmlPlugin({
         filename: 'clipboard.html',
-        template: 'src/clipboard.html',
+        template: 'src/clipboard/index.html',
         chunks: ['clipboard'],
       }),
       new HtmlPlugin({
         filename: 'options.html',
-        template: 'src/options.html',
+        template: 'src/options/index.html',
         chunks: ['options'],
       }),
       new HtmlPlugin({
         filename: 'popup.html',
-        template: 'src/popup.html',
+        template: 'src/popup/index.html',
         chunks: ['popup'],
       }),
       new MiniCssExtractPlugin(),
