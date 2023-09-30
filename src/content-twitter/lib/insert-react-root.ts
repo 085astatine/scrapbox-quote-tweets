@@ -2,17 +2,17 @@ import { getNode, isElement } from '@lib/dom';
 import { Logger, logger as defaultLogger } from '@lib/logger';
 import { TweetID } from '@lib/tweet';
 
-export interface FindTweetResult {
+export interface InsertReactRootResult {
   tweetID: TweetID;
   reactRoot: Element;
 }
 
-export const findTweets = (
+export const insertReactRoot = (
   node: Node,
   url: string,
   logger: Logger = defaultLogger,
-): FindTweetResult[] => {
-  const result: FindTweetResult[] = [];
+): InsertReactRootResult[] => {
+  const result: InsertReactRootResult[] = [];
   // find <article data-testid="tweet"/>
   findTweetArticles(node).forEach((element) => {
     logger.info('find <article data-test-id="tweet" />');

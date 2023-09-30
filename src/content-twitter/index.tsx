@@ -8,7 +8,7 @@ import { TweetCopyResponseMessage } from '@lib/message';
 import { storage } from '@lib/storage';
 import { CopyButton } from './component/copy-button';
 import './index.scss';
-import { findTweets } from './lib/find-tweets';
+import { insertReactRoot } from './lib/insert-react-root';
 import { touchAction, updateAction } from './state';
 import { store } from './store';
 
@@ -23,7 +23,7 @@ const observerCallback = (records: MutationRecord[]): void => {
   records.forEach((record) => {
     // tweet nodes
     record.addedNodes.forEach((node) => {
-      findTweets(node, document.URL, logger).forEach((tweet) => {
+      insertReactRoot(node, document.URL, logger).forEach((tweet) => {
         // update store
         store.dispatch(touchAction([tweet.tweetID]));
         // render by React
