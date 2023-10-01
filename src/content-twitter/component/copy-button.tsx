@@ -14,6 +14,7 @@ import { TweetID } from '@lib/tweet';
 import { toTweetIDKey } from '@lib/tweet-id-key';
 import ScrapboxIcon from '@icon/scrapbox.svg';
 import CloseIcon from '@icon/x.svg';
+import { parseTweet } from '../lib/parse-tweet';
 import { State, updateAction } from '../state';
 
 type TooltipType = 'notification' | 'error';
@@ -29,6 +30,8 @@ export interface CopyButtonProps {
 }
 
 export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
+  // ref
+  const ref = React.useRef<HTMLDivElement>(null);
   // redux
   const selector = React.useCallback(
     (state: State) => state[toTweetIDKey(tweetID)],
@@ -100,6 +103,10 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     dispatch(
       updateAction({ tweetIDs: [tweetID], state: { state: 'in-progress' } }),
     );
+    // parse tweet
+    if (ref?.current) {
+      parseTweet(ref.current);
+    }
     // send message to background
     logger.info(`[Tweet ID: ${tweetID}] copy request`);
     browser.runtime.sendMessage({
@@ -114,7 +121,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     }
   }, [tooltipMessage?.type]);
   return (
-    <div className="copy-button">
+    <div className="copy-button" ref={ref}>
       <div
         className="button"
         role="button"
