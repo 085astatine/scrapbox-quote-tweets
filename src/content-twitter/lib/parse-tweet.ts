@@ -45,7 +45,23 @@ const parseUserName = (user: Element, logger: Logger): string | null => {
     logger.warn('User.name is not found');
     return null;
   }
-  return element.textContent;
+  // traverse DOM tree
+  return traverseUserName(element);
+};
+
+const traverseUserName = (element: Element): string => {
+  if (element.childElementCount === 0) {
+    if (element.tagName === 'SPAN') {
+      return element.textContent ?? '';
+    } else if (element.tagName === 'IMG') {
+      return element.getAttribute('alt') ?? '';
+    }
+    return '';
+  } else {
+    return [...element.children]
+      .map((child) => traverseUserName(child))
+      .join('');
+  }
 };
 
 const parseUserUsername = (user: Element, logger: Logger): string | null => {
