@@ -1,4 +1,4 @@
-import { getElements, getNode } from '@lib/dom';
+import { getElement, getElements, getNode } from '@lib/dom';
 import { Logger, logger as defaultLogger } from '@lib/logger';
 import { TweetID } from '@lib/tweet';
 
@@ -121,20 +121,13 @@ const parseTweetIdInTweetPage = (
 
 const createRootDiv = (element: Element, logger: Logger): Element | null => {
   // button group
-  const xpathResult = document.evaluate(
-    '(.//div[@role="group"])[last()]',
-    element,
-    null,
-    XPathResult.FIRST_ORDERED_NODE_TYPE,
-    null,
-  );
-  const group = xpathResult.singleNodeValue;
+  const group = getElement('(.//div[@role="group"])[last()]', element);
   if (group === null) {
     logger.warn('<div role="group"> is not found');
     return null;
   }
   // check if react root exists
-  if (getNode('./div[@class="scrapbox-copy-tweets"]', group) !== null) {
+  if (getElement('./div[@class="scrapbox-copy-tweets"]', group) !== null) {
     logger.info('<div classse="scrapbox-copy-tweets:" /> already exists');
     return null;
   }
