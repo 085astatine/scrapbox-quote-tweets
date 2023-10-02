@@ -12,6 +12,9 @@ export const parseTweet = (
     logger.warn('Tweet is not found');
     return;
   }
+  // timestamp
+  const timestamp = parseTimestamp(tweet, logger);
+  logger.debug('timestamp', timestamp);
   // user
   const user = parseUser(tweet, logger);
   logger.debug('user', user);
@@ -20,6 +23,25 @@ export const parseTweet = (
 const findTweet = (element: Element, logger: Logger): Element | null => {
   logger.debug('find ancestor::article[@data-testid="tweet"]');
   return getElement('ancestor::article[@data-testid="tweet"]', element);
+};
+
+const parseTimestamp = (tweet: Element, logger: Logger): number | null => {
+  const element = getElement('.//time', tweet);
+  logger.debug('timestamp', element);
+  if (element === null) {
+    logger.warn('Timestamp is not found');
+    return null;
+  }
+  const datetime = element.getAttribute('datetime');
+  if (datetime === null) {
+    logger.warn('datetime attribute is not found');
+    return null;
+  }
+  const milliseconds = Date.parse(datetime);
+  if (isNaN(milliseconds)) {
+    logger.warn(`Faild to parses "${datetime}" as Date`);
+  }
+  return milliseconds / 1000;
 };
 
 const parseUser = (tweet: Element, logger: Logger): User | null => {
