@@ -10,6 +10,22 @@ export const getNode = (xpath: string, parent?: Node): Node | null => {
   return result.singleNodeValue;
 };
 
+export const getNodes = (xpath: string, parent?: Node): Node[] => {
+  const result = document.evaluate(
+    xpath,
+    parent ?? document,
+    null,
+    XPathResult.ORDERED_NODE_ITERATOR_TYPE,
+    null,
+  );
+  const nodes: Node[] = [];
+  let node: Node | null;
+  while ((node = result.iterateNext())) {
+    nodes.push(node);
+  }
+  return nodes;
+};
+
 export const nodeTypeToString = (nodeType: number): string => {
   switch (nodeType) {
     case Node.ELEMENT_NODE: // 1
@@ -59,6 +75,10 @@ export const getElement = (xpath: string, parent?: Node): Element | null => {
     return node;
   }
   return null;
+};
+
+export const getElements = (xpath: string, parent?: Node): Element[] => {
+  return getNodes(xpath, parent).filter(isElement);
 };
 
 export interface MutationRecordInfo {

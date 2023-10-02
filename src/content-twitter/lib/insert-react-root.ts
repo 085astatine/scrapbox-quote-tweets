@@ -1,4 +1,4 @@
-import { getNode, isElement } from '@lib/dom';
+import { getElements, getNode } from '@lib/dom';
 import { Logger, logger as defaultLogger } from '@lib/logger';
 import { TweetID } from '@lib/tweet';
 
@@ -47,21 +47,7 @@ const matchURLType = (url: string): URLType => {
 };
 
 const findTweetArticles = (node: Node): Element[] => {
-  const articles = [];
-  const xpathResult = document.evaluate(
-    './/article[@data-testid="tweet"]',
-    node,
-    null,
-    XPathResult.ORDERED_NODE_ITERATOR_TYPE,
-    null,
-  );
-  let article: Node | null;
-  while ((article = xpathResult.iterateNext())) {
-    if (isElement(article)) {
-      articles.push(article);
-    }
-  }
-  return articles;
+  return getElements('.//article[@data-testid="tweet"]', node);
 };
 
 interface TweetLink {
