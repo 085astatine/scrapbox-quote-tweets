@@ -1,6 +1,6 @@
-import { getElement } from '@lib/dom';
+import { getElement, getElements } from '@lib/dom';
 import { Logger, logger as defaultLogger } from '@lib/logger';
-import { User } from './tweet';
+import { Media, MediaPhoto, MediaVideo, User } from './tweet';
 
 export const parseTweet = (
   element: Element,
@@ -18,6 +18,9 @@ export const parseTweet = (
   // user
   const user = parseUser(tweet, logger);
   logger.debug('user', user);
+  // media
+  const media = parseMedia(tweet, logger);
+  logger.debug('media', media);
 };
 
 const findTweet = (element: Element, logger: Logger): Element | null => {
@@ -98,4 +101,86 @@ const parseUserUsername = (user: Element, logger: Logger): string | null => {
     return null;
   }
   return username.replace(/^@/, '');
+};
+
+const parseMedia = (tweet: Element, logger: Logger): Media[] => {
+  const elements = getElements('.//div[@data-testid="tweetPhoto"]', tweet);
+  logger.debug('Media elements', elements);
+  const result: Media[] = [];
+  for (const element of elements) {
+    switch (mediaType(element)) {
+      case 'photo': {
+        const photo = parseMediaPhoto(element, logger);
+        logger.debug('MediaPhoto', photo);
+        if (photo !== null) {
+          result.push(photo);
+        }
+        break;
+      }
+      case 'video': {
+        const video = parseMediaVideo(element, logger);
+        logger.debug('MediaVideo', video);
+        if (video !== null) {
+          result.push(video);
+        }
+        break;
+      }
+      default:
+        logger.warn('unknown media type', element);
+    }
+  }
+  return result;
+};
+
+const mediaType = (element: Element): Media['type'] | null => {
+  if (element.getAttribute('data-testid') === 'tweetPhoto') {
+    if (getElement('.//div[@data-testid="videoPlayer"]', element) !== null) {
+      return 'video';
+    }
+    return 'photo';
+  }
+  return null;
+};
+
+const parseMediaPhoto = (
+  element: Element,
+  logger: Logger,
+): MediaPhoto | null => {
+  const img = getElement('.//img[@src]', element);
+  logger.debug('MediaPhoto <img src="...">', img);
+  if (img === null) {
+    logger.warn('<img src="..."> is not found in MediaPhoto');
+    return null;
+  }
+  const src = img.getAttribute('src') ?? '';
+  return { type: 'photo', url: parseMediaPhotoURL(src) };
+};
+
+const parseMediaPhotoURL = (src: string): string => {
+  try {
+    const url = new URL(src);
+    const format = url.searchParams.get('format');
+    if (format !== null) {
+      return `${url.origin}${url.pathname}.${format}`;
+    }
+  } catch (error) {
+    if (!(error instanceof TypeError)) {
+      throw error;
+    }
+  }
+  return src;
+};
+
+const parseMediaVideo = (
+  element: Element,
+  logger: Logger,
+): MediaVideo | null => {
+  const video = getElement('.//video[@poster]', element);
+  logger.debug('MediaVideo <video poster="...">', video);
+  if (video === null) {
+    logger.warn('<video poster="..."> is not found in MediaVideo');
+    return null;
+  }
+  const thumbnail = video.getAttribute('poster') ?? '';
+  return { type: 'video', thumbnail };
 };
