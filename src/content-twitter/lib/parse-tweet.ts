@@ -1,5 +1,6 @@
 import { getElement, getElements } from '@lib/dom';
 import { Logger, logger as defaultLogger } from '@lib/logger';
+import { parseTweetText } from './parse-tweet-text';
 import { Media, MediaPhoto, MediaVideo, User } from './tweet';
 
 export const parseTweet = (
@@ -18,6 +19,9 @@ export const parseTweet = (
   // user
   const user = parseUser(tweet, logger);
   logger.debug('user', user);
+  // text
+  const text = parseTweetText(tweet, logger);
+  logger.debug('text', text);
   // media
   const media = parseMedia(tweet, logger);
   logger.debug('media', media);
