@@ -66,7 +66,11 @@ export const showNode = (node: Node): string => {
 
 // element
 export const isElement = (node: Node): node is Element => {
-  return node.nodeType === Node.ELEMENT_NODE;
+  return node instanceof Element;
+};
+
+export const isHTMLElement = (node: Node): node is HTMLElement => {
+  return node instanceof HTMLElement;
 };
 
 export const getElement = (xpath: string, parent?: Node): Element | null => {
