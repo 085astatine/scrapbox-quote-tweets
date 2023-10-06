@@ -60,6 +60,12 @@ const findTweet = (element: Element, logger: Logger): Element | null => {
   return getElement('ancestor::article[@data-testid="tweet"]', element);
 };
 
+const isInQuotedTweet = (element: Element): boolean => {
+  return (
+    getElement('ancestor::div[div[1]/span[text()="Quote"]]', element) !== null
+  );
+};
+
 const parseTimestamp = (tweet: Element, logger: Logger): number | null => {
   const element = getElement('.//time', tweet);
   logger.debug('timestamp', element);
@@ -136,7 +142,10 @@ const parseUserUsername = (user: Element, logger: Logger): string | null => {
 };
 
 const parseMedia = (tweet: Element, logger: Logger): Media[] => {
-  const elements = getElements('.//div[@data-testid="tweetPhoto"]', tweet);
+  const elements = getElements(
+    './/div[@data-testid="tweetPhoto"]',
+    tweet,
+  ).filter((element) => !isInQuotedTweet(element));
   logger.debug('Media elements', elements);
   const result: Media[] = [];
   for (const element of elements) {
