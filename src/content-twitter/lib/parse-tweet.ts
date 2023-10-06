@@ -67,18 +67,13 @@ const isInQuotedTweet = (element: Element): boolean => {
 };
 
 const parseTimestamp = (tweet: Element, logger: Logger): number | null => {
-  const element = getElement('.//time', tweet);
-  logger.debug('timestamp', element);
-  if (element === null) {
-    logger.warn('Timestamp is not found');
-    return null;
-  }
-  const datetime = element.getAttribute('datetime');
+  const datetime = getNode('.//time/@datetime', tweet);
+  logger.debug('datetime attribute', datetime);
   if (datetime === null) {
-    logger.warn('datetime attribute is not found');
+    logger.warn('<time datetime="..."> is not found');
     return null;
   }
-  const milliseconds = Date.parse(datetime);
+  const milliseconds = Date.parse(datetime.textContent ?? '');
   if (isNaN(milliseconds)) {
     logger.warn(`Faild to parses "${datetime}" as Date`);
   }
@@ -187,14 +182,13 @@ const parseMediaPhoto = (
   element: Element,
   logger: Logger,
 ): MediaPhoto | null => {
-  const img = getElement('.//img[@src]', element);
-  logger.debug('MediaPhoto <img src="...">', img);
-  if (img === null) {
+  const src = getNode('.//img/@src', element);
+  logger.debug('MediaPhoto <img src="...">', src);
+  if (src === null) {
     logger.warn('<img src="..."> is not found in MediaPhoto');
     return null;
   }
-  const src = img.getAttribute('src') ?? '';
-  return { type: 'photo', url: parseMediaPhotoURL(src) };
+  return { type: 'photo', url: parseMediaPhotoURL(src.textContent ?? '') };
 };
 
 const parseMediaPhotoURL = (src: string): string => {
@@ -216,14 +210,13 @@ const parseMediaVideo = (
   element: Element,
   logger: Logger,
 ): MediaVideo | null => {
-  const video = getElement('.//video[@poster]', element);
-  logger.debug('MediaVideo <video poster="...">', video);
-  if (video === null) {
+  const poster = getElement('.//video/@poster', element);
+  logger.debug('MediaVideo <video poster="...">', poster);
+  if (poster === null) {
     logger.warn('<video poster="..."> is not found in MediaVideo');
     return null;
   }
-  const thumbnail = video.getAttribute('poster') ?? '';
-  return { type: 'video', thumbnail };
+  return { type: 'video', thumbnail: poster.textContent ?? '' };
 };
 
 const parseCard = (tweet: Element, logger: Logger): Card | null => {
