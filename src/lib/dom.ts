@@ -10,6 +10,17 @@ export const getNode = (xpath: string, parent?: Node): Node | null => {
   return result.singleNodeValue;
 };
 
+export const getNodeSnapshot = (xpath: string, parent?: Node): Node | null => {
+  const result = document.evaluate(
+    xpath,
+    parent ?? document,
+    null,
+    XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+    null,
+  );
+  return result.snapshotItem(0);
+};
+
 export const getNodes = (xpath: string, parent?: Node): Node[] => {
   const result = document.evaluate(
     xpath,
@@ -22,6 +33,24 @@ export const getNodes = (xpath: string, parent?: Node): Node[] => {
   let node: Node | null;
   while ((node = result.iterateNext())) {
     nodes.push(node);
+  }
+  return nodes;
+};
+
+export const getNodeSnapshots = (xpath: string, parent?: Node): Node[] => {
+  const result = document.evaluate(
+    xpath,
+    parent ?? document,
+    null,
+    XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+    null,
+  );
+  const nodes: Node[] = [];
+  for (let i = 0; i < result.snapshotLength; ++i) {
+    const node = result.snapshotItem(i);
+    if (node !== null) {
+      nodes.push(node);
+    }
   }
   return nodes;
 };
@@ -81,8 +110,26 @@ export const getElement = (xpath: string, parent?: Node): Element | null => {
   return null;
 };
 
+export const getElementSnapshot = (
+  xpath: string,
+  parent?: Node,
+): Element | null => {
+  const node = getNodeSnapshot(xpath, parent);
+  if (node !== null && isElement(node)) {
+    return node;
+  }
+  return null;
+};
+
 export const getElements = (xpath: string, parent?: Node): Element[] => {
   return getNodes(xpath, parent).filter(isElement);
+};
+
+export const getElementSnapshots = (
+  xpath: string,
+  parent?: Node,
+): Element[] => {
+  return getNodeSnapshots(xpath, parent).filter(isElement);
 };
 
 export interface MutationRecordInfo {
