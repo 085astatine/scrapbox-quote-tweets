@@ -1,6 +1,6 @@
-import { getElement, getElements, getNode } from '@lib/dom';
-import { Logger, logger as defaultLogger } from '@lib/logger';
-import { TweetID } from '@lib/tweet';
+import { getElement, getElements, getNode } from '~/lib/dom';
+import { Logger, logger as defaultLogger } from '~/lib/logger';
+import { TweetID } from '~/lib/tweet';
 
 export interface InsertReactRootResult {
   tweetID: TweetID;

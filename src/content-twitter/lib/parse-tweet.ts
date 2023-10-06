@@ -1,5 +1,5 @@
-import { getElement, getElements, getNode } from '@lib/dom';
-import { Logger, logger as defaultLogger } from '@lib/logger';
+import { getElement, getElements, getNode } from '~/lib/dom';
+import { Logger, logger as defaultLogger } from '~/lib/logger';
 import { parseTweetText } from './parse-tweet-text';
 import {
   Card,

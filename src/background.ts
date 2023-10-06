@@ -1,7 +1,7 @@
 import 'error-polyfill';
 import browser from 'webextension-polyfill';
-import { setupClipboardWindows } from '@lib/clipboard';
-import { logger } from '@lib/logger';
+import { setupClipboardWindows } from '~/lib/clipboard';
+import { logger } from '~/lib/logger';
 import {
   ClipboardCloseAllRequestMessage,
   ClipboardCloseRequestMessage,
@@ -10,10 +10,10 @@ import {
   TweetCopyRequestMessage,
   TweetCopyResponseMessage,
   TweetCopySuccessMessage,
-} from '@lib/message';
-import { storage } from '@lib/storage';
-import { Tweet, TweetID } from '@lib/tweet';
-import { twitterAPIClient } from '@lib/twitter-api-client';
+} from '~/lib/message';
+import { storage } from '~/lib/storage';
+import { Tweet, TweetID } from '~/lib/tweet';
+import { twitterAPIClient } from '~/lib/twitter-api-client';
 
 logger.info('background script');
 

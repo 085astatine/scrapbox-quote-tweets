@@ -71,8 +71,7 @@ module.exports = (env, argv) => {
     },
     resolve: {
       alias: {
-        '@icon': path.join(__dirname, 'src', 'icon'),
-        '@lib': path.join(__dirname, 'src', 'lib'),
+        '~': path.join(__dirname, 'src'),
       },
       extensions: ['.js', '.ts', '.tsx'],
       fallback: {
