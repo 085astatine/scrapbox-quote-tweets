@@ -1,18 +1,18 @@
-import { getNode, isElement } from '@lib/dom';
+import { getElement, getElements, getNode } from '@lib/dom';
 import { Logger, logger as defaultLogger } from '@lib/logger';
 import { TweetID } from '@lib/tweet';
 
-export interface FindTweetResult {
+export interface InsertReactRootResult {
   tweetID: TweetID;
   reactRoot: Element;
 }
 
-export const findTweets = (
+export const insertReactRoot = (
   node: Node,
   url: string,
   logger: Logger = defaultLogger,
-): FindTweetResult[] => {
-  const result: FindTweetResult[] = [];
+): InsertReactRootResult[] => {
+  const result: InsertReactRootResult[] = [];
   // find <article data-testid="tweet"/>
   findTweetArticles(node).forEach((element) => {
     logger.info('find <article data-test-id="tweet" />');
@@ -47,21 +47,7 @@ const matchURLType = (url: string): URLType => {
 };
 
 const findTweetArticles = (node: Node): Element[] => {
-  const articles = [];
-  const xpathResult = document.evaluate(
-    './/article[@data-testid="tweet"]',
-    node,
-    null,
-    XPathResult.ORDERED_NODE_ITERATOR_TYPE,
-    null,
-  );
-  let article: Node | null;
-  while ((article = xpathResult.iterateNext())) {
-    if (isElement(article)) {
-      articles.push(article);
-    }
-  }
-  return articles;
+  return getElements('.//article[@data-testid="tweet"]', node);
 };
 
 interface TweetLink {
@@ -135,20 +121,13 @@ const parseTweetIdInTweetPage = (
 
 const createRootDiv = (element: Element, logger: Logger): Element | null => {
   // button group
-  const xpathResult = document.evaluate(
-    '(.//div[@role="group"])[last()]',
-    element,
-    null,
-    XPathResult.FIRST_ORDERED_NODE_TYPE,
-    null,
-  );
-  const group = xpathResult.singleNodeValue;
+  const group = getElement('(.//div[@role="group"])[last()]', element);
   if (group === null) {
     logger.warn('<div role="group"> is not found');
     return null;
   }
   // check if react root exists
-  if (getNode('./div[@class="scrapbox-copy-tweets"]', group) !== null) {
+  if (getElement('./div[@class="scrapbox-copy-tweets"]', group) !== null) {
     logger.info('<div classse="scrapbox-copy-tweets:" /> already exists');
     return null;
   }
