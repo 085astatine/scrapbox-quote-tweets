@@ -16,10 +16,10 @@ export const parseTweet = (
   element: Element,
   logger: Logger = defaultLogger,
 ): Tweet | null => {
-  const tweet = findTweet(element, logger);
-  logger.debug('tweet', tweet);
+  const tweet = getElement('ancestor::article[@data-testid="tweet"]', element);
+  logger.debug('tweet element', tweet);
   if (tweet === null) {
-    logger.warn('Tweet is not found');
+    logger.warn('<div data-testid="tweet"> is not found');
     return null;
   }
   // Tweet.timestamp
@@ -55,11 +55,6 @@ export const parseTweet = (
   return result;
 };
 
-const findTweet = (element: Element, logger: Logger): Element | null => {
-  logger.debug('find ancestor::article[@data-testid="tweet"]');
-  return getElement('ancestor::article[@data-testid="tweet"]', element);
-};
-
 const isInQuotedTweet = (element: Element): boolean => {
   return (
     getElement('ancestor::div[div[1]/span[text()="Quote"]]', element) !== null
@@ -81,16 +76,16 @@ const parseTimestamp = (tweet: Element, logger: Logger): number | null => {
 };
 
 const parseUser = (tweet: Element, logger: Logger): User | null => {
-  const user = getElement('.//div[@data-testid="User-Name"]', tweet);
-  logger.debug('User-Name', user);
-  if (user === null) {
-    logger.warn('User-Name is not found');
+  const element = getElement('.//div[@data-testid="User-Name"]', tweet);
+  logger.debug('User element', element);
+  if (element === null) {
+    logger.warn('<div data-testid="User-Name"> is not found');
     return null;
   }
-  const name = parseUserName(user, logger);
-  const username = parseUserUsername(user, logger);
+  const name = parseUserName(element, logger);
+  const username = parseUserUsername(element, logger);
   if (name === null || username === null) {
-    logger.warn('Failed to parse User');
+    logger.warn('Failed to parse as User', element);
     return null;
   }
   return { name, username };
