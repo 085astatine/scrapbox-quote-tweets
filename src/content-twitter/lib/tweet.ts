@@ -1,3 +1,5 @@
+export type TweetID = string;
+
 export interface User {
   name: string;
   username: string;
@@ -54,4 +56,13 @@ export type Media = MediaPhoto | MediaVideo;
 export interface Card {
   link_url: string;
   image_url: string;
+}
+
+export interface Tweet {
+  id: TweetID;
+  timestamp: number;
+  author: User;
+  text: TweetEntity[];
+  card?: Card;
+  media?: Media[];
 }

@@ -1,33 +1,58 @@
 import { getElement, getElements, getNode } from '@lib/dom';
 import { Logger, logger as defaultLogger } from '@lib/logger';
 import { parseTweetText } from './parse-tweet-text';
-import { Card, Media, MediaPhoto, MediaVideo, User } from './tweet';
+import {
+  Card,
+  Media,
+  MediaPhoto,
+  MediaVideo,
+  Tweet,
+  TweetID,
+  User,
+} from './tweet';
 
 export const parseTweet = (
+  id: TweetID,
   element: Element,
   logger: Logger = defaultLogger,
-): void => {
+): Tweet | null => {
   const tweet = findTweet(element, logger);
   logger.debug('tweet', tweet);
   if (tweet === null) {
     logger.warn('Tweet is not found');
-    return;
+    return null;
   }
-  // timestamp
+  // Tweet.timestamp
   const timestamp = parseTimestamp(tweet, logger);
-  logger.debug('timestamp', timestamp);
-  // user
-  const user = parseUser(tweet, logger);
-  logger.debug('user', user);
-  // text
+  logger.debug('Tweet.timestamp', timestamp);
+  if (timestamp === null) {
+    logger.warn('Failed to parse Tweet.timesamp');
+    return null;
+  }
+  // Tweet.author
+  const author = parseUser(tweet, logger);
+  logger.debug('Tweet.author', author);
+  if (author === null) {
+    logger.warn('Falied to parse Tweet.author');
+    return null;
+  }
+  // Tweet.text
   const text = parseTweetText(tweet, logger);
-  logger.debug('text', text);
+  logger.debug('Tweet.text', text);
+  const result: Tweet = { id, timestamp, author, text };
   // card
   const card = parseCard(tweet, logger);
-  logger.debug('card', card);
+  logger.debug('Tweet.card', card);
+  if (card !== null) {
+    result.card = card;
+  }
   // media
   const media = parseMedia(tweet, logger);
-  logger.debug('media', media);
+  logger.debug('Tweet.media', media);
+  if (media.length) {
+    result.media = media;
+  }
+  return result;
 };
 
 const findTweet = (element: Element, logger: Logger): Element | null => {

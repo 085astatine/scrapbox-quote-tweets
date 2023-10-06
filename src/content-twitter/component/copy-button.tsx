@@ -105,7 +105,8 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     );
     // parse tweet
     if (ref?.current) {
-      parseTweet(ref.current);
+      const tweet = parseTweet(tweetID, ref.current);
+      logger.debug('tweet', tweet);
     }
     // send message to background
     logger.info(`[Tweet ID: ${tweetID}] copy request`);
