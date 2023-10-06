@@ -1,7 +1,7 @@
-import { getElement, getElements } from '@lib/dom';
+import { getElement, getElements, getNode } from '@lib/dom';
 import { Logger, logger as defaultLogger } from '@lib/logger';
 import { parseTweetText } from './parse-tweet-text';
-import { Media, MediaPhoto, MediaVideo, User } from './tweet';
+import { Card, Media, MediaPhoto, MediaVideo, User } from './tweet';
 
 export const parseTweet = (
   element: Element,
@@ -22,6 +22,9 @@ export const parseTweet = (
   // text
   const text = parseTweetText(tweet, logger);
   logger.debug('text', text);
+  // card
+  const card = parseCard(tweet, logger);
+  logger.debug('card', card);
   // media
   const media = parseMedia(tweet, logger);
   logger.debug('media', media);
@@ -187,4 +190,25 @@ const parseMediaVideo = (
   }
   const thumbnail = video.getAttribute('poster') ?? '';
   return { type: 'video', thumbnail };
+};
+
+const parseCard = (tweet: Element, logger: Logger): Card | null => {
+  const element = getElement('.//div[@data-testid="card.wrapper"]', tweet);
+  if (element === null) {
+    return null;
+  }
+  const link = getNode('.//a/@href', element)?.textContent;
+  if (!link) {
+    logger.warn('<a href="..."> is not found in card');
+    return null;
+  }
+  const image = getNode('.//img/@src', element)?.textContent;
+  if (!image) {
+    logger.warn('<img src="..."> is not found in card');
+    return null;
+  }
+  return {
+    link_url: link,
+    image_url: image,
+  };
 };

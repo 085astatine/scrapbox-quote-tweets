@@ -50,3 +50,8 @@ export interface MediaVideo {
 }
 
 export type Media = MediaPhoto | MediaVideo;
+
+export interface Card {
+  link_url: string;
+  image_url: string;
+}
