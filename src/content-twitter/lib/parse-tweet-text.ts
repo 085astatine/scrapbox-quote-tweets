@@ -1,5 +1,6 @@
 import { getElement, isHTMLElement } from '~/lib/dom';
 import { Logger, logger as defaultLogger } from '~/lib/logger';
+import { formatTCoURL } from '~/lib/url';
 import {
   TweetEntity,
   TweetEntityCashtag,
@@ -91,7 +92,7 @@ const parseEntityURL = (
   logger: Logger,
 ): TweetEntityURL | null => {
   logger.debug('URL entity element', entity);
-  const shortURL = parseShortURL(entity.getAttribute('href') ?? '');
+  const shortURL = formatTCoURL(entity.getAttribute('href') ?? '');
   const text = [...entity.childNodes]
     .map((node) => {
       // text node
@@ -108,18 +109,6 @@ const parseEntityURL = (
     })
     .join('');
   return { type: 'url', short_url: shortURL, text };
-};
-
-const parseShortURL = (href: string): string => {
-  try {
-    const url = new URL(href);
-    return `${url.origin}${url.pathname}`;
-  } catch (error) {
-    if (!(error instanceof TypeError)) {
-      throw error;
-    }
-  }
-  return href;
 };
 
 const parseEntityHashtag = (
