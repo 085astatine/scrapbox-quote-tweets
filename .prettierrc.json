@@ -2,11 +2,6 @@
   "plugins": ["@trivago/prettier-plugin-sort-imports"],
   "singleQuote": true,
   "bracketSameLine": true,
-  "importOrder": [
-    "<THIRD_PARTY_MODULES>",
-    "^@lib/(.*)",
-    "^@icon/(.*)",
-    "^[./]"
-  ],
+  "importOrder": ["<THIRD_PARTY_MODULES>", "^~/(.*)", "^[./]"],
   "importOrderSortSpecifiers": true
 }

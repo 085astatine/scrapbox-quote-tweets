@@ -1,7 +1,7 @@
 import {
   UnexpectedPlaceholderError,
   tweetTemplateParser,
-} from '@lib/tweet/tweet-template';
+} from '~/lib/tweet/tweet-template';
 
 describe('tweet-template/tweet', () => {
   test('parse', () => {

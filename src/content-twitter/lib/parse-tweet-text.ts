@@ -1,5 +1,5 @@
-import { getElement, isHTMLElement } from '@lib/dom';
-import { Logger, logger as defaultLogger } from '@lib/logger';
+import { getElement, isHTMLElement } from '~/lib/dom';
+import { Logger, logger as defaultLogger } from '~/lib/logger';
 import {
   TweetEntity,
   TweetEntityCashtag,

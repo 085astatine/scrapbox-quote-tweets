@@ -5,8 +5,7 @@
     "baseUrl": "./",
     "module": "commonjs",
     "paths": {
-      "@icon/*": ["src/icon/*"],
-      "@lib/*": ["src/lib/*"]
+      "~/*": ["src/*"]
     },
     "rootDir": "src",
     "typeRoots": ["node_modules/@types"],

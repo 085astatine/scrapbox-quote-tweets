@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { TweetID } from '@lib/tweet';
-import { TweetIDKey, toTweetIDKey } from '@lib/tweet-id-key';
+import { TweetID } from '~/lib/tweet';
+import { TweetIDKey, toTweetIDKey } from '~/lib/tweet-id-key';
 
 export interface ButtonStateNone {
   state: 'none';
