@@ -114,18 +114,32 @@ const parseEntityURL = async (
     })
     .join('');
   // request expand https://t.co/...
-  const requestMessage: ExpandTCoURLRequestMessage = {
+  const request: ExpandTCoURLRequestMessage = {
     type: 'ExpandTCoURL/Request',
     shortURL,
   };
-  logger.debug('Request to expand t.co URL', requestMessage);
-  const responseMessage: ExpandTCoURLResponseMessage =
-    await browser.runtime.sendMessage(requestMessage);
-  logger.debug('Response to request', responseMessage);
-  if (responseMessage?.type !== 'ExpandTCoURL/Response') {
-    logger.warn('Unexpected response message', responseMessage);
-  }
-  return { type: 'url', short_url: shortURL, text };
+  logger.debug('Request to expand t.co URL', request);
+  const { expandedURL, title } = await browser.runtime
+    .sendMessage(request)
+    .then((response: ExpandTCoURLResponseMessage) => {
+      logger.debug('Response to request', response);
+      if (response?.type === 'ExpandTCoURL/Response') {
+        if (response?.ok) {
+          const { expandedURL, title } = response;
+          return { expandedURL, title };
+        }
+      } else {
+        logger.warn('Unexpected response message', response);
+      }
+      return { expandedURL: shortURL };
+    });
+  return {
+    type: 'url',
+    text,
+    short_url: shortURL,
+    expanded_url: expandedURL,
+    ...(title !== undefined ? { title } : {}),
+  };
 };
 
 const parseEntityHashtag = async (
