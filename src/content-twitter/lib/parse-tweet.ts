@@ -1,5 +1,6 @@
 import { getElement, getElements, getNode } from '~/lib/dom';
 import { Logger, logger as defaultLogger } from '~/lib/logger';
+import { formatTCoURL, formatTwimgURL } from '~/lib/url';
 import { parseTweetText } from './parse-tweet-text';
 import {
   Card,
@@ -11,11 +12,11 @@ import {
   User,
 } from './tweet';
 
-export const parseTweet = (
+export const parseTweet = async (
   id: TweetID,
   element: Element,
   logger: Logger = defaultLogger,
-): Tweet | null => {
+): Promise<Tweet | null> => {
   const tweet = getElement('ancestor::article[@data-testid="tweet"]', element);
   logger.debug('tweet element', tweet);
   if (tweet === null) {
@@ -37,7 +38,7 @@ export const parseTweet = (
     return null;
   }
   // Tweet.text
-  const text = parseTweetText(tweet, logger);
+  const text = await parseTweetText(tweet, logger);
   logger.debug('Tweet.text', text);
   const result: Tweet = { id, timestamp, author, text };
   // card
@@ -183,22 +184,7 @@ const parseMediaPhoto = (
     logger.warn('<img src="..."> is not found in MediaPhoto');
     return null;
   }
-  return { type: 'photo', url: parseMediaPhotoURL(src.textContent ?? '') };
-};
-
-const parseMediaPhotoURL = (src: string): string => {
-  try {
-    const url = new URL(src);
-    const format = url.searchParams.get('format');
-    if (format !== null) {
-      return `${url.origin}${url.pathname}.${format}`;
-    }
-  } catch (error) {
-    if (!(error instanceof TypeError)) {
-      throw error;
-    }
-  }
-  return src;
+  return { type: 'photo', url: formatTwimgURL(src.textContent ?? '') };
 };
 
 const parseMediaVideo = (
@@ -230,7 +216,7 @@ const parseCard = (tweet: Element, logger: Logger): Card | null => {
     return null;
   }
   return {
-    link_url: link,
+    link_url: formatTCoURL(link),
     image_url: image,
   };
 };

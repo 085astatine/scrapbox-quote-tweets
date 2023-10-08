@@ -1,5 +1,11 @@
+import browser from 'webextension-polyfill';
 import { getElement, isHTMLElement } from '~/lib/dom';
 import { Logger, logger as defaultLogger } from '~/lib/logger';
+import {
+  ExpandTCoURLRequestMessage,
+  ExpandTCoURLResponseMessage,
+} from '~/lib/message';
+import { formatTCoURL } from '~/lib/url';
 import {
   TweetEntity,
   TweetEntityCashtag,
@@ -9,10 +15,10 @@ import {
   TweetEntityURL,
 } from './tweet';
 
-export const parseTweetText = (
+export const parseTweetText = async (
   tweet: Element,
   logger: Logger = defaultLogger,
-): TweetEntity[] => {
+): Promise<TweetEntity[]> => {
   const element = getElement('.//div[@data-testid="tweetText"]', tweet);
   logger.debug('Text <div data-testid="tweetText">', element);
   if (element === null) {
@@ -26,7 +32,7 @@ export const parseTweetText = (
       logger.warn('Unknown entity type', child);
       continue;
     }
-    const entity = entityParsers[type](child, logger);
+    const entity = await entityParsers[type](child, logger);
     logger.debug('parsed entity', entity);
     if (entity === null) {
       logger.warn('Failed to parse as TweetEntity', child);
@@ -68,30 +74,30 @@ const entityType = (entity: Element): EntityType | null => {
   return null;
 };
 
-const parseEntityText = (
+const parseEntityText = async (
   entity: Element,
   logger: Logger,
-): TweetEntityText | null => {
+): Promise<TweetEntityText | null> => {
   logger.debug('Text entity element', entity);
   const text = entity.textContent ?? '';
   return { type: 'text', text };
 };
 
-const parseEntityEmoji = (
+const parseEntityEmoji = async (
   entity: Element,
   logger: Logger,
-): TweetEntityText | null => {
+): Promise<TweetEntityText | null> => {
   logger.debug('Emoji entity element', entity);
   const text = entity.getAttribute('alt') ?? '';
   return { type: 'text', text };
 };
 
-const parseEntityURL = (
+const parseEntityURL = async (
   entity: Element,
   logger: Logger,
-): TweetEntityURL | null => {
+): Promise<TweetEntityURL | null> => {
   logger.debug('URL entity element', entity);
-  const shortURL = parseShortURL(entity.getAttribute('href') ?? '');
+  const shortURL = formatTCoURL(entity.getAttribute('href') ?? '');
   const text = [...entity.childNodes]
     .map((node) => {
       // text node
@@ -107,25 +113,39 @@ const parseEntityURL = (
       return '';
     })
     .join('');
-  return { type: 'url', short_url: shortURL, text };
+  // request expand https://t.co/...
+  const request: ExpandTCoURLRequestMessage = {
+    type: 'ExpandTCoURL/Request',
+    shortURL,
+  };
+  logger.debug('Request to expand t.co URL', request);
+  const { expandedURL, title } = await browser.runtime
+    .sendMessage(request)
+    .then((response: ExpandTCoURLResponseMessage) => {
+      logger.debug('Response to request', response);
+      if (response?.type === 'ExpandTCoURL/Response') {
+        if (response?.ok) {
+          const { expandedURL, title } = response;
+          return { expandedURL, title };
+        }
+      } else {
+        logger.warn('Unexpected response message', response);
+      }
+      return { expandedURL: shortURL };
+    });
+  return {
+    type: 'url',
+    text,
+    short_url: shortURL,
+    expanded_url: expandedURL,
+    ...(title !== undefined ? { title } : {}),
+  };
 };
 
-const parseShortURL = (href: string): string => {
-  try {
-    const url = new URL(href);
-    return `${url.origin}${url.pathname}`;
-  } catch (error) {
-    if (!(error instanceof TypeError)) {
-      throw error;
-    }
-  }
-  return href;
-};
-
-const parseEntityHashtag = (
+const parseEntityHashtag = async (
   entity: Element,
   logger: Logger,
-): TweetEntityHashtag | null => {
+): Promise<TweetEntityHashtag | null> => {
   logger.debug('Hashtag entity element', entity);
   const text = entity.textContent;
   if (text === null || !text.startsWith('#')) {
@@ -136,10 +156,10 @@ const parseEntityHashtag = (
   return { type: 'hashtag', text, tag };
 };
 
-const parseEntityCashtag = (
+const parseEntityCashtag = async (
   entity: Element,
   logger: Logger,
-): TweetEntityCashtag | null => {
+): Promise<TweetEntityCashtag | null> => {
   logger.debug('Cashtag entity element', entity);
   const text = entity.textContent;
   if (text === null || !text.startsWith('$')) {
@@ -150,10 +170,10 @@ const parseEntityCashtag = (
   return { type: 'cashtag', text, tag };
 };
 
-const parseEntityMention = (
+const parseEntityMention = async (
   entity: Element,
   logger: Logger,
-): TweetEntityMention | null => {
+): Promise<TweetEntityMention | null> => {
   logger.debug('Mention entity element', entity);
   const text = entity.textContent;
   if (text === null || !text.startsWith('@')) {
@@ -165,7 +185,10 @@ const parseEntityMention = (
 };
 
 const entityParsers: {
-  [key in EntityType]: (element: Element, logger: Logger) => TweetEntity | null;
+  [key in EntityType]: (
+    element: Element,
+    logger: Logger,
+  ) => Promise<TweetEntity | null>;
 } = {
   text: parseEntityText,
   emoji: parseEntityEmoji,

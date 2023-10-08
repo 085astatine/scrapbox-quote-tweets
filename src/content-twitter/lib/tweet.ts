@@ -14,6 +14,8 @@ export interface TweetEntityURL {
   type: 'url';
   text: string;
   short_url: string;
+  expanded_url: string;
+  title?: string;
 }
 
 export interface TweetEntityHashtag {
