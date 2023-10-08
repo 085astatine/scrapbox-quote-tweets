@@ -15,10 +15,10 @@ import {
   TweetEntityURL,
 } from './tweet';
 
-export const parseTweetText = (
+export const parseTweetText = async (
   tweet: Element,
   logger: Logger = defaultLogger,
-): TweetEntity[] => {
+): Promise<TweetEntity[]> => {
   const element = getElement('.//div[@data-testid="tweetText"]', tweet);
   logger.debug('Text <div data-testid="tweetText">', element);
   if (element === null) {
@@ -32,7 +32,7 @@ export const parseTweetText = (
       logger.warn('Unknown entity type', child);
       continue;
     }
-    const entity = entityParsers[type](child, logger);
+    const entity = await entityParsers[type](child, logger);
     logger.debug('parsed entity', entity);
     if (entity === null) {
       logger.warn('Failed to parse as TweetEntity', child);
@@ -74,28 +74,28 @@ const entityType = (entity: Element): EntityType | null => {
   return null;
 };
 
-const parseEntityText = (
+const parseEntityText = async (
   entity: Element,
   logger: Logger,
-): TweetEntityText | null => {
+): Promise<TweetEntityText | null> => {
   logger.debug('Text entity element', entity);
   const text = entity.textContent ?? '';
   return { type: 'text', text };
 };
 
-const parseEntityEmoji = (
+const parseEntityEmoji = async (
   entity: Element,
   logger: Logger,
-): TweetEntityText | null => {
+): Promise<TweetEntityText | null> => {
   logger.debug('Emoji entity element', entity);
   const text = entity.getAttribute('alt') ?? '';
   return { type: 'text', text };
 };
 
-const parseEntityURL = (
+const parseEntityURL = async (
   entity: Element,
   logger: Logger,
-): TweetEntityURL | null => {
+): Promise<TweetEntityURL | null> => {
   logger.debug('URL entity element', entity);
   const shortURL = formatTCoURL(entity.getAttribute('href') ?? '');
   const text = [...entity.childNodes]
@@ -119,21 +119,19 @@ const parseEntityURL = (
     shortURL,
   };
   logger.debug('Request to expand t.co URL', requestMessage);
-  browser.runtime
-    .sendMessage(requestMessage)
-    .then((responseMessage: ExpandTCoURLResponseMessage) => {
-      logger.debug('Response to request', responseMessage);
-      if (responseMessage?.type !== 'ExpandTCoURL/Response') {
-        logger.warn('Unexpected response message', responseMessage);
-      }
-    });
+  const responseMessage: ExpandTCoURLResponseMessage =
+    await browser.runtime.sendMessage(requestMessage);
+  logger.debug('Response to request', responseMessage);
+  if (responseMessage?.type !== 'ExpandTCoURL/Response') {
+    logger.warn('Unexpected response message', responseMessage);
+  }
   return { type: 'url', short_url: shortURL, text };
 };
 
-const parseEntityHashtag = (
+const parseEntityHashtag = async (
   entity: Element,
   logger: Logger,
-): TweetEntityHashtag | null => {
+): Promise<TweetEntityHashtag | null> => {
   logger.debug('Hashtag entity element', entity);
   const text = entity.textContent;
   if (text === null || !text.startsWith('#')) {
@@ -144,10 +142,10 @@ const parseEntityHashtag = (
   return { type: 'hashtag', text, tag };
 };
 
-const parseEntityCashtag = (
+const parseEntityCashtag = async (
   entity: Element,
   logger: Logger,
-): TweetEntityCashtag | null => {
+): Promise<TweetEntityCashtag | null> => {
   logger.debug('Cashtag entity element', entity);
   const text = entity.textContent;
   if (text === null || !text.startsWith('$')) {
@@ -158,10 +156,10 @@ const parseEntityCashtag = (
   return { type: 'cashtag', text, tag };
 };
 
-const parseEntityMention = (
+const parseEntityMention = async (
   entity: Element,
   logger: Logger,
-): TweetEntityMention | null => {
+): Promise<TweetEntityMention | null> => {
   logger.debug('Mention entity element', entity);
   const text = entity.textContent;
   if (text === null || !text.startsWith('@')) {
@@ -173,7 +171,10 @@ const parseEntityMention = (
 };
 
 const entityParsers: {
-  [key in EntityType]: (element: Element, logger: Logger) => TweetEntity | null;
+  [key in EntityType]: (
+    element: Element,
+    logger: Logger,
+  ) => Promise<TweetEntity | null>;
 } = {
   text: parseEntityText,
   emoji: parseEntityEmoji,

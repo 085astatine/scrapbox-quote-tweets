@@ -12,11 +12,11 @@ import {
   User,
 } from './tweet';
 
-export const parseTweet = (
+export const parseTweet = async (
   id: TweetID,
   element: Element,
   logger: Logger = defaultLogger,
-): Tweet | null => {
+): Promise<Tweet | null> => {
   const tweet = getElement('ancestor::article[@data-testid="tweet"]', element);
   logger.debug('tweet element', tweet);
   if (tweet === null) {
@@ -38,7 +38,7 @@ export const parseTweet = (
     return null;
   }
   // Tweet.text
-  const text = parseTweetText(tweet, logger);
+  const text = await parseTweetText(tweet, logger);
   logger.debug('Tweet.text', text);
   const result: Tweet = { id, timestamp, author, text };
   // card
