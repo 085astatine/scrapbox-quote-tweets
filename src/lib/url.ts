@@ -65,3 +65,39 @@ export const formatTwimgURL = (url: string): string => {
   }
   return url;
 };
+
+export const getURLTitle = async (
+  url: string,
+  logger: Logger = defaultLogger,
+): Promise<string | null> => {
+  logger.debug(`Get the title of ${url}`);
+  // check Content-Type is text/html
+  const isHTML = await fetch(url, { method: 'HEAD' })
+    .then((response) => {
+      const contentType = response.headers.get('Content-Type');
+      logger.debug('Get the Content-Type of URL', { url, contentType });
+      return contentType?.startsWith('text/html');
+    })
+    .catch((error) => {
+      logger.warn(`Failed to fetch to URL(${url})`, error);
+      return false;
+    });
+  if (!isHTML) {
+    logger.debug(`"${url}" is not text/html`);
+    return null;
+  }
+  // get title
+  const title = await fetch(url)
+    .then((response) => response.text())
+    .then((text) => {
+      const parser = new DOMParser();
+      const head = parser.parseFromString(text, 'text/html');
+      return head.title;
+    })
+    .catch((error) => {
+      logger.warn(`Failed to access to URL(${url})`, error);
+      return null;
+    });
+  logger.debug('Get the title of URL', { url, title });
+  return title;
+};
