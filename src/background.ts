@@ -151,6 +151,7 @@ if (process.env.TARGET_BROWSER === 'firefox') {
           'https://api.twitter.com/*',
           'https://twitter.com/*',
           'https://scrapbox.io/*',
+          'https://*/*',
         ],
       });
       // open popup
