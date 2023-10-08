@@ -1,5 +1,10 @@
+import browser from 'webextension-polyfill';
 import { getElement, isHTMLElement } from '~/lib/dom';
 import { Logger, logger as defaultLogger } from '~/lib/logger';
+import {
+  ExpandTCoURLRequestMessage,
+  ExpandTCoURLResponseMessage,
+} from '~/lib/message';
 import { formatTCoURL } from '~/lib/url';
 import {
   TweetEntity,
@@ -108,6 +113,20 @@ const parseEntityURL = (
       return '';
     })
     .join('');
+  // request expand https://t.co/...
+  const requestMessage: ExpandTCoURLRequestMessage = {
+    type: 'ExpandTCoURL/Request',
+    shortURL,
+  };
+  logger.debug('Request to expand t.co URL', requestMessage);
+  browser.runtime
+    .sendMessage(requestMessage)
+    .then((responseMessage: ExpandTCoURLResponseMessage) => {
+      logger.debug('Response to request', responseMessage);
+      if (responseMessage?.type !== 'ExpandTCoURL/Response') {
+        logger.warn('Unexpected response message', responseMessage);
+      }
+    });
   return { type: 'url', short_url: shortURL, text };
 };
 

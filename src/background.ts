@@ -6,6 +6,8 @@ import {
   ClipboardCloseAllRequestMessage,
   ClipboardCloseRequestMessage,
   ClipboardOpenRequestMessage,
+  ExpandTCoURLRequestMessage,
+  ExpandTCoURLResponseMessage,
   TweetCopyFailureMessage,
   TweetCopyRequestMessage,
   TweetCopyResponseMessage,
@@ -14,6 +16,7 @@ import {
 import { storage } from '~/lib/storage';
 import { Tweet, TweetID } from '~/lib/tweet';
 import { twitterAPIClient } from '~/lib/twitter-api-client';
+import { expandTCoURL, getURLTitle } from '~/lib/url';
 
 logger.info('background script');
 
@@ -40,16 +43,19 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // onMessage Listener
-type Message =
+type RequestMessage =
   | ClipboardCloseRequestMessage
   | ClipboardCloseAllRequestMessage
   | ClipboardOpenRequestMessage
+  | ExpandTCoURLRequestMessage
   | TweetCopyRequestMessage;
 
+type ResponseMessage = ExpandTCoURLResponseMessage;
+
 const onMessageListener = async (
-  message: Message,
+  message: RequestMessage,
   sender: browser.Runtime.MessageSender,
-): Promise<void> => {
+): Promise<void | ResponseMessage> => {
   logger.debug('on message', { message, sender });
   switch (message.type) {
     case 'Clipboard/OpenRequest':
@@ -61,6 +67,9 @@ const onMessageListener = async (
     case 'Clipboard/CloseAllRequest':
       clipboards.closeAll();
       break;
+    case 'ExpandTCoURL/Request':
+      logger.info(`Request to expand URL("${message.shortURL}")`);
+      return await respondToExpandTCoURLRequest(message.shortURL);
     case 'TweetCopy/Request':
       logger.info(`[${message.tweetID}] tweet copy request`);
       twitterClient.requestTweets([message.tweetID]);
@@ -162,3 +171,27 @@ if (process.env.TARGET_BROWSER === 'firefox') {
     },
   );
 }
+
+// Respond to ExpandTCoURL/Request
+const respondToExpandTCoURLRequest = async (
+  shortURL: string,
+): Promise<ExpandTCoURLResponseMessage> => {
+  // expand https://t.co/...
+  const expandedURL = await expandTCoURL(shortURL, logger);
+  if (expandedURL === null) {
+    return {
+      type: 'ExpandTCoURL/Response',
+      ok: false,
+      shortURL,
+    };
+  }
+  // get title
+  const title = await getURLTitle(expandedURL, logger);
+  return {
+    type: 'ExpandTCoURL/Response',
+    ok: true,
+    shortURL,
+    expandedURL,
+    ...(title !== null ? { title } : {}),
+  };
+};
