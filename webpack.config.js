@@ -16,7 +16,7 @@ module.exports = (env, argv) => {
     devtool: mode === 'production' ? false : 'cheap-source-map',
     context: __dirname,
     entry: {
-      background: './src/background.ts',
+      background: './src/background/index.ts',
       clipboard: './src/clipboard/index.tsx',
       'content-scrapbox': './src/content-scrapbox/index.tsx',
       'content-twitter': './src/content-twitter/index.tsx',

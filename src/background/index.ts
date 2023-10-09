@@ -17,6 +17,7 @@ import { storage } from '~/lib/storage';
 import { Tweet, TweetID } from '~/lib/tweet';
 import { twitterAPIClient } from '~/lib/twitter-api-client';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
+import { setupOffscreen } from './offscreen';
 
 logger.info('background script');
 
@@ -170,6 +171,12 @@ if (process.env.TARGET_BROWSER === 'firefox') {
       browser.action.setPopup({ popup: null });
     },
   );
+}
+
+// offscreen (for chrome)
+const offscreen = setupOffscreen(logger);
+if (process.env.TARGET_BROWSER === 'chrome') {
+  offscreen.open();
 }
 
 // Respond to ExpandTCoURL/Request

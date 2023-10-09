@@ -43,5 +43,7 @@
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
-  }
+  },
+
+  "__chrome__minimum_chrome_version": "116"
 }
