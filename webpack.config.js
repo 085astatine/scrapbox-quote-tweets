@@ -16,13 +16,16 @@ module.exports = (env, argv) => {
     devtool: mode === 'production' ? false : 'cheap-source-map',
     context: __dirname,
     entry: {
-      background: './src/background.ts',
+      background: './src/background/index.ts',
       clipboard: './src/clipboard/index.tsx',
       'content-scrapbox': './src/content-scrapbox/index.tsx',
       'content-twitter': './src/content-twitter/index.tsx',
       options: './src/options/index.tsx',
       popup: './src/popup/index.tsx',
       manifest: './src/manifest.json',
+      ...(browser === 'chrome'
+        ? { offscreen: './src/offscreen/index.ts' }
+        : {}),
     },
     output: {
       path: path.join(__dirname, 'build', mode, browser),
@@ -101,6 +104,15 @@ module.exports = (env, argv) => {
         template: 'src/popup/index.html',
         chunks: ['popup'],
       }),
+      ...(browser === 'chrome'
+        ? [
+            new HtmlPlugin({
+              filename: 'offscreen.html',
+              template: 'src/offscreen/index.html',
+              chunks: ['offscreen'],
+            }),
+          ]
+        : []),
       new MiniCssExtractPlugin(),
       new NodePolyfillPlugin(),
       new WextManifestPlugin(),

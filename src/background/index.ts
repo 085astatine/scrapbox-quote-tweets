@@ -8,6 +8,7 @@ import {
   ClipboardOpenRequestMessage,
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
+  ForwardToOffscreenMessage,
   TweetCopyFailureMessage,
   TweetCopyRequestMessage,
   TweetCopyResponseMessage,
@@ -17,6 +18,7 @@ import { storage } from '~/lib/storage';
 import { Tweet, TweetID } from '~/lib/tweet';
 import { twitterAPIClient } from '~/lib/twitter-api-client';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
+import { setupOffscreen } from './offscreen';
 
 logger.info('background script');
 
@@ -69,7 +71,9 @@ const onMessageListener = async (
       break;
     case 'ExpandTCoURL/Request':
       logger.info(`Request to expand URL("${message.shortURL}")`);
-      return await respondToExpandTCoURLRequest(message.shortURL);
+      return process.env.TARGET_BROWSER !== 'chrome'
+        ? await respondToExpandTCoURLRequest(message.shortURL)
+        : await forwardExpandTCoURLRequestToOffscreen(message);
     case 'TweetCopy/Request':
       logger.info(`[${message.tweetID}] tweet copy request`);
       twitterClient.requestTweets([message.tweetID]);
@@ -172,6 +176,9 @@ if (process.env.TARGET_BROWSER === 'firefox') {
   );
 }
 
+// offscreen (for chrome)
+const offscreen = setupOffscreen(logger);
+
 // Respond to ExpandTCoURL/Request
 const respondToExpandTCoURLRequest = async (
   shortURL: string,
@@ -194,4 +201,21 @@ const respondToExpandTCoURLRequest = async (
     expandedURL,
     ...(title !== null ? { title } : {}),
   };
+};
+
+// Forward ExpandTCoURL/Request to offscreen
+const forwardExpandTCoURLRequestToOffscreen = async (
+  message: ExpandTCoURLRequestMessage,
+): Promise<ExpandTCoURLResponseMessage> => {
+  await offscreen.open();
+  logger.debug('forward to offscreen', message);
+  const request: ForwardToOffscreenMessage<ExpandTCoURLRequestMessage> = {
+    type: 'Forward/ToOffscreen',
+    message,
+  };
+  const response: ExpandTCoURLResponseMessage =
+    await browser.runtime.sendMessage(request);
+  logger.debug('response from offscreen', response);
+  await offscreen.close();
+  return response;
 };

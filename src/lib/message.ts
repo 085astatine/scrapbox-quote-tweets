@@ -56,3 +56,8 @@ export interface ExpandTCoURLFailureMessage {
 export type ExpandTCoURLResponseMessage =
   | ExpandTCoURLSuccessMessage
   | ExpandTCoURLFailureMessage;
+
+export interface ForwardToOffscreenMessage<Message> {
+  type: 'Forward/ToOffscreen';
+  message: Message;
+}
