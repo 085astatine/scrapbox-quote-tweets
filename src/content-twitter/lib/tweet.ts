@@ -55,10 +55,13 @@ export interface MediaVideo {
 
 export type Media = MediaPhoto | MediaVideo;
 
-export interface Card {
+export interface CardSingle {
+  type: 'single';
   link_url: string;
   image_url: string;
 }
+
+export type Card = CardSingle;
 
 export interface Tweet {
   id: TweetID;

@@ -3,7 +3,7 @@ import { Logger, logger as defaultLogger } from '~/lib/logger';
 import { formatTCoURL, formatTwimgURL } from '~/lib/url';
 import { parseTweetText } from './parse-tweet-text';
 import {
-  Card,
+  CardSingle,
   Media,
   MediaPhoto,
   MediaVideo,
@@ -42,7 +42,7 @@ export const parseTweet = async (
   logger.debug('Tweet.text', text);
   const result: Tweet = { id, timestamp, author, text };
   // card
-  const card = parseCard(tweet, logger);
+  const card = parseCardSingle(tweet, logger);
   logger.debug('Tweet.card', card);
   if (card !== null) {
     result.card = card;
@@ -200,7 +200,7 @@ const parseMediaVideo = (
   return { type: 'video', thumbnail: poster.textContent ?? '' };
 };
 
-const parseCard = (tweet: Element, logger: Logger): Card | null => {
+const parseCardSingle = (tweet: Element, logger: Logger): CardSingle | null => {
   const element = getElement('.//div[@data-testid="card.wrapper"]', tweet);
   if (element === null) {
     return null;
@@ -216,6 +216,7 @@ const parseCard = (tweet: Element, logger: Logger): Card | null => {
     return null;
   }
   return {
+    type: 'single',
     link_url: formatTCoURL(link),
     image_url: image,
   };
