@@ -28,7 +28,7 @@ export const parseTweet = async (
   const tweet = getElement('ancestor::article[@data-testid="tweet"]', element);
   logger.debug('tweet element', tweet);
   if (tweet === null) {
-    logger.warn('<div data-testid="tweet"> is not found');
+    logger.warn('<article data-testid="tweet"> is not found');
     return null;
   }
   // Tweet.timestamp
