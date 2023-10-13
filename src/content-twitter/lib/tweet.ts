@@ -67,7 +67,13 @@ export interface CardSingle {
   media_url: string;
 }
 
-export type Card = CardSingle;
+export interface CardCarousel {
+  type: 'carousel';
+  link?: CardLink;
+  media_urls: string[];
+}
+
+export type Card = CardSingle | CardCarousel;
 
 export interface Tweet {
   id: TweetID;

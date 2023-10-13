@@ -8,6 +8,8 @@ import {
 import { formatTCoURL, formatTwimgURL } from '~/lib/url';
 import { parseTweetText } from './parse-tweet-text';
 import {
+  Card,
+  CardCarousel,
   CardLink,
   CardSingle,
   Media,
@@ -48,7 +50,7 @@ export const parseTweet = async (
   logger.debug('Tweet.text', text);
   const result: Tweet = { id, timestamp, author, text };
   // card
-  const card = await parseCardSingle(tweet, logger);
+  const card = await parseCard(tweet, logger);
   logger.debug('Tweet.card', card);
   if (card !== null) {
     result.card = card;
@@ -206,27 +208,76 @@ const parseMediaVideo = (
   return { type: 'video', thumbnail: poster.textContent ?? '' };
 };
 
-const parseCardSingle = async (
+const parseCard = async (
   tweet: Element,
   logger: Logger,
-): Promise<CardSingle | null> => {
-  const element = getElement('.//div[@data-testid="card.wrapper"]', tweet);
-  if (element === null) {
+): Promise<Card | null> => {
+  const card = getElement('.//div[@data-testid="card.wrapper"]', tweet);
+  if (card === null) {
     return null;
   }
-  const media = getNode('.//img/@src | .//video/@poster', element)?.textContent;
+  const type: Card['type'] =
+    getElements('.//ul/li', card).length > 0 ? 'carousel' : 'single';
+  switch (type) {
+    case 'single':
+      return await parseCardSingle(card, logger);
+    case 'carousel':
+      return await parseCardCarousel(card, logger);
+    default: {
+      const _: never = type;
+      return _;
+    }
+  }
+};
+
+const parseCardSingle = async (
+  card: Element,
+  logger: Logger,
+): Promise<CardSingle | null> => {
+  if (getElement('self::div[@data-testid="card.wrapper"]', card) === null) {
+    return null;
+  }
+  const media = getNode('.//img/@src | .//video/@poster', card)?.textContent;
   if (!media) {
     logger.warn('<img src="..."> or <video poster="..."> is not found in card');
     return null;
   }
   const link = await parseCardLink(
-    getNode('.//a/@href', element)?.textContent,
+    getNode('.//a/@href', card)?.textContent,
     logger,
   );
   return {
     type: 'single',
     ...(link !== null ? { link } : {}),
     media_url: media,
+  };
+};
+
+const parseCardCarousel = async (
+  card: Element,
+  logger: Logger,
+): Promise<CardCarousel | null> => {
+  if (getElement('self::div[@data-testid="card.wrapper"]', card) === null) {
+    return null;
+  }
+  // media URLs
+  const mediaURLs: string[] = [];
+  for (const listItem of getElements('.//ul/li', card)) {
+    const media = getNode('.//img/@src | .//video/@poster', listItem)
+      ?.textContent;
+    if (media) {
+      mediaURLs.push(media);
+    }
+  }
+  // link
+  const link = await parseCardLink(
+    getNode('.//a/@href', card)?.textContent,
+    logger,
+  );
+  return {
+    type: 'carousel',
+    ...(link !== null ? { link } : {}),
+    media_urls: mediaURLs,
   };
 };
 
