@@ -55,10 +55,16 @@ export interface MediaVideo {
 
 export type Media = MediaPhoto | MediaVideo;
 
+export interface CardLink {
+  url: string;
+  expanded_url: string;
+  title?: string;
+}
+
 export interface CardSingle {
   type: 'single';
-  link_url: string;
-  image_url: string;
+  link?: CardLink;
+  media_url: string;
 }
 
 export type Card = CardSingle;

@@ -1,8 +1,14 @@
+import browser from 'webextension-polyfill';
 import { getElement, getElements, getNode } from '~/lib/dom';
 import { Logger, logger as defaultLogger } from '~/lib/logger';
+import {
+  ExpandTCoURLRequestMessage,
+  ExpandTCoURLResponseMessage,
+} from '~/lib/message';
 import { formatTCoURL, formatTwimgURL } from '~/lib/url';
 import { parseTweetText } from './parse-tweet-text';
 import {
+  CardLink,
   CardSingle,
   Media,
   MediaPhoto,
@@ -42,7 +48,7 @@ export const parseTweet = async (
   logger.debug('Tweet.text', text);
   const result: Tweet = { id, timestamp, author, text };
   // card
-  const card = parseCardSingle(tweet, logger);
+  const card = await parseCardSingle(tweet, logger);
   logger.debug('Tweet.card', card);
   if (card !== null) {
     result.card = card;
@@ -200,24 +206,61 @@ const parseMediaVideo = (
   return { type: 'video', thumbnail: poster.textContent ?? '' };
 };
 
-const parseCardSingle = (tweet: Element, logger: Logger): CardSingle | null => {
+const parseCardSingle = async (
+  tweet: Element,
+  logger: Logger,
+): Promise<CardSingle | null> => {
   const element = getElement('.//div[@data-testid="card.wrapper"]', tweet);
   if (element === null) {
     return null;
   }
-  const link = getNode('.//a/@href', element)?.textContent;
-  if (!link) {
-    logger.warn('<a href="..."> is not found in card');
+  const media = getNode('.//img/@src | .//video/@poster', element)?.textContent;
+  if (!media) {
+    logger.warn('<img src="..."> or <video poster="..."> is not found in card');
     return null;
   }
-  const image = getNode('.//img/@src', element)?.textContent;
-  if (!image) {
-    logger.warn('<img src="..."> is not found in card');
-    return null;
-  }
+  const link = await parseCardLink(
+    getNode('.//a/@href', element)?.textContent,
+    logger,
+  );
   return {
     type: 'single',
-    link_url: formatTCoURL(link),
-    image_url: image,
+    ...(link !== null ? { link } : {}),
+    media_url: media,
+  };
+};
+
+const parseCardLink = async (
+  href: string | undefined | null,
+  logger: Logger,
+): Promise<CardLink | null> => {
+  if (!href) {
+    return null;
+  }
+  const url = formatTCoURL(href);
+  // request expand https://t.co/...
+  const request: ExpandTCoURLRequestMessage = {
+    type: 'ExpandTCoURL/Request',
+    shortURL: url,
+  };
+  logger.debug('Request to expand t.co URL', request);
+  const { expandedURL, title } = await browser.runtime
+    .sendMessage(request)
+    .then((response: ExpandTCoURLResponseMessage) => {
+      logger.debug('Response to request', response);
+      if (response?.type === 'ExpandTCoURL/Response') {
+        if (response?.ok) {
+          const { expandedURL, title } = response;
+          return { expandedURL, title };
+        }
+      } else {
+        logger.warn('Unexpected response message', response);
+      }
+      return { expandedURL: url };
+    });
+  return {
+    url,
+    expanded_url: expandedURL,
+    ...(title !== undefined ? { title } : []),
   };
 };
