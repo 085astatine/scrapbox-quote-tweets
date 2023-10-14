@@ -6,6 +6,7 @@ import {
   ExpandTCoURLResponseMessage,
 } from '~/lib/message';
 import { formatTCoURL, formatTwimgURL } from '~/lib/url';
+import { ParseTweetError } from './error';
 import { parseTweetText } from './parse-tweet-text';
 import {
   Card,
@@ -28,22 +29,25 @@ export const parseTweet = async (
   const tweet = getElement('ancestor::article[@data-testid="tweet"]', element);
   logger.debug('tweet element', tweet);
   if (tweet === null) {
-    logger.warn('<article data-testid="tweet"> is not found');
-    return null;
+    const error = '<article data-testid="tweet"> is not found';
+    logger.warn(error);
+    throw new ParseTweetError(id, error);
   }
   // Tweet.timestamp
   const timestamp = parseTimestamp(tweet, logger);
   logger.debug('Tweet.timestamp', timestamp);
   if (timestamp === null) {
-    logger.warn('Failed to parse Tweet.timesamp');
-    return null;
+    const error = 'Failed to parse Tweet.timesamp';
+    logger.warn(error);
+    throw new ParseTweetError(id, error);
   }
   // Tweet.author
   const author = parseUser(tweet, logger);
   logger.debug('Tweet.author', author);
   if (author === null) {
-    logger.warn('Falied to parse Tweet.author');
-    return null;
+    const error = 'Falied to parse Tweet.author';
+    logger.warn(error);
+    throw new ParseTweetError(id, error);
   }
   // Tweet.text
   const text = await parseTweetText(tweet, logger);
