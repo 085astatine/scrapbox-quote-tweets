@@ -54,7 +54,7 @@ export const parseTweet = async (
   logger.debug('Tweet.text', text);
   const result: Tweet = { id, timestamp, author, text };
   // card
-  const card = await parseCard(tweet, logger);
+  const card = await parseCard(id, tweet, logger);
   logger.debug('Tweet.card', card);
   if (card !== null) {
     result.card = card;
@@ -213,6 +213,7 @@ const parseMediaVideo = (
 };
 
 const parseCard = async (
+  id: TweetID,
   tweet: Element,
   logger: Logger,
 ): Promise<Card | null> => {
@@ -226,7 +227,7 @@ const parseCard = async (
     case 'single':
       return await parseCardSingle(card, logger);
     case 'carousel':
-      return await parseCardCarousel(card, logger);
+      return await parseCardCarousel(id, card, logger);
     default: {
       const _: never = type;
       return _;
@@ -258,6 +259,7 @@ const parseCardSingle = async (
 };
 
 const parseCardCarousel = async (
+  id: TweetID,
   card: Element,
   logger: Logger,
 ): Promise<CardCarousel | null> => {
@@ -271,6 +273,8 @@ const parseCardCarousel = async (
       ?.textContent;
     if (media) {
       mediaURLs.push(media);
+    } else {
+      throw new ParseTweetError(id, 'Some media in carousel ad is not loading');
     }
   }
   // link
