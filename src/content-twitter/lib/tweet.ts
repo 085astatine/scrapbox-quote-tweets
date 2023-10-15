@@ -55,10 +55,25 @@ export interface MediaVideo {
 
 export type Media = MediaPhoto | MediaVideo;
 
-export interface Card {
-  link_url: string;
-  image_url: string;
+export interface CardLink {
+  url: string;
+  expanded_url: string;
+  title?: string;
 }
+
+export interface CardSingle {
+  type: 'single';
+  link?: CardLink;
+  media_url: string;
+}
+
+export interface CardCarousel {
+  type: 'carousel';
+  link?: CardLink;
+  media_urls: string[];
+}
+
+export type Card = CardSingle | CardCarousel;
 
 export interface Tweet {
   id: TweetID;
