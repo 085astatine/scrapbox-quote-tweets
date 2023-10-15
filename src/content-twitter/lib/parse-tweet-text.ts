@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { getElement, isHTMLElement } from '~/lib/dom';
+import { getElement, getNode, isHTMLElement } from '~/lib/dom';
 import { Logger, logger as defaultLogger } from '~/lib/logger';
 import {
   ExpandTCoURLRequestMessage,
@@ -153,7 +153,13 @@ const parseEntityHashtag = async (
     return null;
   }
   const tag = text.replace(/^#/, '');
-  return { type: 'hashtag', text, tag };
+  const hashmoji = getNode('./a/img/@src', entity)?.textContent;
+  return {
+    type: 'hashtag',
+    text,
+    tag,
+    ...(hashmoji ? { hashmoji } : {}),
+  };
 };
 
 const parseEntityCashtag = async (
