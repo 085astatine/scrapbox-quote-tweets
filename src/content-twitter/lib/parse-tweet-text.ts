@@ -5,7 +5,7 @@ import {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
 } from '~/lib/message';
-import { formatTCoURL } from '~/lib/url';
+import { decodeURL, formatTCoURL } from '~/lib/url';
 import {
   TweetEntity,
   TweetEntityCashtag,
@@ -138,6 +138,7 @@ const parseEntityURL = async (
     text,
     short_url: shortURL,
     expanded_url: expandedURL,
+    decoded_url: decodeURL(expandedURL),
     ...(title !== undefined ? { title } : {}),
   };
 };

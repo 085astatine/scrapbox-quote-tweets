@@ -15,6 +15,7 @@ export interface TweetEntityURL {
   text: string;
   short_url: string;
   expanded_url: string;
+  decoded_url: string;
   title?: string;
 }
 
@@ -59,6 +60,7 @@ export type Media = MediaPhoto | MediaVideo;
 export interface CardLink {
   url: string;
   expanded_url: string;
+  decoded_url: string;
   title?: string;
 }
 
