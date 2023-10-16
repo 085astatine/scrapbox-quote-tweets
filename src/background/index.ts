@@ -9,6 +9,8 @@ import {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
   ForwardToOffscreenMessage,
+  SaveTweetRequestMessage,
+  SaveTweetResponseMessage,
   TweetCopyFailureMessage,
   TweetCopyRequestMessage,
   TweetCopyResponseMessage,
@@ -50,9 +52,10 @@ type RequestMessage =
   | ClipboardCloseAllRequestMessage
   | ClipboardOpenRequestMessage
   | ExpandTCoURLRequestMessage
+  | SaveTweetRequestMessage
   | TweetCopyRequestMessage;
 
-type ResponseMessage = ExpandTCoURLResponseMessage;
+type ResponseMessage = ExpandTCoURLResponseMessage | SaveTweetResponseMessage;
 
 const onMessageListener = async (
   message: RequestMessage,
@@ -74,6 +77,13 @@ const onMessageListener = async (
       return process.env.TARGET_BROWSER !== 'chrome'
         ? await respondToExpandTCoURLRequest(message.shortURL)
         : await forwardExpandTCoURLRequestToOffscreen(message);
+    case 'SaveTweet/Request':
+      return {
+        type: 'SaveTweet/Response',
+        ok: true,
+        tweetID: message.tweet.id,
+      };
+      break;
     case 'TweetCopy/Request':
       logger.info(`[${message.tweetID}] tweet copy request`);
       twitterClient.requestTweets([message.tweetID]);

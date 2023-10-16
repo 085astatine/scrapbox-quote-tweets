@@ -12,6 +12,10 @@ import browser from 'webextension-polyfill';
 import ScrapboxIcon from '~/icon/scrapbox.svg';
 import CloseIcon from '~/icon/x.svg';
 import { logger } from '~/lib/logger';
+import {
+  SaveTweetRequestMessage,
+  SaveTweetResponseMessage,
+} from '~/lib/message';
 import { TweetID } from '~/lib/tweet';
 import { toTweetIDKey } from '~/lib/tweet-id-key';
 import { parseTweet } from '../lib/parse-tweet';
@@ -96,23 +100,51 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     }
   }, [tooltipVisibility, tooltipMessage?.type]);
   // click: copy button
-  const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
+  const onClick = async (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     // set state
     setIsClicked(true);
     dispatch(updateAction({ tweetID, state: { state: 'in-progress' } }));
     // parse tweet
-    if (ref?.current) {
-      parseTweet(tweetID, ref.current).then((tweet) =>
-        logger.debug('tweet', tweet),
+    if (!ref?.current) {
+      logger.warn(`[tweet ID: ${tweetID}]: reference to DOM is null`);
+      return;
+    }
+    const tweet = await parseTweet(tweetID, ref.current).catch((error) => {
+      logger.warn(`[tweet ID: ${tweetID}]: failed to parse tweet`, error);
+      dispatch(
+        updateAction({
+          tweetID,
+          state: { state: 'failure', message: error.message },
+        }),
       );
+      return null;
+    });
+    logger.info('tweet', tweet);
+    if (tweet === null) {
+      return;
     }
     // send message to background
-    logger.info(`[Tweet ID: ${tweetID}] copy request`);
-    browser.runtime.sendMessage({
-      type: 'TweetCopy/Request',
-      tweetID,
-    });
+    logger.info(`[Tweet ID: ${tweetID}] save request`);
+    const request: SaveTweetRequestMessage = {
+      type: 'SaveTweet/Request',
+      tweet,
+    };
+    const response: SaveTweetResponseMessage =
+      await browser.runtime.sendMessage(request);
+    logger.debug(`[Tweet ID: ${tweetID}] response`, response);
+    if (response?.type === 'SaveTweet/Response') {
+      if (response.ok) {
+        dispatch(updateAction({ tweetID, state: { state: 'success' } }));
+      } else {
+        dispatch(
+          updateAction({
+            tweetID,
+            state: { state: 'failure', message: response.error },
+          }),
+        );
+      }
+    }
   };
   // click: tooltip close
   const onTooltipClose = React.useCallback(() => {
