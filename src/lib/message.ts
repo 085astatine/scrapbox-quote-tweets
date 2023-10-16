@@ -1,4 +1,4 @@
-import { TweetID } from './tweet';
+import { Tweet, TweetID } from '~/content-twitter/lib/tweet';
 
 export interface ClipboardOpenRequestMessage {
   type: 'Clipboard/OpenRequest';
@@ -60,4 +60,31 @@ export type ExpandTCoURLResponseMessage =
 export interface ForwardToOffscreenMessage<Message> {
   type: 'Forward/ToOffscreen';
   message: Message;
+}
+
+export interface SaveTweetRequestMessage {
+  type: 'SaveTweet/Request';
+  tweet: Tweet;
+}
+
+export interface SaveTweetResponseSuccessMessage {
+  type: 'SaveTweet/Response';
+  ok: true;
+  tweetID: TweetID;
+}
+
+export interface SaveTweetResponseFailureMessage {
+  type: 'SaveTweet/Response';
+  ok: false;
+  tweetID: TweetID;
+  error: string;
+}
+
+export type SaveTweetResponseMessage =
+  | SaveTweetResponseSuccessMessage
+  | SaveTweetResponseFailureMessage;
+
+export interface SaveTweetReportMessage {
+  type: 'SaveTweet/Report';
+  tweetID: TweetID;
 }
