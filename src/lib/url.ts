@@ -1,3 +1,4 @@
+import punycode from 'punycode';
 import { Logger, logger as defaultLogger } from '~/lib/logger';
 
 export const isTCoURL = (url: string): boolean => {
@@ -100,4 +101,16 @@ export const getURLTitle = async (
     });
   logger.debug('Get the title of URL', { url, title });
   return title;
+};
+
+export const decodeURL = (url: string): string => {
+  try {
+    const host = new URL(url).host;
+    return decodeURI(url).replace(host, punycode.toUnicode(host));
+  } catch (error) {
+    if (!(error instanceof TypeError) || !(error instanceof URIError)) {
+      throw error;
+    }
+  }
+  return url;
 };

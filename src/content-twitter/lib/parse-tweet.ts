@@ -5,7 +5,7 @@ import {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
 } from '~/lib/message';
-import { formatTCoURL, formatTwimgURL } from '~/lib/url';
+import { decodeURL, formatTCoURL, formatTwimgURL } from '~/lib/url';
 import { ParseTweetError } from './error';
 import { parseTweetText } from './parse-tweet-text';
 import {
@@ -320,6 +320,7 @@ const parseCardLink = async (
   return {
     url,
     expanded_url: expandedURL,
+    decoded_url: decodeURL(expandedURL),
     ...(title !== undefined ? { title } : []),
   };
 };
