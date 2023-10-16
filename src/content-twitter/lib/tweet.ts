@@ -22,6 +22,7 @@ export interface TweetEntityHashtag {
   type: 'hashtag';
   text: string;
   tag: string;
+  hashmoji?: string;
 }
 
 export interface TweetEntityCashtag {
