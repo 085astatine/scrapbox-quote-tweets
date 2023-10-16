@@ -100,9 +100,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     event.stopPropagation();
     // set state
     setIsClicked(true);
-    dispatch(
-      updateAction({ tweetIDs: [tweetID], state: { state: 'in-progress' } }),
-    );
+    dispatch(updateAction({ tweetID, state: { state: 'in-progress' } }));
     // parse tweet
     if (ref?.current) {
       parseTweet(tweetID, ref.current).then((tweet) =>

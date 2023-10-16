@@ -5,11 +5,10 @@ import browser from 'webextension-polyfill';
 import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
 import { TweetCopyResponseMessage } from '~/lib/message';
-import { storage } from '~/lib/storage';
 import { CopyButton } from './component/copy-button';
 import './index.scss';
 import { insertReactRoot } from './lib/insert-react-root';
-import { touchAction, updateAction } from './state';
+import { initializeAction, touchAction, updateAction } from './state';
 import { store } from './store';
 
 logger.info('content script');
@@ -26,7 +25,7 @@ const observerCallback = (records: MutationRecord[]): void => {
       insertReactRoot(node, document.URL, logger).forEach(
         ({ tweetID, reactRoot }) => {
           // update store
-          store.dispatch(touchAction([tweetID]));
+          store.dispatch(touchAction(tweetID));
           // render by React
           const root = createRoot(reactRoot);
           root.render(
@@ -52,15 +51,7 @@ window.addEventListener('DOMContentLoaded', () => {
   };
   observer.observe(document.body, options);
   // Load saved TweetIDs from storage
-  storage.tweets.savedIDs().then((tweetIDs) => {
-    logger.debug('Saved tweet IDs', tweetIDs);
-    store.dispatch(
-      updateAction({
-        tweetIDs,
-        state: { state: 'success' },
-      }),
-    );
-  });
+  store.dispatch(initializeAction());
 });
 
 // onMessage listener
@@ -71,21 +62,25 @@ const onMessageListener = (message: Message) => {
   switch (message.type) {
     case 'TweetCopy/Response': {
       if (message.ok) {
-        store.dispatch(
-          updateAction({
-            tweetIDs: message.tweetIDs,
-            state: { state: 'success' },
-          }),
+        message.tweetIDs.forEach((tweetID) =>
+          store.dispatch(
+            updateAction({
+              tweetID,
+              state: { state: 'success' },
+            }),
+          ),
         );
       } else {
-        store.dispatch(
-          updateAction({
-            tweetIDs: message.tweetIDs,
-            state: {
-              state: 'failure',
-              message: message.message,
-            },
-          }),
+        message.tweetIDs.forEach((tweetID) =>
+          store.dispatch(
+            updateAction({
+              tweetID,
+              state: {
+                state: 'failure',
+                message: message.message,
+              },
+            }),
+          ),
         );
       }
       break;
