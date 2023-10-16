@@ -12,28 +12,6 @@ export interface ClipboardCloseAllRequestMessage {
   type: 'Clipboard/CloseAllRequest';
 }
 
-export interface TweetCopyRequestMessage {
-  type: 'TweetCopy/Request';
-  tweetID: TweetID;
-}
-
-export interface TweetCopySuccessMessage {
-  type: 'TweetCopy/Response';
-  ok: true;
-  tweetIDs: TweetID[];
-}
-
-export interface TweetCopyFailureMessage {
-  type: 'TweetCopy/Response';
-  ok: false;
-  tweetIDs: TweetID[];
-  message: string;
-}
-
-export type TweetCopyResponseMessage =
-  | TweetCopySuccessMessage
-  | TweetCopyFailureMessage;
-
 export interface ExpandTCoURLRequestMessage {
   type: 'ExpandTCoURL/Request';
   shortURL: string;

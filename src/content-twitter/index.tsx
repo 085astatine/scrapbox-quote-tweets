@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import browser from 'webextension-polyfill';
 import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
-import { TweetCopyResponseMessage } from '~/lib/message';
+import { SaveTweetReportMessage } from '~/lib/message';
 import { CopyButton } from './component/copy-button';
 import './index.scss';
 import { insertReactRoot } from './lib/insert-react-root';
@@ -55,36 +55,19 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // onMessage listener
-type Message = TweetCopyResponseMessage;
+type Message = SaveTweetReportMessage;
 
 const onMessageListener = (message: Message) => {
   logger.debug('on message', message);
   switch (message.type) {
-    case 'TweetCopy/Response': {
-      if (message.ok) {
-        message.tweetIDs.forEach((tweetID) =>
-          store.dispatch(
-            updateAction({
-              tweetID,
-              state: { state: 'success' },
-            }),
-          ),
-        );
-      } else {
-        message.tweetIDs.forEach((tweetID) =>
-          store.dispatch(
-            updateAction({
-              tweetID,
-              state: {
-                state: 'failure',
-                message: message.message,
-              },
-            }),
-          ),
-        );
-      }
+    case 'SaveTweet/Report':
+      store.dispatch(
+        updateAction({
+          tweetID: message.tweetID,
+          state: { state: 'success' },
+        }),
+      );
       break;
-    }
     default: {
       const _: never = message.type;
       logger.error(`unexpected message "${message}"`);
