@@ -5,7 +5,7 @@ import {
   TweetV2LookupResult,
   TwitterApi,
 } from 'twitter-api-v2';
-import { JSONSchemaValidationError } from '../validate-json/jsonschema-validation-error';
+import { JSONSchemaValidationError } from '~/validate-json/jsonschema-validation-error';
 import { logger } from './logger';
 import { ParseTweetError, parseTweets } from './parse-tweets';
 import { storage } from './storage';
