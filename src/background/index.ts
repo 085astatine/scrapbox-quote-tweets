@@ -1,4 +1,3 @@
-import 'error-polyfill';
 import browser from 'webextension-polyfill';
 import { Tweet } from '~/content-twitter/lib/tweet';
 import { setupClipboardWindows } from '~/lib/clipboard';
@@ -17,7 +16,6 @@ import {
   SaveTweetResponseSuccessMessage,
 } from '~/lib/message';
 import { storage } from '~/lib/storage';
-import { twitterAPIClient } from '~/lib/twitter-api-client';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
 import { JSONSchemaValidationError } from '~/validate-json/jsonschema-validation-error';
 import { setupOffscreen } from './offscreen';
@@ -28,11 +26,6 @@ logger.info('background script');
 if (process.env.NODE_ENV !== 'production') {
   logger.debug('claer storage');
   storage.clear();
-  // save bearer token
-  if (process.env.BEARER_TOKEN !== undefined) {
-    logger.debug('save bearer token to storage');
-    storage.auth.bearerToken.save(process.env.BEARER_TOKEN);
-  }
   // login to twitter
   if (process.env.TWITTER_AUTH_TOKEN_COOKIE !== undefined) {
     logger.debug('set auth_token to coockies');
@@ -101,10 +94,6 @@ browser.tabs.onRemoved.addListener(onTabRemovedListener);
 
 // Clipboard
 const clipboards = setupClipboardWindows();
-
-// Twitter API Client
-const twitterClient = twitterAPIClient();
-twitterClient.setup();
 
 // browser action
 if (process.env.TARGET_BROWSER === 'firefox') {
