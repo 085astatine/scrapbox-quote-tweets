@@ -1,5 +1,6 @@
 import 'error-polyfill';
 import browser from 'webextension-polyfill';
+import { Tweet } from '~/content-twitter/lib/tweet';
 import { setupClipboardWindows } from '~/lib/clipboard';
 import { logger } from '~/lib/logger';
 import {
@@ -9,12 +10,16 @@ import {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
   ForwardToOffscreenMessage,
+  SaveTweetReportMessage,
   SaveTweetRequestMessage,
+  SaveTweetResponseFailureMessage,
   SaveTweetResponseMessage,
+  SaveTweetResponseSuccessMessage,
 } from '~/lib/message';
 import { storage } from '~/lib/storage';
 import { twitterAPIClient } from '~/lib/twitter-api-client';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
+import { JSONSchemaValidationError } from '~/validate-json/jsonschema-validation-error';
 import { setupOffscreen } from './offscreen';
 
 logger.info('background script');
@@ -72,11 +77,7 @@ const onMessageListener = async (
         ? await respondToExpandTCoURLRequest(message.shortURL)
         : await forwardExpandTCoURLRequestToOffscreen(message);
     case 'SaveTweet/Request':
-      return {
-        type: 'SaveTweet/Response',
-        ok: true,
-        tweetID: message.tweet.id,
-      };
+      return await respondToSaveTweetRequest(message.tweet);
       break;
     default: {
       const _: never = message;
@@ -173,4 +174,57 @@ const forwardExpandTCoURLRequestToOffscreen = async (
   logger.debug('response from offscreen', response);
   await offscreen.close();
   return response;
+};
+
+// Respond to SaveTweet/Request
+const respondToSaveTweetRequest = async (
+  tweet: Tweet,
+): Promise<SaveTweetResponseMessage> => {
+  return await storage.tweet
+    .save(tweet)
+    .then(() => {
+      // send SaveTweet/Report to all content-twitter
+      const report: SaveTweetReportMessage = {
+        type: 'SaveTweet/Report',
+        tweetID: tweet.id,
+      };
+      sendMessageToAllContentTwitter(report);
+      const response: SaveTweetResponseSuccessMessage = {
+        type: 'SaveTweet/Response',
+        ok: true,
+        tweetID: tweet.id,
+      };
+      return response;
+    })
+    .catch((error) => {
+      logger.warn('Failed to save to storage', error);
+      const message =
+        error instanceof JSONSchemaValidationError
+          ? 'Validation Error'
+          : 'Unknown Error';
+      const response: SaveTweetResponseFailureMessage = {
+        type: 'SaveTweet/Response',
+        ok: false,
+        tweetID: tweet.id,
+        error: message,
+      };
+      return response;
+    });
+};
+
+// Send message to all content-twitter
+const sendMessageToAllContentTwitter = async (
+  message: SaveTweetReportMessage,
+) => {
+  browser.tabs.query({ url: 'https://twitter.com/*' }).then((tabs) => {
+    logger.debug('send message to tabs', {
+      message,
+      tabs: tabs.map(({ index, id, url }) => ({ index, id, url })),
+    });
+    tabs.forEach((tab) => {
+      if (tab.id !== undefined) {
+        browser.tabs.sendMessage(tab.id, message);
+      }
+    });
+  });
 };

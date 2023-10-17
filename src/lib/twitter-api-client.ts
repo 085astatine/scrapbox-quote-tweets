@@ -77,7 +77,7 @@ export const twitterAPIClient = () => {
   };
   // save tweets
   const saveTweetsToStorage = async (tweets: Tweet[]): Promise<Tweet[]> => {
-    await storage.tweets.save(tweets);
+    // await storage.tweets.save(tweets);
     return Promise.resolve(tweets);
   };
   // error massage when requesting tweets
