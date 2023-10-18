@@ -1,4 +1,7 @@
 import Ajv, { JSONSchemaType } from 'ajv';
+import addFormats from 'ajv-formats';
+// @ts-expect-error ajv-formats-draft2019 has no .d.ts file
+import addFormatsDraft2019 from 'ajv-formats-draft2019';
 import standaloneCode from 'ajv/dist/standalone';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -24,10 +27,15 @@ const generate = <T>(
       source: true,
     },
   });
+  addFormats(ajv, ['uri']);
+  addFormatsDraft2019(ajv, { formats: ['iri'] });
   const validate = ajv.compile(schema);
   fs.writeFileSync(
     path.join(directory, `${output}.js`),
-    standaloneCode(ajv, validate),
+    standaloneCode(ajv, validate).replace(
+      /require\("ajv-formats\/dist\/formats"\)\.fullFormats\.iri/g,
+      'require("ajv-formats-draft2019/formats").iri',
+    ),
   );
   // generate .d.ts
   const code: string[] = [];
