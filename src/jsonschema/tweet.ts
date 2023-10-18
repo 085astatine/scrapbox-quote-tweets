@@ -1,5 +1,5 @@
 import { JSONSchemaType, SchemaObject } from 'ajv';
-import { Card, CardLink, CardSingle, Tweet } from '~/content-twitter/lib/tweet';
+import { Tweet } from '~/content-twitter/lib/tweet';
 
 const definitions: SchemaObject = {
   // URI
@@ -123,65 +123,53 @@ const definitions: SchemaObject = {
     required: ['type', 'thumbnail'],
     additionalProperties: false,
   },
-};
-
-export const cardLinkJSONSchema: JSONSchemaType<CardLink> = {
-  type: 'object',
-  properties: {
-    url: { $ref: '#/definitions/uri' },
-    expanded_url: { $ref: '#/definitions/uri' },
-    decoded_url: { $ref: '#/definitions/iri' },
-    title: {
-      type: 'string',
-      nullable: true,
-    },
+  // Card
+  card: {
+    type: 'object',
+    oneOf: [
+      { $ref: '#/definitions/card:single' },
+      { $ref: '#/definitions/card:carousel' },
+    ],
+    required: ['type'],
+    discriminator: { propertyName: 'type' },
   },
-  required: ['url', 'expanded_url', 'decoded_url'],
-  additionalProperties: false,
-};
-
-export const cardSingleJSONSchema: JSONSchemaType<CardSingle> = {
-  type: 'object',
-  properties: {
-    type: {
-      type: 'string',
-      const: 'single',
+  // CardLink
+  'card:link': {
+    type: 'object',
+    properties: {
+      url: { $ref: '#/definitions/uri' },
+      expanded_url: { $ref: '#/definitions/uri' },
+      decoded_url: { $ref: '#/definitions/iri' },
+      title: { type: 'string' },
     },
-    link: {
-      ...cardLinkJSONSchema,
-      nullable: true,
-    },
-    media_url: { $ref: '#/definitions/uri' },
+    required: ['url', 'expanded_url', 'decoded_url'],
+    additionalProperties: false,
   },
-  required: ['type', 'media_url'],
-  additionalProperties: false,
-};
-
-export const cardCarouselJSONSchema: SchemaObject = {
-  type: 'object',
-  properties: {
-    type: {
-      type: 'string',
-      const: 'carousel',
+  // CardSingle
+  'card:single': {
+    type: 'object',
+    properties: {
+      type: { const: 'single' },
+      link: { $ref: '#/definitions/card:link' },
+      media_url: { $ref: '#/definitions/uri' },
     },
-    link: {
-      ...cardLinkJSONSchema,
-      nullable: true,
-    },
-    media_urls: {
-      type: 'array',
-      items: { $ref: '#/definitions/uri' },
-    },
+    required: ['type', 'media_url'],
+    additionalProperties: false,
   },
-  required: ['type', 'media_urls'],
-  additionalProperties: false,
-};
-
-export const cardJSONSchema: JSONSchemaType<Card> = {
-  type: 'object',
-  oneOf: [cardSingleJSONSchema, cardCarouselJSONSchema],
-  required: ['type'],
-  discriminator: { propertyName: 'type' },
+  // CardCarousel
+  'card:carousel': {
+    type: 'object',
+    properties: {
+      type: { const: 'carousel' },
+      link: { $ref: '#/definitions/card:link' },
+      media_urls: {
+        type: 'array',
+        items: { $ref: '#/definitions/uri' },
+      },
+    },
+    required: ['type', 'media_urls'],
+    additionalProperties: false,
+  },
 };
 
 export const tweetJSONSchema = {
@@ -194,10 +182,7 @@ export const tweetJSONSchema = {
       type: 'array',
       items: { $ref: '#/definitions/entity' },
     },
-    card: {
-      ...cardJSONSchema,
-      nullable: true,
-    },
+    card: { $ref: '#/definitions/card' },
     media: {
       type: 'array',
       items: { $ref: '#/definitions/media' },
