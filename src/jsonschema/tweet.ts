@@ -13,7 +13,6 @@ import {
   TweetEntityMention,
   TweetEntityText,
   TweetEntityURL,
-  User,
 } from '~/content-twitter/lib/tweet';
 
 const definitions: SchemaObject = {
@@ -27,16 +26,16 @@ const definitions: SchemaObject = {
     type: 'string',
     format: 'iri',
   },
-};
-
-export const userJSONSchema: JSONSchemaType<User> = {
-  type: 'object',
-  properties: {
-    name: { type: 'string' },
-    username: { type: 'string' },
+  // User
+  user: {
+    type: 'object',
+    properties: {
+      name: { type: 'string' },
+      username: { type: 'string' },
+    },
+    required: ['name', 'username'],
+    additionalProperties: false,
   },
-  required: ['name', 'username'],
-  additionalProperties: false,
 };
 
 export const tweetEntityTextJSONSchema: JSONSchemaType<TweetEntityText> = {
@@ -231,7 +230,7 @@ export const tweetJSONSchema: JSONSchemaType<Tweet> = {
   properties: {
     id: { type: 'string' },
     timestamp: { type: 'integer' },
-    author: userJSONSchema,
+    author: { $ref: '#/definitions/user' },
     text: {
       type: 'array',
       items: tweetEntityJSONSchema,

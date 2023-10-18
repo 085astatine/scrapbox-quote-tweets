@@ -8,12 +8,7 @@ const schema11 = {
     properties: {
       id: { type: 'string' },
       timestamp: { type: 'integer' },
-      author: {
-        type: 'object',
-        properties: { name: { type: 'string' }, username: { type: 'string' } },
-        required: ['name', 'username'],
-        additionalProperties: false,
-      },
+      author: { $ref: '#/definitions/user' },
       text: {
         type: 'array',
         items: {
@@ -171,15 +166,33 @@ const schema11 = {
     definitions: {
       uri: { type: 'string', format: 'uri' },
       iri: { type: 'string', format: 'iri' },
+      user: {
+        type: 'object',
+        properties: { name: { type: 'string' }, username: { type: 'string' } },
+        required: ['name', 'username'],
+        additionalProperties: false,
+      },
     },
   },
   definitions: {
     uri: { type: 'string', format: 'uri' },
     iri: { type: 'string', format: 'iri' },
+    user: {
+      type: 'object',
+      properties: { name: { type: 'string' }, username: { type: 'string' } },
+      required: ['name', 'username'],
+      additionalProperties: false,
+    },
   },
 };
-const schema12 = { type: 'string', format: 'uri' };
-const schema14 = { type: 'string', format: 'iri' };
+const schema12 = {
+  type: 'object',
+  properties: { name: { type: 'string' }, username: { type: 'string' } },
+  required: ['name', 'username'],
+  additionalProperties: false,
+};
+const schema13 = { type: 'string', format: 'uri' };
+const schema15 = { type: 'string', format: 'iri' };
 const formats0 = require('ajv-formats/dist/formats').fullFormats.uri;
 const formats4 = require('ajv-formats-draft2019/formats').iri;
 function validate10(
@@ -327,7 +340,7 @@ function validate10(
             if (data3.name === undefined) {
               const err7 = {
                 instancePath: instancePath + '/' + i0 + '/author',
-                schemaPath: '#/items/properties/author/required',
+                schemaPath: '#/definitions/user/required',
                 keyword: 'required',
                 params: { missingProperty: 'name' },
                 message: "must have required property '" + 'name' + "'",
@@ -342,7 +355,7 @@ function validate10(
             if (data3.username === undefined) {
               const err8 = {
                 instancePath: instancePath + '/' + i0 + '/author',
-                schemaPath: '#/items/properties/author/required',
+                schemaPath: '#/definitions/user/required',
                 keyword: 'required',
                 params: { missingProperty: 'username' },
                 message: "must have required property '" + 'username' + "'",
@@ -358,7 +371,7 @@ function validate10(
               if (!(key1 === 'name' || key1 === 'username')) {
                 const err9 = {
                   instancePath: instancePath + '/' + i0 + '/author',
-                  schemaPath: '#/items/properties/author/additionalProperties',
+                  schemaPath: '#/definitions/user/additionalProperties',
                   keyword: 'additionalProperties',
                   params: { additionalProperty: key1 },
                   message: 'must NOT have additional properties',
@@ -375,7 +388,7 @@ function validate10(
               if (typeof data3.name !== 'string') {
                 const err10 = {
                   instancePath: instancePath + '/' + i0 + '/author/name',
-                  schemaPath: '#/items/properties/author/properties/name/type',
+                  schemaPath: '#/definitions/user/properties/name/type',
                   keyword: 'type',
                   params: { type: 'string' },
                   message: 'must be string',
@@ -392,8 +405,7 @@ function validate10(
               if (typeof data3.username !== 'string') {
                 const err11 = {
                   instancePath: instancePath + '/' + i0 + '/author/username',
-                  schemaPath:
-                    '#/items/properties/author/properties/username/type',
+                  schemaPath: '#/definitions/user/properties/username/type',
                   keyword: 'type',
                   params: { type: 'string' },
                   message: 'must be string',
@@ -409,7 +421,7 @@ function validate10(
           } else {
             const err12 = {
               instancePath: instancePath + '/' + i0 + '/author',
-              schemaPath: '#/items/properties/author/type',
+              schemaPath: '#/definitions/user/type',
               keyword: 'type',
               params: { type: 'object' },
               message: 'must be object',
