@@ -31,9 +31,9 @@ const schema11 = {
             properties: {
               type: { type: 'string', const: 'url' },
               text: { type: 'string' },
-              short_url: { type: 'string', format: 'uri' },
-              expanded_url: { type: 'string', format: 'uri' },
-              decoded_url: { type: 'string', format: 'iri' },
+              short_url: { $ref: '#/definitions/uri' },
+              expanded_url: { $ref: '#/definitions/uri' },
+              decoded_url: { $ref: '#/definitions/iri' },
               title: { type: 'string', nullable: true },
             },
             required: [
@@ -91,16 +91,16 @@ const schema11 = {
             link: {
               type: 'object',
               properties: {
-                url: { type: 'string', format: 'uri' },
-                expanded_url: { type: 'string', format: 'uri' },
-                decoded_url: { type: 'string', format: 'iri' },
+                url: { $ref: '#/definitions/uri' },
+                expanded_url: { $ref: '#/definitions/uri' },
+                decoded_url: { $ref: '#/definitions/iri' },
                 title: { type: 'string', nullable: true },
               },
               required: ['url', 'expanded_url', 'decoded_url'],
               additionalProperties: false,
               nullable: true,
             },
-            media_url: { type: 'string', format: 'uri' },
+            media_url: { $ref: '#/definitions/uri' },
           },
           required: ['type', 'media_url'],
           additionalProperties: false,
@@ -112,19 +112,16 @@ const schema11 = {
             link: {
               type: 'object',
               properties: {
-                url: { type: 'string', format: 'uri' },
-                expanded_url: { type: 'string', format: 'uri' },
-                decoded_url: { type: 'string', format: 'iri' },
+                url: { $ref: '#/definitions/uri' },
+                expanded_url: { $ref: '#/definitions/uri' },
+                decoded_url: { $ref: '#/definitions/iri' },
                 title: { type: 'string', nullable: true },
               },
               required: ['url', 'expanded_url', 'decoded_url'],
               additionalProperties: false,
               nullable: true,
             },
-            media_urls: {
-              type: 'array',
-              items: { type: 'string', format: 'uri' },
-            },
+            media_urls: { type: 'array', items: { $ref: '#/definitions/uri' } },
           },
           required: ['type', 'media_urls'],
           additionalProperties: false,
@@ -143,7 +140,7 @@ const schema11 = {
             type: 'object',
             properties: {
               type: { type: 'string', const: 'photo' },
-              url: { type: 'string', format: 'uri' },
+              url: { $ref: '#/definitions/uri' },
             },
             required: ['type', 'url'],
             additionalProperties: false,
@@ -152,7 +149,7 @@ const schema11 = {
             type: 'object',
             properties: {
               type: { type: 'string', const: 'video' },
-              thumbnail: { type: 'string', format: 'uri' },
+              thumbnail: { $ref: '#/definitions/uri' },
             },
             required: ['type', 'thumbnail'],
             additionalProperties: false,
@@ -166,7 +163,13 @@ const schema11 = {
   },
   required: ['id', 'timestamp', 'author', 'text'],
   additionalProperties: false,
+  definitions: {
+    uri: { type: 'string', format: 'uri' },
+    iri: { type: 'string', format: 'iri' },
+  },
 };
+const schema12 = { type: 'string', format: 'uri' };
+const schema14 = { type: 'string', format: 'iri' };
 const formats0 = require('ajv-formats/dist/formats').fullFormats.uri;
 const formats4 = require('ajv-formats-draft2019/formats').iri;
 function validate10(
@@ -721,8 +724,7 @@ function validate10(
                         const err30 = {
                           instancePath:
                             instancePath + '/text/' + i0 + '/short_url',
-                          schemaPath:
-                            '#/properties/text/items/oneOf/1/properties/short_url/format',
+                          schemaPath: '#/definitions/uri/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
@@ -738,8 +740,7 @@ function validate10(
                       const err31 = {
                         instancePath:
                           instancePath + '/text/' + i0 + '/short_url',
-                        schemaPath:
-                          '#/properties/text/items/oneOf/1/properties/short_url/type',
+                        schemaPath: '#/definitions/uri/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -759,8 +760,7 @@ function validate10(
                         const err32 = {
                           instancePath:
                             instancePath + '/text/' + i0 + '/expanded_url',
-                          schemaPath:
-                            '#/properties/text/items/oneOf/1/properties/expanded_url/format',
+                          schemaPath: '#/definitions/uri/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
@@ -776,8 +776,7 @@ function validate10(
                       const err33 = {
                         instancePath:
                           instancePath + '/text/' + i0 + '/expanded_url',
-                        schemaPath:
-                          '#/properties/text/items/oneOf/1/properties/expanded_url/type',
+                        schemaPath: '#/definitions/uri/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -797,8 +796,7 @@ function validate10(
                         const err34 = {
                           instancePath:
                             instancePath + '/text/' + i0 + '/decoded_url',
-                          schemaPath:
-                            '#/properties/text/items/oneOf/1/properties/decoded_url/format',
+                          schemaPath: '#/definitions/iri/format',
                           keyword: 'format',
                           params: { format: 'iri' },
                           message: 'must match format "' + 'iri' + '"',
@@ -814,8 +812,7 @@ function validate10(
                       const err35 = {
                         instancePath:
                           instancePath + '/text/' + i0 + '/decoded_url',
-                        schemaPath:
-                          '#/properties/text/items/oneOf/1/properties/decoded_url/type',
+                        schemaPath: '#/definitions/iri/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -1662,8 +1659,7 @@ function validate10(
                       if (!formats0(data28)) {
                         const err82 = {
                           instancePath: instancePath + '/card/link/url',
-                          schemaPath:
-                            '#/properties/card/oneOf/0/properties/link/properties/url/format',
+                          schemaPath: '#/definitions/uri/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
@@ -1678,8 +1674,7 @@ function validate10(
                     } else {
                       const err83 = {
                         instancePath: instancePath + '/card/link/url',
-                        schemaPath:
-                          '#/properties/card/oneOf/0/properties/link/properties/url/type',
+                        schemaPath: '#/definitions/uri/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -1699,8 +1694,7 @@ function validate10(
                         const err84 = {
                           instancePath:
                             instancePath + '/card/link/expanded_url',
-                          schemaPath:
-                            '#/properties/card/oneOf/0/properties/link/properties/expanded_url/format',
+                          schemaPath: '#/definitions/uri/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
@@ -1715,8 +1709,7 @@ function validate10(
                     } else {
                       const err85 = {
                         instancePath: instancePath + '/card/link/expanded_url',
-                        schemaPath:
-                          '#/properties/card/oneOf/0/properties/link/properties/expanded_url/type',
+                        schemaPath: '#/definitions/uri/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -1735,8 +1728,7 @@ function validate10(
                       if (!formats4(data30)) {
                         const err86 = {
                           instancePath: instancePath + '/card/link/decoded_url',
-                          schemaPath:
-                            '#/properties/card/oneOf/0/properties/link/properties/decoded_url/format',
+                          schemaPath: '#/definitions/iri/format',
                           keyword: 'format',
                           params: { format: 'iri' },
                           message: 'must match format "' + 'iri' + '"',
@@ -1751,8 +1743,7 @@ function validate10(
                     } else {
                       const err87 = {
                         instancePath: instancePath + '/card/link/decoded_url',
-                        schemaPath:
-                          '#/properties/card/oneOf/0/properties/link/properties/decoded_url/type',
+                        schemaPath: '#/definitions/iri/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -1792,8 +1783,7 @@ function validate10(
                   if (!formats0(data32)) {
                     const err89 = {
                       instancePath: instancePath + '/card/media_url',
-                      schemaPath:
-                        '#/properties/card/oneOf/0/properties/media_url/format',
+                      schemaPath: '#/definitions/uri/format',
                       keyword: 'format',
                       params: { format: 'uri' },
                       message: 'must match format "' + 'uri' + '"',
@@ -1808,8 +1798,7 @@ function validate10(
                 } else {
                   const err90 = {
                     instancePath: instancePath + '/card/media_url',
-                    schemaPath:
-                      '#/properties/card/oneOf/0/properties/media_url/type',
+                    schemaPath: '#/definitions/uri/type',
                     keyword: 'type',
                     params: { type: 'string' },
                     message: 'must be string',
@@ -2035,8 +2024,7 @@ function validate10(
                       if (!formats0(data35)) {
                         const err102 = {
                           instancePath: instancePath + '/card/link/url',
-                          schemaPath:
-                            '#/properties/card/oneOf/1/properties/link/properties/url/format',
+                          schemaPath: '#/definitions/uri/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
@@ -2051,8 +2039,7 @@ function validate10(
                     } else {
                       const err103 = {
                         instancePath: instancePath + '/card/link/url',
-                        schemaPath:
-                          '#/properties/card/oneOf/1/properties/link/properties/url/type',
+                        schemaPath: '#/definitions/uri/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -2072,8 +2059,7 @@ function validate10(
                         const err104 = {
                           instancePath:
                             instancePath + '/card/link/expanded_url',
-                          schemaPath:
-                            '#/properties/card/oneOf/1/properties/link/properties/expanded_url/format',
+                          schemaPath: '#/definitions/uri/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
@@ -2088,8 +2074,7 @@ function validate10(
                     } else {
                       const err105 = {
                         instancePath: instancePath + '/card/link/expanded_url',
-                        schemaPath:
-                          '#/properties/card/oneOf/1/properties/link/properties/expanded_url/type',
+                        schemaPath: '#/definitions/uri/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -2108,8 +2093,7 @@ function validate10(
                       if (!formats4(data37)) {
                         const err106 = {
                           instancePath: instancePath + '/card/link/decoded_url',
-                          schemaPath:
-                            '#/properties/card/oneOf/1/properties/link/properties/decoded_url/format',
+                          schemaPath: '#/definitions/iri/format',
                           keyword: 'format',
                           params: { format: 'iri' },
                           message: 'must match format "' + 'iri' + '"',
@@ -2124,8 +2108,7 @@ function validate10(
                     } else {
                       const err107 = {
                         instancePath: instancePath + '/card/link/decoded_url',
-                        schemaPath:
-                          '#/properties/card/oneOf/1/properties/link/properties/decoded_url/type',
+                        schemaPath: '#/definitions/iri/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -2169,8 +2152,7 @@ function validate10(
                       if (!formats0(data40)) {
                         const err109 = {
                           instancePath: instancePath + '/card/media_urls/' + i1,
-                          schemaPath:
-                            '#/properties/card/oneOf/1/properties/media_urls/items/format',
+                          schemaPath: '#/definitions/uri/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
@@ -2185,8 +2167,7 @@ function validate10(
                     } else {
                       const err110 = {
                         instancePath: instancePath + '/card/media_urls/' + i1,
-                        schemaPath:
-                          '#/properties/card/oneOf/1/properties/media_urls/items/type',
+                        schemaPath: '#/definitions/uri/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -2397,8 +2378,7 @@ function validate10(
                       if (!formats0(data44)) {
                         const err122 = {
                           instancePath: instancePath + '/media/' + i2 + '/url',
-                          schemaPath:
-                            '#/properties/media/items/oneOf/0/properties/url/format',
+                          schemaPath: '#/definitions/uri/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
@@ -2413,8 +2393,7 @@ function validate10(
                     } else {
                       const err123 = {
                         instancePath: instancePath + '/media/' + i2 + '/url',
-                        schemaPath:
-                          '#/properties/media/items/oneOf/0/properties/url/type',
+                        schemaPath: '#/definitions/uri/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
@@ -2539,8 +2518,7 @@ function validate10(
                         const err130 = {
                           instancePath:
                             instancePath + '/media/' + i2 + '/thumbnail',
-                          schemaPath:
-                            '#/properties/media/items/oneOf/1/properties/thumbnail/format',
+                          schemaPath: '#/definitions/uri/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
@@ -2556,8 +2534,7 @@ function validate10(
                       const err131 = {
                         instancePath:
                           instancePath + '/media/' + i2 + '/thumbnail',
-                        schemaPath:
-                          '#/properties/media/items/oneOf/1/properties/thumbnail/type',
+                        schemaPath: '#/definitions/uri/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',

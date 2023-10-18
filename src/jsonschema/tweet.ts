@@ -1,7 +1,6 @@
-import { JSONSchemaType } from 'ajv';
+import { JSONSchemaType, SchemaObject } from 'ajv';
 import {
   Card,
-  CardCarousel,
   CardLink,
   CardSingle,
   Media,
@@ -16,6 +15,19 @@ import {
   TweetEntityURL,
   User,
 } from '~/content-twitter/lib/tweet';
+
+const definitions: SchemaObject = {
+  // URI
+  uri: {
+    type: 'string',
+    format: 'uri',
+  },
+  // IRI
+  iri: {
+    type: 'string',
+    format: 'iri',
+  },
+};
 
 export const userJSONSchema: JSONSchemaType<User> = {
   type: 'object',
@@ -48,18 +60,9 @@ export const tweetEntityURLJSONSchema: JSONSchemaType<TweetEntityURL> = {
       const: 'url',
     },
     text: { type: 'string' },
-    short_url: {
-      type: 'string',
-      format: 'uri',
-    },
-    expanded_url: {
-      type: 'string',
-      format: 'uri',
-    },
-    decoded_url: {
-      type: 'string',
-      format: 'iri',
-    },
+    short_url: { $ref: '#/definitions/uri' },
+    expanded_url: { $ref: '#/definitions/uri' },
+    decoded_url: { $ref: '#/definitions/iri' },
     title: {
       type: 'string',
       nullable: true,
@@ -138,10 +141,7 @@ export const mediaPhotoJSONSchema: JSONSchemaType<MediaPhoto> = {
       type: 'string',
       const: 'photo',
     },
-    url: {
-      type: 'string',
-      format: 'uri',
-    },
+    url: { $ref: '#/definitions/uri' },
   },
   required: ['type', 'url'],
   additionalProperties: false,
@@ -154,10 +154,7 @@ export const mediaVideoJSONSchema: JSONSchemaType<MediaVideo> = {
       type: 'string',
       const: 'video',
     },
-    thumbnail: {
-      type: 'string',
-      format: 'uri',
-    },
+    thumbnail: { $ref: '#/definitions/uri' },
   },
   required: ['type', 'thumbnail'],
   additionalProperties: false,
@@ -173,18 +170,9 @@ export const mediaJSONSchema: JSONSchemaType<Media> = {
 export const cardLinkJSONSchema: JSONSchemaType<CardLink> = {
   type: 'object',
   properties: {
-    url: {
-      type: 'string',
-      format: 'uri',
-    },
-    expanded_url: {
-      type: 'string',
-      format: 'uri',
-    },
-    decoded_url: {
-      type: 'string',
-      format: 'iri',
-    },
+    url: { $ref: '#/definitions/uri' },
+    expanded_url: { $ref: '#/definitions/uri' },
+    decoded_url: { $ref: '#/definitions/iri' },
     title: {
       type: 'string',
       nullable: true,
@@ -205,16 +193,13 @@ export const cardSingleJSONSchema: JSONSchemaType<CardSingle> = {
       ...cardLinkJSONSchema,
       nullable: true,
     },
-    media_url: {
-      type: 'string',
-      format: 'uri',
-    },
+    media_url: { $ref: '#/definitions/uri' },
   },
   required: ['type', 'media_url'],
   additionalProperties: false,
 };
 
-export const cardCarouselJSONSchema: JSONSchemaType<CardCarousel> = {
+export const cardCarouselJSONSchema: SchemaObject = {
   type: 'object',
   properties: {
     type: {
@@ -227,10 +212,7 @@ export const cardCarouselJSONSchema: JSONSchemaType<CardCarousel> = {
     },
     media_urls: {
       type: 'array',
-      items: {
-        type: 'string',
-        format: 'uri',
-      },
+      items: { $ref: '#/definitions/uri' },
     },
   },
   required: ['type', 'media_urls'],
@@ -266,9 +248,11 @@ export const tweetJSONSchema: JSONSchemaType<Tweet> = {
   },
   required: ['id', 'timestamp', 'author', 'text'],
   additionalProperties: false,
+  definitions,
 };
 
 export const tweetsJSONSchema: JSONSchemaType<Tweet[]> = {
   type: 'array',
   items: tweetJSONSchema,
+  definitions,
 };
