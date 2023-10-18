@@ -7,12 +7,6 @@ import {
   MediaPhoto,
   MediaVideo,
   Tweet,
-  TweetEntity,
-  TweetEntityCashtag,
-  TweetEntityHashtag,
-  TweetEntityMention,
-  TweetEntityText,
-  TweetEntityURL,
 } from '~/content-twitter/lib/tweet';
 
 const definitions: SchemaObject = {
@@ -36,101 +30,77 @@ const definitions: SchemaObject = {
     required: ['name', 'username'],
     additionalProperties: false,
   },
-};
-
-export const tweetEntityTextJSONSchema: JSONSchemaType<TweetEntityText> = {
-  type: 'object',
-  properties: {
-    type: {
-      type: 'string',
-      const: 'text',
-    },
-    text: { type: 'string' },
+  // TweetEntity
+  entity: {
+    type: 'object',
+    oneOf: [
+      { $ref: '#/definitions/entity:text' },
+      { $ref: '#/definitions/entity:url' },
+      { $ref: '#/definitions/entity:hashtag' },
+      { $ref: '#/definitions/entity:cashtag' },
+      { $ref: '#/definitions/entity:mention' },
+    ],
+    required: ['type'],
+    discriminator: { propertyName: 'type' },
   },
-  required: ['type', 'text'],
-  additionalProperties: false,
-};
-
-export const tweetEntityURLJSONSchema: JSONSchemaType<TweetEntityURL> = {
-  type: 'object',
-  properties: {
-    type: {
-      type: 'string',
-      const: 'url',
-    },
-    text: { type: 'string' },
-    short_url: { $ref: '#/definitions/uri' },
-    expanded_url: { $ref: '#/definitions/uri' },
-    decoded_url: { $ref: '#/definitions/iri' },
-    title: {
-      type: 'string',
-      nullable: true,
-    },
-  },
-  required: ['type', 'text', 'short_url', 'expanded_url', 'decoded_url'],
-  additionalProperties: false,
-};
-
-export const tweetEntityHashtagJSONSchema: JSONSchemaType<TweetEntityHashtag> =
-  {
+  // TweetEntityText
+  'entity:text': {
     type: 'object',
     properties: {
-      type: {
-        type: 'string',
-        const: 'hashtag',
-      },
+      type: { const: 'text' },
+      text: { type: 'string' },
+    },
+    required: ['type', 'text'],
+    additionalProperties: false,
+  },
+  // TweetEntityURL
+  'entity:url': {
+    type: 'object',
+    properties: {
+      type: { const: 'url' },
+      text: { type: 'string' },
+      short_url: { $ref: '#/definitions/uri' },
+      expanded_url: { $ref: '#/definitions/uri' },
+      decoded_url: { $ref: '#/definitions/iri' },
+      title: { type: 'string' },
+    },
+    required: ['type', 'text', 'short_url', 'expanded_url', 'decoded_url'],
+    additionalProperties: false,
+  },
+  // TweetEntityHashtag
+  'entity:hashtag': {
+    type: 'object',
+    properties: {
+      type: { const: 'hashtag' },
       text: { type: 'string' },
       tag: { type: 'string' },
-      hashmoji: {
-        type: 'string',
-        nullable: true,
-      },
+      hashmoji: { $ref: '#/definitions/uri' },
     },
     required: ['type', 'text', 'tag'],
     additionalProperties: false,
-  };
-
-export const tweetEntityCashtagJSONSchema: JSONSchemaType<TweetEntityCashtag> =
-  {
+  },
+  // TweetEntityCashtag
+  'entity:cashtag': {
     type: 'object',
     properties: {
-      type: {
-        type: 'string',
-        const: 'cashtag',
-      },
+      type: { const: 'cashtag' },
       text: { type: 'string' },
       tag: { type: 'string' },
     },
     required: ['type', 'text', 'tag'],
     additionalProperties: false,
-  };
-
-export const tweetEntityMentionJSONSchema: JSONSchemaType<TweetEntityMention> =
-  {
+  },
+  // TweetEntityMention
+  'entity:mention': {
     type: 'object',
     properties: {
-      type: {
-        type: 'string',
-        const: 'mention',
-      },
+      type: { const: 'mention' },
       text: { type: 'string' },
       username: { type: 'string' },
     },
     required: ['type', 'text', 'username'],
     additionalProperties: false,
-  };
-
-export const tweetEntityJSONSchema: JSONSchemaType<TweetEntity> = {
-  type: 'object',
-  oneOf: [
-    tweetEntityTextJSONSchema,
-    tweetEntityURLJSONSchema,
-    tweetEntityHashtagJSONSchema,
-    tweetEntityCashtagJSONSchema,
-    tweetEntityMentionJSONSchema,
-  ],
-  required: ['type'],
-  discriminator: { propertyName: 'type' },
+  },
 };
 
 export const mediaPhotoJSONSchema: JSONSchemaType<MediaPhoto> = {
@@ -225,7 +195,7 @@ export const cardJSONSchema: JSONSchemaType<Card> = {
   discriminator: { propertyName: 'type' },
 };
 
-export const tweetJSONSchema: JSONSchemaType<Tweet> = {
+export const tweetJSONSchema = {
   type: 'object',
   properties: {
     id: { type: 'string' },
@@ -233,7 +203,7 @@ export const tweetJSONSchema: JSONSchemaType<Tweet> = {
     author: { $ref: '#/definitions/user' },
     text: {
       type: 'array',
-      items: tweetEntityJSONSchema,
+      items: { $ref: '#/definitions/entity' },
     },
     card: {
       ...cardJSONSchema,
@@ -248,7 +218,8 @@ export const tweetJSONSchema: JSONSchemaType<Tweet> = {
   required: ['id', 'timestamp', 'author', 'text'],
   additionalProperties: false,
   definitions,
-};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+} as any as JSONSchemaType<Tweet>;
 
 export const tweetsJSONSchema: JSONSchemaType<Tweet[]> = {
   type: 'array',
