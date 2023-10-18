@@ -2,20 +2,23 @@
 module.exports = validate10;
 module.exports.default = validate10;
 const schema11 = {
-  type: 'object',
-  properties: {
-    id: { type: 'string' },
-    timestamp: { type: 'integer' },
-    author: { $ref: '#/definitions/user' },
-    text: { type: 'array', items: { $ref: '#/definitions/entity' } },
-    card: { $ref: '#/definitions/card' },
-    media: { type: 'array', items: { $ref: '#/definitions/media' } },
-  },
-  required: ['id', 'timestamp', 'author', 'text'],
-  additionalProperties: false,
+  $ref: '#/definitions/tweet',
   definitions: {
     uri: { type: 'string', format: 'uri' },
     iri: { type: 'string', format: 'iri' },
+    tweet: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        timestamp: { type: 'integer' },
+        author: { $ref: '#/definitions/user' },
+        text: { type: 'array', items: { $ref: '#/definitions/entity' } },
+        card: { $ref: '#/definitions/card' },
+        media: { type: 'array', items: { $ref: '#/definitions/media' } },
+      },
+      required: ['id', 'timestamp', 'author', 'text'],
+      additionalProperties: false,
+    },
     user: {
       type: 'object',
       properties: { name: { type: 'string' }, username: { type: 'string' } },
@@ -155,11 +158,24 @@ const schema11 = {
 };
 const schema12 = {
   type: 'object',
+  properties: {
+    id: { type: 'string' },
+    timestamp: { type: 'integer' },
+    author: { $ref: '#/definitions/user' },
+    text: { type: 'array', items: { $ref: '#/definitions/entity' } },
+    card: { $ref: '#/definitions/card' },
+    media: { type: 'array', items: { $ref: '#/definitions/media' } },
+  },
+  required: ['id', 'timestamp', 'author', 'text'],
+  additionalProperties: false,
+};
+const schema13 = {
+  type: 'object',
   properties: { name: { type: 'string' }, username: { type: 'string' } },
   required: ['name', 'username'],
   additionalProperties: false,
 };
-const schema13 = {
+const schema14 = {
   type: 'object',
   oneOf: [
     { $ref: '#/definitions/entity:text' },
@@ -171,13 +187,13 @@ const schema13 = {
   required: ['type'],
   discriminator: { propertyName: 'type' },
 };
-const schema20 = {
+const schema21 = {
   type: 'object',
   properties: { type: { const: 'text' }, text: { type: 'string' } },
   required: ['type', 'text'],
   additionalProperties: false,
 };
-const schema21 = {
+const schema22 = {
   type: 'object',
   properties: {
     type: { const: 'cashtag' },
@@ -187,7 +203,7 @@ const schema21 = {
   required: ['type', 'text', 'tag'],
   additionalProperties: false,
 };
-const schema22 = {
+const schema23 = {
   type: 'object',
   properties: {
     type: { const: 'mention' },
@@ -197,7 +213,7 @@ const schema22 = {
   required: ['type', 'text', 'username'],
   additionalProperties: false,
 };
-const schema14 = {
+const schema15 = {
   type: 'object',
   properties: {
     type: { const: 'url' },
@@ -210,11 +226,11 @@ const schema14 = {
   required: ['type', 'text', 'short_url', 'expanded_url', 'decoded_url'],
   additionalProperties: false,
 };
-const schema15 = { type: 'string', format: 'uri' };
-const schema17 = { type: 'string', format: 'iri' };
+const schema16 = { type: 'string', format: 'uri' };
+const schema18 = { type: 'string', format: 'iri' };
 const formats0 = require('ajv-formats/dist/formats').fullFormats.uri;
 const formats4 = require('ajv-formats-draft2019/formats').iri;
-function validate12(
+function validate13(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -490,10 +506,10 @@ function validate12(
     }
     errors++;
   }
-  validate12.errors = vErrors;
+  validate13.errors = vErrors;
   return errors === 0;
 }
-const schema18 = {
+const schema19 = {
   type: 'object',
   properties: {
     type: { const: 'hashtag' },
@@ -504,7 +520,7 @@ const schema18 = {
   required: ['type', 'text', 'tag'],
   additionalProperties: false,
 };
-function validate13(
+function validate14(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -680,10 +696,10 @@ function validate13(
     }
     errors++;
   }
-  validate13.errors = vErrors;
+  validate14.errors = vErrors;
   return errors === 0;
 }
-function validate11(
+function validate12(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -807,21 +823,6 @@ function validate11(
         }
       } else if (tag0 === 'url') {
         if (
-          !validate12(data, {
-            instancePath,
-            parentData,
-            parentDataProperty,
-            rootData,
-          })
-        ) {
-          vErrors =
-            vErrors === null
-              ? validate12.errors
-              : vErrors.concat(validate12.errors);
-          errors = vErrors.length;
-        }
-      } else if (tag0 === 'hashtag') {
-        if (
           !validate13(data, {
             instancePath,
             parentData,
@@ -833,6 +834,21 @@ function validate11(
             vErrors === null
               ? validate13.errors
               : vErrors.concat(validate13.errors);
+          errors = vErrors.length;
+        }
+      } else if (tag0 === 'hashtag') {
+        if (
+          !validate14(data, {
+            instancePath,
+            parentData,
+            parentDataProperty,
+            rootData,
+          })
+        ) {
+          vErrors =
+            vErrors === null
+              ? validate14.errors
+              : vErrors.concat(validate14.errors);
           errors = vErrors.length;
         }
       } else if (tag0 === 'cashtag') {
@@ -1143,10 +1159,10 @@ function validate11(
     }
     errors++;
   }
-  validate11.errors = vErrors;
+  validate12.errors = vErrors;
   return errors === 0;
 }
-const schema23 = {
+const schema24 = {
   type: 'object',
   oneOf: [
     { $ref: '#/definitions/card:single' },
@@ -1155,7 +1171,7 @@ const schema23 = {
   required: ['type'],
   discriminator: { propertyName: 'type' },
 };
-const schema24 = {
+const schema25 = {
   type: 'object',
   properties: {
     type: { const: 'single' },
@@ -1165,7 +1181,7 @@ const schema24 = {
   required: ['type', 'media_url'],
   additionalProperties: false,
 };
-const schema25 = {
+const schema26 = {
   type: 'object',
   properties: {
     url: { $ref: '#/definitions/uri' },
@@ -1176,7 +1192,7 @@ const schema25 = {
   required: ['url', 'expanded_url', 'decoded_url'],
   additionalProperties: false,
 };
-function validate19(
+function validate20(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -1386,10 +1402,10 @@ function validate19(
     }
     errors++;
   }
-  validate19.errors = vErrors;
+  validate20.errors = vErrors;
   return errors === 0;
 }
-function validate18(
+function validate19(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -1462,7 +1478,7 @@ function validate18(
     }
     if (data.link !== undefined) {
       if (
-        !validate19(data.link, {
+        !validate20(data.link, {
           instancePath: instancePath + '/link',
           parentData: data,
           parentDataProperty: 'link',
@@ -1471,8 +1487,8 @@ function validate18(
       ) {
         vErrors =
           vErrors === null
-            ? validate19.errors
-            : vErrors.concat(validate19.errors);
+            ? validate20.errors
+            : vErrors.concat(validate20.errors);
         errors = vErrors.length;
       }
     }
@@ -1525,10 +1541,10 @@ function validate18(
     }
     errors++;
   }
-  validate18.errors = vErrors;
+  validate19.errors = vErrors;
   return errors === 0;
 }
-const schema30 = {
+const schema31 = {
   type: 'object',
   properties: {
     type: { const: 'carousel' },
@@ -1538,7 +1554,7 @@ const schema30 = {
   required: ['type', 'media_urls'],
   additionalProperties: false,
 };
-function validate21(
+function validate22(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -1611,7 +1627,7 @@ function validate21(
     }
     if (data.link !== undefined) {
       if (
-        !validate19(data.link, {
+        !validate20(data.link, {
           instancePath: instancePath + '/link',
           parentData: data,
           parentDataProperty: 'link',
@@ -1620,8 +1636,8 @@ function validate21(
       ) {
         vErrors =
           vErrors === null
-            ? validate19.errors
-            : vErrors.concat(validate19.errors);
+            ? validate20.errors
+            : vErrors.concat(validate20.errors);
         errors = vErrors.length;
       }
     }
@@ -1694,10 +1710,10 @@ function validate21(
     }
     errors++;
   }
-  validate21.errors = vErrors;
+  validate22.errors = vErrors;
   return errors === 0;
 }
-function validate17(
+function validate18(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -1723,7 +1739,7 @@ function validate17(
     if (typeof tag0 == 'string') {
       if (tag0 === 'single') {
         if (
-          !validate18(data, {
+          !validate19(data, {
             instancePath,
             parentData,
             parentDataProperty,
@@ -1732,13 +1748,13 @@ function validate17(
         ) {
           vErrors =
             vErrors === null
-              ? validate18.errors
-              : vErrors.concat(validate18.errors);
+              ? validate19.errors
+              : vErrors.concat(validate19.errors);
           errors = vErrors.length;
         }
       } else if (tag0 === 'carousel') {
         if (
-          !validate21(data, {
+          !validate22(data, {
             instancePath,
             parentData,
             parentDataProperty,
@@ -1747,8 +1763,8 @@ function validate17(
         ) {
           vErrors =
             vErrors === null
-              ? validate21.errors
-              : vErrors.concat(validate21.errors);
+              ? validate22.errors
+              : vErrors.concat(validate22.errors);
           errors = vErrors.length;
         }
       } else {
@@ -1796,10 +1812,10 @@ function validate17(
     }
     errors++;
   }
-  validate17.errors = vErrors;
+  validate18.errors = vErrors;
   return errors === 0;
 }
-const schema32 = {
+const schema33 = {
   type: 'object',
   oneOf: [
     { $ref: '#/definitions/media:photo' },
@@ -1808,13 +1824,13 @@ const schema32 = {
   required: ['type'],
   discriminator: { propertyName: 'type' },
 };
-const schema33 = {
+const schema34 = {
   type: 'object',
   properties: { type: { const: 'photo' }, url: { $ref: '#/definitions/uri' } },
   required: ['type', 'url'],
   additionalProperties: false,
 };
-function validate27(
+function validate28(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -1934,10 +1950,10 @@ function validate27(
     }
     errors++;
   }
-  validate27.errors = vErrors;
+  validate28.errors = vErrors;
   return errors === 0;
 }
-const schema35 = {
+const schema36 = {
   type: 'object',
   properties: {
     type: { const: 'video' },
@@ -1946,7 +1962,7 @@ const schema35 = {
   required: ['type', 'thumbnail'],
   additionalProperties: false,
 };
-function validate28(
+function validate29(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -2066,10 +2082,10 @@ function validate28(
     }
     errors++;
   }
-  validate28.errors = vErrors;
+  validate29.errors = vErrors;
   return errors === 0;
 }
-function validate26(
+function validate27(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -2095,21 +2111,6 @@ function validate26(
     if (typeof tag0 == 'string') {
       if (tag0 === 'photo') {
         if (
-          !validate27(data, {
-            instancePath,
-            parentData,
-            parentDataProperty,
-            rootData,
-          })
-        ) {
-          vErrors =
-            vErrors === null
-              ? validate27.errors
-              : vErrors.concat(validate27.errors);
-          errors = vErrors.length;
-        }
-      } else if (tag0 === 'video') {
-        if (
           !validate28(data, {
             instancePath,
             parentData,
@@ -2121,6 +2122,21 @@ function validate26(
             vErrors === null
               ? validate28.errors
               : vErrors.concat(validate28.errors);
+          errors = vErrors.length;
+        }
+      } else if (tag0 === 'video') {
+        if (
+          !validate29(data, {
+            instancePath,
+            parentData,
+            parentDataProperty,
+            rootData,
+          })
+        ) {
+          vErrors =
+            vErrors === null
+              ? validate29.errors
+              : vErrors.concat(validate29.errors);
           errors = vErrors.length;
         }
       } else {
@@ -2168,10 +2184,10 @@ function validate26(
     }
     errors++;
   }
-  validate26.errors = vErrors;
+  validate27.errors = vErrors;
   return errors === 0;
 }
-function validate10(
+function validate11(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -2412,7 +2428,7 @@ function validate10(
         const len0 = data5.length;
         for (let i0 = 0; i0 < len0; i0++) {
           if (
-            !validate11(data5[i0], {
+            !validate12(data5[i0], {
               instancePath: instancePath + '/text/' + i0,
               parentData: data5,
               parentDataProperty: i0,
@@ -2421,8 +2437,8 @@ function validate10(
           ) {
             vErrors =
               vErrors === null
-                ? validate11.errors
-                : vErrors.concat(validate11.errors);
+                ? validate12.errors
+                : vErrors.concat(validate12.errors);
             errors = vErrors.length;
           }
         }
@@ -2444,7 +2460,7 @@ function validate10(
     }
     if (data.card !== undefined) {
       if (
-        !validate17(data.card, {
+        !validate18(data.card, {
           instancePath: instancePath + '/card',
           parentData: data,
           parentDataProperty: 'card',
@@ -2453,8 +2469,8 @@ function validate10(
       ) {
         vErrors =
           vErrors === null
-            ? validate17.errors
-            : vErrors.concat(validate17.errors);
+            ? validate18.errors
+            : vErrors.concat(validate18.errors);
         errors = vErrors.length;
       }
     }
@@ -2464,7 +2480,7 @@ function validate10(
         const len1 = data8.length;
         for (let i1 = 0; i1 < len1; i1++) {
           if (
-            !validate26(data8[i1], {
+            !validate27(data8[i1], {
               instancePath: instancePath + '/media/' + i1,
               parentData: data8,
               parentDataProperty: i1,
@@ -2473,8 +2489,8 @@ function validate10(
           ) {
             vErrors =
               vErrors === null
-                ? validate26.errors
-                : vErrors.concat(validate26.errors);
+                ? validate27.errors
+                : vErrors.concat(validate27.errors);
             errors = vErrors.length;
           }
         }
@@ -2508,6 +2524,27 @@ function validate10(
       vErrors.push(err15);
     }
     errors++;
+  }
+  validate11.errors = vErrors;
+  return errors === 0;
+}
+function validate10(
+  data,
+  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
+) {
+  let vErrors = null;
+  let errors = 0;
+  if (
+    !validate11(data, {
+      instancePath,
+      parentData,
+      parentDataProperty,
+      rootData,
+    })
+  ) {
+    vErrors =
+      vErrors === null ? validate11.errors : vErrors.concat(validate11.errors);
+    errors = vErrors.length;
   }
   validate10.errors = vErrors;
   return errors === 0;

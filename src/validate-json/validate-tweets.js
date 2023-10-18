@@ -3,161 +3,23 @@ module.exports = validate10;
 module.exports.default = validate10;
 const schema11 = {
   type: 'array',
-  items: {
-    type: 'object',
-    properties: {
-      id: { type: 'string' },
-      timestamp: { type: 'integer' },
-      author: { $ref: '#/definitions/user' },
-      text: { type: 'array', items: { $ref: '#/definitions/entity' } },
-      card: { $ref: '#/definitions/card' },
-      media: { type: 'array', items: { $ref: '#/definitions/media' } },
-    },
-    required: ['id', 'timestamp', 'author', 'text'],
-    additionalProperties: false,
-    definitions: {
-      uri: { type: 'string', format: 'uri' },
-      iri: { type: 'string', format: 'iri' },
-      user: {
-        type: 'object',
-        properties: { name: { type: 'string' }, username: { type: 'string' } },
-        required: ['name', 'username'],
-        additionalProperties: false,
-      },
-      entity: {
-        type: 'object',
-        oneOf: [
-          { $ref: '#/definitions/entity:text' },
-          { $ref: '#/definitions/entity:url' },
-          { $ref: '#/definitions/entity:hashtag' },
-          { $ref: '#/definitions/entity:cashtag' },
-          { $ref: '#/definitions/entity:mention' },
-        ],
-        required: ['type'],
-        discriminator: { propertyName: 'type' },
-      },
-      'entity:text': {
-        type: 'object',
-        properties: { type: { const: 'text' }, text: { type: 'string' } },
-        required: ['type', 'text'],
-        additionalProperties: false,
-      },
-      'entity:url': {
-        type: 'object',
-        properties: {
-          type: { const: 'url' },
-          text: { type: 'string' },
-          short_url: { $ref: '#/definitions/uri' },
-          expanded_url: { $ref: '#/definitions/uri' },
-          decoded_url: { $ref: '#/definitions/iri' },
-          title: { type: 'string' },
-        },
-        required: ['type', 'text', 'short_url', 'expanded_url', 'decoded_url'],
-        additionalProperties: false,
-      },
-      'entity:hashtag': {
-        type: 'object',
-        properties: {
-          type: { const: 'hashtag' },
-          text: { type: 'string' },
-          tag: { type: 'string' },
-          hashmoji: { $ref: '#/definitions/uri' },
-        },
-        required: ['type', 'text', 'tag'],
-        additionalProperties: false,
-      },
-      'entity:cashtag': {
-        type: 'object',
-        properties: {
-          type: { const: 'cashtag' },
-          text: { type: 'string' },
-          tag: { type: 'string' },
-        },
-        required: ['type', 'text', 'tag'],
-        additionalProperties: false,
-      },
-      'entity:mention': {
-        type: 'object',
-        properties: {
-          type: { const: 'mention' },
-          text: { type: 'string' },
-          username: { type: 'string' },
-        },
-        required: ['type', 'text', 'username'],
-        additionalProperties: false,
-      },
-      media: {
-        type: 'object',
-        oneOf: [
-          { $ref: '#/definitions/media:photo' },
-          { $ref: '#/definitions/media:video' },
-        ],
-        required: ['type'],
-        discriminator: { propertyName: 'type' },
-      },
-      'media:photo': {
-        type: 'object',
-        properties: {
-          type: { const: 'photo' },
-          url: { $ref: '#/definitions/uri' },
-        },
-        required: ['type', 'url'],
-        additionalProperties: false,
-      },
-      'media:video': {
-        type: 'object',
-        properties: {
-          type: { const: 'video' },
-          thumbnail: { $ref: '#/definitions/uri' },
-        },
-        required: ['type', 'thumbnail'],
-        additionalProperties: false,
-      },
-      card: {
-        type: 'object',
-        oneOf: [
-          { $ref: '#/definitions/card:single' },
-          { $ref: '#/definitions/card:carousel' },
-        ],
-        required: ['type'],
-        discriminator: { propertyName: 'type' },
-      },
-      'card:link': {
-        type: 'object',
-        properties: {
-          url: { $ref: '#/definitions/uri' },
-          expanded_url: { $ref: '#/definitions/uri' },
-          decoded_url: { $ref: '#/definitions/iri' },
-          title: { type: 'string' },
-        },
-        required: ['url', 'expanded_url', 'decoded_url'],
-        additionalProperties: false,
-      },
-      'card:single': {
-        type: 'object',
-        properties: {
-          type: { const: 'single' },
-          link: { $ref: '#/definitions/card:link' },
-          media_url: { $ref: '#/definitions/uri' },
-        },
-        required: ['type', 'media_url'],
-        additionalProperties: false,
-      },
-      'card:carousel': {
-        type: 'object',
-        properties: {
-          type: { const: 'carousel' },
-          link: { $ref: '#/definitions/card:link' },
-          media_urls: { type: 'array', items: { $ref: '#/definitions/uri' } },
-        },
-        required: ['type', 'media_urls'],
-        additionalProperties: false,
-      },
-    },
-  },
+  items: { $ref: '#/definitions/tweet' },
   definitions: {
     uri: { type: 'string', format: 'uri' },
     iri: { type: 'string', format: 'iri' },
+    tweet: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        timestamp: { type: 'integer' },
+        author: { $ref: '#/definitions/user' },
+        text: { type: 'array', items: { $ref: '#/definitions/entity' } },
+        card: { $ref: '#/definitions/card' },
+        media: { type: 'array', items: { $ref: '#/definitions/media' } },
+      },
+      required: ['id', 'timestamp', 'author', 'text'],
+      additionalProperties: false,
+    },
     user: {
       type: 'object',
       properties: { name: { type: 'string' }, username: { type: 'string' } },
@@ -297,11 +159,24 @@ const schema11 = {
 };
 const schema12 = {
   type: 'object',
+  properties: {
+    id: { type: 'string' },
+    timestamp: { type: 'integer' },
+    author: { $ref: '#/definitions/user' },
+    text: { type: 'array', items: { $ref: '#/definitions/entity' } },
+    card: { $ref: '#/definitions/card' },
+    media: { type: 'array', items: { $ref: '#/definitions/media' } },
+  },
+  required: ['id', 'timestamp', 'author', 'text'],
+  additionalProperties: false,
+};
+const schema13 = {
+  type: 'object',
   properties: { name: { type: 'string' }, username: { type: 'string' } },
   required: ['name', 'username'],
   additionalProperties: false,
 };
-const schema13 = {
+const schema14 = {
   type: 'object',
   oneOf: [
     { $ref: '#/definitions/entity:text' },
@@ -313,13 +188,13 @@ const schema13 = {
   required: ['type'],
   discriminator: { propertyName: 'type' },
 };
-const schema20 = {
+const schema21 = {
   type: 'object',
   properties: { type: { const: 'text' }, text: { type: 'string' } },
   required: ['type', 'text'],
   additionalProperties: false,
 };
-const schema21 = {
+const schema22 = {
   type: 'object',
   properties: {
     type: { const: 'cashtag' },
@@ -329,7 +204,7 @@ const schema21 = {
   required: ['type', 'text', 'tag'],
   additionalProperties: false,
 };
-const schema22 = {
+const schema23 = {
   type: 'object',
   properties: {
     type: { const: 'mention' },
@@ -339,7 +214,7 @@ const schema22 = {
   required: ['type', 'text', 'username'],
   additionalProperties: false,
 };
-const schema14 = {
+const schema15 = {
   type: 'object',
   properties: {
     type: { const: 'url' },
@@ -352,11 +227,11 @@ const schema14 = {
   required: ['type', 'text', 'short_url', 'expanded_url', 'decoded_url'],
   additionalProperties: false,
 };
-const schema15 = { type: 'string', format: 'uri' };
-const schema17 = { type: 'string', format: 'iri' };
+const schema16 = { type: 'string', format: 'uri' };
+const schema18 = { type: 'string', format: 'iri' };
 const formats0 = require('ajv-formats/dist/formats').fullFormats.uri;
 const formats4 = require('ajv-formats-draft2019/formats').iri;
-function validate12(
+function validate13(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -632,10 +507,10 @@ function validate12(
     }
     errors++;
   }
-  validate12.errors = vErrors;
+  validate13.errors = vErrors;
   return errors === 0;
 }
-const schema18 = {
+const schema19 = {
   type: 'object',
   properties: {
     type: { const: 'hashtag' },
@@ -646,7 +521,7 @@ const schema18 = {
   required: ['type', 'text', 'tag'],
   additionalProperties: false,
 };
-function validate13(
+function validate14(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -822,10 +697,10 @@ function validate13(
     }
     errors++;
   }
-  validate13.errors = vErrors;
+  validate14.errors = vErrors;
   return errors === 0;
 }
-function validate11(
+function validate12(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -949,21 +824,6 @@ function validate11(
         }
       } else if (tag0 === 'url') {
         if (
-          !validate12(data, {
-            instancePath,
-            parentData,
-            parentDataProperty,
-            rootData,
-          })
-        ) {
-          vErrors =
-            vErrors === null
-              ? validate12.errors
-              : vErrors.concat(validate12.errors);
-          errors = vErrors.length;
-        }
-      } else if (tag0 === 'hashtag') {
-        if (
           !validate13(data, {
             instancePath,
             parentData,
@@ -975,6 +835,21 @@ function validate11(
             vErrors === null
               ? validate13.errors
               : vErrors.concat(validate13.errors);
+          errors = vErrors.length;
+        }
+      } else if (tag0 === 'hashtag') {
+        if (
+          !validate14(data, {
+            instancePath,
+            parentData,
+            parentDataProperty,
+            rootData,
+          })
+        ) {
+          vErrors =
+            vErrors === null
+              ? validate14.errors
+              : vErrors.concat(validate14.errors);
           errors = vErrors.length;
         }
       } else if (tag0 === 'cashtag') {
@@ -1285,10 +1160,10 @@ function validate11(
     }
     errors++;
   }
-  validate11.errors = vErrors;
+  validate12.errors = vErrors;
   return errors === 0;
 }
-const schema23 = {
+const schema24 = {
   type: 'object',
   oneOf: [
     { $ref: '#/definitions/card:single' },
@@ -1297,7 +1172,7 @@ const schema23 = {
   required: ['type'],
   discriminator: { propertyName: 'type' },
 };
-const schema24 = {
+const schema25 = {
   type: 'object',
   properties: {
     type: { const: 'single' },
@@ -1307,7 +1182,7 @@ const schema24 = {
   required: ['type', 'media_url'],
   additionalProperties: false,
 };
-const schema25 = {
+const schema26 = {
   type: 'object',
   properties: {
     url: { $ref: '#/definitions/uri' },
@@ -1318,7 +1193,7 @@ const schema25 = {
   required: ['url', 'expanded_url', 'decoded_url'],
   additionalProperties: false,
 };
-function validate19(
+function validate20(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -1528,10 +1403,10 @@ function validate19(
     }
     errors++;
   }
-  validate19.errors = vErrors;
+  validate20.errors = vErrors;
   return errors === 0;
 }
-function validate18(
+function validate19(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -1604,7 +1479,7 @@ function validate18(
     }
     if (data.link !== undefined) {
       if (
-        !validate19(data.link, {
+        !validate20(data.link, {
           instancePath: instancePath + '/link',
           parentData: data,
           parentDataProperty: 'link',
@@ -1613,8 +1488,8 @@ function validate18(
       ) {
         vErrors =
           vErrors === null
-            ? validate19.errors
-            : vErrors.concat(validate19.errors);
+            ? validate20.errors
+            : vErrors.concat(validate20.errors);
         errors = vErrors.length;
       }
     }
@@ -1667,10 +1542,10 @@ function validate18(
     }
     errors++;
   }
-  validate18.errors = vErrors;
+  validate19.errors = vErrors;
   return errors === 0;
 }
-const schema30 = {
+const schema31 = {
   type: 'object',
   properties: {
     type: { const: 'carousel' },
@@ -1680,7 +1555,7 @@ const schema30 = {
   required: ['type', 'media_urls'],
   additionalProperties: false,
 };
-function validate21(
+function validate22(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -1753,7 +1628,7 @@ function validate21(
     }
     if (data.link !== undefined) {
       if (
-        !validate19(data.link, {
+        !validate20(data.link, {
           instancePath: instancePath + '/link',
           parentData: data,
           parentDataProperty: 'link',
@@ -1762,8 +1637,8 @@ function validate21(
       ) {
         vErrors =
           vErrors === null
-            ? validate19.errors
-            : vErrors.concat(validate19.errors);
+            ? validate20.errors
+            : vErrors.concat(validate20.errors);
         errors = vErrors.length;
       }
     }
@@ -1836,10 +1711,10 @@ function validate21(
     }
     errors++;
   }
-  validate21.errors = vErrors;
+  validate22.errors = vErrors;
   return errors === 0;
 }
-function validate17(
+function validate18(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -1865,7 +1740,7 @@ function validate17(
     if (typeof tag0 == 'string') {
       if (tag0 === 'single') {
         if (
-          !validate18(data, {
+          !validate19(data, {
             instancePath,
             parentData,
             parentDataProperty,
@@ -1874,13 +1749,13 @@ function validate17(
         ) {
           vErrors =
             vErrors === null
-              ? validate18.errors
-              : vErrors.concat(validate18.errors);
+              ? validate19.errors
+              : vErrors.concat(validate19.errors);
           errors = vErrors.length;
         }
       } else if (tag0 === 'carousel') {
         if (
-          !validate21(data, {
+          !validate22(data, {
             instancePath,
             parentData,
             parentDataProperty,
@@ -1889,8 +1764,8 @@ function validate17(
         ) {
           vErrors =
             vErrors === null
-              ? validate21.errors
-              : vErrors.concat(validate21.errors);
+              ? validate22.errors
+              : vErrors.concat(validate22.errors);
           errors = vErrors.length;
         }
       } else {
@@ -1938,10 +1813,10 @@ function validate17(
     }
     errors++;
   }
-  validate17.errors = vErrors;
+  validate18.errors = vErrors;
   return errors === 0;
 }
-const schema32 = {
+const schema33 = {
   type: 'object',
   oneOf: [
     { $ref: '#/definitions/media:photo' },
@@ -1950,13 +1825,13 @@ const schema32 = {
   required: ['type'],
   discriminator: { propertyName: 'type' },
 };
-const schema33 = {
+const schema34 = {
   type: 'object',
   properties: { type: { const: 'photo' }, url: { $ref: '#/definitions/uri' } },
   required: ['type', 'url'],
   additionalProperties: false,
 };
-function validate27(
+function validate28(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -2076,10 +1951,10 @@ function validate27(
     }
     errors++;
   }
-  validate27.errors = vErrors;
+  validate28.errors = vErrors;
   return errors === 0;
 }
-const schema35 = {
+const schema36 = {
   type: 'object',
   properties: {
     type: { const: 'video' },
@@ -2088,7 +1963,7 @@ const schema35 = {
   required: ['type', 'thumbnail'],
   additionalProperties: false,
 };
-function validate28(
+function validate29(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -2208,10 +2083,10 @@ function validate28(
     }
     errors++;
   }
-  validate28.errors = vErrors;
+  validate29.errors = vErrors;
   return errors === 0;
 }
-function validate26(
+function validate27(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -2237,21 +2112,6 @@ function validate26(
     if (typeof tag0 == 'string') {
       if (tag0 === 'photo') {
         if (
-          !validate27(data, {
-            instancePath,
-            parentData,
-            parentDataProperty,
-            rootData,
-          })
-        ) {
-          vErrors =
-            vErrors === null
-              ? validate27.errors
-              : vErrors.concat(validate27.errors);
-          errors = vErrors.length;
-        }
-      } else if (tag0 === 'video') {
-        if (
           !validate28(data, {
             instancePath,
             parentData,
@@ -2263,6 +2123,21 @@ function validate26(
             vErrors === null
               ? validate28.errors
               : vErrors.concat(validate28.errors);
+          errors = vErrors.length;
+        }
+      } else if (tag0 === 'video') {
+        if (
+          !validate29(data, {
+            instancePath,
+            parentData,
+            parentDataProperty,
+            rootData,
+          })
+        ) {
+          vErrors =
+            vErrors === null
+              ? validate29.errors
+              : vErrors.concat(validate29.errors);
           errors = vErrors.length;
         }
       } else {
@@ -2310,7 +2185,348 @@ function validate26(
     }
     errors++;
   }
-  validate26.errors = vErrors;
+  validate27.errors = vErrors;
+  return errors === 0;
+}
+function validate11(
+  data,
+  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
+) {
+  let vErrors = null;
+  let errors = 0;
+  if (data && typeof data == 'object' && !Array.isArray(data)) {
+    if (data.id === undefined) {
+      const err0 = {
+        instancePath,
+        schemaPath: '#/required',
+        keyword: 'required',
+        params: { missingProperty: 'id' },
+        message: "must have required property '" + 'id' + "'",
+      };
+      if (vErrors === null) {
+        vErrors = [err0];
+      } else {
+        vErrors.push(err0);
+      }
+      errors++;
+    }
+    if (data.timestamp === undefined) {
+      const err1 = {
+        instancePath,
+        schemaPath: '#/required',
+        keyword: 'required',
+        params: { missingProperty: 'timestamp' },
+        message: "must have required property '" + 'timestamp' + "'",
+      };
+      if (vErrors === null) {
+        vErrors = [err1];
+      } else {
+        vErrors.push(err1);
+      }
+      errors++;
+    }
+    if (data.author === undefined) {
+      const err2 = {
+        instancePath,
+        schemaPath: '#/required',
+        keyword: 'required',
+        params: { missingProperty: 'author' },
+        message: "must have required property '" + 'author' + "'",
+      };
+      if (vErrors === null) {
+        vErrors = [err2];
+      } else {
+        vErrors.push(err2);
+      }
+      errors++;
+    }
+    if (data.text === undefined) {
+      const err3 = {
+        instancePath,
+        schemaPath: '#/required',
+        keyword: 'required',
+        params: { missingProperty: 'text' },
+        message: "must have required property '" + 'text' + "'",
+      };
+      if (vErrors === null) {
+        vErrors = [err3];
+      } else {
+        vErrors.push(err3);
+      }
+      errors++;
+    }
+    for (const key0 in data) {
+      if (
+        !(
+          key0 === 'id' ||
+          key0 === 'timestamp' ||
+          key0 === 'author' ||
+          key0 === 'text' ||
+          key0 === 'card' ||
+          key0 === 'media'
+        )
+      ) {
+        const err4 = {
+          instancePath,
+          schemaPath: '#/additionalProperties',
+          keyword: 'additionalProperties',
+          params: { additionalProperty: key0 },
+          message: 'must NOT have additional properties',
+        };
+        if (vErrors === null) {
+          vErrors = [err4];
+        } else {
+          vErrors.push(err4);
+        }
+        errors++;
+      }
+    }
+    if (data.id !== undefined) {
+      if (typeof data.id !== 'string') {
+        const err5 = {
+          instancePath: instancePath + '/id',
+          schemaPath: '#/properties/id/type',
+          keyword: 'type',
+          params: { type: 'string' },
+          message: 'must be string',
+        };
+        if (vErrors === null) {
+          vErrors = [err5];
+        } else {
+          vErrors.push(err5);
+        }
+        errors++;
+      }
+    }
+    if (data.timestamp !== undefined) {
+      let data1 = data.timestamp;
+      if (
+        !(
+          typeof data1 == 'number' &&
+          !(data1 % 1) &&
+          !isNaN(data1) &&
+          isFinite(data1)
+        )
+      ) {
+        const err6 = {
+          instancePath: instancePath + '/timestamp',
+          schemaPath: '#/properties/timestamp/type',
+          keyword: 'type',
+          params: { type: 'integer' },
+          message: 'must be integer',
+        };
+        if (vErrors === null) {
+          vErrors = [err6];
+        } else {
+          vErrors.push(err6);
+        }
+        errors++;
+      }
+    }
+    if (data.author !== undefined) {
+      let data2 = data.author;
+      if (data2 && typeof data2 == 'object' && !Array.isArray(data2)) {
+        if (data2.name === undefined) {
+          const err7 = {
+            instancePath: instancePath + '/author',
+            schemaPath: '#/definitions/user/required',
+            keyword: 'required',
+            params: { missingProperty: 'name' },
+            message: "must have required property '" + 'name' + "'",
+          };
+          if (vErrors === null) {
+            vErrors = [err7];
+          } else {
+            vErrors.push(err7);
+          }
+          errors++;
+        }
+        if (data2.username === undefined) {
+          const err8 = {
+            instancePath: instancePath + '/author',
+            schemaPath: '#/definitions/user/required',
+            keyword: 'required',
+            params: { missingProperty: 'username' },
+            message: "must have required property '" + 'username' + "'",
+          };
+          if (vErrors === null) {
+            vErrors = [err8];
+          } else {
+            vErrors.push(err8);
+          }
+          errors++;
+        }
+        for (const key1 in data2) {
+          if (!(key1 === 'name' || key1 === 'username')) {
+            const err9 = {
+              instancePath: instancePath + '/author',
+              schemaPath: '#/definitions/user/additionalProperties',
+              keyword: 'additionalProperties',
+              params: { additionalProperty: key1 },
+              message: 'must NOT have additional properties',
+            };
+            if (vErrors === null) {
+              vErrors = [err9];
+            } else {
+              vErrors.push(err9);
+            }
+            errors++;
+          }
+        }
+        if (data2.name !== undefined) {
+          if (typeof data2.name !== 'string') {
+            const err10 = {
+              instancePath: instancePath + '/author/name',
+              schemaPath: '#/definitions/user/properties/name/type',
+              keyword: 'type',
+              params: { type: 'string' },
+              message: 'must be string',
+            };
+            if (vErrors === null) {
+              vErrors = [err10];
+            } else {
+              vErrors.push(err10);
+            }
+            errors++;
+          }
+        }
+        if (data2.username !== undefined) {
+          if (typeof data2.username !== 'string') {
+            const err11 = {
+              instancePath: instancePath + '/author/username',
+              schemaPath: '#/definitions/user/properties/username/type',
+              keyword: 'type',
+              params: { type: 'string' },
+              message: 'must be string',
+            };
+            if (vErrors === null) {
+              vErrors = [err11];
+            } else {
+              vErrors.push(err11);
+            }
+            errors++;
+          }
+        }
+      } else {
+        const err12 = {
+          instancePath: instancePath + '/author',
+          schemaPath: '#/definitions/user/type',
+          keyword: 'type',
+          params: { type: 'object' },
+          message: 'must be object',
+        };
+        if (vErrors === null) {
+          vErrors = [err12];
+        } else {
+          vErrors.push(err12);
+        }
+        errors++;
+      }
+    }
+    if (data.text !== undefined) {
+      let data5 = data.text;
+      if (Array.isArray(data5)) {
+        const len0 = data5.length;
+        for (let i0 = 0; i0 < len0; i0++) {
+          if (
+            !validate12(data5[i0], {
+              instancePath: instancePath + '/text/' + i0,
+              parentData: data5,
+              parentDataProperty: i0,
+              rootData,
+            })
+          ) {
+            vErrors =
+              vErrors === null
+                ? validate12.errors
+                : vErrors.concat(validate12.errors);
+            errors = vErrors.length;
+          }
+        }
+      } else {
+        const err13 = {
+          instancePath: instancePath + '/text',
+          schemaPath: '#/properties/text/type',
+          keyword: 'type',
+          params: { type: 'array' },
+          message: 'must be array',
+        };
+        if (vErrors === null) {
+          vErrors = [err13];
+        } else {
+          vErrors.push(err13);
+        }
+        errors++;
+      }
+    }
+    if (data.card !== undefined) {
+      if (
+        !validate18(data.card, {
+          instancePath: instancePath + '/card',
+          parentData: data,
+          parentDataProperty: 'card',
+          rootData,
+        })
+      ) {
+        vErrors =
+          vErrors === null
+            ? validate18.errors
+            : vErrors.concat(validate18.errors);
+        errors = vErrors.length;
+      }
+    }
+    if (data.media !== undefined) {
+      let data8 = data.media;
+      if (Array.isArray(data8)) {
+        const len1 = data8.length;
+        for (let i1 = 0; i1 < len1; i1++) {
+          if (
+            !validate27(data8[i1], {
+              instancePath: instancePath + '/media/' + i1,
+              parentData: data8,
+              parentDataProperty: i1,
+              rootData,
+            })
+          ) {
+            vErrors =
+              vErrors === null
+                ? validate27.errors
+                : vErrors.concat(validate27.errors);
+            errors = vErrors.length;
+          }
+        }
+      } else {
+        const err14 = {
+          instancePath: instancePath + '/media',
+          schemaPath: '#/properties/media/type',
+          keyword: 'type',
+          params: { type: 'array' },
+          message: 'must be array',
+        };
+        if (vErrors === null) {
+          vErrors = [err14];
+        } else {
+          vErrors.push(err14);
+        }
+        errors++;
+      }
+    }
+  } else {
+    const err15 = {
+      instancePath,
+      schemaPath: '#/type',
+      keyword: 'type',
+      params: { type: 'object' },
+      message: 'must be object',
+    };
+    if (vErrors === null) {
+      vErrors = [err15];
+    } else {
+      vErrors.push(err15);
+    }
+    errors++;
+  }
+  validate11.errors = vErrors;
   return errors === 0;
 }
 function validate10(
@@ -2322,342 +2538,23 @@ function validate10(
   if (Array.isArray(data)) {
     const len0 = data.length;
     for (let i0 = 0; i0 < len0; i0++) {
-      let data0 = data[i0];
-      if (data0 && typeof data0 == 'object' && !Array.isArray(data0)) {
-        if (data0.id === undefined) {
-          const err0 = {
-            instancePath: instancePath + '/' + i0,
-            schemaPath: '#/items/required',
-            keyword: 'required',
-            params: { missingProperty: 'id' },
-            message: "must have required property '" + 'id' + "'",
-          };
-          if (vErrors === null) {
-            vErrors = [err0];
-          } else {
-            vErrors.push(err0);
-          }
-          errors++;
-        }
-        if (data0.timestamp === undefined) {
-          const err1 = {
-            instancePath: instancePath + '/' + i0,
-            schemaPath: '#/items/required',
-            keyword: 'required',
-            params: { missingProperty: 'timestamp' },
-            message: "must have required property '" + 'timestamp' + "'",
-          };
-          if (vErrors === null) {
-            vErrors = [err1];
-          } else {
-            vErrors.push(err1);
-          }
-          errors++;
-        }
-        if (data0.author === undefined) {
-          const err2 = {
-            instancePath: instancePath + '/' + i0,
-            schemaPath: '#/items/required',
-            keyword: 'required',
-            params: { missingProperty: 'author' },
-            message: "must have required property '" + 'author' + "'",
-          };
-          if (vErrors === null) {
-            vErrors = [err2];
-          } else {
-            vErrors.push(err2);
-          }
-          errors++;
-        }
-        if (data0.text === undefined) {
-          const err3 = {
-            instancePath: instancePath + '/' + i0,
-            schemaPath: '#/items/required',
-            keyword: 'required',
-            params: { missingProperty: 'text' },
-            message: "must have required property '" + 'text' + "'",
-          };
-          if (vErrors === null) {
-            vErrors = [err3];
-          } else {
-            vErrors.push(err3);
-          }
-          errors++;
-        }
-        for (const key0 in data0) {
-          if (
-            !(
-              key0 === 'id' ||
-              key0 === 'timestamp' ||
-              key0 === 'author' ||
-              key0 === 'text' ||
-              key0 === 'card' ||
-              key0 === 'media'
-            )
-          ) {
-            const err4 = {
-              instancePath: instancePath + '/' + i0,
-              schemaPath: '#/items/additionalProperties',
-              keyword: 'additionalProperties',
-              params: { additionalProperty: key0 },
-              message: 'must NOT have additional properties',
-            };
-            if (vErrors === null) {
-              vErrors = [err4];
-            } else {
-              vErrors.push(err4);
-            }
-            errors++;
-          }
-        }
-        if (data0.id !== undefined) {
-          if (typeof data0.id !== 'string') {
-            const err5 = {
-              instancePath: instancePath + '/' + i0 + '/id',
-              schemaPath: '#/items/properties/id/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-            };
-            if (vErrors === null) {
-              vErrors = [err5];
-            } else {
-              vErrors.push(err5);
-            }
-            errors++;
-          }
-        }
-        if (data0.timestamp !== undefined) {
-          let data2 = data0.timestamp;
-          if (
-            !(
-              typeof data2 == 'number' &&
-              !(data2 % 1) &&
-              !isNaN(data2) &&
-              isFinite(data2)
-            )
-          ) {
-            const err6 = {
-              instancePath: instancePath + '/' + i0 + '/timestamp',
-              schemaPath: '#/items/properties/timestamp/type',
-              keyword: 'type',
-              params: { type: 'integer' },
-              message: 'must be integer',
-            };
-            if (vErrors === null) {
-              vErrors = [err6];
-            } else {
-              vErrors.push(err6);
-            }
-            errors++;
-          }
-        }
-        if (data0.author !== undefined) {
-          let data3 = data0.author;
-          if (data3 && typeof data3 == 'object' && !Array.isArray(data3)) {
-            if (data3.name === undefined) {
-              const err7 = {
-                instancePath: instancePath + '/' + i0 + '/author',
-                schemaPath: '#/definitions/user/required',
-                keyword: 'required',
-                params: { missingProperty: 'name' },
-                message: "must have required property '" + 'name' + "'",
-              };
-              if (vErrors === null) {
-                vErrors = [err7];
-              } else {
-                vErrors.push(err7);
-              }
-              errors++;
-            }
-            if (data3.username === undefined) {
-              const err8 = {
-                instancePath: instancePath + '/' + i0 + '/author',
-                schemaPath: '#/definitions/user/required',
-                keyword: 'required',
-                params: { missingProperty: 'username' },
-                message: "must have required property '" + 'username' + "'",
-              };
-              if (vErrors === null) {
-                vErrors = [err8];
-              } else {
-                vErrors.push(err8);
-              }
-              errors++;
-            }
-            for (const key1 in data3) {
-              if (!(key1 === 'name' || key1 === 'username')) {
-                const err9 = {
-                  instancePath: instancePath + '/' + i0 + '/author',
-                  schemaPath: '#/definitions/user/additionalProperties',
-                  keyword: 'additionalProperties',
-                  params: { additionalProperty: key1 },
-                  message: 'must NOT have additional properties',
-                };
-                if (vErrors === null) {
-                  vErrors = [err9];
-                } else {
-                  vErrors.push(err9);
-                }
-                errors++;
-              }
-            }
-            if (data3.name !== undefined) {
-              if (typeof data3.name !== 'string') {
-                const err10 = {
-                  instancePath: instancePath + '/' + i0 + '/author/name',
-                  schemaPath: '#/definitions/user/properties/name/type',
-                  keyword: 'type',
-                  params: { type: 'string' },
-                  message: 'must be string',
-                };
-                if (vErrors === null) {
-                  vErrors = [err10];
-                } else {
-                  vErrors.push(err10);
-                }
-                errors++;
-              }
-            }
-            if (data3.username !== undefined) {
-              if (typeof data3.username !== 'string') {
-                const err11 = {
-                  instancePath: instancePath + '/' + i0 + '/author/username',
-                  schemaPath: '#/definitions/user/properties/username/type',
-                  keyword: 'type',
-                  params: { type: 'string' },
-                  message: 'must be string',
-                };
-                if (vErrors === null) {
-                  vErrors = [err11];
-                } else {
-                  vErrors.push(err11);
-                }
-                errors++;
-              }
-            }
-          } else {
-            const err12 = {
-              instancePath: instancePath + '/' + i0 + '/author',
-              schemaPath: '#/definitions/user/type',
-              keyword: 'type',
-              params: { type: 'object' },
-              message: 'must be object',
-            };
-            if (vErrors === null) {
-              vErrors = [err12];
-            } else {
-              vErrors.push(err12);
-            }
-            errors++;
-          }
-        }
-        if (data0.text !== undefined) {
-          let data6 = data0.text;
-          if (Array.isArray(data6)) {
-            const len1 = data6.length;
-            for (let i1 = 0; i1 < len1; i1++) {
-              if (
-                !validate11(data6[i1], {
-                  instancePath: instancePath + '/' + i0 + '/text/' + i1,
-                  parentData: data6,
-                  parentDataProperty: i1,
-                  rootData,
-                })
-              ) {
-                vErrors =
-                  vErrors === null
-                    ? validate11.errors
-                    : vErrors.concat(validate11.errors);
-                errors = vErrors.length;
-              }
-            }
-          } else {
-            const err13 = {
-              instancePath: instancePath + '/' + i0 + '/text',
-              schemaPath: '#/items/properties/text/type',
-              keyword: 'type',
-              params: { type: 'array' },
-              message: 'must be array',
-            };
-            if (vErrors === null) {
-              vErrors = [err13];
-            } else {
-              vErrors.push(err13);
-            }
-            errors++;
-          }
-        }
-        if (data0.card !== undefined) {
-          if (
-            !validate17(data0.card, {
-              instancePath: instancePath + '/' + i0 + '/card',
-              parentData: data0,
-              parentDataProperty: 'card',
-              rootData,
-            })
-          ) {
-            vErrors =
-              vErrors === null
-                ? validate17.errors
-                : vErrors.concat(validate17.errors);
-            errors = vErrors.length;
-          }
-        }
-        if (data0.media !== undefined) {
-          let data9 = data0.media;
-          if (Array.isArray(data9)) {
-            const len2 = data9.length;
-            for (let i2 = 0; i2 < len2; i2++) {
-              if (
-                !validate26(data9[i2], {
-                  instancePath: instancePath + '/' + i0 + '/media/' + i2,
-                  parentData: data9,
-                  parentDataProperty: i2,
-                  rootData,
-                })
-              ) {
-                vErrors =
-                  vErrors === null
-                    ? validate26.errors
-                    : vErrors.concat(validate26.errors);
-                errors = vErrors.length;
-              }
-            }
-          } else {
-            const err14 = {
-              instancePath: instancePath + '/' + i0 + '/media',
-              schemaPath: '#/items/properties/media/type',
-              keyword: 'type',
-              params: { type: 'array' },
-              message: 'must be array',
-            };
-            if (vErrors === null) {
-              vErrors = [err14];
-            } else {
-              vErrors.push(err14);
-            }
-            errors++;
-          }
-        }
-      } else {
-        const err15 = {
+      if (
+        !validate11(data[i0], {
           instancePath: instancePath + '/' + i0,
-          schemaPath: '#/items/type',
-          keyword: 'type',
-          params: { type: 'object' },
-          message: 'must be object',
-        };
-        if (vErrors === null) {
-          vErrors = [err15];
-        } else {
-          vErrors.push(err15);
-        }
-        errors++;
+          parentData: data,
+          parentDataProperty: i0,
+          rootData,
+        })
+      ) {
+        vErrors =
+          vErrors === null
+            ? validate11.errors
+            : vErrors.concat(validate11.errors);
+        errors = vErrors.length;
       }
     }
   } else {
-    const err16 = {
+    const err0 = {
       instancePath,
       schemaPath: '#/type',
       keyword: 'type',
@@ -2665,9 +2562,9 @@ function validate10(
       message: 'must be array',
     };
     if (vErrors === null) {
-      vErrors = [err16];
+      vErrors = [err0];
     } else {
-      vErrors.push(err16);
+      vErrors.push(err0);
     }
     errors++;
   }

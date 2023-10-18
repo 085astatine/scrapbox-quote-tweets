@@ -12,6 +12,26 @@ const definitions: SchemaObject = {
     type: 'string',
     format: 'iri',
   },
+  // Tweet
+  tweet: {
+    type: 'object',
+    properties: {
+      id: { type: 'string' },
+      timestamp: { type: 'integer' },
+      author: { $ref: '#/definitions/user' },
+      text: {
+        type: 'array',
+        items: { $ref: '#/definitions/entity' },
+      },
+      card: { $ref: '#/definitions/card' },
+      media: {
+        type: 'array',
+        items: { $ref: '#/definitions/media' },
+      },
+    },
+    required: ['id', 'timestamp', 'author', 'text'],
+    additionalProperties: false,
+  },
   // User
   user: {
     type: 'object',
@@ -173,29 +193,14 @@ const definitions: SchemaObject = {
 };
 
 export const tweetJSONSchema = {
-  type: 'object',
-  properties: {
-    id: { type: 'string' },
-    timestamp: { type: 'integer' },
-    author: { $ref: '#/definitions/user' },
-    text: {
-      type: 'array',
-      items: { $ref: '#/definitions/entity' },
-    },
-    card: { $ref: '#/definitions/card' },
-    media: {
-      type: 'array',
-      items: { $ref: '#/definitions/media' },
-    },
-  },
-  required: ['id', 'timestamp', 'author', 'text'],
-  additionalProperties: false,
+  $ref: '#/definitions/tweet',
   definitions,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as any as JSONSchemaType<Tweet>;
 
-export const tweetsJSONSchema: JSONSchemaType<Tweet[]> = {
+export const tweetsJSONSchema = {
   type: 'array',
-  items: tweetJSONSchema,
+  items: { $ref: '#/definitions/tweet' },
   definitions,
-};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+} as any as JSONSchemaType<Tweet[]>;
