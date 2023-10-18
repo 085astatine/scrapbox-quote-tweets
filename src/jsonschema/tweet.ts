@@ -1,13 +1,5 @@
 import { JSONSchemaType, SchemaObject } from 'ajv';
-import {
-  Card,
-  CardLink,
-  CardSingle,
-  Media,
-  MediaPhoto,
-  MediaVideo,
-  Tweet,
-} from '~/content-twitter/lib/tweet';
+import { Card, CardLink, CardSingle, Tweet } from '~/content-twitter/lib/tweet';
 
 const definitions: SchemaObject = {
   // URI
@@ -101,39 +93,36 @@ const definitions: SchemaObject = {
     required: ['type', 'text', 'username'],
     additionalProperties: false,
   },
-};
-
-export const mediaPhotoJSONSchema: JSONSchemaType<MediaPhoto> = {
-  type: 'object',
-  properties: {
-    type: {
-      type: 'string',
-      const: 'photo',
-    },
-    url: { $ref: '#/definitions/uri' },
+  // Media
+  media: {
+    type: 'object',
+    oneOf: [
+      { $ref: '#/definitions/media:photo' },
+      { $ref: '#/definitions/media:video' },
+    ],
+    required: ['type'],
+    discriminator: { propertyName: 'type' },
   },
-  required: ['type', 'url'],
-  additionalProperties: false,
-};
-
-export const mediaVideoJSONSchema: JSONSchemaType<MediaVideo> = {
-  type: 'object',
-  properties: {
-    type: {
-      type: 'string',
-      const: 'video',
+  // MediaPhoto
+  'media:photo': {
+    type: 'object',
+    properties: {
+      type: { const: 'photo' },
+      url: { $ref: '#/definitions/uri' },
     },
-    thumbnail: { $ref: '#/definitions/uri' },
+    required: ['type', 'url'],
+    additionalProperties: false,
   },
-  required: ['type', 'thumbnail'],
-  additionalProperties: false,
-};
-
-export const mediaJSONSchema: JSONSchemaType<Media> = {
-  type: 'object',
-  oneOf: [mediaPhotoJSONSchema, mediaVideoJSONSchema],
-  required: ['type'],
-  discriminator: { propertyName: 'type' },
+  // MediaVideo
+  'media:video': {
+    type: 'object',
+    properties: {
+      type: { const: 'video' },
+      thumbnail: { $ref: '#/definitions/uri' },
+    },
+    required: ['type', 'thumbnail'],
+    additionalProperties: false,
+  },
 };
 
 export const cardLinkJSONSchema: JSONSchemaType<CardLink> = {
@@ -211,8 +200,7 @@ export const tweetJSONSchema = {
     },
     media: {
       type: 'array',
-      items: mediaJSONSchema,
-      nullable: true,
+      items: { $ref: '#/definitions/media' },
     },
   },
   required: ['id', 'timestamp', 'author', 'text'],
