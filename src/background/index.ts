@@ -106,7 +106,6 @@ if (process.env.TARGET_BROWSER === 'firefox') {
       // request permision
       browser.permissions.request({
         origins: [
-          'https://api.twitter.com/*',
           'https://twitter.com/*',
           'https://scrapbox.io/*',
           'https://*/*',
