@@ -1,5 +1,4 @@
 import browser from 'webextension-polyfill';
-import { Tweet } from '~/content-twitter/lib/tweet';
 import { setupClipboardWindows } from '~/lib/clipboard';
 import { logger } from '~/lib/logger';
 import {
@@ -16,6 +15,7 @@ import {
   SaveTweetResponseSuccessMessage,
 } from '~/lib/message';
 import { storage } from '~/lib/storage';
+import { Tweet } from '~/lib/tweet';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
 import { JSONSchemaValidationError } from '~/validate-json/jsonschema-validation-error';
 import { setupOffscreen } from './offscreen';

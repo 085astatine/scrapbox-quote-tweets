@@ -5,9 +5,6 @@ import {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
 } from '~/lib/message';
-import { decodeURL, formatTCoURL, formatTwimgURL } from '~/lib/url';
-import { ParseTweetError } from './error';
-import { parseTweetText } from './parse-tweet-text';
 import {
   Card,
   CardCarousel,
@@ -19,7 +16,10 @@ import {
   Tweet,
   TweetID,
   User,
-} from './tweet';
+} from '~/lib/tweet';
+import { decodeURL, formatTCoURL, formatTwimgURL } from '~/lib/url';
+import { ParseTweetError } from './error';
+import { parseTweetText } from './parse-tweet-text';
 
 export const parseTweet = async (
   id: TweetID,

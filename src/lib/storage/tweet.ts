@@ -1,9 +1,9 @@
 import browser from 'webextension-polyfill';
-import { Tweet, TweetID } from '~/content-twitter/lib/tweet';
 import { tweetJSONSchema, tweetsJSONSchema } from '~/jsonschema/tweet';
 import { JSONSchemaValidationError } from '~/validate-json/jsonschema-validation-error';
 import validateTweet from '~/validate-json/validate-tweet';
 import validateTweets from '~/validate-json/validate-tweets';
+import { Tweet, TweetID } from '../tweet';
 import { isTweetIDKey, toTweetID, toTweetIDKey } from '../tweet-id-key';
 
 export const saveTweets = async (tweets: Tweet[]): Promise<void> => {

@@ -6,7 +6,7 @@ import {
   TweetEntityMention,
   TweetEntityText,
   TweetEntityURL,
-} from '~/content-twitter/lib/tweet';
+} from './tweet';
 import { toDate } from './tweet-date';
 import {
   EntityCashtagField,
