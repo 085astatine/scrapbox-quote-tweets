@@ -5,10 +5,11 @@ import browser from 'webextension-polyfill';
 import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
 import { SaveTweetReportMessage } from '~/lib/message';
+import { storage } from '~/lib/storage';
 import { CopyButton } from './component/copy-button';
 import './index.scss';
 import { insertReactRoot } from './lib/insert-react-root';
-import { initializeAction, touchAction, updateAction } from './state';
+import { touchAction, updateAction } from './state';
 import { store } from './store';
 
 logger.info('content script');
@@ -51,7 +52,14 @@ window.addEventListener('DOMContentLoaded', () => {
   };
   observer.observe(document.body, options);
   // Load saved TweetIDs from storage
-  store.dispatch(initializeAction());
+  storage.tweets.savedIDs().then((tweetIDs) => {
+    logger.debug('Saved Tweet IDs', tweetIDs);
+    store.dispatch(
+      updateAction(
+        tweetIDs.map((tweetID) => ({ tweetID, state: { state: 'success' } })),
+      ),
+    );
+  });
 });
 
 // onMessage listener
