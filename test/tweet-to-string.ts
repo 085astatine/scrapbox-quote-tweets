@@ -5,7 +5,6 @@ describe('tweet-to-string/tweet', () => {
     id: '1234567890123456789',
     timestamp: 1330873445000,
     author: {
-      id: '1234567890',
       name: 'User Name',
       username: 'username',
     },
@@ -22,7 +21,7 @@ describe('tweet-to-string/tweet', () => {
       url: '[${decoded_url} ${title}]',
       hashtag: '#${tag}',
       cashtag: '$${tag}',
-      mention: '@${user.username}',
+      mention: '@${username}',
     },
   };
   test('tweet.id', () => {
@@ -39,14 +38,6 @@ describe('tweet-to-string/tweet', () => {
     };
     expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
       'tweet.url: https://twitter.com/username/status/1234567890123456789',
-    );
-  });
-  test('user.id', () => {
-    const template = {
-      tweet: 'user.id: ${user.id}',
-    };
-    expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'user.id: 1234567890',
     );
   });
   test('user.name', () => {
@@ -118,7 +109,6 @@ describe('tweet-to-string/entity', () => {
     id: '1234567890123456789',
     timestamp: 1330873445000,
     author: {
-      id: '1111111111',
       name: 'Alice',
       username: 'alice',
     },
@@ -130,7 +120,7 @@ describe('tweet-to-string/entity', () => {
       url: '[${decoded_url} ${title}]',
       hashtag: '#${tag}',
       cashtag: '$${tag}',
-      mention: '@${user.username}',
+      mention: '@${username}',
     },
   };
   test('text', () => {
@@ -151,10 +141,10 @@ describe('tweet-to-string/entity', () => {
       text: [
         {
           type: 'url' as const,
-          text: 'https://t.co/XXXXXXXXXX',
-          url: 'https://example.com/sample/index.html',
-          display_url: 'example.com/sample/i...',
-          decoded_url: 'https://example.com/sample/index.html',
+          text: 'example.com/sample/i...',
+          short_url: 'https://t.co/XXXXXXXXXX',
+          expanded_url: 'https://example.com/%E4%BE%8B',
+          decoded_url: 'https://example.com/例',
           title: 'Example.com',
         },
       ],
@@ -165,22 +155,20 @@ describe('tweet-to-string/entity', () => {
       ...{
         url: [
           'text: "${text}"',
-          'url: "${url}"',
-          'display_url: "${display_url}"',
+          'short_url: "${short_url}"',
+          'expanded_url: "${expanded_url}"',
           'decoded_url: "${decoded_url}"',
           'title: "${title}"',
-          'description: "${description}"',
         ].join('\n'),
       },
     };
     expect(tweetToString({ ...tweet, ...text }, template)).toBe(
       [
-        'text: "https://t.co/XXXXXXXXXX"',
-        'url: "https://example.com/sample/index.html"',
-        'display_url: "example.com/sample/i..."',
-        'decoded_url: "https://example.com/sample/index.html"',
+        'text: "example.com/sample/i..."',
+        'short_url: "https://t.co/XXXXXXXXXX"',
+        'expanded_url: "https://example.com/%E4%BE%8B"',
+        'decoded_url: "https://example.com/例"',
         'title: "Example.com"',
-        'description: ""',
       ].join('\n'),
     );
   });
@@ -232,11 +220,7 @@ describe('tweet-to-string/entity', () => {
         {
           type: 'mention' as const,
           text: '@bob',
-          user: {
-            id: '2222222222',
-            name: 'Bob',
-            username: 'bob',
-          },
+          username: 'bob',
         },
       ],
     };
@@ -244,21 +228,11 @@ describe('tweet-to-string/entity', () => {
     template.entity = {
       ...template.entity,
       ...{
-        mention: [
-          'text: "${text}"',
-          'user.id: "${user.id}"',
-          'user.name: "${user.name}"',
-          'user.username: "${user.username}"',
-        ].join('\n'),
+        mention: ['text: "${text}"', 'username: "${username}"'].join('\n'),
       },
     };
     expect(tweetToString({ ...tweet, ...text }, template)).toBe(
-      [
-        'text: "@bob"',
-        'user.id: "2222222222"',
-        'user.name: "Bob"',
-        'user.username: "bob"',
-      ].join('\n'),
+      ['text: "@bob"', 'username: "bob"'].join('\n'),
     );
   });
 });
