@@ -171,6 +171,7 @@ const respondToSaveTweetRequest = async (
   return await storage.tweet
     .save(tweet)
     .then(() => {
+      logger.info('save tweet', tweet);
       // send SaveTweet/Report to all content-twitter
       const report: SaveTweetReportMessage = {
         type: 'SaveTweet/Report',
