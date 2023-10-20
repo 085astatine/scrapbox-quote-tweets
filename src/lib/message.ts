@@ -1,4 +1,4 @@
-import { TweetID } from './tweet';
+import { Tweet, TweetID } from './tweet';
 
 export interface ClipboardOpenRequestMessage {
   type: 'Clipboard/OpenRequest';
@@ -11,28 +11,6 @@ export interface ClipboardCloseRequestMessage {
 export interface ClipboardCloseAllRequestMessage {
   type: 'Clipboard/CloseAllRequest';
 }
-
-export interface TweetCopyRequestMessage {
-  type: 'TweetCopy/Request';
-  tweetID: TweetID;
-}
-
-export interface TweetCopySuccessMessage {
-  type: 'TweetCopy/Response';
-  ok: true;
-  tweetIDs: TweetID[];
-}
-
-export interface TweetCopyFailureMessage {
-  type: 'TweetCopy/Response';
-  ok: false;
-  tweetIDs: TweetID[];
-  message: string;
-}
-
-export type TweetCopyResponseMessage =
-  | TweetCopySuccessMessage
-  | TweetCopyFailureMessage;
 
 export interface ExpandTCoURLRequestMessage {
   type: 'ExpandTCoURL/Request';
@@ -60,4 +38,31 @@ export type ExpandTCoURLResponseMessage =
 export interface ForwardToOffscreenMessage<Message> {
   type: 'Forward/ToOffscreen';
   message: Message;
+}
+
+export interface SaveTweetRequestMessage {
+  type: 'SaveTweet/Request';
+  tweet: Tweet;
+}
+
+export interface SaveTweetResponseSuccessMessage {
+  type: 'SaveTweet/Response';
+  ok: true;
+  tweetID: TweetID;
+}
+
+export interface SaveTweetResponseFailureMessage {
+  type: 'SaveTweet/Response';
+  ok: false;
+  tweetID: TweetID;
+  error: string;
+}
+
+export type SaveTweetResponseMessage =
+  | SaveTweetResponseSuccessMessage
+  | SaveTweetResponseFailureMessage;
+
+export interface SaveTweetReportMessage {
+  type: 'SaveTweet/Report';
+  tweetID: TweetID;
 }

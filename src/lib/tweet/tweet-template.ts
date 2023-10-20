@@ -31,7 +31,6 @@ const tweetFields = [
   'tweet.url',
   'tweet.id',
   'tweet.text',
-  'user.id',
   'user.name',
   'user.username',
   'date.iso',
@@ -48,23 +47,17 @@ const entityTextFields = ['text'] as const;
 
 const entityURLFields = [
   'text',
-  'url',
-  'display_url',
+  'short_url',
+  'expanded_url',
   'decoded_url',
   'title',
-  'description',
 ] as const;
 
-const entityHashtagFields = ['text', 'tag'] as const;
+const entityHashtagFields = ['text', 'tag', 'hashmoji'] as const;
 
 const entityCashtagFields = ['text', 'tag'] as const;
 
-const entityMentionFields = [
-  'text',
-  'user.id',
-  'user.name',
-  'user.username',
-] as const;
+const entityMentionFields = ['text', 'username'] as const;
 
 export type TweetField = (typeof tweetFields)[number];
 

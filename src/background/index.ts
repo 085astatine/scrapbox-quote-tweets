@@ -1,4 +1,3 @@
-import 'error-polyfill';
 import browser from 'webextension-polyfill';
 import { setupClipboardWindows } from '~/lib/clipboard';
 import { logger } from '~/lib/logger';
@@ -9,15 +8,16 @@ import {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
   ForwardToOffscreenMessage,
-  TweetCopyFailureMessage,
-  TweetCopyRequestMessage,
-  TweetCopyResponseMessage,
-  TweetCopySuccessMessage,
+  SaveTweetReportMessage,
+  SaveTweetRequestMessage,
+  SaveTweetResponseFailureMessage,
+  SaveTweetResponseMessage,
+  SaveTweetResponseSuccessMessage,
 } from '~/lib/message';
 import { storage } from '~/lib/storage';
-import { Tweet, TweetID } from '~/lib/tweet';
-import { twitterAPIClient } from '~/lib/twitter-api-client';
+import { Tweet } from '~/lib/tweet';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
+import { JSONSchemaValidationError } from '~/validate-json/jsonschema-validation-error';
 import { setupOffscreen } from './offscreen';
 
 logger.info('background script');
@@ -26,11 +26,6 @@ logger.info('background script');
 if (process.env.NODE_ENV !== 'production') {
   logger.debug('claer storage');
   storage.clear();
-  // save bearer token
-  if (process.env.BEARER_TOKEN !== undefined) {
-    logger.debug('save bearer token to storage');
-    storage.auth.bearerToken.save(process.env.BEARER_TOKEN);
-  }
   // login to twitter
   if (process.env.TWITTER_AUTH_TOKEN_COOKIE !== undefined) {
     logger.debug('set auth_token to coockies');
@@ -50,9 +45,9 @@ type RequestMessage =
   | ClipboardCloseAllRequestMessage
   | ClipboardOpenRequestMessage
   | ExpandTCoURLRequestMessage
-  | TweetCopyRequestMessage;
+  | SaveTweetRequestMessage;
 
-type ResponseMessage = ExpandTCoURLResponseMessage;
+type ResponseMessage = ExpandTCoURLResponseMessage | SaveTweetResponseMessage;
 
 const onMessageListener = async (
   message: RequestMessage,
@@ -74,9 +69,8 @@ const onMessageListener = async (
       return process.env.TARGET_BROWSER !== 'chrome'
         ? await respondToExpandTCoURLRequest(message.shortURL)
         : await forwardExpandTCoURLRequestToOffscreen(message);
-    case 'TweetCopy/Request':
-      logger.info(`[${message.tweetID}] tweet copy request`);
-      twitterClient.requestTweets([message.tweetID]);
+    case 'SaveTweet/Request':
+      return await respondToSaveTweetRequest(message.tweet);
       break;
     default: {
       const _: never = message;
@@ -101,55 +95,6 @@ browser.tabs.onRemoved.addListener(onTabRemovedListener);
 // Clipboard
 const clipboards = setupClipboardWindows();
 
-// Twitter API Client
-const twitterClient = twitterAPIClient();
-twitterClient.setup();
-twitterClient.addListener({
-  onRequestTweetsSuccess: async (tweets: Tweet[]) =>
-    sendMessageToAllContentTwitter(tweetCopySuccessMessage(tweets)),
-  onRequestTweetsFailure: async (tweetIDs: TweetID[], message: string) =>
-    sendMessageToAllContentTwitter(tweetCopyFailureMessage(tweetIDs, message)),
-});
-
-// create TweetCopySuccessMessage
-const tweetCopySuccessMessage = (tweets: Tweet[]): TweetCopySuccessMessage => {
-  return {
-    type: 'TweetCopy/Response',
-    ok: true,
-    tweetIDs: tweets.map((tweet) => tweet.id),
-  };
-};
-
-// create TweetCopyFailureMessage
-const tweetCopyFailureMessage = (
-  tweetIDs: TweetID[],
-  message: string,
-): TweetCopyFailureMessage => {
-  return {
-    type: 'TweetCopy/Response',
-    ok: false,
-    tweetIDs,
-    message,
-  };
-};
-
-// Send Message to All content-twitter
-const sendMessageToAllContentTwitter = async (
-  message: TweetCopyResponseMessage,
-) => {
-  browser.tabs.query({ url: 'https://twitter.com/*' }).then((tabs) => {
-    logger.debug('send message to tabs', {
-      message,
-      tabs: tabs.map(({ index, id, url }) => ({ index, id, url })),
-    });
-    tabs.forEach((tab) => {
-      if (tab.id !== undefined) {
-        browser.tabs.sendMessage(tab.id, message);
-      }
-    });
-  });
-};
-
 // browser action
 if (process.env.TARGET_BROWSER === 'firefox') {
   browser.action.onClicked.addListener(
@@ -161,7 +106,6 @@ if (process.env.TARGET_BROWSER === 'firefox') {
       // request permision
       browser.permissions.request({
         origins: [
-          'https://api.twitter.com/*',
           'https://twitter.com/*',
           'https://scrapbox.io/*',
           'https://*/*',
@@ -218,4 +162,58 @@ const forwardExpandTCoURLRequestToOffscreen = async (
   logger.debug('response from offscreen', response);
   await offscreen.close();
   return response;
+};
+
+// Respond to SaveTweet/Request
+const respondToSaveTweetRequest = async (
+  tweet: Tweet,
+): Promise<SaveTweetResponseMessage> => {
+  return await storage.tweet
+    .save(tweet)
+    .then(() => {
+      logger.info('save tweet', tweet);
+      // send SaveTweet/Report to all content-twitter
+      const report: SaveTweetReportMessage = {
+        type: 'SaveTweet/Report',
+        tweetID: tweet.id,
+      };
+      sendMessageToAllContentTwitter(report);
+      const response: SaveTweetResponseSuccessMessage = {
+        type: 'SaveTweet/Response',
+        ok: true,
+        tweetID: tweet.id,
+      };
+      return response;
+    })
+    .catch((error) => {
+      logger.warn('Failed to save to storage', error);
+      const message =
+        error instanceof JSONSchemaValidationError
+          ? 'Validation Error'
+          : 'Unknown Error';
+      const response: SaveTweetResponseFailureMessage = {
+        type: 'SaveTweet/Response',
+        ok: false,
+        tweetID: tweet.id,
+        error: message,
+      };
+      return response;
+    });
+};
+
+// Send message to all content-twitter
+const sendMessageToAllContentTwitter = async (
+  message: SaveTweetReportMessage,
+) => {
+  browser.tabs.query({ url: 'https://twitter.com/*' }).then((tabs) => {
+    logger.debug('send message to tabs', {
+      message,
+      tabs: tabs.map(({ index, id, url }) => ({ index, id, url })),
+    });
+    tabs.forEach((tab) => {
+      if (tab.id !== undefined) {
+        browser.tabs.sendMessage(tab.id, message);
+      }
+    });
+  });
 };

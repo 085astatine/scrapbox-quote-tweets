@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import browser from 'webextension-polyfill';
 import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
-import { TweetCopyResponseMessage } from '~/lib/message';
+import { SaveTweetReportMessage } from '~/lib/message';
 import { storage } from '~/lib/storage';
 import { CopyButton } from './component/copy-button';
 import './index.scss';
@@ -26,7 +26,7 @@ const observerCallback = (records: MutationRecord[]): void => {
       insertReactRoot(node, document.URL, logger).forEach(
         ({ tweetID, reactRoot }) => {
           // update store
-          store.dispatch(touchAction([tweetID]));
+          store.dispatch(touchAction(tweetID));
           // render by React
           const root = createRoot(reactRoot);
           root.render(
@@ -53,43 +53,29 @@ window.addEventListener('DOMContentLoaded', () => {
   observer.observe(document.body, options);
   // Load saved TweetIDs from storage
   storage.tweets.savedIDs().then((tweetIDs) => {
-    logger.debug('Saved tweet IDs', tweetIDs);
+    logger.debug('Saved Tweet IDs', tweetIDs);
     store.dispatch(
-      updateAction({
-        tweetIDs,
-        state: { state: 'success' },
-      }),
+      updateAction(
+        tweetIDs.map((tweetID) => ({ tweetID, state: { state: 'success' } })),
+      ),
     );
   });
 });
 
 // onMessage listener
-type Message = TweetCopyResponseMessage;
+type Message = SaveTweetReportMessage;
 
 const onMessageListener = (message: Message) => {
   logger.debug('on message', message);
   switch (message.type) {
-    case 'TweetCopy/Response': {
-      if (message.ok) {
-        store.dispatch(
-          updateAction({
-            tweetIDs: message.tweetIDs,
-            state: { state: 'success' },
-          }),
-        );
-      } else {
-        store.dispatch(
-          updateAction({
-            tweetIDs: message.tweetIDs,
-            state: {
-              state: 'failure',
-              message: message.message,
-            },
-          }),
-        );
-      }
+    case 'SaveTweet/Report':
+      store.dispatch(
+        updateAction({
+          tweetID: message.tweetID,
+          state: { state: 'success' },
+        }),
+      );
       break;
-    }
     default: {
       const _: never = message.type;
       logger.error(`unexpected message "${message}"`);

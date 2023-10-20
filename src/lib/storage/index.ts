@@ -1,6 +1,5 @@
 import browser from 'webextension-polyfill';
 import { logger } from '../logger';
-import { deleteBearerToken, loadBearerToken, saveBearerToken } from './auth';
 import {
   deleteTweet,
   deleteTweets,
@@ -23,13 +22,6 @@ const dumpStorage = async (): Promise<void> => {
 export const storage = {
   clear: clearStorage,
   dump: dumpStorage,
-  auth: {
-    bearerToken: {
-      load: loadBearerToken,
-      save: saveBearerToken,
-      delete: deleteBearerToken,
-    },
-  },
   tweet: {
     save: saveTweet,
     load: loadTweet,

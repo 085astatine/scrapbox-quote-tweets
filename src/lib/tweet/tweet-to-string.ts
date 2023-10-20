@@ -50,8 +50,6 @@ const fillTweetTemplateElement = (
           return tweet.text
             .map((entity) => fillTweetEntity(entity, template))
             .join('');
-        case 'user.id':
-          return tweet.author.id;
         case 'user.name':
           return tweet.author.name;
         case 'user.username':
@@ -104,7 +102,8 @@ const fillTweetEntity = (
         .map((element) => fillTweetEntityMention(element, entity))
         .join('');
     default:
-      return entity.text;
+      ((_: never) => _)(entity);
+      return '';
   }
 };
 
@@ -136,16 +135,14 @@ const fillTweetEntityURL = (
       switch (templateElement.field) {
         case 'text':
           return entity.text;
-        case 'url':
-          return entity.url;
-        case 'display_url':
-          return entity.display_url;
+        case 'short_url':
+          return entity.short_url;
+        case 'expanded_url':
+          return entity.expanded_url;
         case 'decoded_url':
           return entity.decoded_url;
         case 'title':
           return entity.title ?? '';
-        case 'description':
-          return entity.description ?? '';
       }
   }
   ((_: never) => _)(templateElement);
@@ -165,6 +162,8 @@ const fillTweetEntityHashtag = (
           return entity.text;
         case 'tag':
           return entity.tag;
+        case 'hashmoji':
+          return entity.hashmoji ?? '';
       }
   }
   ((_: never) => _)(templateElement);
@@ -201,12 +200,8 @@ const fillTweetEntityMention = (
       switch (templateElement.field) {
         case 'text':
           return entity.text;
-        case 'user.id':
-          return entity.user.id;
-        case 'user.name':
-          return entity.user.name ?? '';
-        case 'user.username':
-          return entity.user.username;
+        case 'username':
+          return entity.username;
       }
   }
   ((_: never) => _)(templateElement);
