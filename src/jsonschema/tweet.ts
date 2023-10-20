@@ -32,12 +32,17 @@ const definitions: SchemaObject = {
     required: ['id', 'timestamp', 'author', 'text'],
     additionalProperties: false,
   },
+  // username
+  username: {
+    type: 'string',
+    pattern: '^\\w{1,15}$',
+  },
   // User
   user: {
     type: 'object',
     properties: {
       name: { type: 'string' },
-      username: { type: 'string' },
+      username: { $ref: '#/definitions/username' },
     },
     required: ['name', 'username'],
     additionalProperties: false,
@@ -108,7 +113,7 @@ const definitions: SchemaObject = {
     properties: {
       type: { const: 'mention' },
       text: { type: 'string' },
-      username: { type: 'string' },
+      username: { $ref: '#/definitions/username' },
     },
     required: ['type', 'text', 'username'],
     additionalProperties: false,
