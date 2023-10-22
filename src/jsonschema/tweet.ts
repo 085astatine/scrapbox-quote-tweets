@@ -1,5 +1,5 @@
 import { JSONSchemaType, SchemaObject } from 'ajv';
-import { Tweet } from '~/lib/tweet';
+import { Tweet, TweetID } from '~/lib/tweet';
 
 const definitions: SchemaObject = {
   // URI
@@ -214,3 +214,11 @@ export const tweetsJSONSchema = {
   definitions,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as any as JSONSchemaType<Tweet[]>;
+
+export const tweetIDsJSONSchema: JSONSchemaType<TweetID[]> = {
+  type: 'array',
+  items: {
+    type: 'string',
+    pattern: '^[0-9]+$',
+  },
+};

@@ -5,7 +5,11 @@ import addFormatsDraft2019 from 'ajv-formats-draft2019';
 import standaloneCode from 'ajv/dist/standalone';
 import * as fs from 'fs';
 import * as path from 'path';
-import { tweetJSONSchema, tweetsJSONSchema } from './jsonschema/tweet';
+import {
+  tweetIDsJSONSchema,
+  tweetJSONSchema,
+  tweetsJSONSchema,
+} from './jsonschema/tweet';
 
 const generate = <T>(
   schema: JSONSchemaType<T>,
@@ -61,4 +65,11 @@ generate(
   'validate-tweets',
   'Tweet[]',
   "import { Tweet } from '~/lib/tweet'",
+);
+// TweetID[]
+generate(
+  tweetIDsJSONSchema,
+  'validate-tweet-ids',
+  'TweetID[]',
+  "import { TweetID } from '~/lib/tweet'",
 );
