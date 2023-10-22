@@ -1,11 +1,14 @@
 import browser from 'webextension-polyfill';
-import { logger } from '~/lib/logger';
+import { createLogger } from '~/lib/logger';
 import {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
   ForwardToOffscreenMessage,
 } from '~/lib/message';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
+
+// logger
+const logger = createLogger({ prefix: '[offscreen] ' });
 
 // runtime.onMessage
 type ForwardedMessage = ExpandTCoURLRequestMessage;
@@ -15,12 +18,12 @@ type ResponseMessage = ExpandTCoURLResponseMessage;
 const listener = async (
   message: RequestMessage,
 ): Promise<ResponseMessage | void> => {
-  logger.debug('[offscreen] on message', message);
+  logger.debug('on message', message);
   switch (message?.type) {
     case 'Forward/ToOffscreen':
       return await respondToForwardedMessage(message.message);
     default:
-      logger.debug('[offscreen] skip message', message);
+      logger.debug('skip message', message);
   }
 };
 
@@ -34,7 +37,7 @@ const respondToForwardedMessage = async (
     case 'ExpandTCoURL/Request':
       return await respondToExpandTCoURLRequest(message.shortURL);
     default:
-      logger.debug('[offscreen] unexpected forwarded message', message);
+      logger.debug('unexpected forwarded message', message);
   }
 };
 
