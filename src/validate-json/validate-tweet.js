@@ -353,8 +353,8 @@ const schema17 = {
 };
 const schema18 = { type: 'string', format: 'uri' };
 const schema20 = { type: 'string', format: 'iri' };
-const formats0 = require('ajv-formats/dist/formats').fullFormats.uri;
-const formats4 = require('ajv-formats-draft2019/formats').iri;
+const formats0 = require('./formats').uri;
+const formats4 = require('./formats').iri;
 function validate15(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},

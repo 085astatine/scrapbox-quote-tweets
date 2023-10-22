@@ -1,4 +1,4 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv, { JSONSchemaType, _ } from 'ajv';
 import addFormats from 'ajv-formats';
 // @ts-expect-error ajv-formats-draft2019 has no .d.ts file
 import addFormatsDraft2019 from 'ajv-formats-draft2019';
@@ -29,6 +29,7 @@ const generate = <T>(
     discriminator: true,
     code: {
       source: true,
+      formats: _`require("./formats")`,
     },
   });
   addFormats(ajv, ['uri']);
@@ -36,10 +37,7 @@ const generate = <T>(
   const validate = ajv.compile(schema);
   fs.writeFileSync(
     path.join(directory, `${output}.js`),
-    standaloneCode(ajv, validate).replace(
-      /require\("ajv-formats\/dist\/formats"\)\.fullFormats\.iri/g,
-      'require("ajv-formats-draft2019/formats").iri',
-    ),
+    standaloneCode(ajv, validate),
   );
   // generate .d.ts
   const code: string[] = [];
