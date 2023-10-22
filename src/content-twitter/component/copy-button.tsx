@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import browser from 'webextension-polyfill';
 import ScrapboxIcon from '~/icon/scrapbox.svg';
 import CloseIcon from '~/icon/x.svg';
-import { logger } from '~/lib/logger';
+import { createLogger } from '~/lib/logger';
 import {
   SaveTweetRequestMessage,
   SaveTweetResponseMessage,
@@ -34,6 +34,8 @@ export interface CopyButtonProps {
 }
 
 export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
+  // logger
+  const logger = createLogger({ prefix: `[Tweet ID: ${tweetID}] ` });
   // ref
   const ref = React.useRef<HTMLDivElement>(null);
   // redux
@@ -107,32 +109,34 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     dispatch(updateAction({ tweetID, state: { state: 'in-progress' } }));
     // parse tweet
     if (!ref?.current) {
-      logger.warn(`[tweet ID: ${tweetID}]: reference to DOM is null`);
+      logger.warn('reference to DOM is null');
       return;
     }
-    const tweet = await parseTweet(tweetID, ref.current).catch((error) => {
-      logger.warn(`[tweet ID: ${tweetID}]: failed to parse tweet`, error);
-      dispatch(
-        updateAction({
-          tweetID,
-          state: { state: 'failure', message: error.message },
-        }),
-      );
-      return null;
-    });
+    const tweet = await parseTweet(tweetID, ref.current, logger).catch(
+      (error) => {
+        logger.warn('failed to parse tweet', error);
+        dispatch(
+          updateAction({
+            tweetID,
+            state: { state: 'failure', message: error.message },
+          }),
+        );
+        return null;
+      },
+    );
     logger.info('tweet', tweet);
     if (tweet === null) {
       return;
     }
     // send message to background
-    logger.info(`[Tweet ID: ${tweetID}] save request`);
+    logger.info('save request');
     const request: SaveTweetRequestMessage = {
       type: 'SaveTweet/Request',
       tweet,
     };
     const response: SaveTweetResponseMessage =
       await browser.runtime.sendMessage(request);
-    logger.debug(`[Tweet ID: ${tweetID}] response`, response);
+    logger.debug('response', response);
     if (response?.type === 'SaveTweet/Response') {
       if (response.ok) {
         dispatch(updateAction({ tweetID, state: { state: 'success' } }));
