@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { logger } from './logger';
+import { logger } from '../logger';
 
 interface ClipboardWindow {
   windowID: number;
