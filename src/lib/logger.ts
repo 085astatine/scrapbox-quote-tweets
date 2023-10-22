@@ -6,6 +6,7 @@ export interface LoggerOption {
   level?: LogLevel;
   collapsed?: boolean;
   prefix?: string;
+  time?: boolean;
 }
 
 const defaultLoggerOption = (): Required<LoggerOption> => {
@@ -16,6 +17,7 @@ const defaultLoggerOption = (): Required<LoggerOption> => {
         : ('debug' as const),
     collapsed: true,
     prefix: '',
+    time: false,
   };
 };
 
@@ -41,16 +43,18 @@ export const createLogger = (option?: LoggerOption) => {
     if (priority(config.level) > priority(level)) {
       return;
     }
+    // prefix
+    const prefix = createPrefix(config);
     // single message
     if (args.length === 0) {
-      console[level](`${config.prefix}${message}`);
+      console[level](`${prefix}${message}`);
       return;
     }
     // group
     if (config.collapsed) {
-      console.groupCollapsed(`${config.prefix}${message}`);
+      console.groupCollapsed(`${prefix}${message}`);
     } else {
-      console.group(`${config.prefix}${message}`);
+      console.group(`${prefix}${message}`);
     }
     // args
     for (const arg of args) {
@@ -103,4 +107,15 @@ const priority = (level: LogLevel) => {
       return _;
     }
   }
+};
+
+const createPrefix = (option: Required<LoggerOption>): string => {
+  let prefix = '';
+  if (option.time) {
+    prefix += `${new Date().toISOString()} `;
+  }
+  if (option.prefix) {
+    prefix += option.prefix;
+  }
+  return prefix;
 };
