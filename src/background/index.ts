@@ -17,7 +17,7 @@ import {
 import { storage } from '~/lib/storage';
 import { Tweet } from '~/lib/tweet';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
-import { JSONSchemaValidationError } from '~/validate-json/jsonschema-validation-error';
+import { JSONSchemaValidationError } from '~/validate-json/error';
 import { setupOffscreen } from './offscreen';
 
 logger.info('background script');

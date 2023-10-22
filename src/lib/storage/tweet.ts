@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 import { tweetJSONSchema, tweetsJSONSchema } from '~/jsonschema/tweet';
-import { JSONSchemaValidationError } from '~/validate-json/jsonschema-validation-error';
+import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateTweet from '~/validate-json/validate-tweet';
 import validateTweets from '~/validate-json/validate-tweets';
 import { Tweet, TweetID } from '../tweet';
