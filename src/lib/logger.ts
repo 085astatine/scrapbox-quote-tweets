@@ -5,6 +5,7 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 export interface LoggerOption {
   level?: LogLevel;
   collapsed?: boolean;
+  prefix?: string;
 }
 
 const defaultLoggerOption = (): Required<LoggerOption> => {
@@ -14,6 +15,7 @@ const defaultLoggerOption = (): Required<LoggerOption> => {
         ? ('warn' as const)
         : ('debug' as const),
     collapsed: true,
+    prefix: '',
   };
 };
 
@@ -41,14 +43,14 @@ export const createLogger = (option?: LoggerOption) => {
     }
     // single message
     if (args.length === 0) {
-      console[level](message);
+      console[level](`${config.prefix}${message}`);
       return;
     }
     // group
     if (config.collapsed) {
-      console.groupCollapsed(message);
+      console.groupCollapsed(`${config.prefix}${message}`);
     } else {
-      console.group(message);
+      console.group(`${config.prefix}${message}`);
     }
     // args
     for (const arg of args) {
