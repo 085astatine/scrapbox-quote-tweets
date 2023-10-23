@@ -12,7 +12,7 @@ export const saveTweets = async (tweets: Tweet[]): Promise<void> => {
     throw new JSONSchemaValidationError(
       tweetsJSONSchema,
       tweets,
-      validateTweets.errors,
+      validateTweets.errors ?? [],
     );
   }
   // set to storage
@@ -27,7 +27,7 @@ export const saveTweet = async (tweet: Tweet): Promise<void> => {
     throw new JSONSchemaValidationError(
       tweetJSONSchema,
       tweet,
-      validateTweet.errors,
+      validateTweet.errors ?? [],
     );
   }
   // set to storage
@@ -59,7 +59,7 @@ export const loadTweets = async (tweetIDs?: TweetID[]): Promise<Tweet[]> => {
     throw new JSONSchemaValidationError(
       tweetsJSONSchema,
       tweets,
-      validateTweets.errors,
+      validateTweets.errors ?? [],
     );
   }
   return tweets;
@@ -79,7 +79,7 @@ export const loadTweet = async (tweetID: TweetID): Promise<Tweet | null> => {
     throw new JSONSchemaValidationError(
       tweetJSONSchema,
       tweet,
-      validateTweet.errors,
+      validateTweet.errors ?? [],
     );
   }
   return tweet;

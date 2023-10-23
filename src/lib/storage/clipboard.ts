@@ -27,7 +27,7 @@ const loadTweetIDs = async (): Promise<TweetID[]> => {
     throw new JSONSchemaValidationError(
       tweetIDsJSONSchema,
       tweetIDs,
-      validateTweetIDs.errors,
+      validateTweetIDs.errors ?? [],
     );
   }
   return tweetIDs;

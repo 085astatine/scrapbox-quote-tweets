@@ -42,10 +42,13 @@ const generate = <T>(
   );
   // generate .d.ts
   const code: string[] = [];
-  code.push("import { ValidateFunction } from 'avj';");
+  code.push("import { ErrorObject } from 'ajv';");
   code.push(`${importCode};`);
   code.push('');
-  code.push(`declare const validate: ValidateFunction<${typename}>;`);
+  code.push('declare const validate: {');
+  code.push(`  (data: unknown): data is ${typename};`);
+  code.push('  errors: ErrorObject[] | null;');
+  code.push('};');
   code.push(`export default validate;`);
   code.push('');
   fs.writeFileSync(path.join(directory, `${output}.d.ts`), code.join('\n'));

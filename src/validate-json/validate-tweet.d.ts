@@ -1,5 +1,8 @@
-import { ValidateFunction } from 'avj';
+import { ErrorObject } from 'ajv';
 import { Tweet } from '~/lib/tweet';
 
-declare const validate: ValidateFunction<Tweet>;
+declare const validate: {
+  (data: unknown): data is Tweet;
+  errors: ErrorObject[] | null;
+};
 export default validate;

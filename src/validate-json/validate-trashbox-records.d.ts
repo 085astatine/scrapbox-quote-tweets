@@ -1,5 +1,8 @@
-import { ValidateFunction } from 'avj';
+import { ErrorObject } from 'ajv';
 import { TrashboxRecord } from '~/lib/clipboard';
 
-declare const validate: ValidateFunction<TrashboxRecord[]>;
+declare const validate: {
+  (data: unknown): data is TrashboxRecord[];
+  errors: ErrorObject[] | null;
+};
 export default validate;
