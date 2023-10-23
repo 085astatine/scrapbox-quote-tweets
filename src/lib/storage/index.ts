@@ -1,14 +1,7 @@
 import browser from 'webextension-polyfill';
 import { logger } from '../logger';
-import {
-  deleteTweet,
-  deleteTweets,
-  loadTweet,
-  loadTweets,
-  saveTweet,
-  saveTweets,
-  savedTweetIDs,
-} from './tweet';
+import * as clipboard from './clipboard';
+import * as tweet from './tweet';
 
 const clearStorage = async (): Promise<void> => {
   await browser.storage.local.clear();
@@ -23,14 +16,20 @@ export const storage = {
   clear: clearStorage,
   dump: dumpStorage,
   tweet: {
-    save: saveTweet,
-    load: loadTweet,
-    delete: deleteTweet,
+    save: tweet.saveTweet,
+    load: tweet.loadTweet,
+    delete: tweet.deleteTweet,
   },
   tweets: {
-    save: saveTweets,
-    load: loadTweets,
-    delete: deleteTweets,
-    savedIDs: savedTweetIDs,
+    save: tweet.saveTweets,
+    load: tweet.loadTweets,
+    delete: tweet.deleteTweets,
+    savedIDs: tweet.savedTweetIDs,
+  },
+  clipboard: {
+    tweets: {
+      add: clipboard.addTweet,
+      load: clipboard.loadTweets,
+    },
   },
 } as const;
