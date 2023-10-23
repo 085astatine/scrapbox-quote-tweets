@@ -5,6 +5,7 @@ import addFormatsDraft2019 from 'ajv-formats-draft2019';
 import standaloneCode from 'ajv/dist/standalone';
 import * as fs from 'fs';
 import * as path from 'path';
+import { trashboxRecordsJSONSchema } from './jsonschema/clipboard';
 import {
   tweetIDsJSONSchema,
   tweetJSONSchema,
@@ -70,4 +71,11 @@ generate(
   'validate-tweet-ids',
   'TweetID[]',
   "import { TweetID } from '~/lib/tweet'",
+);
+// TrashboxRecord[]
+generate(
+  trashboxRecordsJSONSchema,
+  'validate-trashbox-records',
+  'TrashboxRecord[]',
+  "import { TrashboxRecord } from '~/lib/clipboard'",
 );
