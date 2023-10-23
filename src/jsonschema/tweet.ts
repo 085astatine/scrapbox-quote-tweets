@@ -206,16 +206,16 @@ export const tweetJSONSchema = {
   $ref: '#/definitions/tweet',
   definitions,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-} as any as JSONSchemaType<Tweet>;
+} as any as Readonly<JSONSchemaType<Tweet>>;
 
 export const tweetsJSONSchema = {
   type: 'array',
   items: { $ref: '#/definitions/tweet' },
   definitions,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-} as any as JSONSchemaType<Tweet[]>;
+} as any as Readonly<JSONSchemaType<Tweet[]>>;
 
-export const tweetIDsJSONSchema: JSONSchemaType<TweetID[]> = {
+export const tweetIDsJSONSchema: Readonly<JSONSchemaType<TweetID[]>> = {
   type: 'array',
   items: {
     type: 'string',
