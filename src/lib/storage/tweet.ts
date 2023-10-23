@@ -62,7 +62,7 @@ export const loadTweets = async (tweetIDs?: TweetID[]): Promise<Tweet[]> => {
       validateTweets.errors,
     );
   }
-  return Promise.resolve(tweets);
+  return tweets;
 };
 
 export const loadTweet = async (tweetID: TweetID): Promise<Tweet | null> => {
@@ -72,7 +72,7 @@ export const loadTweet = async (tweetID: TweetID): Promise<Tweet | null> => {
     .get(key)
     .then((record) => record[key]);
   if (tweet === undefined) {
-    return Promise.resolve(null);
+    return null;
   }
   // JSON Schema validation
   if (!validateTweet(tweet)) {
@@ -82,7 +82,7 @@ export const loadTweet = async (tweetID: TweetID): Promise<Tweet | null> => {
       validateTweet.errors,
     );
   }
-  return Promise.resolve(tweet);
+  return tweet;
 };
 
 export const deleteTweets = async (tweetIDs?: TweetID[]): Promise<void> => {
