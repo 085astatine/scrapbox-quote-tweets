@@ -31,5 +31,11 @@ export const storage = {
       add: clipboard.addTweet,
       load: clipboard.loadTweets,
     },
+    trashbox: {
+      move: clipboard.moveToTrashbox,
+      load: clipboard.loadTrashbox,
+      delete: clipboard.deleteTrashbox,
+      clear: clipboard.clearTrashbox,
+    },
   },
 } as const;
