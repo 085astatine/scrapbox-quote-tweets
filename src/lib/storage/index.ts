@@ -28,7 +28,6 @@ export const storage = {
   },
   clipboard: {
     tweets: {
-      add: clipboard.addTweet,
       load: clipboard.loadTweets,
     },
     trashbox: {

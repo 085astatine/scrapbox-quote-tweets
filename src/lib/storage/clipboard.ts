@@ -1,26 +1,27 @@
 import browser from 'webextension-polyfill';
 import { trashboxRecordsJSONSchema } from '~/jsonschema/clipboard';
-import { tweetIDsJSONSchema } from '~/jsonschema/tweet';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateTrashboxRecords from '~/validate-json/validate-trashbox-records';
-import validateTweetIDs from '~/validate-json/validate-tweet-ids';
 import { TrashboxElement, TrashboxRecord } from '../clipboard';
 import { Tweet, TweetID } from '../tweet';
-import { loadTweets as loadSavedTweets, saveTweet } from './tweet';
+import { loadTweets as loadSavedTweets, savedTweetIDs } from './tweet';
 
-const keyTweets = 'clipboard/tweets';
 const keyTrashbox = 'clipboard/trashbox';
 
-export const addTweet = async (tweet: Tweet): Promise<void> => {
-  await saveTweet(tweet);
-  const tweetIDs = await loadTweetIDs();
-  tweetIDs.push(tweet.id);
-  await browser.storage.local.set({ [keyTweets]: tweetIDs.sort() });
-};
-
 export const loadTweets = async (): Promise<Tweet[]> => {
-  const tweetIDs = await loadTweetIDs();
-  return await loadSavedTweets(tweetIDs);
+  // tweet IDs of tweets in trashbox
+  const tweetIDsInTrashbox = (await loadTrashboxRecords()).reduce<TweetID[]>(
+    (tweetIDs, record) => {
+      tweetIDs.concat(record.tweetIDs);
+      return tweetIDs;
+    },
+    [],
+  );
+  // tweet IDs of tweets in tweets
+  const tweetIDsInTweets = (await savedTweetIDs()).filter(
+    (id) => !tweetIDsInTrashbox.includes(id),
+  );
+  return await loadSavedTweets(tweetIDsInTweets);
 };
 
 export const moveToTrashbox = async (tweets: Tweet[]): Promise<void> => {
@@ -28,12 +29,6 @@ export const moveToTrashbox = async (tweets: Tweet[]): Promise<void> => {
     timestamp: Math.trunc(Date.now() / 1000),
     tweetIDs: tweets.map((tweet) => tweet.id).sort(),
   };
-  // remove from clipboard/tweets
-  const tweetIDs = await loadTweetIDs();
-  await browser.storage.local.set({
-    [keyTweets]: tweetIDs.filter((id) => !record.tweetIDs.includes(id)).sort(),
-  });
-  // add to clipboard/trashbox
   const records = await loadTrashboxRecords();
   records.push(record);
   records.sort(sortRecords);
@@ -79,20 +74,6 @@ export const deleteTrashbox = async (record: TrashboxRecord): Promise<void> => {
 
 export const clearTrashbox = async (): Promise<void> => {
   await browser.storage.local.remove(keyTrashbox);
-};
-
-const loadTweetIDs = async (): Promise<TweetID[]> => {
-  const tweetIDs = await browser.storage.local
-    .get(keyTweets)
-    .then((record) => record[keyTweets] ?? []);
-  if (!validateTweetIDs(tweetIDs)) {
-    throw new JSONSchemaValidationError(
-      tweetIDsJSONSchema,
-      tweetIDs,
-      validateTweetIDs.errors ?? [],
-    );
-  }
-  return tweetIDs;
 };
 
 const loadTrashboxRecords = async (): Promise<TrashboxRecord[]> => {
