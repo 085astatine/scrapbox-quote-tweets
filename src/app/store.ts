@@ -50,3 +50,5 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(...middlewares),
 });
+
+export type Store = typeof store;

@@ -1,19 +1,14 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
+import { initializeAction, store } from '~/app/store';
 import { storage } from '~/lib/storage';
 import { Root } from './component/root';
 import './index.scss';
-import { initializeAction, store } from './store';
 
 const root = document.getElementById('root');
 if (root !== null) {
   const reactRoot = createRoot(root);
-  reactRoot.render(
-    <Provider store={store}>
-      <Root />
-    </Provider>,
-  );
+  reactRoot.render(<Root store={store} />);
 }
 
 const initialize = async (): Promise<void> => {
