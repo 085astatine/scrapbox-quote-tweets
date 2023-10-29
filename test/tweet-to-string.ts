@@ -3,7 +3,7 @@ import { tweetToString } from '~/lib/tweet/tweet-to-string';
 describe('tweet-to-string/tweet', () => {
   const tweet = {
     id: '1234567890123456789',
-    timestamp: 1330873445000,
+    timestamp: 1330873445,
     author: {
       name: 'User Name',
       username: 'username',
@@ -61,7 +61,7 @@ describe('tweet-to-string/tweet', () => {
       tweet: 'date.timestamp: ${date.timestamp}',
     };
     expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'date.timestamp: 1330873445000',
+      'date.timestamp: 1330873445',
     );
   });
   test('date.iso(utc)', () => {
