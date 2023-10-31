@@ -1,5 +1,8 @@
+import classNames from 'classnames';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import ChevronDownIcon from '~/icon/chevron-down.svg';
+import ChevronUpIcon from '~/icon/chevron-up.svg';
 import { Tweet as TweetData, TweetID, toDate } from '~/lib/tweet';
 import { State } from '../store';
 
@@ -17,12 +20,11 @@ export const Tweet: React.FC<TweetProps> = ({ tweetID }: TweetProps) => {
   if (tweet === undefined) {
     return <div>Error</div>;
   }
+  const text = tweet.text.map((entity) => entity.text).join('');
   return (
     <div className="tweet">
       <Header tweet={tweet} />
-      <div className="text">
-        {tweet.text.map((entity) => entity.text).join('')}
-      </div>
+      <Body text={text} />
     </div>
   );
 };
@@ -49,6 +51,27 @@ const Header: React.FC<HeaderProps> = ({ tweet }: HeaderProps) => {
       <a className="datetime" href={tweetURL} target="_blink" rel="noreferrer">
         {date}
       </a>
+    </div>
+  );
+};
+
+interface BodyProps {
+  text: string;
+}
+
+const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
+  const [ellipsis, setEllipsis] = React.useState(true);
+  const Icon = ellipsis ? ChevronDownIcon : ChevronUpIcon;
+  return (
+    <div className="body">
+      <div className={classNames('text', { ellipsis })}>{text}</div>
+      <div className="button">
+        <div
+          className="circle"
+          onClick={() => setEllipsis((ellipsis) => !ellipsis)}
+        />
+        <Icon className="icon" width={undefined} height={undefined} />
+      </div>
     </div>
   );
 };
