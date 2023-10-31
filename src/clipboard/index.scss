@@ -1,1 +1,6 @@
+@use 'sass:meta';
 @use 'bootstrap/scss/bootstrap';
+
+.scrapbox-copy-tweets {
+  @include meta.load-css('~/app/index');
+}

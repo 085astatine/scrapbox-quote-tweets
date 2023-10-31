@@ -1,0 +1,69 @@
+@use 'sass:map';
+
+$bs-prefix: bs- !default;
+$bs-spacer: 1rem !default;
+$bs-spacers: (
+  0: 0,
+  1: $bs-spacer * 0.25,
+  2: $bs-spacer * 0.5,
+  3: $bs-spacer,
+  4: $bs-spacer * 1.5,
+  5: $bs-spacer * 3,
+);
+
+.tweet {
+  border-style: var(--#{$bs-prefix}border-style);
+  border-width: var(--#{$bs-prefix}border-width);
+  border-color: var(--#{$bs-prefix}border-color);
+  border-radius: var(--#{$bs-prefix}border-radius);
+
+  .header {
+    display: flex;
+    gap: map.get($bs-spacers, 1);
+    background-color: var(--#{$bs-prefix}gray-300);
+    white-space: nowrap;
+    padding: map.get($bs-spacers, 1) map.get($bs-spacers, 2);
+
+    .name {
+      color: var(--#{$bs-prefix}black);
+      text-decoration: none;
+      flex-shrink: 1;
+      overflow: hidden;
+      text-overflow: clip;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .username {
+      color: var(--#{$bs-prefix}gray);
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .datetime {
+      color: var(--#{$bs-prefix}black);
+      text-decoration: none;
+      flex-grow: 1;
+      text-align: right;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: map.get($bs-spacers, 1) map.get($bs-spacers, 2);
+  }
+}
+
+.tweets {
+  display: flex;
+  flex-direction: column;
+  gap: map.get($bs-spacers, 1);
+}

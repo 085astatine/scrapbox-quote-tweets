@@ -12,12 +12,18 @@ export const Root: React.FC<RootProps> = ({ store }: RootProps) => {
     browser.runtime.sendMessage({ type: 'Clipboard/CloseRequest' });
   };
   return (
-    <div>
-      <h1>Clipboard</h1>
-      <div>
-        <App store={store} />
+    <div className="scrapbox-copy-tweets">
+      <div className="container">
+        <div>
+          <h1>Clipboard</h1>
+        </div>
+        <div>
+          <App store={store} />
+        </div>
+        <div>
+          <Button onClick={close}>Close</Button>
+        </div>
       </div>
-      <Button onClick={close}>Close</Button>
     </div>
   );
 };
