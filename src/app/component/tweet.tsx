@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import ReturnIcon from '~/icon/bootstrap/arrow-return-left.svg';
 import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
 import { Tweet as TweetData, TweetID, toDate } from '~/lib/tweet';
@@ -61,10 +62,28 @@ interface BodyProps {
 
 const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
   const [ellipsis, setEllipsis] = React.useState(true);
+  const texts = text.split('\n');
   const Icon = ellipsis ? ChevronDownIcon : ChevronUpIcon;
   return (
     <div className="body">
-      <div className={classNames('text', { ellipsis })}>{text}</div>
+      <div className={classNames('text', { ellipsis })}>
+        {texts.map((line, index) => (
+          <React.Fragment key={index}>
+            {line}
+            {index + 1 === texts.length ? (
+              <></>
+            ) : ellipsis ? (
+              <ReturnIcon
+                className="return"
+                width={undefined}
+                height={undefined}
+              />
+            ) : (
+              <br />
+            )}
+          </React.Fragment>
+        ))}
+      </div>
       <div className="button">
         <div
           className="circle"
