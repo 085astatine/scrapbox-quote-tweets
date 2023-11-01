@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import ChevronDownIcon from '~/icon/chevron-down.svg';
-import ChevronUpIcon from '~/icon/chevron-up.svg';
+import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
+import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
 import { Tweet as TweetData, TweetID, toDate } from '~/lib/tweet';
 import { State } from '../store';
 

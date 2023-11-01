@@ -9,8 +9,8 @@ import classNames from 'classnames';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import browser from 'webextension-polyfill';
+import CloseIcon from '~/icon/bootstrap/x.svg';
 import ScrapboxIcon from '~/icon/scrapbox.svg';
-import CloseIcon from '~/icon/x.svg';
 import { createLogger } from '~/lib/logger';
 import {
   SaveTweetRequestMessage,
