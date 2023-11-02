@@ -70,14 +70,14 @@ const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
         {texts.map((line, index) => (
           <React.Fragment key={index}>
             {line}
-            {index + 1 === texts.length ? (
-              <></>
-            ) : ellipsis ? (
+            {ellipsis ? (
               <ReturnIcon
                 className="return"
                 width={undefined}
                 height={undefined}
               />
+            ) : index + 1 === texts.length ? (
+              <></>
             ) : (
               <br />
             )}
