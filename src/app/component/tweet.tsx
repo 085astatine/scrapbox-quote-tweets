@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import ReturnIcon from '~/icon/bootstrap/arrow-return-left.svg';
 import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
-import { Tweet as TweetData, TweetID, toDate } from '~/lib/tweet';
+import { TweetID, toDate } from '~/lib/tweet';
 import { State } from '../store';
 
 export interface TweetProps {
@@ -24,30 +24,43 @@ export const Tweet: React.FC<TweetProps> = ({ tweetID }: TweetProps) => {
   const text = tweet.text.map((entity) => entity.text).join('');
   return (
     <div className="tweet">
-      <Header tweet={tweet} />
+      <Header
+        id={tweet.id}
+        name={tweet.author.name}
+        username={tweet.author.username}
+        timestamp={tweet.timestamp}
+      />
       <Body text={text} />
     </div>
   );
 };
 
 interface HeaderProps {
-  tweet: TweetData;
+  id: TweetID;
+  name: string;
+  username: string;
+  timestamp: number;
 }
 
-const Header: React.FC<HeaderProps> = ({ tweet }: HeaderProps) => {
+const Header: React.FC<HeaderProps> = ({
+  id,
+  name,
+  username,
+  timestamp,
+}: HeaderProps) => {
   const baseURL = 'https://twitter.com';
   const timezone = 'UTC';
   const dateFormat = 'YYYY/MM/DD HH:mm:ss';
-  const userURL = `${baseURL}/${tweet.author.username}`;
-  const tweetURL = `${userURL}/status/${tweet.id}`;
-  const date = toDate(tweet.timestamp, timezone).format(dateFormat);
+  const userURL = `${baseURL}/${username}`;
+  const tweetURL = `${userURL}/status/${id}`;
+  const date = toDate(timestamp, timezone).format(dateFormat);
   return (
     <div className="header">
       <a className="name" href={userURL} target="_blink" rel="noreferrer">
-        {tweet.author.name}
+        {name}
       </a>
       <a className="username" href={userURL} target="_blink" rel="noreferrer">
-        {`@${tweet.author.username}`}
+        {`@${username}`}
       </a>
       <a className="datetime" href={tweetURL} target="_blink" rel="noreferrer">
         {date}
