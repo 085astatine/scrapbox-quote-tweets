@@ -220,7 +220,6 @@ const TooltipBody: React.FC<TooltipBodyProps> = ({
         onClick={onClose}
         role="button"
         tabIndex={0}
-        viewBox="0 0 16 16"
         width={undefined}
         height={undefined}
       />

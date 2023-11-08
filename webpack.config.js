@@ -11,6 +11,25 @@ module.exports = (env, argv) => {
   const mode = argv.mode ?? 'development';
   const browser = process.env.TARGET_BROWSER;
   process.env.NODE_ENV = mode;
+  // svgr
+  const svgrLoader = {
+    loader: '@svgr/webpack',
+    options: {
+      svgoConfig: {
+        plugins: [
+          {
+            name: 'preset-default',
+            params: {
+              overrides: {
+                removeViewBox: false,
+              },
+            },
+          },
+        ],
+      },
+    },
+  };
+  // config
   return {
     mode: mode,
     devtool: mode === 'production' ? false : 'cheap-source-map',
@@ -54,7 +73,7 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.svg$/,
-          use: ['@svgr/webpack'],
+          use: [svgrLoader],
         },
         {
           type: 'javascript/auto',
