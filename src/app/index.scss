@@ -116,4 +116,6 @@ $bs-spacers: (
   display: flex;
   flex-direction: column;
   gap: map.get($bs-spacers, 1);
+  flex-shrink: 1;
+  overflow-y: scroll;
 }
