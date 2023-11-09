@@ -61,6 +61,8 @@ $bs-spacers: (
 
     .text {
       margin-right: auto;
+      word-break: break-all;
+
       &.ellipsis {
         white-space: nowrap;
         overflow: hidden;
