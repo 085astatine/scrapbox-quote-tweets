@@ -1,4 +1,5 @@
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const DotenvPlugin = require('dotenv-webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
@@ -135,6 +136,18 @@ module.exports = (env, argv) => {
       new MiniCssExtractPlugin(),
       new NodePolyfillPlugin(),
       new WextManifestPlugin(),
+      ...(mode === 'development'
+        ? [
+            new CopyPlugin({
+              patterns: [
+                {
+                  from: 'test_data.json',
+                  noErrorOnMissing: true,
+                },
+              ],
+            }),
+          ]
+        : []),
     ],
     performance: {
       hints: false,

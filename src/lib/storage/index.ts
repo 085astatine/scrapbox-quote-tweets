@@ -38,3 +38,24 @@ export const storage = {
     },
   },
 } as const;
+
+export const loadTestData = async (url: string): Promise<void> => {
+  if (process.env.NODE_ENV !== 'production') {
+    // clear storage
+    logger.debug('clear storage');
+    await clearStorage();
+    // load test data
+    logger.debug(`load test data from ${url}`);
+    const data = await fetch(url)
+      .then((response) => response.json())
+      .catch((error) => {
+        logger.debug('failed to load test data', error);
+        return null;
+      });
+    logger.debug('test data', data);
+    // save test data
+    if (data !== null) {
+      await browser.storage.local.set(data);
+    }
+  }
+};

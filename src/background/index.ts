@@ -14,7 +14,7 @@ import {
   SaveTweetResponseMessage,
   SaveTweetResponseSuccessMessage,
 } from '~/lib/message';
-import { storage } from '~/lib/storage';
+import { loadTestData, storage } from '~/lib/storage';
 import { Tweet } from '~/lib/tweet';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
 import { JSONSchemaValidationError } from '~/validate-json/error';
@@ -24,8 +24,7 @@ logger.info('background script');
 
 // Clear storage.local (in development)
 if (process.env.NODE_ENV !== 'production') {
-  logger.debug('claer storage');
-  storage.clear();
+  loadTestData(browser.runtime.getURL('test_data.json'));
   // login to twitter
   if (process.env.TWITTER_AUTH_TOKEN_COOKIE !== undefined) {
     logger.debug('set auth_token to coockies');
