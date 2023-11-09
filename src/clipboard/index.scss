@@ -14,19 +14,19 @@
     white-space: nowrap;
 
     .title {
+      margin-right: auto;
+      overflow: hidden;
       font-size: 2.5rem;
       font-weight: 500;
-      overflow: hidden;
       text-overflow: clip;
-      margin-right: auto;
     }
     .close {
       display: flex;
 
       .icon {
-        margin: auto;
         width: 2rem;
         height: 2rem;
+        margin: auto;
       }
     }
   }

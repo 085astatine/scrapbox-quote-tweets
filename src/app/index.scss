@@ -12,23 +12,23 @@ $bs-spacers: (
 );
 
 .tweet {
+  border-color: var(--#{$bs-prefix}border-color);
   border-style: var(--#{$bs-prefix}border-style);
   border-width: var(--#{$bs-prefix}border-width);
-  border-color: var(--#{$bs-prefix}border-color);
   border-radius: var(--#{$bs-prefix}border-radius);
 
   .header {
     display: flex;
     gap: map.get($bs-spacers, 1);
-    background-color: var(--#{$bs-prefix}gray-300);
-    white-space: nowrap;
     padding: map.get($bs-spacers, 1) map.get($bs-spacers, 2);
+    white-space: nowrap;
+    background-color: var(--#{$bs-prefix}gray-300);
 
     .name {
-      color: var(--#{$bs-prefix}black);
-      text-decoration: none;
       flex-shrink: 1;
       overflow: hidden;
+      color: var(--#{$bs-prefix}black);
+      text-decoration: none;
       text-overflow: clip;
       &:hover {
         text-decoration: underline;
@@ -44,10 +44,10 @@ $bs-spacers: (
     }
 
     .datetime {
-      color: var(--#{$bs-prefix}black);
-      text-decoration: none;
       flex-grow: 1;
+      color: var(--#{$bs-prefix}black);
       text-align: right;
+      text-decoration: none;
       &:hover {
         text-decoration: underline;
       }
@@ -64,16 +64,16 @@ $bs-spacers: (
       word-break: break-all;
 
       &.ellipsis {
-        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .return {
-        fill: var(--#{$bs-prefix}gray-500);
-        stroke: var(--#{$bs-prefix}gray-500);
         width: 1rem;
         height: 1rem;
+        fill: var(--#{$bs-prefix}gray-500);
+        stroke: var(--#{$bs-prefix}gray-500);
       }
     }
 
@@ -85,16 +85,14 @@ $bs-spacers: (
       height: map.get($bs-spacers, 4);
 
       .circle {
-        // circle
         position: absolute;
         top: 0;
-        bottom: 0;
         right: 0;
+        bottom: 0;
         left: 0;
-        border-radius: 50%;
         margin: 0;
-        // cursor
         cursor: pointer;
+        border-radius: 50%;
         &:hover {
           box-shadow: 0 0 0 var(--#{$bs-prefix}focus-ring-width)
             rgba(
@@ -104,9 +102,9 @@ $bs-spacers: (
         }
       }
       .icon {
-        margin: auto;
         width: map.get($bs-spacers, 3);
         height: map.get($bs-spacers, 3);
+        margin: auto;
       }
     }
   }
@@ -115,7 +113,7 @@ $bs-spacers: (
 .tweets {
   display: flex;
   flex-direction: column;
-  gap: map.get($bs-spacers, 1);
   flex-shrink: 1;
+  gap: map.get($bs-spacers, 1);
   overflow-y: scroll;
 }
