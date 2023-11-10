@@ -5,15 +5,12 @@ import { Tweet } from './tweet';
 
 export const Tweets: React.FC = () => {
   // redux
-  const selector = React.useCallback(
-    (state: State) => state.tweets.map((tweet) => tweet.id),
-    [],
-  );
-  const tweetIDs = useSelector(selector, shallowEqual);
+  const selector = React.useCallback((state: State) => state.tweets, []);
+  const tweets = useSelector(selector, shallowEqual);
   return (
     <div className="tweets">
-      {tweetIDs.map((tweetID) => (
-        <Tweet key={tweetID} tweetID={tweetID} />
+      {tweets.map((tweet) => (
+        <Tweet key={tweet.id} tweet={tweet} />
       ))}
     </div>
   );

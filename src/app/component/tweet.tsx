@@ -1,26 +1,15 @@
 import classNames from 'classnames';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import ReturnIcon from '~/icon/bootstrap/arrow-return-left.svg';
 import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
-import { TweetID, toDate } from '~/lib/tweet';
-import { State } from '../store';
+import { Tweet as TweetData, TweetID, toDate } from '~/lib/tweet';
 
 export interface TweetProps {
-  tweetID: TweetID;
+  tweet: TweetData;
 }
 
-export const Tweet: React.FC<TweetProps> = ({ tweetID }: TweetProps) => {
-  // redux
-  const selector = React.useCallback(
-    (state: State) => state.tweets.find((tweet) => tweet.id === tweetID),
-    [tweetID],
-  );
-  const tweet = useSelector(selector);
-  if (tweet === undefined) {
-    return <div>Error</div>;
-  }
+export const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
   const text = tweet.text.map((entity) => entity.text).join('');
   return (
     <div className="tweet">
