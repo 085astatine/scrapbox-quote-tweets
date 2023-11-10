@@ -10,6 +10,48 @@ $bs-spacers: (
   4: $bs-spacer * 1.5,
   5: $bs-spacer * 3,
 );
+$bs-body-bg: var(--#{$bs-prefix}body-bg);
+$tab-border-color: var(--#{$bs-prefix}border-color);
+$tab-border-hover-color: var(--#{$bs-prefix}secondary-bg);
+$tab-border-width: var(--#{$bs-prefix}border-width);
+$tab-border-style: var(--#{$bs-prefix}border-style);
+
+.tabs {
+  display: flex;
+  margin-top: map.get($bs-spacers, 1);
+  border-bottom: $tab-border-width $tab-border-style $tab-border-color;
+
+  .tab {
+    flex-grow: 1;
+    padding: 0.375rem 0.75rem;
+    margin-bottom: calc(-1 * $tab-border-width);
+    color: var(--#{$bs-prefix}link-color);
+    text-align: center;
+    cursor: pointer;
+    border: $tab-border-width $tab-border-style transparent;
+    border-top-left-radius: var(--#{$bs-prefix}border-radius);
+    border-top-right-radius: var(--#{$bs-prefix}border-radius);
+    transition:
+      color 0.15s ease-in-out,
+      border-color 0.15s ease-in-out;
+
+    &:hover {
+      border-color: $tab-border-hover-color $tab-border-hover-color
+        $tab-border-color;
+    }
+
+    &.active {
+      color: var(--#{$bs-prefix}emphasis-color);
+      cursor: auto;
+      border-color: $tab-border-color $tab-border-color $bs-body-bg;
+    }
+
+    .icon {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+}
 
 .tweet {
   border-color: var(--#{$bs-prefix}border-color);
@@ -113,7 +155,12 @@ $bs-spacers: (
 .tweets {
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   flex-shrink: 1;
   gap: map.get($bs-spacers, 1);
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
   overflow-y: scroll;
+  border-color: transparent $tab-border-color;
+  border-style: $tab-border-style;
+  border-width: $tab-border-width;
 }
