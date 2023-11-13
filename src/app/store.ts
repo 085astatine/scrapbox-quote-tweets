@@ -6,11 +6,13 @@ import { Tweet } from '~/lib/tweet';
 
 export interface State {
   tweets: Tweet[];
+  selectedTweets: Tweet[];
   trashbox: TrashboxElement[];
 }
 
 const initialState: State = {
   tweets: [],
+  selectedTweets: [],
   trashbox: [],
 };
 
@@ -27,11 +29,26 @@ const slice = createSlice({
       state.tweets = action.payload.tweets;
       state.trashbox = action.payload.trashbox;
     },
+    selectTweet(state: State, action: PayloadAction<Tweet>): void {
+      if (
+        !state.selectedTweets.find((tweet) => tweet.id === action.payload.id)
+      ) {
+        state.selectedTweets.push(action.payload);
+      } else {
+        state.selectedTweets.splice(
+          state.selectedTweets.findIndex(
+            (tweet) => tweet.id === action.payload.id,
+          ),
+          1,
+        );
+      }
+    },
   },
 });
 
 // actions
-export const { initialize: initializeAction } = slice.actions;
+export const { initialize: initializeAction, selectTweet: selectTweetAction } =
+  slice.actions;
 
 // store
 const middlewares: Middleware<State>[] = [];
