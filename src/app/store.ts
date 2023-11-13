@@ -26,8 +26,8 @@ const slice = createSlice({
   initialState,
   reducers: {
     initialize(state: State, action: PayloadAction<Initializer>): void {
-      state.tweets = action.payload.tweets;
-      state.trashbox = action.payload.trashbox;
+      state.tweets = [...action.payload.tweets];
+      state.trashbox = [...action.payload.trashbox];
     },
     selectTweet(state: State, action: PayloadAction<Tweet>): void {
       if (
