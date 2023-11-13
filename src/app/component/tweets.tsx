@@ -1,7 +1,10 @@
+import classNames from 'classnames';
 import React from 'react';
-import { shallowEqual, useSelector } from 'react-redux';
-import { State } from '../store';
-import { Tweet } from './tweet';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import CheckIcon from '~/icon/bootstrap/check2.svg';
+import { Tweet as TweetData } from '~/lib/tweet';
+import { State, selectTweetAction } from '../store';
+import { Tweet as TweetInfo } from './tweet';
 
 export const Tweets: React.FC = () => {
   // redux
@@ -12,6 +15,32 @@ export const Tweets: React.FC = () => {
       {tweets.map((tweet) => (
         <Tweet key={tweet.id} tweet={tweet} />
       ))}
+    </div>
+  );
+};
+
+interface TweetProps {
+  tweet: TweetData;
+}
+
+const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
+  // redux
+  const selector = React.useCallback(
+    (state: State) => state.selectedTweets.includes(tweet),
+    [tweet],
+  );
+  const isSelected = useSelector(selector);
+  const dispatch = useDispatch();
+  // select
+  const select = () => dispatch(selectTweetAction(tweet));
+  return (
+    <div className="item">
+      <button
+        className={classNames('checkbox', { checked: isSelected })}
+        onClick={select}>
+        <CheckIcon className="icon" width={undefined} height={undefined} />
+      </button>
+      <TweetInfo tweet={tweet} />
     </div>
   );
 };
