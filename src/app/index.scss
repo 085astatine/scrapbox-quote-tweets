@@ -53,6 +53,20 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
   }
 }
 
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  flex-shrink: 1;
+  margin-bottom: map.get($bs-spacers, 1);
+  overflow-y: hidden;
+  border-color: transparent $tab-border-color $tab-border-color;
+  border-style: $tab-border-style;
+  border-width: $tab-border-width;
+  border-bottom-right-radius: var(--#{$bs-prefix}border-radius);
+  border-bottom-left-radius: var(--#{$bs-prefix}border-radius);
+}
+
 .tweet {
   border-color: var(--#{$bs-prefix}border-color);
   border-style: var(--#{$bs-prefix}border-style);
@@ -155,14 +169,10 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
 .tweets {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
   flex-shrink: 1;
   gap: map.get($bs-spacers, 1);
   padding: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
   overflow-y: scroll;
-  border-color: transparent $tab-border-color;
-  border-style: $tab-border-style;
-  border-width: $tab-border-width;
 
   .item {
     display: flex;

@@ -18,15 +18,11 @@ export const App: React.FC<AppProps> = ({ store }: AppProps) => {
   return (
     <Provider store={store}>
       <Tabs tab={tab} switchTab={setTab} />
-      {tab === 'tweets' ? (
-        <Tweets />
-      ) : tab === 'trashbox' ? (
-        <Trashbox />
-      ) : tab === 'settings' ? (
-        <Settings />
-      ) : (
-        <></>
-      )}
+      <div className="tab-content">
+        {tab === 'tweets' && <Tweets />}
+        {tab === 'trashbox' && <Trashbox />}
+        {tab === 'settings' && <Settings />}
+      </div>
     </Provider>
   );
 };
