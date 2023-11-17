@@ -2,6 +2,8 @@ import React from 'react';
 import { Transition } from 'react-transition-group';
 
 export interface CollapseProps {
+  nodeRef: React.RefObject<HTMLElement>;
+  target: React.ReactNode;
   in?: boolean;
   duration?: number | { enter?: number; exit?: number };
 }
@@ -9,11 +11,11 @@ export interface CollapseProps {
 const defaultCollapseDuration = 300;
 
 export const Collapse: React.FC<CollapseProps> = ({
+  nodeRef: ref,
+  target,
   in: inProps = false,
   duration = defaultCollapseDuration,
 }: CollapseProps) => {
-  // ref
-  const ref = React.useRef<HTMLDivElement>(null);
   // timeout
   const timeout =
     typeof duration === 'number'
@@ -29,7 +31,7 @@ export const Collapse: React.FC<CollapseProps> = ({
       ref.current.style.height = '0';
       ref.current.style.overflow = 'hidden';
     }
-  }, []);
+  }, [ref]);
   const onEntering = React.useCallback(() => {
     if (ref.current) {
       const scrollHeight = ref.current.scrollHeight;
@@ -37,14 +39,14 @@ export const Collapse: React.FC<CollapseProps> = ({
       ref.current.style.transition = `height ${timeout.enter}ms ease`;
       ref.current.style.overflow = 'hidden';
     }
-  }, [timeout.enter]);
+  }, [ref, timeout.enter]);
   const onEntered = React.useCallback(() => {
     if (ref.current) {
       ref.current.style.height = '';
       ref.current.style.transition = '';
       ref.current.style.overflow = '';
     }
-  }, []);
+  }, [ref]);
   // collapsing
   const onExit = React.useCallback(() => {
     if (ref.current) {
@@ -54,14 +56,14 @@ export const Collapse: React.FC<CollapseProps> = ({
       // reading a dimension prop will cause the browser to recalculate
       ref.current.scrollHeight;
     }
-  }, []);
+  }, [ref]);
   const onExiting = React.useCallback(() => {
     if (ref.current) {
       ref.current.style.height = '0';
       ref.current.style.overflow = 'hidden';
       ref.current.style.transition = `height ${timeout.exit}ms ease`;
     }
-  }, [timeout.exit]);
+  }, [ref, timeout.exit]);
   const onExited = React.useCallback(() => {
     if (ref.current) {
       ref.current.style.height = '';
@@ -69,7 +71,7 @@ export const Collapse: React.FC<CollapseProps> = ({
       ref.current.style.transition = '';
       ref.current.style.display = 'none';
     }
-  }, []);
+  }, [ref]);
   return (
     <Transition
       nodeRef={ref}
@@ -81,14 +83,7 @@ export const Collapse: React.FC<CollapseProps> = ({
       onExit={onExit}
       onExiting={onExiting}
       onExited={onExited}>
-      <div ref={ref}>
-        {[...Array(10).keys()].reverse().map((i) => (
-          <React.Fragment key={i}>
-            {'a'.repeat(i + 1)}
-            <br />
-          </React.Fragment>
-        ))}
-      </div>
+      {target}
     </Transition>
   );
 };

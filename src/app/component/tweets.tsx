@@ -4,6 +4,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import CheckIcon from '~/icon/bootstrap/check2.svg';
 import { Tweet as TweetData } from '~/lib/tweet';
 import { State, selectTweetAction } from '../store';
+import { Collapse } from './transition';
 import { Tweet as TweetInfo } from './tweet';
 
 export const Tweets: React.FC = () => {
@@ -11,11 +12,14 @@ export const Tweets: React.FC = () => {
   const selector = React.useCallback((state: State) => state.tweets, []);
   const tweets = useSelector(selector, shallowEqual);
   return (
-    <div className="tweets">
-      {tweets.map((tweet) => (
-        <Tweet key={tweet.id} tweet={tweet} />
-      ))}
-    </div>
+    <>
+      <div className="tweets">
+        {tweets.map((tweet) => (
+          <Tweet key={tweet.id} tweet={tweet} />
+        ))}
+      </div>
+      <Commands />
+    </>
   );
 };
 
@@ -42,5 +46,33 @@ const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
       </button>
       <TweetInfo tweet={tweet} />
     </div>
+  );
+};
+
+const Commands: React.FC = () => {
+  // ref
+  const ref = React.useRef(null);
+  // redux
+  const selector = React.useCallback(
+    (state: State) => state.selectedTweets.length > 0,
+    [],
+  );
+  const show = useSelector(selector);
+  return (
+    <Collapse
+      nodeRef={ref}
+      in={show}
+      duration={{ enter: 3000, exit: 1000 }}
+      target={
+        <div ref={ref}>
+          {[...Array(10).keys()].reverse().map((i) => (
+            <React.Fragment key={i}>
+              {'a'.repeat(i + 1)}
+              <br />
+            </React.Fragment>
+          ))}
+        </div>
+      }
+    />
   );
 };
