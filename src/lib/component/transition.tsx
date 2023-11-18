@@ -8,7 +8,13 @@ type TransitionTarget =
       childProps?: Record<string, unknown>,
     ) => React.ReactNode);
 
-export interface CollapseProps<RefElement extends HTMLElement> {
+interface Timeout {
+  appear: number;
+  enter: number;
+  exit: number;
+}
+
+interface TransitionProps<RefElement extends HTMLElement> {
   nodeRef: React.RefObject<RefElement>;
   target: TransitionTarget;
   in?: boolean;
@@ -17,7 +23,7 @@ export interface CollapseProps<RefElement extends HTMLElement> {
   appear?: boolean;
   enter?: boolean;
   exit?: boolean;
-  duration?: number | { appear?: number; enter?: number; exit?: number };
+  duration?: number | Partial<Timeout>;
   onEnter?: (node: RefElement, isAppearing: boolean) => void;
   onEntering?: (node: RefElement, isAppearing: boolean) => void;
   onEntered?: (node: RefElement, isAppearing: boolean) => void;
@@ -27,6 +33,9 @@ export interface CollapseProps<RefElement extends HTMLElement> {
 }
 
 const defaultCollapseDuration = 300;
+
+export interface CollapseProps<RefElement extends HTMLElement>
+  extends TransitionProps<RefElement> {}
 
 export const Collapse = <RefElement extends HTMLElement>({
   nodeRef: ref,
@@ -41,15 +50,7 @@ export const Collapse = <RefElement extends HTMLElement>({
   ...props
 }: CollapseProps<RefElement>) => {
   // timeout
-  const timeout =
-    typeof duration === 'number'
-      ? { appear: duration, enter: duration, exit: duration }
-      : {
-          appear:
-            duration?.appear ?? duration?.enter ?? defaultCollapseDuration,
-          enter: duration?.enter ?? defaultCollapseDuration,
-          exit: duration?.exit ?? defaultCollapseDuration,
-        };
+  const timeout = toTimeout(duration, defaultCollapseDuration);
   // expanding
   const onEnter = React.useCallback(
     (isAppearing: boolean) => {
@@ -128,4 +129,109 @@ export const Collapse = <RefElement extends HTMLElement>({
       {target}
     </Transition>
   );
+};
+
+const defaultFadeDuration = 300;
+
+export interface FadeProps<RefElement extends HTMLElement>
+  extends TransitionProps<RefElement> {}
+
+export const Fade = <RefElement extends HTMLElement>({
+  nodeRef: ref,
+  target,
+  duration = defaultFadeDuration,
+  onEnter: onEnterProps,
+  onEntering: onEnteringProps,
+  onEntered: onEnteredProps,
+  onExit: onExitProps,
+  onExiting: onExitingProps,
+  onExited: onExitedProps,
+  ...props
+}: FadeProps<RefElement>) => {
+  // timeout
+  const timeout = toTimeout(duration, defaultFadeDuration);
+  // fade-in
+  const onEnter = React.useCallback(
+    (isAppearing: boolean) => {
+      if (ref.current) {
+        ref.current.style.opacity = '0';
+        onEnterProps?.(ref.current, isAppearing);
+        // reading a dimension prop will cause the browser to recalculate
+        ref.current.scrollHeight;
+      }
+    },
+    [ref, onEnterProps],
+  );
+  const onEntering = React.useCallback(
+    (isAppearing: boolean) => {
+      if (ref.current) {
+        const duration = isAppearing ? timeout.appear : timeout.enter;
+        ref.current.style.opacity = '';
+        ref.current.style.transition = `opacity ${duration}ms ease`;
+        onEnteringProps?.(ref.current, isAppearing);
+      }
+    },
+    [ref, onEnteringProps, timeout.appear, timeout.enter],
+  );
+  const onEntered = React.useCallback(
+    (isAppearing: boolean) => {
+      if (ref.current) {
+        ref.current.style.transition = '';
+        onEnteredProps?.(ref.current, isAppearing);
+      }
+    },
+    [ref, onEnteredProps],
+  );
+  // fade-out
+  const onExit = React.useCallback(() => {
+    if (ref.current) {
+      onExitProps?.(ref.current);
+    }
+  }, [ref, onExitProps]);
+  const onExiting = React.useCallback(() => {
+    if (ref.current) {
+      ref.current.style.opacity = '0';
+      ref.current.style.transition = `opacity ${timeout.exit}ms ease`;
+      onExitingProps?.(ref.current);
+    }
+  }, [ref, onExitingProps, timeout.exit]);
+  const onExited = React.useCallback(() => {
+    if (ref.current) {
+      ref.current.style.opacity = '0';
+      ref.current.style.transition = '';
+      onExitedProps?.(ref.current);
+    }
+  }, [ref, onExitedProps]);
+  return (
+    <Transition
+      {...props}
+      nodeRef={ref}
+      timeout={timeout}
+      onEnter={onEnter}
+      onEntering={onEntering}
+      onEntered={onEntered}
+      onExit={onExit}
+      onExiting={onExiting}
+      onExited={onExited}>
+      {target}
+    </Transition>
+  );
+};
+
+const toTimeout = (
+  duration: number | Partial<Timeout>,
+  defaultDuration: number,
+): Timeout => {
+  if (typeof duration === 'number') {
+    return {
+      appear: duration,
+      enter: duration,
+      exit: duration,
+    };
+  }
+  return {
+    appear: duration?.appear ?? duration?.enter ?? defaultDuration,
+    enter: duration?.enter ?? defaultDuration,
+    exit: duration?.exit ?? defaultDuration,
+  };
 };
