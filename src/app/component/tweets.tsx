@@ -2,6 +2,8 @@ import classNames from 'classnames';
 import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import CheckIcon from '~/icon/bootstrap/check2.svg';
+import ClipboardIcon from '~/icon/bootstrap/clipboard.svg';
+import TrashboxIcon from '~/icon/bootstrap/trash3.svg';
 import { Tweet as TweetData } from '~/lib/tweet';
 import { State, selectTweetAction } from '../store';
 import { Collapse } from './transition';
@@ -62,15 +64,27 @@ const Commands: React.FC = () => {
     <Collapse
       nodeRef={ref}
       in={show}
-      duration={{ enter: 3000, exit: 1000 }}
+      duration={300}
+      mountOnEnter
+      unmountOnExit
       target={
         <div ref={ref}>
-          {[...Array(10).keys()].reverse().map((i) => (
-            <React.Fragment key={i}>
-              {'a'.repeat(i + 1)}
-              <br />
-            </React.Fragment>
-          ))}
+          <div className="commands">
+            <button className="command">
+              <ClipboardIcon
+                className="icon"
+                width={undefined}
+                height={undefined}
+              />
+            </button>
+            <button className="command">
+              <TrashboxIcon
+                className="icon"
+                width={undefined}
+                height={undefined}
+              />
+            </button>
+          </div>
         </div>
       }
     />
