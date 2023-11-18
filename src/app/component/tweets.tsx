@@ -4,9 +4,9 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import CheckIcon from '~/icon/bootstrap/check2.svg';
 import ClipboardIcon from '~/icon/bootstrap/clipboard.svg';
 import TrashboxIcon from '~/icon/bootstrap/trash3.svg';
+import { Collapse } from '~/lib/component/transition';
 import { Tweet as TweetData } from '~/lib/tweet';
 import { State, selectTweetAction } from '../store';
-import { Collapse } from './transition';
 import { Tweet as TweetInfo } from './tweet';
 
 export const Tweets: React.FC = () => {
