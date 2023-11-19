@@ -4,6 +4,8 @@ import { Provider } from 'react-redux';
 import SettingsIcon from '~/icon/bootstrap/gear.svg';
 import TweetsIcon from '~/icon/bootstrap/list-ul.svg';
 import TrashboxIcon from '~/icon/bootstrap/trash3.svg';
+import { Settings } from './component/settings';
+import { Trashbox } from './component/trashbox';
 import { Tweets } from './component/tweets';
 import { Store } from './store';
 
@@ -54,12 +56,4 @@ const Tabs: React.FC<TabsProps> = ({ tab, switchTab }: TabsProps) => {
       </div>
     </div>
   );
-};
-
-const Trashbox = () => {
-  return <div className="fade-in">Trashbox</div>;
-};
-
-const Settings = () => {
-  return <div className="fade-in">Settings</div>;
 };
