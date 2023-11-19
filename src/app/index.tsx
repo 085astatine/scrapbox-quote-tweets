@@ -57,9 +57,9 @@ const Tabs: React.FC<TabsProps> = ({ tab, switchTab }: TabsProps) => {
 };
 
 const Trashbox = () => {
-  return <div>Trashbox</div>;
+  return <div className="fade-in">Trashbox</div>;
 };
 
 const Settings = () => {
-  return <div>Settings</div>;
+  return <div className="fade-in">Settings</div>;
 };

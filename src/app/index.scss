@@ -1,5 +1,6 @@
 @use 'sass:map';
 
+$prefix: '' !default;
 $bs-prefix: bs- !default;
 $bs-spacer: 1rem !default;
 $bs-spacers: (
@@ -16,13 +17,17 @@ $tab-border-hover-color: var(--#{$bs-prefix}secondary-bg);
 $tab-border-width: var(--#{$bs-prefix}border-width);
 $tab-border-style: var(--#{$bs-prefix}border-style);
 
-@keyframes fade-in-animation {
+@keyframes #{$prefix}fade-in {
   from {
     opacity: 0;
   }
   to {
     opacity: 1;
   }
+}
+
+.fade-in {
+  animation: #{$prefix}fade-in 0.2s;
 }
 
 .commands {
@@ -107,10 +112,6 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
   border-width: $tab-border-width;
   border-bottom-right-radius: var(--#{$bs-prefix}border-radius);
   border-bottom-left-radius: var(--#{$bs-prefix}border-radius);
-
-  > * {
-    animation: fade-in-animation 0.2s;
-  }
 }
 
 .tweet {

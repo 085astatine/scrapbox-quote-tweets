@@ -15,7 +15,7 @@ export const Tweets: React.FC = () => {
   const tweets = useSelector(selector, shallowEqual);
   return (
     <>
-      <div className="tweets">
+      <div className="tweets fade-in">
         {tweets.map((tweet) => (
           <Tweet key={tweet.id} tweet={tweet} />
         ))}
@@ -69,7 +69,7 @@ const Commands: React.FC = () => {
       unmountOnExit
       target={
         <div ref={ref}>
-          <div className="commands">
+          <div className="commands fade-in">
             <button className="command">
               <ClipboardIcon
                 className="icon"
