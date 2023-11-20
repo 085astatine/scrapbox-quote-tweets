@@ -13,6 +13,7 @@ import {
   SaveTweetResponseFailureMessage,
   SaveTweetResponseMessage,
   SaveTweetResponseSuccessMessage,
+  SettingsDownloadStorageMessage,
 } from '~/lib/message';
 import { loadTestData, storage } from '~/lib/storage';
 import { Tweet } from '~/lib/tweet';
@@ -44,7 +45,8 @@ type RequestMessage =
   | ClipboardCloseAllRequestMessage
   | ClipboardOpenRequestMessage
   | ExpandTCoURLRequestMessage
-  | SaveTweetRequestMessage;
+  | SaveTweetRequestMessage
+  | SettingsDownloadStorageMessage;
 
 type ResponseMessage = ExpandTCoURLResponseMessage | SaveTweetResponseMessage;
 
@@ -70,6 +72,9 @@ const onMessageListener = async (
         : await forwardExpandTCoURLRequestToOffscreen(message);
     case 'SaveTweet/Request':
       return await respondToSaveTweetRequest(message.tweet);
+      break;
+    case 'Settings/DownloadStorage':
+      await downloadStorage();
       break;
     default: {
       const _: never = message;
@@ -215,4 +220,19 @@ const sendMessageToAllContentTwitter = async (
       }
     });
   });
+};
+
+// Download storage (in development)
+const downloadStorage = async (): Promise<void> => {
+  if (process.env.NODE_ENV === 'development') {
+    const data = await browser.storage.local.get();
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: 'application/json',
+    });
+    browser.downloads.download({
+      url: await URL.createObjectURL(blob),
+      filename: 'scrapbox-copy-tweets.json',
+      saveAs: true,
+    });
+  }
 };
