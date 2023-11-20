@@ -4,7 +4,12 @@
 .scrapbox-copy-tweets {
   display: flex;
   flex-direction: column;
+  max-width: 744px;
   height: 100vh;
+  padding-right: 12px;
+  padding-left: 12px;
+  margin-right: auto;
+  margin-left: auto;
 
   .header {
     display: flex;

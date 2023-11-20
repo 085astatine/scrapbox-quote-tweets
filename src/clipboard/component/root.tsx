@@ -9,7 +9,7 @@ export interface RootProps {
 
 export const Root: React.FC<RootProps> = ({ store }: RootProps) => {
   return (
-    <div className="scrapbox-copy-tweets container">
+    <div className="scrapbox-copy-tweets">
       <Header />
       <App store={store} />
     </div>
