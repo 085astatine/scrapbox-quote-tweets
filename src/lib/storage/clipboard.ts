@@ -24,9 +24,12 @@ export const loadTweets = async (): Promise<Tweet[]> => {
   return await loadSavedTweets(tweetIDsInTweets);
 };
 
-export const moveToTrashbox = async (tweets: Tweet[]): Promise<void> => {
+export const moveToTrashbox = async (
+  tweets: Tweet[],
+  timestamp: number,
+): Promise<void> => {
   const record: TrashboxRecord = {
-    timestamp: Math.trunc(Date.now() / 1000),
+    timestamp,
     tweetIDs: tweets.map((tweet) => tweet.id).sort(),
   };
   const records = await loadTrashboxRecords();
