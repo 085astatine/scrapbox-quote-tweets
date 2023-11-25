@@ -29,8 +29,7 @@ export const Tweets: React.FC = () => {
   return (
     <>
       <div className="tweets fade-in">
-        <SelectAll />
-        <SelectSort />
+        <Toolbar />
         {tweets.map((tweet) => (
           <Tweet key={tweet.id} tweet={tweet} />
         ))}
@@ -68,6 +67,21 @@ const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
         <CheckIcon className="icon" width={undefined} height={undefined} />
       </button>
       <TweetInfo tweet={tweet} />
+    </div>
+  );
+};
+
+const Toolbar: React.FC = () => {
+  return (
+    <div className="toolbar">
+      <div className="tool">
+        <SelectAll />
+        <div>All Tweets</div>
+      </div>
+      <div className="tool">
+        <div>Order by</div>
+        <SelectSort />
+      </div>
     </div>
   );
 };

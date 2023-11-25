@@ -147,6 +147,19 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
   border-bottom-left-radius: var(--#{$bs-prefix}border-radius);
 }
 
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  .tool {
+    display: flex;
+    gap: map.get($bs-spacers, 2);
+    align-items: center;
+    white-space: nowrap;
+  }
+}
+
 .tweet {
   border-color: var(--#{$bs-prefix}border-color);
   border-style: var(--#{$bs-prefix}border-style);
