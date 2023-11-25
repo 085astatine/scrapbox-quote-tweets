@@ -57,6 +57,22 @@ const slice = createSlice({
     unselectAllTweets(state: State): void {
       state.selectedTweets = [];
     },
+    moveToTrashbox(state: State, action: PayloadAction<number>): void {
+      // remove from tweets
+      state.selectedTweets.forEach((target) => {
+        const index = state.tweets.findIndex((tweet) => tweet.id === target.id);
+        if (index !== -1) {
+          state.tweets.splice(index, 1);
+        }
+      });
+      // add to trashbox
+      state.trashbox.push({
+        timestamp: action.payload,
+        tweets: [...state.selectedTweets],
+      });
+      // clear selected tweets
+      state.selectedTweets = [];
+    },
     updateTweetSort(state: State, action: PayloadAction<TweetSort>): void {
       state.tweetSort = action.payload;
     },
@@ -70,6 +86,7 @@ export const {
   unselectTweet: unselectTweetAction,
   selectAllTweets: selectAllTweetsAction,
   unselectAllTweets: unselectAllTweetsAction,
+  moveToTrashbox: moveToTrashboxAction,
   updateTweetSort: updateTweetSortAction,
 } = slice.actions;
 

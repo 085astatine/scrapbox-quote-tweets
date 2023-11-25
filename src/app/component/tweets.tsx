@@ -5,11 +5,13 @@ import CheckIcon from '~/icon/bootstrap/check2.svg';
 import ClipboardIcon from '~/icon/bootstrap/clipboard.svg';
 import TrashboxIcon from '~/icon/bootstrap/trash3.svg';
 import { Collapse } from '~/lib/component/transition';
+import { storage } from '~/lib/storage';
 import { Tweet as TweetData } from '~/lib/tweet';
 import { SortOrder, TweetSortKey } from '../lib/sort-tweets';
 import { tweetSortFunction } from '../lib/sort-tweets';
 import {
   State,
+  moveToTrashboxAction,
   selectAllTweetsAction,
   selectTweetAction,
   unselectAllTweetsAction,
@@ -152,27 +154,41 @@ const Commands: React.FC = () => {
   const selector = React.useCallback((state: State) => {
     const selectedTweets = [...state.selectedTweets];
     selectedTweets.sort(tweetSortFunction(state.tweetSort));
-    return selectedTweets.length > 0;
+    return selectedTweets;
   }, []);
-  const show = useSelector(selector);
+  const tweets = useSelector(selector, shallowEqual);
+  const dispatch = useDispatch();
+  // clipboard
+  const copyToClipboard = () => {
+    // TODO: copy to clipboard
+    moveToTrashbox();
+  };
+  // move to trashbox
+  const moveToTrashbox = () => {
+    const timestamp = Math.trunc(Date.now() / 1000);
+    // store
+    dispatch(moveToTrashboxAction(timestamp));
+    // storage
+    storage.clipboard.trashbox.move(tweets, timestamp);
+  };
   return (
     <Collapse
       nodeRef={ref}
-      in={show}
+      in={tweets.length > 0}
       duration={300}
       mountOnEnter
       unmountOnExit
       target={
         <div ref={ref}>
           <div className="commands fade-in">
-            <button className="command">
+            <button className="command" onClick={copyToClipboard}>
               <ClipboardIcon
                 className="icon"
                 width={undefined}
                 height={undefined}
               />
             </button>
-            <button className="command">
+            <button className="command" onClick={moveToTrashbox}>
               <TrashboxIcon
                 className="icon"
                 width={undefined}
