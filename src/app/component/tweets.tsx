@@ -6,13 +6,8 @@ import ClipboardIcon from '~/icon/bootstrap/clipboard.svg';
 import TrashboxIcon from '~/icon/bootstrap/trash3.svg';
 import { Collapse } from '~/lib/component/transition';
 import { Tweet as TweetData } from '~/lib/tweet';
-import {
-  SortOrder,
-  State,
-  TweetSortKey,
-  selectTweetAction,
-  updateTweetSortAction,
-} from '../store';
+import { SortOrder, TweetSortKey } from '../lib/sort-tweets';
+import { State, selectTweetAction, updateTweetSortAction } from '../store';
 import { Tweet as TweetInfo } from './tweet';
 
 export const Tweets: React.FC = () => {
