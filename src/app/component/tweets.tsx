@@ -7,12 +7,17 @@ import TrashboxIcon from '~/icon/bootstrap/trash3.svg';
 import { Collapse } from '~/lib/component/transition';
 import { Tweet as TweetData } from '~/lib/tweet';
 import { SortOrder, TweetSortKey } from '../lib/sort-tweets';
+import { tweetSortFunction } from '../lib/sort-tweets';
 import { State, selectTweetAction, updateTweetSortAction } from '../store';
 import { Tweet as TweetInfo } from './tweet';
 
 export const Tweets: React.FC = () => {
   // redux
-  const selector = React.useCallback((state: State) => state.tweets, []);
+  const selector = React.useCallback((state: State) => {
+    const tweets = [...state.tweets];
+    tweets.sort(tweetSortFunction(state.tweetSort));
+    return tweets;
+  }, []);
   const tweets = useSelector(selector, shallowEqual);
   return (
     <>
@@ -90,10 +95,11 @@ const Commands: React.FC = () => {
   // ref
   const ref = React.useRef(null);
   // redux
-  const selector = React.useCallback(
-    (state: State) => state.selectedTweets.length > 0,
-    [],
-  );
+  const selector = React.useCallback((state: State) => {
+    const selectedTweets = [...state.selectedTweets];
+    selectedTweets.sort(tweetSortFunction(state.tweetSort));
+    return selectedTweets.length > 0;
+  }, []);
   const show = useSelector(selector);
   return (
     <Collapse

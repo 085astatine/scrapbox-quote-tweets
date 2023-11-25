@@ -3,7 +3,7 @@ import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
 import { TrashboxElement } from '~/lib/clipboard';
 import { Tweet } from '~/lib/tweet';
-import { TweetSort, tweetSortFunction } from './lib/sort-tweets';
+import { TweetSort } from './lib/sort-tweets';
 
 // state
 export interface State {
@@ -35,14 +35,12 @@ const slice = createSlice({
     initialize(state: State, action: PayloadAction<Initializer>): void {
       state.tweets = [...action.payload.tweets];
       state.trashbox = [...action.payload.trashbox];
-      state.tweets.sort(tweetSortFunction(state.tweetSort));
     },
     selectTweet(state: State, action: PayloadAction<Tweet>): void {
       if (
         !state.selectedTweets.find((tweet) => tweet.id === action.payload.id)
       ) {
         state.selectedTweets.push(action.payload);
-        state.selectedTweets.sort(tweetSortFunction(state.tweetSort));
       } else {
         state.selectedTweets.splice(
           state.selectedTweets.findIndex(
@@ -54,8 +52,6 @@ const slice = createSlice({
     },
     updateTweetSort(state: State, action: PayloadAction<TweetSort>): void {
       state.tweetSort = action.payload;
-      state.tweets.sort(tweetSortFunction(state.tweetSort));
-      state.selectedTweets.sort(tweetSortFunction(state.tweetSort));
     },
   },
 });
