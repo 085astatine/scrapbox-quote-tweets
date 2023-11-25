@@ -59,12 +59,20 @@ const slice = createSlice({
         );
       }
     },
+    updateTweetSort(state: State, action: PayloadAction<TweetSort>): void {
+      state.tweetSort = action.payload;
+      state.tweets.sort(tweetSortFunction(state.tweetSort));
+      state.selectedTweets.sort(tweetSortFunction(state.tweetSort));
+    },
   },
 });
 
 // actions
-export const { initialize: initializeAction, selectTweet: selectTweetAction } =
-  slice.actions;
+export const {
+  initialize: initializeAction,
+  selectTweet: selectTweetAction,
+  updateTweetSort: updateTweetSortAction,
+} = slice.actions;
 
 // store
 const middlewares: Middleware<State>[] = [];

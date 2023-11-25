@@ -6,7 +6,13 @@ import ClipboardIcon from '~/icon/bootstrap/clipboard.svg';
 import TrashboxIcon from '~/icon/bootstrap/trash3.svg';
 import { Collapse } from '~/lib/component/transition';
 import { Tweet as TweetData } from '~/lib/tweet';
-import { State, selectTweetAction } from '../store';
+import {
+  SortOrder,
+  State,
+  TweetSortKey,
+  selectTweetAction,
+  updateTweetSortAction,
+} from '../store';
 import { Tweet as TweetInfo } from './tweet';
 
 export const Tweets: React.FC = () => {
@@ -16,6 +22,7 @@ export const Tweets: React.FC = () => {
   return (
     <>
       <div className="tweets fade-in">
+        <SelectSort />
         {tweets.map((tweet) => (
           <Tweet key={tweet.id} tweet={tweet} />
         ))}
@@ -48,6 +55,39 @@ const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
       </button>
       <TweetInfo tweet={tweet} />
     </div>
+  );
+};
+
+const SelectSort: React.FC = () => {
+  // redux
+  const selector = React.useCallback((state: State) => state.tweetSort, []);
+  const { key: sortKey, order: sortOrder } = useSelector(selector);
+  const dispatch = useDispatch();
+  // options
+  const options: ReadonlyArray<readonly [TweetSortKey, SortOrder, string]> = [
+    ['timestamp', 'asc', 'Posted Time (older → newer)'],
+    ['timestamp', 'desc', 'Posted Time (newer → older)'],
+    ['username', 'asc', 'Username (@A → @Z)'],
+    ['username', 'desc', 'Username (@Z → @A)'],
+  ];
+  // event
+  const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const [key, order] = options[event.target.selectedIndex];
+    dispatch(updateTweetSortAction({ key, order }));
+  };
+  return (
+    <select
+      className="form-select"
+      value={options.findIndex(
+        ([key, order]) => key === sortKey && order === sortOrder,
+      )}
+      onChange={onChange}>
+      {options.map((option, index) => (
+        <option key={index} value={index}>
+          {option[2]}
+        </option>
+      ))}
+    </select>
   );
 };
 
