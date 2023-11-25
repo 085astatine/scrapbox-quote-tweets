@@ -41,13 +41,14 @@ const slice = createSlice({
         !state.selectedTweets.find((tweet) => tweet.id === action.payload.id)
       ) {
         state.selectedTweets.push(action.payload);
-      } else {
-        state.selectedTweets.splice(
-          state.selectedTweets.findIndex(
-            (tweet) => tweet.id === action.payload.id,
-          ),
-          1,
-        );
+      }
+    },
+    unselectTweet(state: State, action: PayloadAction<Tweet>): void {
+      const index = state.selectedTweets.findIndex(
+        (tweet) => tweet.id === action.payload.id,
+      );
+      if (index !== -1) {
+        state.selectedTweets.splice(index, 1);
       }
     },
     selectAllTweets(state: State): void {
@@ -66,6 +67,7 @@ const slice = createSlice({
 export const {
   initialize: initializeAction,
   selectTweet: selectTweetAction,
+  unselectTweet: unselectTweetAction,
   selectAllTweets: selectAllTweetsAction,
   unselectAllTweets: unselectAllTweetsAction,
   updateTweetSort: updateTweetSortAction,

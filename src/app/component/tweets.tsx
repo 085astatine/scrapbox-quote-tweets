@@ -13,6 +13,7 @@ import {
   selectAllTweetsAction,
   selectTweetAction,
   unselectAllTweetsAction,
+  unselectTweetAction,
   updateTweetSortAction,
 } from '../store';
 import { Tweet as TweetInfo } from './tweet';
@@ -52,7 +53,13 @@ const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
   const isSelected = useSelector(selector);
   const dispatch = useDispatch();
   // select
-  const select = () => dispatch(selectTweetAction(tweet));
+  const select = () => {
+    if (isSelected) {
+      dispatch(unselectTweetAction(tweet));
+    } else {
+      dispatch(selectTweetAction(tweet));
+    }
+  };
   return (
     <div className="item">
       <button
