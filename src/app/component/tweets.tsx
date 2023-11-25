@@ -8,7 +8,13 @@ import { Collapse } from '~/lib/component/transition';
 import { Tweet as TweetData } from '~/lib/tweet';
 import { SortOrder, TweetSortKey } from '../lib/sort-tweets';
 import { tweetSortFunction } from '../lib/sort-tweets';
-import { State, selectTweetAction, updateTweetSortAction } from '../store';
+import {
+  State,
+  selectAllTweetsAction,
+  selectTweetAction,
+  unselectAllTweetsAction,
+  updateTweetSortAction,
+} from '../store';
 import { Tweet as TweetInfo } from './tweet';
 
 export const Tweets: React.FC = () => {
@@ -22,6 +28,7 @@ export const Tweets: React.FC = () => {
   return (
     <>
       <div className="tweets fade-in">
+        <SelectAll />
         <SelectSort />
         {tweets.map((tweet) => (
           <Tweet key={tweet.id} tweet={tweet} />
@@ -55,6 +62,32 @@ const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
       </button>
       <TweetInfo tweet={tweet} />
     </div>
+  );
+};
+
+const SelectAll: React.FC = () => {
+  // redux
+  const selector = React.useCallback(
+    (state: State) =>
+      state.tweets.every((tweet) => state.selectedTweets.includes(tweet)),
+    [],
+  );
+  const isSelected = useSelector(selector);
+  const dispatch = useDispatch();
+  // select
+  const select = () => {
+    if (isSelected) {
+      dispatch(unselectAllTweetsAction());
+    } else {
+      dispatch(selectAllTweetsAction());
+    }
+  };
+  return (
+    <button
+      className={classNames('checkbox', { checked: isSelected })}
+      onClick={select}>
+      <CheckIcon className="icon" width={undefined} height={undefined} />
+    </button>
   );
 };
 

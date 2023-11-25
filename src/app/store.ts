@@ -50,6 +50,12 @@ const slice = createSlice({
         );
       }
     },
+    selectAllTweets(state: State): void {
+      state.selectedTweets = [...state.tweets];
+    },
+    unselectAllTweets(state: State): void {
+      state.selectedTweets = [];
+    },
     updateTweetSort(state: State, action: PayloadAction<TweetSort>): void {
       state.tweetSort = action.payload;
     },
@@ -60,6 +66,8 @@ const slice = createSlice({
 export const {
   initialize: initializeAction,
   selectTweet: selectTweetAction,
+  selectAllTweets: selectAllTweetsAction,
+  unselectAllTweets: unselectAllTweetsAction,
   updateTweetSort: updateTweetSortAction,
 } = slice.actions;
 
