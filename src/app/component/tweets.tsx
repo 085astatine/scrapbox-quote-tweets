@@ -1,7 +1,5 @@
-import classNames from 'classnames';
 import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import CheckIcon from '~/icon/bootstrap/check2.svg';
 import ClipboardIcon from '~/icon/bootstrap/clipboard.svg';
 import TrashboxIcon from '~/icon/bootstrap/trash3.svg';
 import { Collapse } from '~/lib/component/transition';
@@ -18,6 +16,7 @@ import {
   unselectTweetAction,
   updateTweetSortAction,
 } from '../store';
+import { Checkbox } from './checkbox';
 import { Tweet as TweetInfo } from './tweet';
 
 export const Tweets: React.FC = () => {
@@ -63,11 +62,7 @@ const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
   };
   return (
     <div className="item">
-      <button
-        className={classNames('checkbox', { checked: isSelected })}
-        onClick={select}>
-        <CheckIcon className="icon" width={undefined} height={undefined} />
-      </button>
+      <Checkbox checked={isSelected} onClick={select} />
       <TweetInfo tweet={tweet} />
     </div>
   );
@@ -105,13 +100,7 @@ const SelectAll: React.FC = () => {
       dispatch(selectAllTweetsAction());
     }
   };
-  return (
-    <button
-      className={classNames('checkbox', { checked: isSelected })}
-      onClick={select}>
-      <CheckIcon className="icon" width={undefined} height={undefined} />
-    </button>
-  );
+  return <Checkbox checked={isSelected} onClick={select} />;
 };
 
 const SelectSort: React.FC = () => {
