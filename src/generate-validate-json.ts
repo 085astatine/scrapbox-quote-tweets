@@ -75,10 +75,10 @@ generate(
   'TweetID[]',
   "import { TweetID } from '~/lib/tweet'",
 );
-// TrashboxRecord[]
+// DeletedTweetIDs[]
 generate(
   trashboxRecordsJSONSchema,
   'validate-trashbox-records',
-  'TrashboxRecord[]',
-  "import { TrashboxRecord } from '~/lib/clipboard'",
+  'DeletedTweetIDs[]',
+  "import { DeletedTweetIDs } from '~/lib/tweet'",
 );

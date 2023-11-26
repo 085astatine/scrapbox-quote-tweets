@@ -1,4 +1,5 @@
 export * from './tweet';
+export * from './deleted-tweets';
 export * from './sort-tweets';
 export * from './tweet-date';
 export * from './tweet-template';

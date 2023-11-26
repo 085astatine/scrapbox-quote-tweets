@@ -1,8 +1,8 @@
 import { JSONSchemaType } from 'ajv';
-import { TrashboxRecord } from '~/lib/clipboard';
+import { DeletedTweetIDs } from '~/lib/tweet';
 
 export const trashboxRecordJSONSchema: Readonly<
-  JSONSchemaType<TrashboxRecord>
+  JSONSchemaType<DeletedTweetIDs>
 > = {
   type: 'object',
   properties: {
@@ -21,7 +21,7 @@ export const trashboxRecordJSONSchema: Readonly<
 };
 
 export const trashboxRecordsJSONSchema: Readonly<
-  JSONSchemaType<TrashboxRecord[]>
+  JSONSchemaType<DeletedTweetIDs[]>
 > = {
   type: 'array',
   items: trashboxRecordJSONSchema,

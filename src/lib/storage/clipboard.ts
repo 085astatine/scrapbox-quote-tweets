@@ -2,8 +2,7 @@ import browser from 'webextension-polyfill';
 import { trashboxRecordsJSONSchema } from '~/jsonschema/clipboard';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateTrashboxRecords from '~/validate-json/validate-trashbox-records';
-import { TrashboxElement, TrashboxRecord } from '../clipboard';
-import { Tweet, TweetID } from '../tweet';
+import { DeletedTweetIDs, DeletedTweets, Tweet, TweetID } from '../tweet';
 import { loadTweets as loadSavedTweets, savedTweetIDs } from './tweet';
 
 const keyTrashbox = 'clipboard/trashbox';
@@ -28,7 +27,7 @@ export const moveToTrashbox = async (
   tweets: Tweet[],
   timestamp: number,
 ): Promise<void> => {
-  const record: TrashboxRecord = {
+  const record: DeletedTweetIDs = {
     timestamp,
     tweetIDs: tweets.map((tweet) => tweet.id).sort(),
   };
@@ -38,7 +37,7 @@ export const moveToTrashbox = async (
   browser.storage.local.set({ [keyTrashbox]: records });
 };
 
-export const loadTrashbox = async (): Promise<TrashboxElement[]> => {
+export const loadTrashbox = async (): Promise<DeletedTweets[]> => {
   // load records
   const records = await loadTrashboxRecords();
   // load tweets
@@ -54,8 +53,10 @@ export const loadTrashbox = async (): Promise<TrashboxElement[]> => {
   }));
 };
 
-export const deleteTrashbox = async (record: TrashboxRecord): Promise<void> => {
-  const records = (await loadTrashboxRecords()).reduce<TrashboxRecord[]>(
+export const deleteTrashbox = async (
+  record: DeletedTweetIDs,
+): Promise<void> => {
+  const records = (await loadTrashboxRecords()).reduce<DeletedTweetIDs[]>(
     (previous, current) => {
       if (current.timestamp !== record.timestamp) {
         previous.push(current);
@@ -79,7 +80,7 @@ export const clearTrashbox = async (): Promise<void> => {
   await browser.storage.local.remove(keyTrashbox);
 };
 
-const loadTrashboxRecords = async (): Promise<TrashboxRecord[]> => {
+const loadTrashboxRecords = async (): Promise<DeletedTweetIDs[]> => {
   const records = await browser.storage.local
     .get(keyTrashbox)
     .then((record) => record[keyTrashbox] ?? []);
@@ -93,6 +94,6 @@ const loadTrashboxRecords = async (): Promise<TrashboxRecord[]> => {
   return records;
 };
 
-const sortRecords = (lhs: TrashboxRecord, rhs: TrashboxRecord): number => {
+const sortRecords = (lhs: DeletedTweetIDs, rhs: DeletedTweetIDs): number => {
   return rhs.timestamp - lhs.timestamp;
 };

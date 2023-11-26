@@ -1,14 +1,13 @@
 import { PayloadAction, configureStore, createSlice } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
-import { TrashboxElement } from '~/lib/clipboard';
-import { Tweet, TweetSort } from '~/lib/tweet';
+import { DeletedTweets, Tweet, TweetSort } from '~/lib/tweet';
 
 // state
 export interface State {
   tweets: Tweet[];
   selectedTweets: Tweet[];
-  trashbox: TrashboxElement[];
+  trashbox: DeletedTweets[];
   tweetSort: TweetSort;
 }
 
@@ -24,7 +23,7 @@ const initialState: State = {
 
 export interface Initializer {
   tweets: Tweet[];
-  trashbox: TrashboxElement[];
+  trashbox: DeletedTweets[];
 }
 
 const slice = createSlice({
