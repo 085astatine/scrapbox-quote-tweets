@@ -42,6 +42,7 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
   border: 1px solid rgba(0, 0, 0, 0.25);
   border-radius: 0.25rem;
   transition:
+    opacity 0.15s ease,
     color 0.15s ease-in-out,
     background-color 0.15s ease-in-out,
     border-color 0.15s ease-in-out,
@@ -50,6 +51,11 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
   &.checked {
     color: var(--#{$bs-prefix}body-bg);
     background-color: var(--#{$bs-prefix}primary);
+  }
+
+  &.disabled {
+    cursor: default;
+    opacity: 0.5;
   }
 
   .icon {
@@ -156,7 +162,14 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
     display: flex;
     gap: map.get($bs-spacers, 2);
     align-items: center;
-    white-space: nowrap;
+
+    .tool-label {
+      white-space: nowrap;
+
+      &.disabled {
+        opacity: 0.5;
+      }
+    }
   }
 }
 

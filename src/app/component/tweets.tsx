@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import ClipboardIcon from '~/icon/bootstrap/clipboard.svg';
@@ -71,39 +72,53 @@ const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
 const Toolbar: React.FC = () => {
   return (
     <div className="toolbar">
-      <div className="tool">
-        <SelectAll />
-        <div>All Tweets</div>
-      </div>
-      <div className="tool">
-        <div>Order by</div>
-        <SelectSort />
-      </div>
+      <SelectAll />
+      <SelectSort />
     </div>
   );
 };
 
 const SelectAll: React.FC = () => {
+  const id = 'select-all-tweets';
   // redux
   const selector = React.useCallback(
-    (state: State) =>
-      state.tweets.every((tweet) => state.selectedTweets.includes(tweet)),
+    (state: State): 'disabled' | 'checked' | 'unchecked' =>
+      state.tweets.length === 0
+        ? 'disabled'
+        : state.tweets.every((tweet) => state.selectedTweets.includes(tweet))
+        ? 'checked'
+        : 'unchecked',
     [],
   );
-  const isSelected = useSelector(selector);
+  const state = useSelector(selector);
   const dispatch = useDispatch();
   // select
   const select = () => {
-    if (isSelected) {
+    if (state === 'checked') {
       dispatch(unselectAllTweetsAction());
-    } else {
+    } else if (state === 'unchecked') {
       dispatch(selectAllTweetsAction());
     }
   };
-  return <Checkbox checked={isSelected} onClick={select} />;
+  return (
+    <div className="tool">
+      <Checkbox
+        id={id}
+        disabled={state === 'disabled'}
+        checked={state === 'checked'}
+        onClick={select}
+      />
+      <label
+        className={classNames('tool-label', { disabled: state === 'disabled' })}
+        htmlFor={id}>
+        All Tweets
+      </label>
+    </div>
+  );
 };
 
 const SelectSort: React.FC = () => {
+  const id = 'select-tweets-sort';
   // redux
   const selector = React.useCallback((state: State) => state.tweetSort, []);
   const { key: sortKey, order: sortOrder } = useSelector(selector);
@@ -121,18 +136,24 @@ const SelectSort: React.FC = () => {
     dispatch(updateTweetSortAction({ key, order }));
   };
   return (
-    <select
-      className="form-select"
-      value={options.findIndex(
-        ([key, order]) => key === sortKey && order === sortOrder,
-      )}
-      onChange={onChange}>
-      {options.map((option, index) => (
-        <option key={index} value={index}>
-          {option[2]}
-        </option>
-      ))}
-    </select>
+    <div className="tool">
+      <label className="tool-label" htmlFor={id}>
+        Order by
+      </label>
+      <select
+        className="form-select"
+        id={id}
+        value={options.findIndex(
+          ([key, order]) => key === sortKey && order === sortOrder,
+        )}
+        onChange={onChange}>
+        {options.map((option, index) => (
+          <option key={index} value={index}>
+            {option[2]}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 };
 
