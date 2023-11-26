@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill';
-import { trashboxRecordsJSONSchema } from '~/jsonschema/clipboard';
+import { deletedTweetIDsListJSONSchema } from '~/jsonschema/deleted-tweets';
 import { JSONSchemaValidationError } from '~/validate-json/error';
-import validateTrashboxRecords from '~/validate-json/validate-trashbox-records';
+import validateDeletedTweetIDsList from '~/validate-json/validate-deleted-tweet-ids-list';
 import { DeletedTweetIDs, DeletedTweets, Tweet, TweetID } from '../tweet';
 import { loadTweets as loadSavedTweets, savedTweetIDs } from './tweet';
 
@@ -84,11 +84,11 @@ const loadTrashboxRecords = async (): Promise<DeletedTweetIDs[]> => {
   const records = await browser.storage.local
     .get(keyTrashbox)
     .then((record) => record[keyTrashbox] ?? []);
-  if (!validateTrashboxRecords(records)) {
+  if (!validateDeletedTweetIDsList(records)) {
     throw new JSONSchemaValidationError(
-      trashboxRecordsJSONSchema,
+      deletedTweetIDsListJSONSchema,
       records,
-      validateTrashboxRecords.errors ?? [],
+      validateDeletedTweetIDsList.errors ?? [],
     );
   }
   return records;
