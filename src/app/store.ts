@@ -2,8 +2,7 @@ import { PayloadAction, configureStore, createSlice } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
 import { TrashboxElement } from '~/lib/clipboard';
-import { Tweet } from '~/lib/tweet';
-import { TweetSort } from './lib/sort-tweets';
+import { Tweet, TweetSort } from '~/lib/tweet';
 
 // state
 export interface State {

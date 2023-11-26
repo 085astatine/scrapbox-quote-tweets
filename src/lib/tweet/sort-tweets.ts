@@ -1,4 +1,4 @@
-import { Tweet } from '~/lib/tweet';
+import { Tweet } from './tweet';
 
 export type TweetSortKey = 'timestamp' | 'username';
 export type SortOrder = 'asc' | 'desc';

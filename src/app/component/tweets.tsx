@@ -5,9 +5,12 @@ import ClipboardIcon from '~/icon/bootstrap/clipboard.svg';
 import TrashboxIcon from '~/icon/bootstrap/trash3.svg';
 import { Collapse } from '~/lib/component/transition';
 import { storage } from '~/lib/storage';
-import { Tweet as TweetData } from '~/lib/tweet';
-import { SortOrder, TweetSortKey } from '../lib/sort-tweets';
-import { tweetSortFunction } from '../lib/sort-tweets';
+import {
+  SortOrder,
+  Tweet as TweetData,
+  TweetSortKey,
+  tweetSortFunction,
+} from '~/lib/tweet';
 import {
   State,
   moveToTrashboxAction,
