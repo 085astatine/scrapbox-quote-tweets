@@ -1,11 +1,15 @@
 import React from 'react';
-import { shallowEqual, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import {
   DeletedTweets as DeletedTweetsData,
   Tweet as TweetData,
   toDate,
 } from '~/lib/tweet';
-import { State } from '../store';
+import {
+  State,
+  selectDeletedTweetAction,
+  unselectDeletedTweetAction,
+} from '../store';
 import { Checkbox } from './checkbox';
 import { Tweet as TweetInfo } from './tweet';
 
@@ -44,9 +48,25 @@ interface DeletedTweetsProps {
 const DeletedTweets: React.FC<DeletedTweetsProps> = ({
   deletedTweets: { timestamp, tweets },
 }) => {
+  // redux
+  const selector = React.useCallback(
+    (state: State) =>
+      tweets.every((tweet) => state.selectedDeletedTweets.includes(tweet)),
+    [tweets],
+  );
+  const isAllSelected = useSelector(selector);
+  const dispatch = useDispatch();
+  // select
+  const selectAll = () => {
+    if (isAllSelected) {
+      dispatch(unselectDeletedTweetAction(tweets));
+    } else {
+      dispatch(selectDeletedTweetAction(tweets));
+    }
+  };
   return (
     <div className="item">
-      <Checkbox checked={false} onClick={() => {}} />
+      <Checkbox checked={isAllSelected} onClick={selectAll} />
       <div className="deleted-tweets">
         <DeletedTweetsHeader
           timestamp={timestamp}
@@ -85,9 +105,24 @@ interface TweetProps {
 }
 
 const Tweet: React.FC<TweetProps> = ({ tweet }) => {
+  // redux
+  const selector = React.useCallback(
+    (state: State) => state.selectedDeletedTweets.includes(tweet),
+    [tweet],
+  );
+  const isSelected = useSelector(selector);
+  const dispatch = useDispatch();
+  // select
+  const select = () => {
+    if (isSelected) {
+      dispatch(unselectDeletedTweetAction(tweet));
+    } else {
+      dispatch(selectDeletedTweetAction(tweet));
+    }
+  };
   return (
     <div className="deleted-tweet">
-      <Checkbox checked={false} onClick={() => {}} />
+      <Checkbox checked={isSelected} onClick={select} />
       <TweetInfo tweet={tweet} />
     </div>
   );

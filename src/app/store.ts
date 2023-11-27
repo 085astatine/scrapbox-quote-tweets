@@ -2,19 +2,22 @@ import { PayloadAction, configureStore, createSlice } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
 import { DeletedTweets, Tweet, TweetSort } from '~/lib/tweet';
+import { toArray } from '~/lib/utility';
 
 // state
 export interface State {
   tweets: Tweet[];
-  selectedTweets: Tweet[];
   trashbox: DeletedTweets[];
+  selectedTweets: Tweet[];
+  selectedDeletedTweets: Tweet[];
   tweetSort: TweetSort;
 }
 
 const initialState: State = {
   tweets: [],
-  selectedTweets: [],
   trashbox: [],
+  selectedTweets: [],
+  selectedDeletedTweets: [],
   tweetSort: {
     key: 'timestamp',
     order: 'desc',
@@ -35,9 +38,10 @@ const slice = createSlice({
       state.trashbox = [...action.payload.trashbox];
     },
     selectTweet(state: State, action: PayloadAction<Tweet>): void {
-      if (
-        !state.selectedTweets.find((tweet) => tweet.id === action.payload.id)
-      ) {
+      const exist = state.selectedTweets.find(
+        (tweet) => tweet.id === action.payload.id,
+      );
+      if (!exist) {
         state.selectedTweets.push(action.payload);
       }
     },
@@ -71,6 +75,32 @@ const slice = createSlice({
       // clear selected tweets
       state.selectedTweets = [];
     },
+    selectDeletedTweet(
+      state: State,
+      action: PayloadAction<Tweet | Tweet[]>,
+    ): void {
+      toArray(action.payload).forEach((selectedTweet) => {
+        const exist = state.selectedDeletedTweets.find(
+          (tweet) => tweet.id === selectedTweet.id,
+        );
+        if (!exist) {
+          state.selectedDeletedTweets.push(selectedTweet);
+        }
+      });
+    },
+    unselectDeletedTweet(
+      state: State,
+      action: PayloadAction<Tweet | Tweet[]>,
+    ): void {
+      toArray(action.payload).forEach((selectedTweet) => {
+        const index = state.selectedDeletedTweets.findIndex(
+          (tweet) => tweet.id === selectedTweet.id,
+        );
+        if (index !== -1) {
+          state.selectedDeletedTweets.splice(index, 1);
+        }
+      });
+    },
     updateTweetSort(state: State, action: PayloadAction<TweetSort>): void {
       state.tweetSort = action.payload;
     },
@@ -85,6 +115,8 @@ export const {
   selectAllTweets: selectAllTweetsAction,
   unselectAllTweets: unselectAllTweetsAction,
   moveToTrashbox: moveToTrashboxAction,
+  selectDeletedTweet: selectDeletedTweetAction,
+  unselectDeletedTweet: unselectDeletedTweetAction,
   updateTweetSort: updateTweetSortAction,
 } = slice.actions;
 
