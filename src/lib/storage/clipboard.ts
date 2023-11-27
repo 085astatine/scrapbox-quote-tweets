@@ -11,7 +11,7 @@ export const loadTweets = async (): Promise<Tweet[]> => {
   // tweet IDs of tweets in trashbox
   const tweetIDsInTrashbox = (await loadTrashboxRecords()).reduce<TweetID[]>(
     (tweetIDs, record) => {
-      tweetIDs.concat(record.tweetIDs);
+      tweetIDs.push(...record.tweetIDs);
       return tweetIDs;
     },
     [],
@@ -42,7 +42,7 @@ export const loadTrashbox = async (): Promise<DeletedTweets[]> => {
   const records = await loadTrashboxRecords();
   // load tweets
   const tweetIDs = records.reduce<TweetID[]>((tweetIDs, record) => {
-    tweetIDs.concat(record.tweetIDs);
+    tweetIDs.push(...record.tweetIDs);
     return tweetIDs;
   }, []);
   const tweets = await loadSavedTweets(tweetIDs);
