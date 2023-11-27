@@ -3,97 +3,101 @@ import { deletedTweetIDsListJSONSchema } from '~/jsonschema/deleted-tweets';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateDeletedTweetIDsList from '~/validate-json/validate-deleted-tweet-ids-list';
 import { DeletedTweetIDs, DeletedTweets, Tweet, TweetID } from '../tweet';
-import { loadTweets as loadSavedTweets, savedTweetIDs } from './tweet';
+import { loadTweets, savedTweetIDs } from './tweet';
 
-const keyTrashbox = 'clipboard/trashbox';
+const keyTrashbox = 'trashbox';
 
-export const loadTweets = async (): Promise<Tweet[]> => {
-  // tweet IDs of tweets in trashbox
-  const tweetIDsInTrashbox = (await loadTrashboxRecords()).reduce<TweetID[]>(
-    (tweetIDs, record) => {
-      tweetIDs.push(...record.tweetIDs);
-      return tweetIDs;
-    },
-    [],
-  );
-  // tweet IDs of tweets in tweets
-  const tweetIDsInTweets = (await savedTweetIDs()).filter(
+export const loadTweetsNotInTrashbox = async (): Promise<Tweet[]> => {
+  // IDs of tweet in trashbox
+  const tweetIDsInTrashbox = (await loadDeletedTweetIDsList())
+    .map((element) => element.tweetIDs)
+    .flat();
+  // IDs of tweet not in trashbox;
+  const tweetIDsNotInTrashbox = (await savedTweetIDs()).filter(
     (id) => !tweetIDsInTrashbox.includes(id),
   );
-  return await loadSavedTweets(tweetIDsInTweets);
+  return await loadTweets(tweetIDsNotInTrashbox);
 };
 
-export const moveToTrashbox = async (
+export const addTweetsToTrashbox = async (
   tweets: Tweet[],
   timestamp: number,
 ): Promise<void> => {
-  const record: DeletedTweetIDs = {
+  const newElement: DeletedTweetIDs = {
     timestamp,
     tweetIDs: tweets.map((tweet) => tweet.id).sort(),
   };
-  const records = await loadTrashboxRecords();
-  records.push(record);
-  records.sort(sortRecords);
-  browser.storage.local.set({ [keyTrashbox]: records });
+  const elements = await loadDeletedTweetIDsList();
+  elements.push(newElement);
+  elements.sort(sortDeletedTweetIDs);
+  browser.storage.local.set({ [keyTrashbox]: elements });
 };
 
 export const loadTrashbox = async (): Promise<DeletedTweets[]> => {
-  // load records
-  const records = await loadTrashboxRecords();
-  // load tweets
-  const tweetIDs = records.reduce<TweetID[]>((tweetIDs, record) => {
-    tweetIDs.push(...record.tweetIDs);
-    return tweetIDs;
-  }, []);
-  const tweets = await loadSavedTweets(tweetIDs);
+  // load IDs of tweet in trashbox
+  const deletedTweetIDsList = await loadDeletedTweetIDsList();
+  // load tweets in trashbox
+  const tweetIDs = deletedTweetIDsList
+    .map((element) => element.tweetIDs)
+    .flat();
+  const tweets = await loadTweets(tweetIDs);
   // elements
-  return records.map(({ timestamp, tweetIDs }) => ({
+  return deletedTweetIDsList.map(({ timestamp, tweetIDs }) => ({
     timestamp,
-    tweets: tweets.filter((tweet) => tweetIDs.includes(tweet.id)),
+    tweets: tweetIDs.reduce<Tweet[]>((result, id) => {
+      const tweet = tweets.find((tweet) => tweet.id === id);
+      if (tweet !== undefined) {
+        result.push(tweet);
+      }
+      return result;
+    }, []),
   }));
 };
 
-export const deleteTrashbox = async (
-  record: DeletedTweetIDs,
+export const deleteTweetsFromTrashbox = async (
+  tweetIDs: TweetID[],
 ): Promise<void> => {
-  const records = (await loadTrashboxRecords()).reduce<DeletedTweetIDs[]>(
-    (previous, current) => {
-      if (current.timestamp !== record.timestamp) {
-        previous.push(current);
-      } else {
-        current.tweetIDs = current.tweetIDs.filter(
-          (id) => !record.tweetIDs.includes(id),
-        );
-        if (current.tweetIDs) {
-          previous.push(current);
-        }
+  // delete selected tweet IDs from trashbox
+  const result = (await loadDeletedTweetIDsList()).reduce<DeletedTweetIDs[]>(
+    (result, element) => {
+      // delete selected tweet IDs
+      element.tweetIDs = element.tweetIDs.filter(
+        (id) => !tweetIDs.includes(id),
+      );
+      if (element.tweetIDs.length > 0) {
+        result.push(element);
       }
-      return previous;
+      return result;
     },
     [],
   );
-  records.sort(sortRecords);
-  await browser.storage.local.set({ [keyTrashbox]: records });
+  await browser.storage.local.set({ [keyTrashbox]: result });
 };
 
 export const clearTrashbox = async (): Promise<void> => {
   await browser.storage.local.remove(keyTrashbox);
 };
 
-const loadTrashboxRecords = async (): Promise<DeletedTweetIDs[]> => {
-  const records = await browser.storage.local
+const loadDeletedTweetIDsList = async (): Promise<DeletedTweetIDs[]> => {
+  const deletedTweetIDsList = await browser.storage.local
     .get(keyTrashbox)
-    .then((record) => record[keyTrashbox] ?? []);
-  if (!validateDeletedTweetIDsList(records)) {
+    .then((record) => record[keyTrashbox]);
+  if (deletedTweetIDsList === undefined) {
+    return [];
+  }
+  if (!validateDeletedTweetIDsList(deletedTweetIDsList)) {
     throw new JSONSchemaValidationError(
       deletedTweetIDsListJSONSchema,
-      records,
+      deletedTweetIDsList,
       validateDeletedTweetIDsList.errors ?? [],
     );
   }
-  return records;
+  return deletedTweetIDsList;
 };
 
-const sortRecords = (lhs: DeletedTweetIDs, rhs: DeletedTweetIDs): number => {
+const sortDeletedTweetIDs = (
+  lhs: DeletedTweetIDs,
+  rhs: DeletedTweetIDs,
+): number => {
   return rhs.timestamp - lhs.timestamp;
 };

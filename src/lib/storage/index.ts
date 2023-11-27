@@ -28,12 +28,12 @@ export const storage = {
   },
   clipboard: {
     tweets: {
-      load: clipboard.loadTweets,
+      load: clipboard.loadTweetsNotInTrashbox,
     },
     trashbox: {
-      move: clipboard.moveToTrashbox,
+      move: clipboard.addTweetsToTrashbox,
       load: clipboard.loadTrashbox,
-      delete: clipboard.deleteTrashbox,
+      delete: clipboard.deleteTweetsFromTrashbox,
       clear: clipboard.clearTrashbox,
     },
   },
