@@ -35,7 +35,6 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
   flex-shrink: 0;
   width: 1.5rem;
   height: 1.5rem;
-  margin-top: map.get($bs-spacers, 1);
   color: var(--#{$bs-prefix}secondary);
   cursor: pointer;
   background-color: var(--#{$bs-prefix}body-bg);
@@ -272,6 +271,31 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
   }
 }
 
+.deleted-tweets {
+  .deleted-tweets-header {
+    display: flex;
+    justify-content: space-between;
+    padding: map.get($bs-spacers, 1) map.get($bs-spacers, 2);
+    margin-bottom: map.get($bs-spacers, 1);
+    background-color: var(--#{$bs-prefix}gray-300);
+    border-color: var(--#{$bs-prefix}border-color);
+    border-style: var(--#{$bs-prefix}border-style);
+    border-width: var(--#{$bs-prefix}border-width);
+    border-radius: var(--#{$bs-prefix}border-radius);
+  }
+
+  .deleted-tweet {
+    display: flex;
+    gap: map.get($bs-spacers, 1);
+    margin-left: map.get($bs-spacers, 1);
+
+    .tweet {
+      flex-grow: 1;
+      overflow: hidden;
+    }
+  }
+}
+
 .tweets {
   display: flex;
   flex-direction: column;
@@ -284,7 +308,34 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
     display: flex;
     gap: map.get($bs-spacers, 1);
 
+    .checkbox {
+      margin-top: map.get($bs-spacers, 1);
+    }
+
     .tweet {
+      flex-grow: 1;
+      overflow: hidden;
+    }
+  }
+}
+
+.deleted-tweets-list {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 1;
+  gap: map.get($bs-spacers, 1);
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
+  overflow-y: scroll;
+
+  .item {
+    display: flex;
+    gap: map.get($bs-spacers, 1);
+
+    .checkbox {
+      margin-top: map.get($bs-spacers, 1);
+    }
+
+    .deleted-tweets {
       flex-grow: 1;
       overflow: hidden;
     }
