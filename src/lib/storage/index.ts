@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 import { logger } from '../logger';
-import * as clipboard from './clipboard';
+import * as trashbox from './trashbox';
 import * as tweet from './tweet';
 
 const clearStorage = async (): Promise<void> => {
@@ -28,13 +28,13 @@ export const storage = {
   },
   clipboard: {
     tweets: {
-      load: clipboard.loadTweetsNotInTrashbox,
+      load: trashbox.loadTweetsNotInTrashbox,
     },
     trashbox: {
-      move: clipboard.addTweetsToTrashbox,
-      load: clipboard.loadTrashbox,
-      delete: clipboard.deleteTweetsFromTrashbox,
-      clear: clipboard.clearTrashbox,
+      move: trashbox.addTweetsToTrashbox,
+      load: trashbox.loadTrashbox,
+      delete: trashbox.deleteTweetsFromTrashbox,
+      clear: trashbox.clearTrashbox,
     },
   },
 } as const;
