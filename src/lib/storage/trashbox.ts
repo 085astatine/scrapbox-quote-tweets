@@ -3,7 +3,7 @@ import { deletedTweetIDsListJSONSchema } from '~/jsonschema/deleted-tweets';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateDeletedTweetIDsList from '~/validate-json/validate-deleted-tweet-ids-list';
 import { DeletedTweetIDs, DeletedTweets, Tweet, TweetID } from '../tweet';
-import { loadTweets, savedTweetIDs } from './tweet';
+import { deleteTweets, loadTweets, savedTweetIDs } from './tweet';
 
 const keyTrashbox = 'trashbox';
 
@@ -54,10 +54,10 @@ export const loadTrashbox = async (): Promise<DeletedTweets[]> => {
   }));
 };
 
-export const deleteTweetsFromTrashbox = async (
+export const restoreTweetsFromTrashbox = async (
   tweetIDs: TweetID[],
 ): Promise<void> => {
-  // delete selected tweet IDs from trashbox
+  // delete from trashbox
   const result = (await loadDeletedTweetIDsList()).reduce<DeletedTweetIDs[]>(
     (result, element) => {
       // delete selected tweet IDs
@@ -72,6 +72,15 @@ export const deleteTweetsFromTrashbox = async (
     [],
   );
   await browser.storage.local.set({ [keyTrashbox]: result });
+};
+
+export const deleteTweetsFromTrashbox = async (
+  tweetIDs: TweetID[],
+): Promise<void> => {
+  // delete from trashbox
+  await restoreTweetsFromTrashbox(tweetIDs);
+  // delete from storage
+  await deleteTweets(tweetIDs);
 };
 
 export const clearTrashbox = async (): Promise<void> => {

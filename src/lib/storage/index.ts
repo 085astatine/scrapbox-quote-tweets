@@ -31,8 +31,9 @@ export const storage = {
       load: trashbox.loadTweetsNotInTrashbox,
     },
     trashbox: {
-      move: trashbox.addTweetsToTrashbox,
       load: trashbox.loadTrashbox,
+      move: trashbox.addTweetsToTrashbox,
+      restore: trashbox.restoreTweetsFromTrashbox,
       delete: trashbox.deleteTweetsFromTrashbox,
       clear: trashbox.clearTrashbox,
     },
