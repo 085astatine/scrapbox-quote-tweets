@@ -101,6 +101,14 @@ const slice = createSlice({
         }
       });
     },
+    selectAllDeletedTweets(state: State) {
+      state.selectedDeletedTweets = state.trashbox
+        .map((deletedTweets) => deletedTweets.tweets)
+        .flat();
+    },
+    unselectAllDeletedTweets(state: State) {
+      state.selectedDeletedTweets = [];
+    },
     restoreSelectedDeletedTweets(state: State): void {
       // restore to tweets
       state.tweets.push(...state.selectedDeletedTweets);
@@ -157,6 +165,8 @@ export const {
   moveToTrashbox: moveToTrashboxAction,
   selectDeletedTweet: selectDeletedTweetAction,
   unselectDeletedTweet: unselectDeletedTweetAction,
+  selectAllDeletedTweets: selectAllDeletedTweetsAction,
+  unselectAllDeletedTweets: unselectAllDeletedTweetsAction,
   restoreSelectedDeletedTweets: restoreSelectedDeletedTweetsAction,
   deleteSelectedDeletedTweets: deleteSelectedDeletedTweetsAction,
   updateTweetSort: updateTweetSortAction,

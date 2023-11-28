@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import DeleteIcon from '~/icon/google-fonts/delete-forever.svg';
@@ -14,7 +15,9 @@ import {
   State,
   deleteSelectedDeletedTweetsAction,
   restoreSelectedDeletedTweetsAction,
+  selectAllDeletedTweetsAction,
   selectDeletedTweetAction,
+  unselectAllDeletedTweetsAction,
   unselectDeletedTweetAction,
 } from '../store';
 import { Checkbox } from './checkbox';
@@ -39,6 +42,7 @@ const DeletedTweetsList: React.FC = () => {
   const deletedTweetsList = useSelector(selector, shallowEqual);
   return (
     <div className="deleted-tweets-list">
+      <Toolbar />
       {deletedTweetsList.map((deletedTweets) => (
         <DeletedTweets
           key={deletedTweets.timestamp}
@@ -132,6 +136,59 @@ const Tweet: React.FC<TweetProps> = ({ tweet }) => {
     <div className="deleted-tweet">
       <Checkbox checked={isSelected} onClick={select} />
       <TweetInfo tweet={tweet} />
+    </div>
+  );
+};
+
+const Toolbar: React.FC = () => {
+  return (
+    <div className="toolbar">
+      <SelectAll />
+    </div>
+  );
+};
+
+const SelectAll: React.FC = () => {
+  const id = 'select-all-trashbox';
+  // redux
+  const selector = React.useCallback(
+    (state: State): 'disabled' | 'checked' | 'unchecked' => {
+      const deletedTweetIDs = state.trashbox
+        .map((deletedTweets) => deletedTweets.tweets.map((tweet) => tweet.id))
+        .flat();
+      return deletedTweetIDs.length === 0
+        ? 'disabled'
+        : deletedTweetIDs.every((tweetID) =>
+            state.selectedDeletedTweets.some((tweet) => tweet.id === tweetID),
+          )
+        ? 'checked'
+        : 'unchecked';
+    },
+    [],
+  );
+  const state = useSelector(selector);
+  const dispatch = useDispatch();
+  // select
+  const select = () => {
+    if (state === 'checked') {
+      dispatch(unselectAllDeletedTweetsAction());
+    } else if (state === 'unchecked') {
+      dispatch(selectAllDeletedTweetsAction());
+    }
+  };
+  return (
+    <div className="tool">
+      <Checkbox
+        id={id}
+        disabled={state === 'disabled'}
+        checked={state === 'checked'}
+        onClick={select}
+      />
+      <label
+        className={classNames('tool-label', { disabled: state === 'disabled' })}
+        htmlFor={id}>
+        All Tweets
+      </label>
     </div>
   );
 };
