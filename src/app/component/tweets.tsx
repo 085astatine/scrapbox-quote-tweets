@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import ClipboardIcon from '~/icon/bootstrap/clipboard.svg';
-import TrashboxIcon from '~/icon/bootstrap/trash3.svg';
+import TrashboxIcon from '~/icon/google-fonts/delete.svg';
 import { Collapse } from '~/lib/component/transition';
 import { storage } from '~/lib/storage';
 import {
@@ -11,6 +11,7 @@ import {
   TweetSortKey,
   tweetSortFunction,
 } from '~/lib/tweet';
+import { trimGoogleFontsIcon } from '~/lib/utility';
 import {
   State,
   moveToTrashboxAction,
@@ -204,8 +205,10 @@ const Commands: React.FC = () => {
             <button className="command" onClick={moveToTrashbox}>
               <TrashboxIcon
                 className="icon"
+                viewBox={trimGoogleFontsIcon(200)}
                 width={undefined}
                 height={undefined}
+                fill="currentColor"
               />
             </button>
           </div>

@@ -3,7 +3,8 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import SettingsIcon from '~/icon/bootstrap/gear.svg';
 import TweetsIcon from '~/icon/bootstrap/list-ul.svg';
-import TrashboxIcon from '~/icon/bootstrap/trash3.svg';
+import TrashboxIcon from '~/icon/google-fonts/delete.svg';
+import { trimGoogleFontsIcon } from '~/lib/utility';
 import { Settings } from './component/settings';
 import { Trashbox } from './component/trashbox';
 import { Tweets } from './component/tweets';
@@ -47,7 +48,13 @@ const Tabs: React.FC<TabsProps> = ({ tab, switchTab }: TabsProps) => {
       <div
         className={classNames('tab', { active: tab === 'trashbox' })}
         onClick={() => switchTab('trashbox')}>
-        <TrashboxIcon className="icon" width={undefined} height={undefined} />
+        <TrashboxIcon
+          className="icon"
+          viewBox={trimGoogleFontsIcon(200)}
+          width={undefined}
+          height={undefined}
+          fill="currentColor"
+        />
       </div>
       <div
         className={classNames('tab', { active: tab === 'settings' })}

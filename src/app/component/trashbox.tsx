@@ -1,10 +1,14 @@
 import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import DeleteIcon from '~/icon/google-fonts/delete-forever.svg';
+import RestoreIcon from '~/icon/google-fonts/restore-from-trash.svg';
+import { Collapse } from '~/lib/component/transition';
 import {
   DeletedTweets as DeletedTweetsData,
   Tweet as TweetData,
   toDate,
 } from '~/lib/tweet';
+import { trimGoogleFontsIcon } from '~/lib/utility';
 import {
   State,
   selectDeletedTweetAction,
@@ -17,6 +21,7 @@ export const Trashbox: React.FC = () => {
   return (
     <>
       <DeletedTweetsList />
+      <Commands />
     </>
   );
 };
@@ -125,5 +130,49 @@ const Tweet: React.FC<TweetProps> = ({ tweet }) => {
       <Checkbox checked={isSelected} onClick={select} />
       <TweetInfo tweet={tweet} />
     </div>
+  );
+};
+
+const Commands: React.FC = () => {
+  // ref
+  const ref = React.useRef(null);
+  // redux
+  const selector = React.useCallback(
+    (state: State) => state.selectedDeletedTweets,
+    [],
+  );
+  const tweets = useSelector(selector, shallowEqual);
+  return (
+    <Collapse
+      nodeRef={ref}
+      in={tweets.length > 0}
+      duration={300}
+      mountOnEnter
+      unmountOnExit
+      target={
+        <div ref={ref}>
+          <div className="commands fade-in">
+            <button className="command">
+              <RestoreIcon
+                className="icon"
+                viewBox={trimGoogleFontsIcon(200)}
+                width={undefined}
+                height={undefined}
+                fill="currentColor"
+              />
+            </button>
+            <button className="command">
+              <DeleteIcon
+                className="icon"
+                viewBox={trimGoogleFontsIcon(200)}
+                width={undefined}
+                height={undefined}
+                fill="currentColor"
+              />
+            </button>
+          </div>
+        </div>
+      }
+    />
   );
 };
