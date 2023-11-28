@@ -1,7 +1,12 @@
 import { PayloadAction, configureStore, createSlice } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
-import { DeletedTweets, Tweet, TweetSort } from '~/lib/tweet';
+import {
+  DeletedTweets,
+  DeletedTweetsSort,
+  Tweet,
+  TweetSort,
+} from '~/lib/tweet';
 import { toArray } from '~/lib/utility';
 
 // state
@@ -11,6 +16,7 @@ export interface State {
   selectedTweets: Tweet[];
   selectedDeletedTweets: Tweet[];
   tweetSort: TweetSort;
+  deletedTweetsSort: DeletedTweetsSort;
 }
 
 const initialState: State = {
@@ -19,6 +25,10 @@ const initialState: State = {
   selectedTweets: [],
   selectedDeletedTweets: [],
   tweetSort: {
+    key: 'timestamp',
+    order: 'desc',
+  },
+  deletedTweetsSort: {
     key: 'timestamp',
     order: 'desc',
   },
@@ -152,6 +162,12 @@ const slice = createSlice({
     updateTweetSort(state: State, action: PayloadAction<TweetSort>): void {
       state.tweetSort = action.payload;
     },
+    updateDeletedTweetsSort(
+      state: State,
+      action: PayloadAction<DeletedTweetsSort>,
+    ): void {
+      state.deletedTweetsSort = action.payload;
+    },
   },
 });
 
@@ -170,6 +186,7 @@ export const {
   restoreSelectedDeletedTweets: restoreSelectedDeletedTweetsAction,
   deleteSelectedDeletedTweets: deleteSelectedDeletedTweetsAction,
   updateTweetSort: updateTweetSortAction,
+  updateDeletedTweetsSort: updateDeletedTweetsSortAction,
 } = slice.actions;
 
 // store

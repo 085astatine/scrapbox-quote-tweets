@@ -1,10 +1,17 @@
+import { DeletedTweets } from './deleted-tweets';
 import { Tweet } from './tweet';
 
 export type TweetSortKey = 'timestamp' | 'username';
+export type DeletedTweetsSortKey = 'timestamp';
 export type SortOrder = 'asc' | 'desc';
 
 export interface TweetSort {
   key: TweetSortKey;
+  order: SortOrder;
+}
+
+export interface DeletedTweetsSort {
+  key: DeletedTweetsSortKey;
   order: SortOrder;
 }
 
@@ -29,6 +36,22 @@ export const tweetSortFunction = ({
           : rhs.timestamp - lhs.timestamp;
       };
     }
+    default: {
+      const _: never = key;
+      return _;
+    }
+  }
+};
+
+export const deletedTweetsSortFunction = ({
+  key,
+  order,
+}: DeletedTweetsSort): ((lhs: DeletedTweets, rhs: DeletedTweets) => number) => {
+  const sign = order === 'asc' ? +1 : -1;
+  switch (key) {
+    case 'timestamp':
+      return (lhs: DeletedTweets, rhs: DeletedTweets) =>
+        sign * (lhs.timestamp - rhs.timestamp);
     default: {
       const _: never = key;
       return _;

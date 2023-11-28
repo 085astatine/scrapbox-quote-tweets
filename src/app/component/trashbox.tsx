@@ -7,7 +7,10 @@ import { Collapse } from '~/lib/component/transition';
 import { storage } from '~/lib/storage';
 import {
   DeletedTweets as DeletedTweetsData,
+  DeletedTweetsSortKey,
+  SortOrder,
   Tweet as TweetData,
+  deletedTweetsSortFunction,
   toDate,
 } from '~/lib/tweet';
 import { trimGoogleFontsIcon } from '~/lib/utility';
@@ -19,6 +22,7 @@ import {
   selectDeletedTweetAction,
   unselectAllDeletedTweetsAction,
   unselectDeletedTweetAction,
+  updateDeletedTweetsSortAction,
 } from '../store';
 import { Checkbox } from './checkbox';
 import { Tweet as TweetInfo } from './tweet';
@@ -36,7 +40,7 @@ const DeletedTweetsList: React.FC = () => {
   // redux
   const selector = React.useCallback((state: State) => {
     const deletedTweetsList = [...state.trashbox];
-    deletedTweetsList.sort((lhs, rhs) => rhs.timestamp - lhs.timestamp);
+    deletedTweetsList.sort(deletedTweetsSortFunction(state.deletedTweetsSort));
     return deletedTweetsList;
   }, []);
   const deletedTweetsList = useSelector(selector, shallowEqual);
@@ -144,6 +148,7 @@ const Toolbar: React.FC = () => {
   return (
     <div className="toolbar">
       <SelectAll />
+      <SelectSort />
     </div>
   );
 };
@@ -189,6 +194,49 @@ const SelectAll: React.FC = () => {
         htmlFor={id}>
         All Tweets
       </label>
+    </div>
+  );
+};
+
+const SelectSort: React.FC = () => {
+  const id = 'select-deleted-tweets-sort';
+  // redux
+  const selector = React.useCallback(
+    (state: State) => state.deletedTweetsSort,
+    [],
+  );
+  const { key: sortKey, order: sortOrder } = useSelector(selector);
+  const dispatch = useDispatch();
+  // options
+  const options: ReadonlyArray<
+    readonly [DeletedTweetsSortKey, SortOrder, string]
+  > = [
+    ['timestamp', 'asc', 'Deleted Time (older → newer)'],
+    ['timestamp', 'desc', 'Deleted Time (newer → older)'],
+  ];
+  // event
+  const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const [key, order] = options[event.target.selectedIndex];
+    dispatch(updateDeletedTweetsSortAction({ key, order }));
+  };
+  return (
+    <div className="tool">
+      <label className="tool-label" htmlFor={id}>
+        Order By
+      </label>
+      <select
+        className="form-select"
+        id={id}
+        value={options.findIndex(
+          ([key, order]) => key === sortKey && order === sortOrder,
+        )}
+        onChange={onChange}>
+        {options.map((option, index) => (
+          <option key={index} value={index}>
+            {option[2]}
+          </option>
+        ))}
+      </select>
     </div>
   );
 };
