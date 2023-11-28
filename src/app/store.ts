@@ -101,6 +101,46 @@ const slice = createSlice({
         }
       });
     },
+    restoreSelectedDeletedTweets(state: State): void {
+      // restore to tweets
+      state.tweets.push(...state.selectedDeletedTweets);
+      // remove from trashbox
+      state.trashbox = state.trashbox.reduce<DeletedTweets[]>(
+        (result, element) => {
+          element.tweets = element.tweets.filter((tweet) =>
+            state.selectedDeletedTweets.every(
+              (selected) => selected.id !== tweet.id,
+            ),
+          );
+          if (element.tweets.length > 0) {
+            result.push(element);
+          }
+          return result;
+        },
+        [],
+      );
+      // clear selected deleted tweets
+      state.selectedDeletedTweets = [];
+    },
+    deleteSelectedDeletedTweets(state: State): void {
+      // remove from trashbox
+      state.trashbox = state.trashbox.reduce<DeletedTweets[]>(
+        (result, element) => {
+          element.tweets = element.tweets.filter((tweet) =>
+            state.selectedDeletedTweets.every(
+              (selected) => selected.id !== tweet.id,
+            ),
+          );
+          if (element.tweets.length > 0) {
+            result.push(element);
+          }
+          return result;
+        },
+        [],
+      );
+      // clear selected deleted tweets
+      state.selectedDeletedTweets = [];
+    },
     updateTweetSort(state: State, action: PayloadAction<TweetSort>): void {
       state.tweetSort = action.payload;
     },
@@ -117,6 +157,8 @@ export const {
   moveToTrashbox: moveToTrashboxAction,
   selectDeletedTweet: selectDeletedTweetAction,
   unselectDeletedTweet: unselectDeletedTweetAction,
+  restoreSelectedDeletedTweets: restoreSelectedDeletedTweetsAction,
+  deleteSelectedDeletedTweets: deleteSelectedDeletedTweetsAction,
   updateTweetSort: updateTweetSortAction,
 } = slice.actions;
 

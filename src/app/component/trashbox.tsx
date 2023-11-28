@@ -3,6 +3,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import DeleteIcon from '~/icon/google-fonts/delete-forever.svg';
 import RestoreIcon from '~/icon/google-fonts/restore-from-trash.svg';
 import { Collapse } from '~/lib/component/transition';
+import { storage } from '~/lib/storage';
 import {
   DeletedTweets as DeletedTweetsData,
   Tweet as TweetData,
@@ -11,6 +12,8 @@ import {
 import { trimGoogleFontsIcon } from '~/lib/utility';
 import {
   State,
+  deleteSelectedDeletedTweetsAction,
+  restoreSelectedDeletedTweetsAction,
   selectDeletedTweetAction,
   unselectDeletedTweetAction,
 } from '../store';
@@ -142,6 +145,21 @@ const Commands: React.FC = () => {
     [],
   );
   const tweets = useSelector(selector, shallowEqual);
+  const dispatch = useDispatch();
+  // restore
+  const restoreTweets = () => {
+    // store
+    dispatch(restoreSelectedDeletedTweetsAction());
+    // storage
+    storage.clipboard.trashbox.restore(tweets.map((tweet) => tweet.id));
+  };
+  // delete
+  const deleteTweets = () => {
+    // store
+    dispatch(deleteSelectedDeletedTweetsAction());
+    // storage
+    storage.clipboard.trashbox.delete(tweets.map((tweet) => tweet.id));
+  };
   return (
     <Collapse
       nodeRef={ref}
@@ -152,7 +170,7 @@ const Commands: React.FC = () => {
       target={
         <div ref={ref}>
           <div className="commands fade-in">
-            <button className="command">
+            <button className="command" onClick={restoreTweets}>
               <RestoreIcon
                 className="icon"
                 viewBox={trimGoogleFontsIcon(200)}
@@ -161,7 +179,7 @@ const Commands: React.FC = () => {
                 fill="currentColor"
               />
             </button>
-            <button className="command">
+            <button className="command" onClick={deleteTweets}>
               <DeleteIcon
                 className="icon"
                 viewBox={trimGoogleFontsIcon(200)}
