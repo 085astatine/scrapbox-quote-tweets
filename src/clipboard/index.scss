@@ -27,10 +27,13 @@
     }
     .close {
       display: flex;
+      padding: 0;
+      margin-top: 0.25rem;
+      margin-bottom: auto;
 
       .icon {
-        width: 2rem;
-        height: 2rem;
+        width: 1.75rem;
+        height: 1.75rem;
         margin: auto;
       }
     }

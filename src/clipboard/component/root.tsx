@@ -23,9 +23,9 @@ const Header: React.FC = () => {
   return (
     <div className="header">
       <div className="title">Scrapbox Copy Tweets</div>
-      <div className="close btn btn-danger" onClick={close}>
+      <button className="close btn btn-danger" onClick={close}>
         <CloseIcon className="icon" width={undefined} height={undefined} />
-      </div>
+      </button>
     </div>
   );
 };
