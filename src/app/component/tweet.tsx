@@ -86,9 +86,9 @@ const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
           </React.Fragment>
         ))}
       </div>
-      <div className="button">
-        <div
-          className="circle"
+      <div className="expand-button">
+        <button
+          className="expand-button-circle"
           onClick={() => setEllipsis((ellipsis) => !ellipsis)}
         />
         <Icon className="icon" width={undefined} height={undefined} />
