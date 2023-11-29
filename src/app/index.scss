@@ -188,19 +188,24 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
     background-color: var(--#{$bs-prefix}gray-300);
 
     .name {
-      flex-shrink: 1;
+      flex-shrink: 3;
       overflow: hidden;
       color: var(--#{$bs-prefix}black);
       text-decoration: none;
       text-overflow: clip;
+
       &:hover {
         text-decoration: underline;
       }
     }
 
     .username {
+      flex-shrink: 1;
+      overflow: hidden;
       color: var(--#{$bs-prefix}gray);
       text-decoration: none;
+      text-overflow: clip;
+
       &:hover {
         text-decoration: underline;
       }
@@ -208,9 +213,13 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
 
     .datetime {
       flex-grow: 1;
+      flex-shrink: 2;
+      overflow: hidden;
       color: var(--#{$bs-prefix}black);
       text-align: right;
       text-decoration: none;
+      text-overflow: clip;
+
       &:hover {
         text-decoration: underline;
       }
