@@ -40,12 +40,12 @@ interface TabsProps {
 const Tabs: React.FC<TabsProps> = ({ tab, switchTab }: TabsProps) => {
   return (
     <div className="tabs">
-      <div
+      <button
         className={classNames('tab', { active: tab === 'tweets' })}
         onClick={() => switchTab('tweets')}>
         <TweetsIcon className="icon" width={undefined} height={undefined} />
-      </div>
-      <div
+      </button>
+      <button
         className={classNames('tab', { active: tab === 'trashbox' })}
         onClick={() => switchTab('trashbox')}>
         <TrashboxIcon
@@ -55,12 +55,12 @@ const Tabs: React.FC<TabsProps> = ({ tab, switchTab }: TabsProps) => {
           height={undefined}
           fill="currentColor"
         />
-      </div>
-      <div
+      </button>
+      <button
         className={classNames('tab', { active: tab === 'settings' })}
         onClick={() => switchTab('settings')}>
         <SettingsIcon className="icon" width={undefined} height={undefined} />
-      </div>
+      </button>
     </div>
   );
 };

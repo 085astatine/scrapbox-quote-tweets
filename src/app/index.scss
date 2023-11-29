@@ -103,6 +103,7 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
 
 .tabs {
   display: flex;
+  gap: calc(2 * $tab-border-width);
   margin-top: map.get($bs-spacers, 1);
   border-bottom: $tab-border-width $tab-border-style $tab-border-color;
 
@@ -113,6 +114,7 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
     color: var(--#{$bs-prefix}link-color);
     text-align: center;
     cursor: pointer;
+    background-color: $bs-body-bg;
     border: $tab-border-width $tab-border-style transparent;
     border-top-left-radius: var(--#{$bs-prefix}border-radius);
     border-top-right-radius: var(--#{$bs-prefix}border-radius);
