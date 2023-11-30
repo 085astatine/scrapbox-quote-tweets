@@ -5,7 +5,7 @@ import browser from 'webextension-polyfill';
 import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
 import { SaveTweetReportMessage } from '~/lib/message';
-import { storage } from '~/lib/storage';
+import { savedTweetIDs } from '~/lib/storage/tweet';
 import { CopyButton } from './component/copy-button';
 import './index.scss';
 import { insertReactRoot } from './lib/insert-react-root';
@@ -52,7 +52,7 @@ window.addEventListener('DOMContentLoaded', () => {
   };
   observer.observe(document.body, options);
   // Load saved TweetIDs from storage
-  storage.savedTweetIDs().then((tweetIDs) => {
+  savedTweetIDs().then((tweetIDs) => {
     logger.debug('Saved Tweet IDs', tweetIDs);
     store.dispatch(
       updateAction(

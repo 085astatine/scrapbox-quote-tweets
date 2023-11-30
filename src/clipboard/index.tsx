@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { initializeAction, store } from '~/app/store';
-import { storage } from '~/lib/storage';
+import { loadTrashbox, loadTweetsNotInTrashbox } from '~/lib/storage/trashbox';
 import { Root } from './component/root';
 import './index.scss';
 
@@ -13,8 +13,8 @@ if (root !== null) {
 
 const initialize = async (): Promise<void> => {
   const initializer = {
-    tweets: await storage.loadTweetsNotInTrashbox(),
-    trashbox: await storage.loadTrashbox(),
+    tweets: await loadTweetsNotInTrashbox(),
+    trashbox: await loadTrashbox(),
   };
   store.dispatch(initializeAction(initializer));
 };

@@ -4,7 +4,10 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import DeleteIcon from '~/icon/google-fonts/delete-forever.svg';
 import RestoreIcon from '~/icon/google-fonts/restore-from-trash.svg';
 import { Collapse } from '~/lib/component/transition';
-import { storage } from '~/lib/storage';
+import {
+  deleteTweetsFromTrashbox,
+  restoreTweetsFromTrashbox,
+} from '~/lib/storage/trashbox';
 import {
   DeletedTweets as DeletedTweetsData,
   DeletedTweetsSortKey,
@@ -259,14 +262,14 @@ const Commands: React.FC = () => {
     // store
     dispatch(restoreSelectedDeletedTweetsAction());
     // storage
-    storage.restoreTweetsFromTrashbox(tweets.map((tweet) => tweet.id));
+    restoreTweetsFromTrashbox(tweets.map((tweet) => tweet.id));
   };
   // delete
   const deleteTweets = () => {
     // store
     dispatch(deleteSelectedDeletedTweetsAction());
     // storage
-    storage.deleteTweetsFromTrashbox(tweets.map((tweet) => tweet.id));
+    deleteTweetsFromTrashbox(tweets.map((tweet) => tweet.id));
   };
   return (
     <Collapse

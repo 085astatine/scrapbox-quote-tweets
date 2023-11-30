@@ -4,7 +4,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import ClipboardIcon from '~/icon/bootstrap/clipboard.svg';
 import TrashboxIcon from '~/icon/google-fonts/delete.svg';
 import { Collapse } from '~/lib/component/transition';
-import { storage } from '~/lib/storage';
+import { addTweetsToTrashbox } from '~/lib/storage/trashbox';
 import {
   SortOrder,
   Tweet as TweetData,
@@ -182,7 +182,7 @@ const Commands: React.FC = () => {
     // store
     dispatch(moveToTrashboxAction(timestamp));
     // storage
-    storage.addTweetsToTrashbox(tweets, timestamp);
+    addTweetsToTrashbox(tweets, timestamp);
   };
   return (
     <Collapse
