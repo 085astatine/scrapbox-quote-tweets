@@ -9,8 +9,7 @@ import { savedTweetIDs } from '~/lib/storage/tweet';
 import { CopyButton } from './component/copy-button';
 import './index.scss';
 import { insertReactRoot } from './lib/insert-react-root';
-import { actions } from './state';
-import { store } from './store';
+import { actions, store } from './store';
 
 logger.info('content script');
 

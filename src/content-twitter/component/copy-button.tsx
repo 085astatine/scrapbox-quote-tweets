@@ -19,7 +19,7 @@ import {
 import { TweetID } from '~/lib/tweet';
 import { toTweetIDKey } from '~/lib/tweet-id-key';
 import { parseTweet } from '../lib/parse-tweet';
-import { State, actions } from '../state';
+import { State, actions } from '../store';
 
 type TooltipType = 'notification' | 'error';
 type TooltipVisibility = 'none' | 'fade-in' | 'visible' | 'fade-out';
