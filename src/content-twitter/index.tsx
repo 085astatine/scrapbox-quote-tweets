@@ -9,7 +9,7 @@ import { savedTweetIDs } from '~/lib/storage/tweet';
 import { CopyButton } from './component/copy-button';
 import './index.scss';
 import { insertReactRoot } from './lib/insert-react-root';
-import { touchAction, updateAction } from './state';
+import { actions } from './state';
 import { store } from './store';
 
 logger.info('content script');
@@ -26,7 +26,7 @@ const observerCallback = (records: MutationRecord[]): void => {
       insertReactRoot(node, document.URL, logger).forEach(
         ({ tweetID, reactRoot }) => {
           // update store
-          store.dispatch(touchAction(tweetID));
+          store.dispatch(actions.touch(tweetID));
           // render by React
           const root = createRoot(reactRoot);
           root.render(
@@ -55,7 +55,7 @@ window.addEventListener('DOMContentLoaded', () => {
   savedTweetIDs().then((tweetIDs) => {
     logger.debug('Saved Tweet IDs', tweetIDs);
     store.dispatch(
-      updateAction(
+      actions.update(
         tweetIDs.map((tweetID) => ({ tweetID, state: { state: 'success' } })),
       ),
     );
@@ -70,7 +70,7 @@ const onMessageListener = (message: Message) => {
   switch (message.type) {
     case 'SaveTweet/Report':
       store.dispatch(
-        updateAction({
+        actions.update({
           tweetID: message.tweetID,
           state: { state: 'success' },
         }),

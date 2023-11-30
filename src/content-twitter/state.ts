@@ -60,4 +60,4 @@ const stateSlice = createSlice({
 });
 
 export const reducer = stateSlice.reducer;
-export const { update: updateAction, touch: touchAction } = stateSlice.actions;
+export const actions: Readonly<typeof stateSlice.actions> = stateSlice.actions;

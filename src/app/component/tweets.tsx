@@ -12,15 +12,7 @@ import {
   tweetSortFunction,
 } from '~/lib/tweet';
 import { trimGoogleFontsIcon } from '~/lib/utility';
-import {
-  State,
-  moveToTrashboxAction,
-  selectAllTweetsAction,
-  selectTweetAction,
-  unselectAllTweetsAction,
-  unselectTweetAction,
-  updateTweetSortAction,
-} from '../store';
+import { State, actions } from '../store';
 import { Checkbox } from './checkbox';
 import { Tweet as TweetInfo } from './tweet';
 
@@ -60,9 +52,9 @@ const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
   // select
   const select = () => {
     if (isSelected) {
-      dispatch(unselectTweetAction(tweet));
+      dispatch(actions.unselectTweet(tweet));
     } else {
-      dispatch(selectTweetAction(tweet));
+      dispatch(actions.selectTweet(tweet));
     }
   };
   return (
@@ -98,9 +90,9 @@ const SelectAll: React.FC = () => {
   // select
   const select = () => {
     if (state === 'checked') {
-      dispatch(unselectAllTweetsAction());
+      dispatch(actions.unselectAllTweets());
     } else if (state === 'unchecked') {
-      dispatch(selectAllTweetsAction());
+      dispatch(actions.selectAllTweets());
     }
   };
   return (
@@ -136,7 +128,7 @@ const SelectSort: React.FC = () => {
   // event
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const [key, order] = options[event.target.selectedIndex];
-    dispatch(updateTweetSortAction({ key, order }));
+    dispatch(actions.updateTweetSort({ key, order }));
   };
   return (
     <div className="tool">
@@ -180,7 +172,7 @@ const Commands: React.FC = () => {
   const moveToTrashbox = () => {
     const timestamp = Math.trunc(Date.now() / 1000);
     // store
-    dispatch(moveToTrashboxAction(timestamp));
+    dispatch(actions.moveToTrashbox(timestamp));
     // storage
     addTweetsToTrashbox(tweets, timestamp);
   };

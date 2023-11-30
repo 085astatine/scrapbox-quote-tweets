@@ -17,16 +17,7 @@ import {
   toDate,
 } from '~/lib/tweet';
 import { trimGoogleFontsIcon } from '~/lib/utility';
-import {
-  State,
-  deleteSelectedDeletedTweetsAction,
-  restoreSelectedDeletedTweetsAction,
-  selectAllDeletedTweetsAction,
-  selectDeletedTweetAction,
-  unselectAllDeletedTweetsAction,
-  unselectDeletedTweetAction,
-  updateDeletedTweetsSortAction,
-} from '../store';
+import { State, actions } from '../store';
 import { Checkbox } from './checkbox';
 import { Tweet as TweetInfo } from './tweet';
 
@@ -78,9 +69,9 @@ const DeletedTweets: React.FC<DeletedTweetsProps> = ({
   // select
   const selectAll = () => {
     if (isAllSelected) {
-      dispatch(unselectDeletedTweetAction(tweets));
+      dispatch(actions.unselectDeletedTweet(tweets));
     } else {
-      dispatch(selectDeletedTweetAction(tweets));
+      dispatch(actions.selectDeletedTweet(tweets));
     }
   };
   return (
@@ -134,9 +125,9 @@ const Tweet: React.FC<TweetProps> = ({ tweet }) => {
   // select
   const select = () => {
     if (isSelected) {
-      dispatch(unselectDeletedTweetAction(tweet));
+      dispatch(actions.unselectDeletedTweet(tweet));
     } else {
-      dispatch(selectDeletedTweetAction(tweet));
+      dispatch(actions.selectDeletedTweet(tweet));
     }
   };
   return (
@@ -182,9 +173,9 @@ const SelectAll: React.FC = () => {
   // select
   const select = () => {
     if (state === 'checked') {
-      dispatch(unselectAllDeletedTweetsAction());
+      dispatch(actions.unselectAllDeletedTweets());
     } else if (state === 'unchecked') {
-      dispatch(selectAllDeletedTweetsAction());
+      dispatch(actions.selectAllDeletedTweets());
     }
   };
   return (
@@ -223,7 +214,7 @@ const SelectSort: React.FC = () => {
   // event
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const [key, order] = options[event.target.selectedIndex];
-    dispatch(updateDeletedTweetsSortAction({ key, order }));
+    dispatch(actions.updateDeletedTweetsSort({ key, order }));
   };
   return (
     <div className="tool">
@@ -260,14 +251,14 @@ const Commands: React.FC = () => {
   // restore
   const restoreTweets = () => {
     // store
-    dispatch(restoreSelectedDeletedTweetsAction());
+    dispatch(actions.restoreSelectedDeletedTweets());
     // storage
     restoreTweetsFromTrashbox(tweets.map((tweet) => tweet.id));
   };
   // delete
   const deleteTweets = () => {
     // store
-    dispatch(deleteSelectedDeletedTweetsAction());
+    dispatch(actions.deleteSelectedDeletedTweets());
     // storage
     deleteTweetsFromTrashbox(tweets.map((tweet) => tweet.id));
   };

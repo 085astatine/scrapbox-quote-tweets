@@ -172,22 +172,7 @@ const slice = createSlice({
 });
 
 // actions
-export const {
-  initialize: initializeAction,
-  selectTweet: selectTweetAction,
-  unselectTweet: unselectTweetAction,
-  selectAllTweets: selectAllTweetsAction,
-  unselectAllTweets: unselectAllTweetsAction,
-  moveToTrashbox: moveToTrashboxAction,
-  selectDeletedTweet: selectDeletedTweetAction,
-  unselectDeletedTweet: unselectDeletedTweetAction,
-  selectAllDeletedTweets: selectAllDeletedTweetsAction,
-  unselectAllDeletedTweets: unselectAllDeletedTweetsAction,
-  restoreSelectedDeletedTweets: restoreSelectedDeletedTweetsAction,
-  deleteSelectedDeletedTweets: deleteSelectedDeletedTweetsAction,
-  updateTweetSort: updateTweetSortAction,
-  updateDeletedTweetsSort: updateDeletedTweetsSortAction,
-} = slice.actions;
+export const actions: Readonly<typeof slice.actions> = slice.actions;
 
 // store
 const middlewares: Middleware<State>[] = [];

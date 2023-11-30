@@ -19,7 +19,7 @@ import {
 import { TweetID } from '~/lib/tweet';
 import { toTweetIDKey } from '~/lib/tweet-id-key';
 import { parseTweet } from '../lib/parse-tweet';
-import { State, updateAction } from '../state';
+import { State, actions } from '../state';
 
 type TooltipType = 'notification' | 'error';
 type TooltipVisibility = 'none' | 'fade-in' | 'visible' | 'fade-out';
@@ -106,7 +106,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     event.stopPropagation();
     // set state
     setIsClicked(true);
-    dispatch(updateAction({ tweetID, state: { state: 'in-progress' } }));
+    dispatch(actions.update({ tweetID, state: { state: 'in-progress' } }));
     // parse tweet
     if (!ref?.current) {
       logger.warn('reference to DOM is null');
@@ -116,7 +116,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
       (error) => {
         logger.warn('failed to parse tweet', error);
         dispatch(
-          updateAction({
+          actions.update({
             tweetID,
             state: { state: 'failure', message: error.message },
           }),
@@ -139,10 +139,10 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     logger.debug('response', response);
     if (response?.type === 'SaveTweet/Response') {
       if (response.ok) {
-        dispatch(updateAction({ tweetID, state: { state: 'success' } }));
+        dispatch(actions.update({ tweetID, state: { state: 'success' } }));
       } else {
         dispatch(
-          updateAction({
+          actions.update({
             tweetID,
             state: { state: 'failure', message: response.error },
           }),
