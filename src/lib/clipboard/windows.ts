@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { logger } from './logger';
+import { logger } from '../logger';
 
 interface ClipboardWindow {
   windowID: number;
@@ -40,19 +40,21 @@ export const setupClipboardWindows = (): ClipboardWindows => {
   const close = async (tabID: number | undefined): Promise<void> => {
     logger.debug(`close clipboard in tab(ID=${tabID})`);
     const target = clipboards.find((clipboard) => clipboard.tabID === tabID);
-    if (target?.parentTabID === undefined) {
-      return;
-    }
-    // close the clipboard window
-    browser.windows.remove(target.windowID);
-    // activate the parent tab
-    browser.tabs.update(target.parentTabID, { active: true });
-    // focus on the window with the parent tab
-    browser.tabs.get(target.parentTabID).then((tab) => {
-      if (tab.windowId !== undefined) {
-        browser.windows.update(tab.windowId, { focused: true });
+    if (target !== undefined) {
+      // close the clipboard window
+      browser.windows.remove(target.windowID);
+      // parent tab
+      if (target.parentTabID !== undefined) {
+        // activate the parent tab
+        browser.tabs.update(target.parentTabID, { active: true });
+        // focus on the window with the parent tab
+        browser.tabs.get(target.parentTabID).then((tab) => {
+          if (tab.windowId !== undefined) {
+            browser.windows.update(tab.windowId, { focused: true });
+          }
+        });
       }
-    });
+    }
   };
   // close all clipboards
   const closeAll = async (): Promise<void> => {

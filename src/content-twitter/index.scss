@@ -3,21 +3,17 @@
 $fav-color: rgb(249, 24, 128);
 
 @mixin circle {
-  // layout
   position: absolute;
   top: 0px;
   right: 0px;
   bottom: 0px;
   left: 0px;
-  // circle
-  border-radius: 50%;
   margin: -8px;
-  // transition
-  transition-property: background-color, border-color;
-  transition-duration: 0.2s;
-  // border
-  border-width: 2px;
   border-style: solid;
+  border-width: 2px;
+  border-radius: 50%;
+  transition-duration: 0.2s;
+  transition-property: background-color, border-color;
 }
 
 @keyframes scrapbox-copy-tweets-fade-in {
@@ -63,20 +59,14 @@ $fav-color: rgb(249, 24, 128);
   justify-content: center;
 
   .copy-button {
-    // flex
     flex-shrink: 0;
-    // cursor
-    cursor: pointer;
-    // size
     font-size: 15px;
+    cursor: pointer;
 
     .button {
-      // flex
+      position: relative;
       display: flex;
       align-items: stretch;
-      // position
-      position: relative;
-      // size
       width: 1.5em;
       height: 1.5em;
 
@@ -109,16 +99,12 @@ $fav-color: rgb(249, 24, 128);
     .tooltip {
       $tooltip-padding: 4px;
       $tooltip-color: rgba(black, 0.5);
-
-      // layout
-      border-radius: 5px;
       padding: $tooltip-padding;
-      // text
+      color: white;
       text-align: center;
       white-space: nowrap;
-      // color
-      color: white;
       background-color: $tooltip-color;
+      border-radius: 5px;
 
       .arrow {
         fill: $tooltip-color;
@@ -126,27 +112,23 @@ $fav-color: rgb(249, 24, 128);
       }
 
       .body {
-        // flex
         display: inline-flex;
         flex-direction: row;
-        // cursor
         cursor: text;
 
         .close-button {
-          // layout
-          height: 20px;
           width: 20px;
+          height: 20px;
           margin-right: 5px;
-          // cursor
-          cursor: pointer;
-          // color
           color: white;
+          cursor: pointer;
+
           &:hover {
             color: red;
           }
         }
       }
-      // animation
+
       &.fade-in {
         animation: scrapbox-copy-tweets-fade-in 0.2s;
       }

@@ -1,5 +1,5 @@
 import { JSONSchemaType, SchemaObject } from 'ajv';
-import { Tweet } from '~/lib/tweet';
+import { Tweet, TweetID } from '~/lib/tweet';
 
 const definitions: SchemaObject = {
   // URI
@@ -16,7 +16,7 @@ const definitions: SchemaObject = {
   tweet: {
     type: 'object',
     properties: {
-      id: { type: 'string' },
+      id: { $ref: '#/definitions/tweet:id' },
       timestamp: { type: 'integer' },
       author: { $ref: '#/definitions/user' },
       text: {
@@ -31,6 +31,11 @@ const definitions: SchemaObject = {
     },
     required: ['id', 'timestamp', 'author', 'text'],
     additionalProperties: false,
+  },
+  // tweet id
+  'tweet:id': {
+    type: 'string',
+    pattern: '^[0-9]+$',
   },
   // username
   username: {
@@ -201,11 +206,19 @@ export const tweetJSONSchema = {
   $ref: '#/definitions/tweet',
   definitions,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-} as any as JSONSchemaType<Tweet>;
+} as any as Readonly<JSONSchemaType<Tweet>>;
 
 export const tweetsJSONSchema = {
   type: 'array',
   items: { $ref: '#/definitions/tweet' },
   definitions,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-} as any as JSONSchemaType<Tweet[]>;
+} as any as Readonly<JSONSchemaType<Tweet[]>>;
+
+export const tweetIDsJSONSchema: Readonly<JSONSchemaType<TweetID[]>> = {
+  type: 'array',
+  items: {
+    type: 'string',
+    pattern: '^[0-9]+$',
+  },
+};

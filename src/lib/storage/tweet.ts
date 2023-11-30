@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 import { tweetJSONSchema, tweetsJSONSchema } from '~/jsonschema/tweet';
-import { JSONSchemaValidationError } from '~/validate-json/jsonschema-validation-error';
+import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateTweet from '~/validate-json/validate-tweet';
 import validateTweets from '~/validate-json/validate-tweets';
 import { Tweet, TweetID } from '../tweet';
@@ -12,7 +12,7 @@ export const saveTweets = async (tweets: Tweet[]): Promise<void> => {
     throw new JSONSchemaValidationError(
       tweetsJSONSchema,
       tweets,
-      validateTweets.errors,
+      validateTweets.errors ?? [],
     );
   }
   // set to storage
@@ -27,7 +27,7 @@ export const saveTweet = async (tweet: Tweet): Promise<void> => {
     throw new JSONSchemaValidationError(
       tweetJSONSchema,
       tweet,
-      validateTweet.errors,
+      validateTweet.errors ?? [],
     );
   }
   // set to storage
@@ -59,10 +59,10 @@ export const loadTweets = async (tweetIDs?: TweetID[]): Promise<Tweet[]> => {
     throw new JSONSchemaValidationError(
       tweetsJSONSchema,
       tweets,
-      validateTweets.errors,
+      validateTweets.errors ?? [],
     );
   }
-  return Promise.resolve(tweets);
+  return tweets;
 };
 
 export const loadTweet = async (tweetID: TweetID): Promise<Tweet | null> => {
@@ -72,17 +72,17 @@ export const loadTweet = async (tweetID: TweetID): Promise<Tweet | null> => {
     .get(key)
     .then((record) => record[key]);
   if (tweet === undefined) {
-    return Promise.resolve(null);
+    return null;
   }
   // JSON Schema validation
   if (!validateTweet(tweet)) {
     throw new JSONSchemaValidationError(
       tweetJSONSchema,
       tweet,
-      validateTweet.errors,
+      validateTweet.errors ?? [],
     );
   }
-  return Promise.resolve(tweet);
+  return tweet;
 };
 
 export const deleteTweets = async (tweetIDs?: TweetID[]): Promise<void> => {

@@ -1,8 +1,8 @@
 import { ErrorObject } from 'ajv';
-import { Tweet } from '~/lib/tweet';
+import { TweetID } from '~/lib/tweet';
 
 declare const validate: {
-  (data: unknown): data is Tweet[];
+  (data: unknown): data is TweetID[];
   errors: ErrorObject[] | null;
 };
 export default validate;

@@ -66,3 +66,7 @@ export interface SaveTweetReportMessage {
   type: 'SaveTweet/Report';
   tweetID: TweetID;
 }
+
+export interface SettingsDownloadStorageMessage {
+  type: 'Settings/DownloadStorage';
+}

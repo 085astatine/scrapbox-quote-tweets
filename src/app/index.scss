@@ -1,0 +1,396 @@
+@use 'sass:map';
+
+$prefix: '' !default;
+$bs-prefix: bs- !default;
+$bs-spacer: 1rem !default;
+$bs-spacers: (
+  0: 0,
+  1: $bs-spacer * 0.25,
+  2: $bs-spacer * 0.5,
+  3: $bs-spacer,
+  4: $bs-spacer * 1.5,
+  5: $bs-spacer * 3,
+);
+$bs-body-bg: var(--#{$bs-prefix}body-bg);
+$tab-border-color: var(--#{$bs-prefix}border-color);
+$tab-border-hover-color: var(--#{$bs-prefix}secondary-bg);
+$tab-border-width: var(--#{$bs-prefix}border-width);
+$tab-border-style: var(--#{$bs-prefix}border-style);
+$focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
+
+@keyframes #{$prefix}fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: #{$prefix}fade-in 0.2s;
+}
+
+.checkbox {
+  display: flex;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--#{$bs-prefix}secondary);
+  cursor: pointer;
+  background-color: var(--#{$bs-prefix}body-bg);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 0.25rem;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+
+  &.checked {
+    color: var(--#{$bs-prefix}body-bg);
+    background-color: var(--#{$bs-prefix}primary);
+  }
+
+  &.disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+
+  .icon {
+    width: calc(1.5rem - 2px);
+    height: calc(1.5rem - 2px);
+    margin: auto;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--#{$bs-prefix}primary-rgb), 0.25);
+  }
+
+  &:focus-visible {
+    outline: $focus-visible-outline;
+  }
+}
+
+.commands {
+  display: flex;
+  flex-shrink: 0;
+  gap: map.get($bs-spacers, 1);
+  margin: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
+
+  .command {
+    display: flex;
+    flex-grow: 1;
+    padding: 0.375rem 0.75rem;
+    appearance: none;
+    background-color: var(--#{$bs-prefix}body-bg);
+    border-color: var(--#{$bs-prefix}border-color);
+    border-style: var(--#{$bs-prefix}border-style);
+    border-width: var(--#{$bs-prefix}border-width);
+    border-radius: var(--#{$bs-prefix}border-radius);
+
+    .icon {
+      width: 2rem;
+      height: 2rem;
+      margin: auto;
+    }
+
+    &:is(:focus, :hover) {
+      box-shadow: 0 0 0 var(--#{$bs-prefix}focus-ring-width)
+        rgba(
+          var(--#{$bs-prefix}primary-rgb),
+          var(--#{$bs-prefix}focus-ring-opacity)
+        );
+    }
+
+    &:focus-visible {
+      outline: $focus-visible-outline;
+    }
+  }
+}
+
+.tabs {
+  display: flex;
+  gap: calc(2 * $tab-border-width);
+  margin-top: map.get($bs-spacers, 1);
+  border-bottom: $tab-border-width $tab-border-style $tab-border-color;
+
+  .tab {
+    flex-grow: 1;
+    padding: 0.375rem 0.75rem;
+    margin-bottom: calc(-1 * $tab-border-width);
+    color: var(--#{$bs-prefix}link-color);
+    text-align: center;
+    cursor: pointer;
+    background-color: $bs-body-bg;
+    border: $tab-border-width $tab-border-style transparent;
+    border-top-left-radius: var(--#{$bs-prefix}border-radius);
+    border-top-right-radius: var(--#{$bs-prefix}border-radius);
+    transition:
+      color 0.15s ease-in-out,
+      border-color 0.15s ease-in-out;
+
+    &:hover {
+      border-color: $tab-border-hover-color $tab-border-hover-color
+        $tab-border-color;
+    }
+
+    &:focus-visible {
+      outline: $focus-visible-outline;
+    }
+
+    &.active {
+      color: var(--#{$bs-prefix}emphasis-color);
+      cursor: auto;
+      border-color: $tab-border-color $tab-border-color $bs-body-bg;
+    }
+
+    .icon {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  flex-shrink: 1;
+  margin-bottom: map.get($bs-spacers, 1);
+  overflow-y: hidden;
+  border-color: transparent $tab-border-color $tab-border-color;
+  border-style: $tab-border-style;
+  border-width: $tab-border-width;
+  border-bottom-right-radius: var(--#{$bs-prefix}border-radius);
+  border-bottom-left-radius: var(--#{$bs-prefix}border-radius);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  .tool {
+    display: flex;
+    gap: map.get($bs-spacers, 2);
+    align-items: center;
+
+    .tool-label {
+      white-space: nowrap;
+
+      &.disabled {
+        opacity: 0.5;
+      }
+    }
+  }
+}
+
+.tweet {
+  border-color: var(--#{$bs-prefix}border-color);
+  border-style: var(--#{$bs-prefix}border-style);
+  border-width: var(--#{$bs-prefix}border-width);
+  border-radius: var(--#{$bs-prefix}border-radius);
+
+  .header {
+    display: flex;
+    gap: map.get($bs-spacers, 1);
+    padding: map.get($bs-spacers, 1) map.get($bs-spacers, 2);
+    white-space: nowrap;
+    background-color: var(--#{$bs-prefix}gray-300);
+
+    .name {
+      flex-shrink: 3;
+      overflow: hidden;
+      color: var(--#{$bs-prefix}black);
+      text-decoration: none;
+      text-overflow: clip;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &:focus-visible {
+        color: var(--#{$bs-prefix}link-color);
+        text-decoration: underline;
+        outline: none;
+      }
+    }
+
+    .username {
+      flex-shrink: 1;
+      overflow: hidden;
+      color: var(--#{$bs-prefix}gray);
+      text-decoration: none;
+      text-overflow: clip;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &:focus-visible {
+        color: var(--#{$bs-prefix}link-color);
+        text-decoration: underline;
+        outline: none;
+      }
+    }
+
+    .datetime {
+      flex-grow: 1;
+      flex-shrink: 2;
+      overflow: hidden;
+      color: var(--#{$bs-prefix}black);
+      text-align: right;
+      text-decoration: none;
+      text-overflow: clip;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &:focus-visible {
+        color: var(--#{$bs-prefix}link-color);
+        text-decoration: underline;
+        outline: none;
+      }
+    }
+  }
+
+  .body {
+    display: flex;
+    gap: map.get($bs-spacers, 1);
+    padding: map.get($bs-spacers, 1) map.get($bs-spacers, 2);
+
+    .text {
+      margin-right: auto;
+      word-break: break-all;
+
+      &.ellipsis {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .return {
+        width: 1rem;
+        height: 1rem;
+        fill: var(--#{$bs-prefix}gray-500);
+        stroke: var(--#{$bs-prefix}gray-500);
+      }
+    }
+
+    .expand-button {
+      position: relative;
+      display: flex;
+      flex-shrink: 0;
+      width: map.get($bs-spacers, 4);
+      height: map.get($bs-spacers, 4);
+
+      .expand-button-circle {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        appearance: none;
+        cursor: pointer;
+        background-color: transparent;
+        border-style: none;
+        border-radius: 50%;
+        transition: box-shadow 0.15s ease-in-out;
+
+        &:is(:hover, :focus) {
+          box-shadow: 0 0 0 var(--#{$bs-prefix}focus-ring-width)
+            rgba(
+              var(--#{$bs-prefix}primary-rgb),
+              var(--#{$bs-prefix}focus-ring-opacity)
+            );
+        }
+
+        &:focus-visible {
+          outline: $focus-visible-outline;
+        }
+      }
+      .icon {
+        width: map.get($bs-spacers, 3);
+        height: map.get($bs-spacers, 3);
+        margin: auto;
+      }
+    }
+  }
+}
+
+.deleted-tweets {
+  .deleted-tweets-header {
+    display: flex;
+    justify-content: space-between;
+    padding: map.get($bs-spacers, 1) map.get($bs-spacers, 2);
+    margin-bottom: map.get($bs-spacers, 1);
+    background-color: var(--#{$bs-prefix}gray-300);
+    border-color: var(--#{$bs-prefix}border-color);
+    border-style: var(--#{$bs-prefix}border-style);
+    border-width: var(--#{$bs-prefix}border-width);
+    border-radius: var(--#{$bs-prefix}border-radius);
+  }
+
+  .deleted-tweet {
+    display: flex;
+    gap: map.get($bs-spacers, 1);
+    margin-left: map.get($bs-spacers, 1);
+
+    .tweet {
+      flex-grow: 1;
+      overflow: hidden;
+    }
+  }
+}
+
+.tweets {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 1;
+  gap: map.get($bs-spacers, 1);
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
+  overflow-y: scroll;
+
+  .item {
+    display: flex;
+    gap: map.get($bs-spacers, 1);
+
+    .checkbox {
+      margin-top: map.get($bs-spacers, 1);
+    }
+
+    .tweet {
+      flex-grow: 1;
+      overflow: hidden;
+    }
+  }
+}
+
+.deleted-tweets-list {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 1;
+  gap: map.get($bs-spacers, 1);
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
+  overflow-y: scroll;
+
+  .item {
+    display: flex;
+    gap: map.get($bs-spacers, 1);
+
+    .checkbox {
+      margin-top: map.get($bs-spacers, 1);
+    }
+
+    .deleted-tweets {
+      flex-grow: 1;
+      overflow: hidden;
+    }
+  }
+}

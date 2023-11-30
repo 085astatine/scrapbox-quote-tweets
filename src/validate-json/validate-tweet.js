@@ -9,7 +9,7 @@ const schema11 = {
     tweet: {
       type: 'object',
       properties: {
-        id: { type: 'string' },
+        id: { $ref: '#/definitions/tweet:id' },
         timestamp: { type: 'integer' },
         author: { $ref: '#/definitions/user' },
         text: { type: 'array', items: { $ref: '#/definitions/entity' } },
@@ -19,6 +19,7 @@ const schema11 = {
       required: ['id', 'timestamp', 'author', 'text'],
       additionalProperties: false,
     },
+    'tweet:id': { type: 'string', pattern: '^[0-9]+$' },
     username: { type: 'string', pattern: '^\\w{1,15}$' },
     user: {
       type: 'object',
@@ -163,7 +164,7 @@ const schema11 = {
 const schema12 = {
   type: 'object',
   properties: {
-    id: { type: 'string' },
+    id: { $ref: '#/definitions/tweet:id' },
     timestamp: { type: 'integer' },
     author: { $ref: '#/definitions/user' },
     text: { type: 'array', items: { $ref: '#/definitions/entity' } },
@@ -173,7 +174,9 @@ const schema12 = {
   required: ['id', 'timestamp', 'author', 'text'],
   additionalProperties: false,
 };
-const schema13 = {
+const schema13 = { type: 'string', pattern: '^[0-9]+$' };
+const pattern0 = new RegExp('^[0-9]+$', 'u');
+const schema14 = {
   type: 'object',
   properties: {
     name: { type: 'string' },
@@ -182,8 +185,8 @@ const schema13 = {
   required: ['name', 'username'],
   additionalProperties: false,
 };
-const schema14 = { type: 'string', pattern: '^\\w{1,15}$' };
-const pattern0 = new RegExp('^\\w{1,15}$', 'u');
+const schema15 = { type: 'string', pattern: '^\\w{1,15}$' };
+const pattern1 = new RegExp('^\\w{1,15}$', 'u');
 function validate12(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
@@ -258,7 +261,7 @@ function validate12(
     if (data.username !== undefined) {
       let data1 = data.username;
       if (typeof data1 === 'string') {
-        if (!pattern0.test(data1)) {
+        if (!pattern1.test(data1)) {
           const err4 = {
             instancePath: instancePath + '/username',
             schemaPath: '#/definitions/username/pattern',
@@ -307,7 +310,7 @@ function validate12(
   validate12.errors = vErrors;
   return errors === 0;
 }
-const schema15 = {
+const schema16 = {
   type: 'object',
   oneOf: [
     { $ref: '#/definitions/entity:text' },
@@ -319,13 +322,13 @@ const schema15 = {
   required: ['type'],
   discriminator: { propertyName: 'type' },
 };
-const schema24 = {
+const schema25 = {
   type: 'object',
   properties: { type: { const: 'text' }, text: { type: 'string' } },
   required: ['type', 'text'],
   additionalProperties: false,
 };
-const schema25 = {
+const schema26 = {
   type: 'object',
   properties: {
     type: { const: 'cashtag' },
@@ -335,7 +338,7 @@ const schema25 = {
   required: ['type', 'text', 'tag'],
   additionalProperties: false,
 };
-const schema16 = {
+const schema17 = {
   type: 'object',
   properties: {
     type: { const: 'url' },
@@ -348,10 +351,10 @@ const schema16 = {
   required: ['type', 'text', 'short_url', 'expanded_url', 'decoded_url'],
   additionalProperties: false,
 };
-const schema17 = { type: 'string', format: 'uri' };
-const schema19 = { type: 'string', format: 'iri' };
-const formats0 = require('ajv-formats/dist/formats').fullFormats.uri;
-const formats4 = require('ajv-formats-draft2019/formats').iri;
+const schema18 = { type: 'string', format: 'uri' };
+const schema20 = { type: 'string', format: 'iri' };
+const formats0 = require('./formats').uri;
+const formats4 = require('./formats').iri;
 function validate15(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
@@ -631,7 +634,7 @@ function validate15(
   validate15.errors = vErrors;
   return errors === 0;
 }
-const schema20 = {
+const schema21 = {
   type: 'object',
   properties: {
     type: { const: 'hashtag' },
@@ -821,7 +824,7 @@ function validate16(
   validate16.errors = vErrors;
   return errors === 0;
 }
-const schema22 = {
+const schema23 = {
   type: 'object',
   properties: {
     type: { const: 'mention' },
@@ -937,7 +940,7 @@ function validate17(
     if (data.username !== undefined) {
       let data2 = data.username;
       if (typeof data2 === 'string') {
-        if (!pattern0.test(data2)) {
+        if (!pattern1.test(data2)) {
           const err6 = {
             instancePath: instancePath + '/username',
             schemaPath: '#/definitions/username/pattern',
@@ -1332,7 +1335,7 @@ function validate14(
   validate14.errors = vErrors;
   return errors === 0;
 }
-const schema26 = {
+const schema27 = {
   type: 'object',
   oneOf: [
     { $ref: '#/definitions/card:single' },
@@ -1341,7 +1344,7 @@ const schema26 = {
   required: ['type'],
   discriminator: { propertyName: 'type' },
 };
-const schema27 = {
+const schema28 = {
   type: 'object',
   properties: {
     type: { const: 'single' },
@@ -1351,7 +1354,7 @@ const schema27 = {
   required: ['type', 'media_url'],
   additionalProperties: false,
 };
-const schema28 = {
+const schema29 = {
   type: 'object',
   properties: {
     url: { $ref: '#/definitions/uri' },
@@ -1714,7 +1717,7 @@ function validate23(
   validate23.errors = vErrors;
   return errors === 0;
 }
-const schema33 = {
+const schema34 = {
   type: 'object',
   properties: {
     type: { const: 'carousel' },
@@ -1985,7 +1988,7 @@ function validate22(
   validate22.errors = vErrors;
   return errors === 0;
 }
-const schema35 = {
+const schema36 = {
   type: 'object',
   oneOf: [
     { $ref: '#/definitions/media:photo' },
@@ -1994,7 +1997,7 @@ const schema35 = {
   required: ['type'],
   discriminator: { propertyName: 'type' },
 };
-const schema36 = {
+const schema37 = {
   type: 'object',
   properties: { type: { const: 'photo' }, url: { $ref: '#/definitions/uri' } },
   required: ['type', 'url'],
@@ -2123,7 +2126,7 @@ function validate32(
   validate32.errors = vErrors;
   return errors === 0;
 }
-const schema38 = {
+const schema39 = {
   type: 'object',
   properties: {
     type: { const: 'video' },
@@ -2451,18 +2454,35 @@ function validate11(
       }
     }
     if (data.id !== undefined) {
-      if (typeof data.id !== 'string') {
-        const err5 = {
+      let data0 = data.id;
+      if (typeof data0 === 'string') {
+        if (!pattern0.test(data0)) {
+          const err5 = {
+            instancePath: instancePath + '/id',
+            schemaPath: '#/definitions/tweet:id/pattern',
+            keyword: 'pattern',
+            params: { pattern: '^[0-9]+$' },
+            message: 'must match pattern "' + '^[0-9]+$' + '"',
+          };
+          if (vErrors === null) {
+            vErrors = [err5];
+          } else {
+            vErrors.push(err5);
+          }
+          errors++;
+        }
+      } else {
+        const err6 = {
           instancePath: instancePath + '/id',
-          schemaPath: '#/properties/id/type',
+          schemaPath: '#/definitions/tweet:id/type',
           keyword: 'type',
           params: { type: 'string' },
           message: 'must be string',
         };
         if (vErrors === null) {
-          vErrors = [err5];
+          vErrors = [err6];
         } else {
-          vErrors.push(err5);
+          vErrors.push(err6);
         }
         errors++;
       }
@@ -2477,7 +2497,7 @@ function validate11(
           isFinite(data1)
         )
       ) {
-        const err6 = {
+        const err7 = {
           instancePath: instancePath + '/timestamp',
           schemaPath: '#/properties/timestamp/type',
           keyword: 'type',
@@ -2485,9 +2505,9 @@ function validate11(
           message: 'must be integer',
         };
         if (vErrors === null) {
-          vErrors = [err6];
+          vErrors = [err7];
         } else {
-          vErrors.push(err6);
+          vErrors.push(err7);
         }
         errors++;
       }
@@ -2529,7 +2549,7 @@ function validate11(
           }
         }
       } else {
-        const err7 = {
+        const err8 = {
           instancePath: instancePath + '/text',
           schemaPath: '#/properties/text/type',
           keyword: 'type',
@@ -2537,9 +2557,9 @@ function validate11(
           message: 'must be array',
         };
         if (vErrors === null) {
-          vErrors = [err7];
+          vErrors = [err8];
         } else {
-          vErrors.push(err7);
+          vErrors.push(err8);
         }
         errors++;
       }
@@ -2581,7 +2601,7 @@ function validate11(
           }
         }
       } else {
-        const err8 = {
+        const err9 = {
           instancePath: instancePath + '/media',
           schemaPath: '#/properties/media/type',
           keyword: 'type',
@@ -2589,15 +2609,15 @@ function validate11(
           message: 'must be array',
         };
         if (vErrors === null) {
-          vErrors = [err8];
+          vErrors = [err9];
         } else {
-          vErrors.push(err8);
+          vErrors.push(err9);
         }
         errors++;
       }
     }
   } else {
-    const err9 = {
+    const err10 = {
       instancePath,
       schemaPath: '#/type',
       keyword: 'type',
@@ -2605,9 +2625,9 @@ function validate11(
       message: 'must be object',
     };
     if (vErrors === null) {
-      vErrors = [err9];
+      vErrors = [err10];
     } else {
-      vErrors.push(err9);
+      vErrors.push(err10);
     }
     errors++;
   }

@@ -1,11 +1,16 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv, { JSONSchemaType, _ } from 'ajv';
 import addFormats from 'ajv-formats';
 // @ts-expect-error ajv-formats-draft2019 has no .d.ts file
 import addFormatsDraft2019 from 'ajv-formats-draft2019';
 import standaloneCode from 'ajv/dist/standalone';
 import * as fs from 'fs';
 import * as path from 'path';
-import { tweetJSONSchema, tweetsJSONSchema } from './jsonschema/tweet';
+import { deletedTweetIDsListJSONSchema } from './jsonschema/deleted-tweets';
+import {
+  tweetIDsJSONSchema,
+  tweetJSONSchema,
+  tweetsJSONSchema,
+} from './jsonschema/tweet';
 
 const generate = <T>(
   schema: JSONSchemaType<T>,
@@ -25,6 +30,7 @@ const generate = <T>(
     discriminator: true,
     code: {
       source: true,
+      formats: _`require("./formats")`,
     },
   });
   addFormats(ajv, ['uri']);
@@ -32,17 +38,17 @@ const generate = <T>(
   const validate = ajv.compile(schema);
   fs.writeFileSync(
     path.join(directory, `${output}.js`),
-    standaloneCode(ajv, validate).replace(
-      /require\("ajv-formats\/dist\/formats"\)\.fullFormats\.iri/g,
-      'require("ajv-formats-draft2019/formats").iri',
-    ),
+    standaloneCode(ajv, validate),
   );
   // generate .d.ts
   const code: string[] = [];
-  code.push("import { ValidateFunction } from 'avj';");
+  code.push("import { ErrorObject } from 'ajv';");
   code.push(`${importCode};`);
   code.push('');
-  code.push(`declare const validate: ValidateFunction<${typename}>;`);
+  code.push('declare const validate: {');
+  code.push(`  (data: unknown): data is ${typename};`);
+  code.push('  errors: ErrorObject[] | null;');
+  code.push('};');
   code.push(`export default validate;`);
   code.push('');
   fs.writeFileSync(path.join(directory, `${output}.d.ts`), code.join('\n'));
@@ -61,4 +67,18 @@ generate(
   'validate-tweets',
   'Tweet[]',
   "import { Tweet } from '~/lib/tweet'",
+);
+// TweetID[]
+generate(
+  tweetIDsJSONSchema,
+  'validate-tweet-ids',
+  'TweetID[]',
+  "import { TweetID } from '~/lib/tweet'",
+);
+// DeletedTweetIDs[]
+generate(
+  deletedTweetIDsListJSONSchema,
+  'validate-deleted-tweet-ids-list',
+  'DeletedTweetIDs[]',
+  "import { DeletedTweetIDs } from '~/lib/tweet'",
 );

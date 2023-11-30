@@ -1,14 +1,7 @@
 import browser from 'webextension-polyfill';
 import { logger } from '../logger';
-import {
-  deleteTweet,
-  deleteTweets,
-  loadTweet,
-  loadTweets,
-  saveTweet,
-  saveTweets,
-  savedTweetIDs,
-} from './tweet';
+import * as trashbox from './trashbox';
+import * as tweet from './tweet';
 
 const clearStorage = async (): Promise<void> => {
   await browser.storage.local.clear();
@@ -23,14 +16,47 @@ export const storage = {
   clear: clearStorage,
   dump: dumpStorage,
   tweet: {
-    save: saveTweet,
-    load: loadTweet,
-    delete: deleteTweet,
+    save: tweet.saveTweet,
+    load: tweet.loadTweet,
+    delete: tweet.deleteTweet,
   },
   tweets: {
-    save: saveTweets,
-    load: loadTweets,
-    delete: deleteTweets,
-    savedIDs: savedTweetIDs,
+    save: tweet.saveTweets,
+    load: tweet.loadTweets,
+    delete: tweet.deleteTweets,
+    savedIDs: tweet.savedTweetIDs,
+  },
+  clipboard: {
+    tweets: {
+      load: trashbox.loadTweetsNotInTrashbox,
+    },
+    trashbox: {
+      load: trashbox.loadTrashbox,
+      move: trashbox.addTweetsToTrashbox,
+      restore: trashbox.restoreTweetsFromTrashbox,
+      delete: trashbox.deleteTweetsFromTrashbox,
+      clear: trashbox.clearTrashbox,
+    },
   },
 } as const;
+
+export const loadTestData = async (url: string): Promise<void> => {
+  if (process.env.NODE_ENV !== 'production') {
+    // clear storage
+    logger.debug('clear storage');
+    await clearStorage();
+    // load test data
+    logger.debug(`load test data from ${url}`);
+    const data = await fetch(url)
+      .then((response) => response.json())
+      .catch((error) => {
+        logger.debug('failed to load test data', error);
+        return null;
+      });
+    logger.debug('test data', data);
+    // save test data
+    if (data !== null) {
+      await browser.storage.local.set(data);
+    }
+  }
+};

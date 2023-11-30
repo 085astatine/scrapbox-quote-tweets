@@ -1,4 +1,5 @@
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const DotenvPlugin = require('dotenv-webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
@@ -11,6 +12,25 @@ module.exports = (env, argv) => {
   const mode = argv.mode ?? 'development';
   const browser = process.env.TARGET_BROWSER;
   process.env.NODE_ENV = mode;
+  // svgr
+  const svgrLoader = {
+    loader: '@svgr/webpack',
+    options: {
+      svgoConfig: {
+        plugins: [
+          {
+            name: 'preset-default',
+            params: {
+              overrides: {
+                removeViewBox: false,
+              },
+            },
+          },
+        ],
+      },
+    },
+  };
+  // config
   return {
     mode: mode,
     devtool: mode === 'production' ? false : 'cheap-source-map',
@@ -54,7 +74,7 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.svg$/,
-          use: ['@svgr/webpack'],
+          use: [svgrLoader],
         },
         {
           type: 'javascript/auto',
@@ -116,6 +136,18 @@ module.exports = (env, argv) => {
       new MiniCssExtractPlugin(),
       new NodePolyfillPlugin(),
       new WextManifestPlugin(),
+      ...(mode === 'development'
+        ? [
+            new CopyPlugin({
+              patterns: [
+                {
+                  from: 'test_data.json',
+                  noErrorOnMissing: true,
+                },
+              ],
+            }),
+          ]
+        : []),
     ],
     performance: {
       hints: false,
