@@ -56,12 +56,12 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
   const [tooltipVisibility, setTooltipVisibility] =
     React.useState<TooltipVisibility>('none');
   // tooltip
-  const tooltipMessage: TooltipMessage | null = !isClicked
-    ? null
-    : buttonState.state === 'success'
-    ? { type: 'notification', message: 'Copied' }
-    : buttonState.state === 'failure'
-    ? { type: 'error', message: buttonState.message }
+  const tooltipMessage: TooltipMessage | null =
+    !isClicked ? null
+    : buttonState.state === 'success' ?
+      { type: 'notification', message: 'Copied' }
+    : buttonState.state === 'failure' ?
+      { type: 'error', message: buttonState.message }
     : null;
   if (tooltipMessage !== null && tooltipVisibility === 'none') {
     setTooltipVisibility('fade-in');
@@ -178,7 +178,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
           height={undefined}
         />
       </div>
-      {tooltipVisibility !== 'none' && tooltipMessage !== null ? (
+      {tooltipVisibility !== 'none' && tooltipMessage !== null ?
         <div
           className={classNames('tooltip', {
             'fade-in': tooltipVisibility === 'fade-in',
@@ -188,15 +188,13 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
           style={floatingStyles}>
           <TooltipBody
             message={tooltipMessage.message}
-            {...(tooltipMessage.type === 'error'
-              ? { onClose: onTooltipClose }
-              : {})}
+            {...(tooltipMessage.type === 'error' ?
+              { onClose: onTooltipClose }
+            : {})}
           />
           <FloatingArrow className="arrow" ref={arrowRef} context={context} />
         </div>
-      ) : (
-        <></>
-      )}
+      : <></>}
     </div>
   );
 };

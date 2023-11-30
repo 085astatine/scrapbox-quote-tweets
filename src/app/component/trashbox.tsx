@@ -161,13 +161,16 @@ const SelectAll: React.FC = () => {
       const deletedTweetIDs = state.trashbox
         .map((deletedTweets) => deletedTweets.tweets.map((tweet) => tweet.id))
         .flat();
-      return deletedTweetIDs.length === 0
-        ? 'disabled'
-        : deletedTweetIDs.every((tweetID) =>
+      return (
+        deletedTweetIDs.length === 0 ? 'disabled'
+        : (
+          deletedTweetIDs.every((tweetID) =>
             state.selectedDeletedTweets.some((tweet) => tweet.id === tweetID),
           )
-        ? 'checked'
-        : 'unchecked';
+        ) ?
+          'checked'
+        : 'unchecked'
+      );
     },
     [],
   );

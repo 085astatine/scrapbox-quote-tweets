@@ -31,8 +31,8 @@ export const tweetSortFunction = ({
           rhs.author.username,
         );
         // if the usenames are equal, the newest first
-        return compareUsername !== 0
-          ? sign * compareUsername
+        return compareUsername !== 0 ?
+            sign * compareUsername
           : rhs.timestamp - lhs.timestamp;
       };
     }

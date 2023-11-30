@@ -43,9 +43,9 @@ module.exports = (env, argv) => {
       options: './src/options/index.tsx',
       popup: './src/popup/index.tsx',
       manifest: './src/manifest.json',
-      ...(browser === 'chrome'
-        ? { offscreen: './src/offscreen/index.ts' }
-        : {}),
+      ...(browser === 'chrome' ?
+        { offscreen: './src/offscreen/index.ts' }
+      : {}),
     },
     output: {
       path: path.join(__dirname, 'build', mode, browser),
@@ -124,30 +124,30 @@ module.exports = (env, argv) => {
         template: 'src/popup/index.html',
         chunks: ['popup'],
       }),
-      ...(browser === 'chrome'
-        ? [
-            new HtmlPlugin({
-              filename: 'offscreen.html',
-              template: 'src/offscreen/index.html',
-              chunks: ['offscreen'],
-            }),
-          ]
-        : []),
+      ...(browser === 'chrome' ?
+        [
+          new HtmlPlugin({
+            filename: 'offscreen.html',
+            template: 'src/offscreen/index.html',
+            chunks: ['offscreen'],
+          }),
+        ]
+      : []),
       new MiniCssExtractPlugin(),
       new NodePolyfillPlugin(),
       new WextManifestPlugin(),
-      ...(mode === 'development'
-        ? [
-            new CopyPlugin({
-              patterns: [
-                {
-                  from: 'test_data.json',
-                  noErrorOnMissing: true,
-                },
-              ],
-            }),
-          ]
-        : []),
+      ...(mode === 'development' ?
+        [
+          new CopyPlugin({
+            patterns: [
+              {
+                from: 'test_data.json',
+                noErrorOnMissing: true,
+              },
+            ],
+          }),
+        ]
+      : []),
     ],
     performance: {
       hints: false,
