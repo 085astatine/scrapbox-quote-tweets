@@ -16,6 +16,7 @@ $tab-border-color: var(--#{$bs-prefix}border-color);
 $tab-border-hover-color: var(--#{$bs-prefix}secondary-bg);
 $tab-border-width: var(--#{$bs-prefix}border-width);
 $tab-border-style: var(--#{$bs-prefix}border-style);
+$focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 
 @keyframes #{$prefix}fade-in {
   from {
@@ -66,6 +67,10 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
   &:focus {
     box-shadow: 0 0 0 0.25rem rgba(var(--#{$bs-prefix}primary-rgb), 0.25);
   }
+
+  &:focus-visible {
+    outline: $focus-visible-outline;
+  }
 }
 
 .commands {
@@ -98,6 +103,10 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
           var(--#{$bs-prefix}focus-ring-opacity)
         );
     }
+
+    &:focus-visible {
+      outline: $focus-visible-outline;
+    }
   }
 }
 
@@ -125,6 +134,10 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
     &:hover {
       border-color: $tab-border-hover-color $tab-border-hover-color
         $tab-border-color;
+    }
+
+    &:focus-visible {
+      outline: $focus-visible-outline;
     }
 
     &.active {
@@ -197,6 +210,12 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
       &:hover {
         text-decoration: underline;
       }
+
+      &:focus-visible {
+        color: var(--#{$bs-prefix}link-color);
+        text-decoration: underline;
+        outline: none;
+      }
     }
 
     .username {
@@ -208,6 +227,12 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
 
       &:hover {
         text-decoration: underline;
+      }
+
+      &:focus-visible {
+        color: var(--#{$bs-prefix}link-color);
+        text-decoration: underline;
+        outline: none;
       }
     }
 
@@ -222,6 +247,12 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
 
       &:hover {
         text-decoration: underline;
+      }
+
+      &:focus-visible {
+        color: var(--#{$bs-prefix}link-color);
+        text-decoration: underline;
+        outline: none;
       }
     }
   }
@@ -278,6 +309,10 @@ $tab-border-style: var(--#{$bs-prefix}border-style);
               var(--#{$bs-prefix}primary-rgb),
               var(--#{$bs-prefix}focus-ring-opacity)
             );
+        }
+
+        &:focus-visible {
+          outline: $focus-visible-outline;
         }
       }
       .icon {
