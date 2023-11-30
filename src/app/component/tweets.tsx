@@ -182,7 +182,7 @@ const Commands: React.FC = () => {
     // store
     dispatch(moveToTrashboxAction(timestamp));
     // storage
-    storage.clipboard.trashbox.move(tweets, timestamp);
+    storage.addTweetsToTrashbox(tweets, timestamp);
   };
   return (
     <Collapse

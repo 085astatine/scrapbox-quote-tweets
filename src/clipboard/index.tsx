@@ -13,8 +13,8 @@ if (root !== null) {
 
 const initialize = async (): Promise<void> => {
   const initializer = {
-    tweets: await storage.clipboard.tweets.load(),
-    trashbox: await storage.clipboard.trashbox.load(),
+    tweets: await storage.loadTweetsNotInTrashbox(),
+    trashbox: await storage.loadTrashbox(),
   };
   store.dispatch(initializeAction(initializer));
 };

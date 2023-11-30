@@ -172,8 +172,8 @@ const forwardExpandTCoURLRequestToOffscreen = async (
 const respondToSaveTweetRequest = async (
   tweet: Tweet,
 ): Promise<SaveTweetResponseMessage> => {
-  return await storage.tweet
-    .save(tweet)
+  return await storage
+    .saveTweet(tweet)
     .then(() => {
       logger.info('save tweet', tweet);
       // send SaveTweet/Report to all content-twitter

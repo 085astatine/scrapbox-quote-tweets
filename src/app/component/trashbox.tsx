@@ -259,14 +259,14 @@ const Commands: React.FC = () => {
     // store
     dispatch(restoreSelectedDeletedTweetsAction());
     // storage
-    storage.clipboard.trashbox.restore(tweets.map((tweet) => tweet.id));
+    storage.restoreTweetsFromTrashbox(tweets.map((tweet) => tweet.id));
   };
   // delete
   const deleteTweets = () => {
     // store
     dispatch(deleteSelectedDeletedTweetsAction());
     // storage
-    storage.clipboard.trashbox.delete(tweets.map((tweet) => tweet.id));
+    storage.deleteTweetsFromTrashbox(tweets.map((tweet) => tweet.id));
   };
   return (
     <Collapse

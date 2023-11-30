@@ -52,7 +52,7 @@ window.addEventListener('DOMContentLoaded', () => {
   };
   observer.observe(document.body, options);
   // Load saved TweetIDs from storage
-  storage.tweets.savedIDs().then((tweetIDs) => {
+  storage.savedTweetIDs().then((tweetIDs) => {
     logger.debug('Saved Tweet IDs', tweetIDs);
     store.dispatch(
       updateAction(
