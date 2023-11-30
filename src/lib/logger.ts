@@ -12,9 +12,9 @@ export interface LoggerOption {
 const defaultLoggerOption = (): Required<LoggerOption> => {
   return {
     level:
-      process.env.NODE_ENV === 'production'
-        ? ('warn' as const)
-        : ('debug' as const),
+      process.env.NODE_ENV === 'production' ?
+        ('warn' as const)
+      : ('debug' as const),
     collapsed: true,
     prefix: '',
     time: false,

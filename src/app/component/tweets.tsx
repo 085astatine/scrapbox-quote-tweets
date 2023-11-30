@@ -87,11 +87,10 @@ const SelectAll: React.FC = () => {
   // redux
   const selector = React.useCallback(
     (state: State): 'disabled' | 'checked' | 'unchecked' =>
-      state.tweets.length === 0
-        ? 'disabled'
-        : state.tweets.every((tweet) => state.selectedTweets.includes(tweet))
-        ? 'checked'
-        : 'unchecked',
+      state.tweets.length === 0 ? 'disabled'
+      : state.tweets.every((tweet) => state.selectedTweets.includes(tweet)) ?
+        'checked'
+      : 'unchecked',
     [],
   );
   const state = useSelector(selector);

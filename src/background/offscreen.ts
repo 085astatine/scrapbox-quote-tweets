@@ -62,6 +62,6 @@ const setupOffscreenDummy = (): Offscreen => {
 };
 
 export const setupOffscreen: (logger?: Logger) => Offscreen =
-  process.env.TARGET_BROWSER === 'chrome'
-    ? setupOffscreenImpl
-    : setupOffscreenDummy;
+  process.env.TARGET_BROWSER === 'chrome' ?
+    setupOffscreenImpl
+  : setupOffscreenDummy;

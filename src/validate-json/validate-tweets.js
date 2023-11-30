@@ -1122,9 +1122,9 @@ function validate14(
           })
         ) {
           vErrors =
-            vErrors === null
-              ? validate15.errors
-              : vErrors.concat(validate15.errors);
+            vErrors === null ?
+              validate15.errors
+            : vErrors.concat(validate15.errors);
           errors = vErrors.length;
         }
       } else if (tag0 === 'hashtag') {
@@ -1137,9 +1137,9 @@ function validate14(
           })
         ) {
           vErrors =
-            vErrors === null
-              ? validate16.errors
-              : vErrors.concat(validate16.errors);
+            vErrors === null ?
+              validate16.errors
+            : vErrors.concat(validate16.errors);
           errors = vErrors.length;
         }
       } else if (tag0 === 'cashtag') {
@@ -1283,9 +1283,9 @@ function validate14(
           })
         ) {
           vErrors =
-            vErrors === null
-              ? validate17.errors
-              : vErrors.concat(validate17.errors);
+            vErrors === null ?
+              validate17.errors
+            : vErrors.concat(validate17.errors);
           errors = vErrors.length;
         }
       } else {
@@ -1660,9 +1660,9 @@ function validate23(
         })
       ) {
         vErrors =
-          vErrors === null
-            ? validate24.errors
-            : vErrors.concat(validate24.errors);
+          vErrors === null ?
+            validate24.errors
+          : vErrors.concat(validate24.errors);
         errors = vErrors.length;
       }
     }
@@ -1809,9 +1809,9 @@ function validate26(
         })
       ) {
         vErrors =
-          vErrors === null
-            ? validate24.errors
-            : vErrors.concat(validate24.errors);
+          vErrors === null ?
+            validate24.errors
+          : vErrors.concat(validate24.errors);
         errors = vErrors.length;
       }
     }
@@ -1921,9 +1921,9 @@ function validate22(
           })
         ) {
           vErrors =
-            vErrors === null
-              ? validate23.errors
-              : vErrors.concat(validate23.errors);
+            vErrors === null ?
+              validate23.errors
+            : vErrors.concat(validate23.errors);
           errors = vErrors.length;
         }
       } else if (tag0 === 'carousel') {
@@ -1936,9 +1936,9 @@ function validate22(
           })
         ) {
           vErrors =
-            vErrors === null
-              ? validate26.errors
-              : vErrors.concat(validate26.errors);
+            vErrors === null ?
+              validate26.errors
+            : vErrors.concat(validate26.errors);
           errors = vErrors.length;
         }
       } else {
@@ -2293,9 +2293,9 @@ function validate31(
           })
         ) {
           vErrors =
-            vErrors === null
-              ? validate32.errors
-              : vErrors.concat(validate32.errors);
+            vErrors === null ?
+              validate32.errors
+            : vErrors.concat(validate32.errors);
           errors = vErrors.length;
         }
       } else if (tag0 === 'video') {
@@ -2308,9 +2308,9 @@ function validate31(
           })
         ) {
           vErrors =
-            vErrors === null
-              ? validate33.errors
-              : vErrors.concat(validate33.errors);
+            vErrors === null ?
+              validate33.errors
+            : vErrors.concat(validate33.errors);
           errors = vErrors.length;
         }
       } else {
@@ -2523,9 +2523,9 @@ function validate11(
         })
       ) {
         vErrors =
-          vErrors === null
-            ? validate12.errors
-            : vErrors.concat(validate12.errors);
+          vErrors === null ?
+            validate12.errors
+          : vErrors.concat(validate12.errors);
         errors = vErrors.length;
       }
     }
@@ -2543,9 +2543,9 @@ function validate11(
             })
           ) {
             vErrors =
-              vErrors === null
-                ? validate14.errors
-                : vErrors.concat(validate14.errors);
+              vErrors === null ?
+                validate14.errors
+              : vErrors.concat(validate14.errors);
             errors = vErrors.length;
           }
         }
@@ -2575,9 +2575,9 @@ function validate11(
         })
       ) {
         vErrors =
-          vErrors === null
-            ? validate22.errors
-            : vErrors.concat(validate22.errors);
+          vErrors === null ?
+            validate22.errors
+          : vErrors.concat(validate22.errors);
         errors = vErrors.length;
       }
     }
@@ -2595,9 +2595,9 @@ function validate11(
             })
           ) {
             vErrors =
-              vErrors === null
-                ? validate31.errors
-                : vErrors.concat(validate31.errors);
+              vErrors === null ?
+                validate31.errors
+              : vErrors.concat(validate31.errors);
             errors = vErrors.length;
           }
         }
@@ -2653,9 +2653,9 @@ function validate10(
         })
       ) {
         vErrors =
-          vErrors === null
-            ? validate11.errors
-            : vErrors.concat(validate11.errors);
+          vErrors === null ?
+            validate11.errors
+          : vErrors.concat(validate11.errors);
         errors = vErrors.length;
       }
     }

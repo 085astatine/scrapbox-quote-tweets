@@ -67,8 +67,8 @@ const onMessageListener = async (
       break;
     case 'ExpandTCoURL/Request':
       logger.info(`Request to expand URL("${message.shortURL}")`);
-      return process.env.TARGET_BROWSER !== 'chrome'
-        ? await respondToExpandTCoURLRequest(message.shortURL)
+      return process.env.TARGET_BROWSER !== 'chrome' ?
+          await respondToExpandTCoURLRequest(message.shortURL)
         : await forwardExpandTCoURLRequestToOffscreen(message);
     case 'SaveTweet/Request':
       return await respondToSaveTweetRequest(message.tweet);
@@ -192,9 +192,9 @@ const respondToSaveTweetRequest = async (
     .catch((error) => {
       logger.warn('Failed to save to storage', error);
       const message =
-        error instanceof JSONSchemaValidationError
-          ? 'Validation Error'
-          : 'Unknown Error';
+        error instanceof JSONSchemaValidationError ? 'Validation Error' : (
+          'Unknown Error'
+        );
       const response: SaveTweetResponseFailureMessage = {
         type: 'SaveTweet/Response',
         ok: false,

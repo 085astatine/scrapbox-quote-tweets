@@ -72,17 +72,15 @@ const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
         {texts.map((line, index) => (
           <React.Fragment key={index}>
             {line}
-            {ellipsis ? (
+            {ellipsis ?
               <ReturnIcon
                 className="return"
                 width={undefined}
                 height={undefined}
               />
-            ) : index + 1 === texts.length ? (
+            : index + 1 === texts.length ?
               <></>
-            ) : (
-              <br />
-            )}
+            : <br />}
           </React.Fragment>
         ))}
       </div>
