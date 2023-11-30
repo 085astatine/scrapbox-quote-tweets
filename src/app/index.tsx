@@ -10,8 +10,6 @@ import { Trashbox } from './component/trashbox';
 import { Tweets } from './component/tweets';
 import { Store } from './store';
 
-export { initializeAction, store, Store } from './store';
-
 export interface AppProps {
   store: Store;
 }
