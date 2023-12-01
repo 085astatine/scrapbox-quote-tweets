@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { setupClipboardWindows } from '~/lib/clipboard';
+import { setupClipboardWindows } from '~/lib/clipboard/windows';
 import { logger } from '~/lib/logger';
 import {
   ClipboardCloseAllRequestMessage,
