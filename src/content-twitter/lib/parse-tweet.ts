@@ -16,7 +16,7 @@ import {
   Tweet,
   TweetID,
   User,
-} from '~/lib/tweet';
+} from '~/lib/tweet/tweet';
 import { decodeURL, formatTCoURL, formatTwimgURL } from '~/lib/url';
 import { ParseTweetError } from './error';
 import { parseTweetText } from './parse-tweet-text';

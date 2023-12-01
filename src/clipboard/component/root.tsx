@@ -1,6 +1,7 @@
 import React from 'react';
 import browser from 'webextension-polyfill';
-import { App, Store } from '~/app';
+import { App } from '~/app';
+import { Store } from '~/app/store';
 import CloseIcon from '~/icon/bootstrap/x.svg';
 
 export interface RootProps {

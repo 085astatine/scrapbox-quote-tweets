@@ -1,12 +1,9 @@
 import { PayloadAction, configureStore, createSlice } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
-import {
-  DeletedTweets,
-  DeletedTweetsSort,
-  Tweet,
-  TweetSort,
-} from '~/lib/tweet';
+import { DeletedTweets } from '~/lib/tweet/deleted-tweets';
+import { DeletedTweetsSort, TweetSort } from '~/lib/tweet/sort-tweets';
+import { Tweet } from '~/lib/tweet/tweet';
 import { toArray } from '~/lib/utility';
 
 // state
@@ -172,22 +169,7 @@ const slice = createSlice({
 });
 
 // actions
-export const {
-  initialize: initializeAction,
-  selectTweet: selectTweetAction,
-  unselectTweet: unselectTweetAction,
-  selectAllTweets: selectAllTweetsAction,
-  unselectAllTweets: unselectAllTweetsAction,
-  moveToTrashbox: moveToTrashboxAction,
-  selectDeletedTweet: selectDeletedTweetAction,
-  unselectDeletedTweet: unselectDeletedTweetAction,
-  selectAllDeletedTweets: selectAllDeletedTweetsAction,
-  unselectAllDeletedTweets: unselectAllDeletedTweetsAction,
-  restoreSelectedDeletedTweets: restoreSelectedDeletedTweetsAction,
-  deleteSelectedDeletedTweets: deleteSelectedDeletedTweetsAction,
-  updateTweetSort: updateTweetSortAction,
-  updateDeletedTweetsSort: updateDeletedTweetsSortAction,
-} = slice.actions;
+export const actions: Readonly<typeof slice.actions> = slice.actions;
 
 // store
 const middlewares: Middleware<State>[] = [];

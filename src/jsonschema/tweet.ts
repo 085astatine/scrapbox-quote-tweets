@@ -1,5 +1,5 @@
 import { JSONSchemaType, SchemaObject } from 'ajv';
-import { Tweet, TweetID } from '~/lib/tweet';
+import { Tweet, TweetID } from '~/lib/tweet/tweet';
 
 const definitions: SchemaObject = {
   // URI

@@ -1,44 +1,14 @@
 import browser from 'webextension-polyfill';
 import { logger } from '../logger';
-import * as trashbox from './trashbox';
-import * as tweet from './tweet';
 
-const clearStorage = async (): Promise<void> => {
+export const clearStorage = async (): Promise<void> => {
   await browser.storage.local.clear();
 };
 
-const dumpStorage = async (): Promise<void> => {
+export const dumpStorage = async (): Promise<void> => {
   const data = await browser.storage.local.get();
   logger.debug('dump storage', data);
 };
-
-export const storage = {
-  clear: clearStorage,
-  dump: dumpStorage,
-  tweet: {
-    save: tweet.saveTweet,
-    load: tweet.loadTweet,
-    delete: tweet.deleteTweet,
-  },
-  tweets: {
-    save: tweet.saveTweets,
-    load: tweet.loadTweets,
-    delete: tweet.deleteTweets,
-    savedIDs: tweet.savedTweetIDs,
-  },
-  clipboard: {
-    tweets: {
-      load: trashbox.loadTweetsNotInTrashbox,
-    },
-    trashbox: {
-      load: trashbox.loadTrashbox,
-      move: trashbox.addTweetsToTrashbox,
-      restore: trashbox.restoreTweetsFromTrashbox,
-      delete: trashbox.deleteTweetsFromTrashbox,
-      clear: trashbox.clearTrashbox,
-    },
-  },
-} as const;
 
 export const loadTestData = async (url: string): Promise<void> => {
   if (process.env.NODE_ENV !== 'production') {

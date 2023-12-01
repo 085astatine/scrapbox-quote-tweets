@@ -4,23 +4,15 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import ClipboardIcon from '~/icon/bootstrap/clipboard.svg';
 import TrashboxIcon from '~/icon/google-fonts/delete.svg';
 import { Collapse } from '~/lib/component/transition';
-import { storage } from '~/lib/storage';
+import { addTweetsToTrashbox } from '~/lib/storage/trashbox';
 import {
   SortOrder,
-  Tweet as TweetData,
   TweetSortKey,
   tweetSortFunction,
-} from '~/lib/tweet';
+} from '~/lib/tweet/sort-tweets';
+import { Tweet as TweetData } from '~/lib/tweet/tweet';
 import { trimGoogleFontsIcon } from '~/lib/utility';
-import {
-  State,
-  moveToTrashboxAction,
-  selectAllTweetsAction,
-  selectTweetAction,
-  unselectAllTweetsAction,
-  unselectTweetAction,
-  updateTweetSortAction,
-} from '../store';
+import { State, actions } from '../store';
 import { Checkbox } from './checkbox';
 import { Tweet as TweetInfo } from './tweet';
 
@@ -60,9 +52,9 @@ const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
   // select
   const select = () => {
     if (isSelected) {
-      dispatch(unselectTweetAction(tweet));
+      dispatch(actions.unselectTweet(tweet));
     } else {
-      dispatch(selectTweetAction(tweet));
+      dispatch(actions.selectTweet(tweet));
     }
   };
   return (
@@ -98,9 +90,9 @@ const SelectAll: React.FC = () => {
   // select
   const select = () => {
     if (state === 'checked') {
-      dispatch(unselectAllTweetsAction());
+      dispatch(actions.unselectAllTweets());
     } else if (state === 'unchecked') {
-      dispatch(selectAllTweetsAction());
+      dispatch(actions.selectAllTweets());
     }
   };
   return (
@@ -136,7 +128,7 @@ const SelectSort: React.FC = () => {
   // event
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const [key, order] = options[event.target.selectedIndex];
-    dispatch(updateTweetSortAction({ key, order }));
+    dispatch(actions.updateTweetSort({ key, order }));
   };
   return (
     <div className="tool">
@@ -180,9 +172,9 @@ const Commands: React.FC = () => {
   const moveToTrashbox = () => {
     const timestamp = Math.trunc(Date.now() / 1000);
     // store
-    dispatch(moveToTrashboxAction(timestamp));
+    dispatch(actions.moveToTrashbox(timestamp));
     // storage
-    storage.clipboard.trashbox.move(tweets, timestamp);
+    addTweetsToTrashbox(tweets, timestamp);
   };
   return (
     <Collapse

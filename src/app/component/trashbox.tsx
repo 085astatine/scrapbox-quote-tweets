@@ -4,26 +4,20 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import DeleteIcon from '~/icon/google-fonts/delete-forever.svg';
 import RestoreIcon from '~/icon/google-fonts/restore-from-trash.svg';
 import { Collapse } from '~/lib/component/transition';
-import { storage } from '~/lib/storage';
 import {
-  DeletedTweets as DeletedTweetsData,
+  deleteTweetsFromTrashbox,
+  restoreTweetsFromTrashbox,
+} from '~/lib/storage/trashbox';
+import { DeletedTweets as DeletedTweetsData } from '~/lib/tweet/deleted-tweets';
+import {
   DeletedTweetsSortKey,
   SortOrder,
-  Tweet as TweetData,
   deletedTweetsSortFunction,
-  toDate,
-} from '~/lib/tweet';
+} from '~/lib/tweet/sort-tweets';
+import { Tweet as TweetData } from '~/lib/tweet/tweet';
+import { toDate } from '~/lib/tweet/tweet-date';
 import { trimGoogleFontsIcon } from '~/lib/utility';
-import {
-  State,
-  deleteSelectedDeletedTweetsAction,
-  restoreSelectedDeletedTweetsAction,
-  selectAllDeletedTweetsAction,
-  selectDeletedTweetAction,
-  unselectAllDeletedTweetsAction,
-  unselectDeletedTweetAction,
-  updateDeletedTweetsSortAction,
-} from '../store';
+import { State, actions } from '../store';
 import { Checkbox } from './checkbox';
 import { Tweet as TweetInfo } from './tweet';
 
@@ -75,9 +69,9 @@ const DeletedTweets: React.FC<DeletedTweetsProps> = ({
   // select
   const selectAll = () => {
     if (isAllSelected) {
-      dispatch(unselectDeletedTweetAction(tweets));
+      dispatch(actions.unselectDeletedTweet(tweets));
     } else {
-      dispatch(selectDeletedTweetAction(tweets));
+      dispatch(actions.selectDeletedTweet(tweets));
     }
   };
   return (
@@ -131,9 +125,9 @@ const Tweet: React.FC<TweetProps> = ({ tweet }) => {
   // select
   const select = () => {
     if (isSelected) {
-      dispatch(unselectDeletedTweetAction(tweet));
+      dispatch(actions.unselectDeletedTweet(tweet));
     } else {
-      dispatch(selectDeletedTweetAction(tweet));
+      dispatch(actions.selectDeletedTweet(tweet));
     }
   };
   return (
@@ -179,9 +173,9 @@ const SelectAll: React.FC = () => {
   // select
   const select = () => {
     if (state === 'checked') {
-      dispatch(unselectAllDeletedTweetsAction());
+      dispatch(actions.unselectAllDeletedTweets());
     } else if (state === 'unchecked') {
-      dispatch(selectAllDeletedTweetsAction());
+      dispatch(actions.selectAllDeletedTweets());
     }
   };
   return (
@@ -220,7 +214,7 @@ const SelectSort: React.FC = () => {
   // event
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const [key, order] = options[event.target.selectedIndex];
-    dispatch(updateDeletedTweetsSortAction({ key, order }));
+    dispatch(actions.updateDeletedTweetsSort({ key, order }));
   };
   return (
     <div className="tool">
@@ -257,16 +251,16 @@ const Commands: React.FC = () => {
   // restore
   const restoreTweets = () => {
     // store
-    dispatch(restoreSelectedDeletedTweetsAction());
+    dispatch(actions.restoreSelectedDeletedTweets());
     // storage
-    storage.clipboard.trashbox.restore(tweets.map((tweet) => tweet.id));
+    restoreTweetsFromTrashbox(tweets.map((tweet) => tweet.id));
   };
   // delete
   const deleteTweets = () => {
     // store
-    dispatch(deleteSelectedDeletedTweetsAction());
+    dispatch(actions.deleteSelectedDeletedTweets());
     // storage
-    storage.clipboard.trashbox.delete(tweets.map((tweet) => tweet.id));
+    deleteTweetsFromTrashbox(tweets.map((tweet) => tweet.id));
   };
   return (
     <Collapse

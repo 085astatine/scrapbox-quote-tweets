@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { setupClipboardWindows } from '~/lib/clipboard';
+import { setupClipboardWindows } from '~/lib/clipboard/windows';
 import { logger } from '~/lib/logger';
 import {
   ClipboardCloseAllRequestMessage,
@@ -15,8 +15,9 @@ import {
   SaveTweetResponseSuccessMessage,
   SettingsDownloadStorageMessage,
 } from '~/lib/message';
-import { loadTestData, storage } from '~/lib/storage';
-import { Tweet } from '~/lib/tweet';
+import { loadTestData } from '~/lib/storage';
+import { saveTweet } from '~/lib/storage/tweet';
+import { Tweet } from '~/lib/tweet/tweet';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import { setupOffscreen } from './offscreen';
@@ -172,8 +173,7 @@ const forwardExpandTCoURLRequestToOffscreen = async (
 const respondToSaveTweetRequest = async (
   tweet: Tweet,
 ): Promise<SaveTweetResponseMessage> => {
-  return await storage.tweet
-    .save(tweet)
+  return await saveTweet(tweet)
     .then(() => {
       logger.info('save tweet', tweet);
       // send SaveTweet/Report to all content-twitter
