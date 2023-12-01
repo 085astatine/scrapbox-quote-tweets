@@ -1,4 +1,4 @@
-import { Tweet, TweetID } from './tweet';
+import { Tweet, TweetID } from './tweet/tweet';
 
 export interface ClipboardOpenRequestMessage {
   type: 'Clipboard/OpenRequest';

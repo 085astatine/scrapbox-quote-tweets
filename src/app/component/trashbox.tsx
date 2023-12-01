@@ -8,14 +8,14 @@ import {
   deleteTweetsFromTrashbox,
   restoreTweetsFromTrashbox,
 } from '~/lib/storage/trashbox';
+import { DeletedTweets as DeletedTweetsData } from '~/lib/tweet/deleted-tweets';
 import {
-  DeletedTweets as DeletedTweetsData,
   DeletedTweetsSortKey,
   SortOrder,
-  Tweet as TweetData,
   deletedTweetsSortFunction,
-  toDate,
-} from '~/lib/tweet';
+} from '~/lib/tweet/sort-tweets';
+import { Tweet as TweetData } from '~/lib/tweet/tweet';
+import { toDate } from '~/lib/tweet/tweet-date';
 import { trimGoogleFontsIcon } from '~/lib/utility';
 import { State, actions } from '../store';
 import { Checkbox } from './checkbox';

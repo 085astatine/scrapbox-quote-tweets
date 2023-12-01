@@ -1,4 +1,4 @@
-import { TweetID } from './tweet';
+import { TweetID } from './tweet/tweet';
 
 export type TweetIDKey = `tweet_${TweetID}`;
 

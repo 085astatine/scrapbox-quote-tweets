@@ -3,7 +3,8 @@ import React from 'react';
 import ReturnIcon from '~/icon/bootstrap/arrow-return-left.svg';
 import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
-import { Tweet as TweetData, TweetID, toDate } from '~/lib/tweet';
+import { Tweet as TweetData, TweetID } from '~/lib/tweet/tweet';
+import { toDate } from '~/lib/tweet/tweet-date';
 
 export interface TweetProps {
   tweet: TweetData;

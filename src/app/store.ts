@@ -1,12 +1,9 @@
 import { PayloadAction, configureStore, createSlice } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
-import {
-  DeletedTweets,
-  DeletedTweetsSort,
-  Tweet,
-  TweetSort,
-} from '~/lib/tweet';
+import { DeletedTweets } from '~/lib/tweet/deleted-tweets';
+import { DeletedTweetsSort, TweetSort } from '~/lib/tweet/sort-tweets';
+import { Tweet } from '~/lib/tweet/tweet';
 import { toArray } from '~/lib/utility';
 
 // state

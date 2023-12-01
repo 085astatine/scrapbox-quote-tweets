@@ -1,5 +1,5 @@
 import { JSONSchemaType } from 'ajv';
-import { DeletedTweetIDs } from '~/lib/tweet';
+import { DeletedTweetIDs } from '~/lib/tweet/deleted-tweets';
 
 export const deletedTweetIDsJSONSchema: Readonly<
   JSONSchemaType<DeletedTweetIDs>

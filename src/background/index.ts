@@ -17,7 +17,7 @@ import {
 } from '~/lib/message';
 import { loadTestData } from '~/lib/storage';
 import { saveTweet } from '~/lib/storage/tweet';
-import { Tweet } from '~/lib/tweet';
+import { Tweet } from '~/lib/tweet/tweet';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import { setupOffscreen } from './offscreen';

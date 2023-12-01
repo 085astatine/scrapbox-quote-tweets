@@ -1,5 +1,5 @@
 import { ErrorObject } from 'ajv';
-import { DeletedTweetIDs } from '~/lib/tweet';
+import { DeletedTweetIDs } from '~/lib/tweet/deleted-tweets';
 
 declare const validate: {
   (data: unknown): data is DeletedTweetIDs[];

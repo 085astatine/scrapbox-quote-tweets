@@ -7,10 +7,10 @@ import { Collapse } from '~/lib/component/transition';
 import { addTweetsToTrashbox } from '~/lib/storage/trashbox';
 import {
   SortOrder,
-  Tweet as TweetData,
   TweetSortKey,
   tweetSortFunction,
-} from '~/lib/tweet';
+} from '~/lib/tweet/sort-tweets';
+import { Tweet as TweetData } from '~/lib/tweet/tweet';
 import { trimGoogleFontsIcon } from '~/lib/utility';
 import { State, actions } from '../store';
 import { Checkbox } from './checkbox';

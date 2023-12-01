@@ -1,4 +1,4 @@
-import { TweetID } from '~/lib/tweet';
+import { TweetID } from '~/lib/tweet/tweet';
 
 export class ParseTweetError extends Error {
   readonly tweetID: TweetID;

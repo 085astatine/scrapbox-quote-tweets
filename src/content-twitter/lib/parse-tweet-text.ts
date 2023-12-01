@@ -12,7 +12,7 @@ import {
   TweetEntityMention,
   TweetEntityText,
   TweetEntityURL,
-} from '~/lib/tweet';
+} from '~/lib/tweet/tweet';
 import { decodeURL, formatTCoURL } from '~/lib/url';
 
 export const parseTweetText = async (

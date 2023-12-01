@@ -59,26 +59,26 @@ generate(
   tweetJSONSchema,
   'validate-tweet',
   'Tweet',
-  "import { Tweet } from '~/lib/tweet'",
+  "import { Tweet } from '~/lib/tweet/tweet'",
 );
 // Tweet[]
 generate(
   tweetsJSONSchema,
   'validate-tweets',
   'Tweet[]',
-  "import { Tweet } from '~/lib/tweet'",
+  "import { Tweet } from '~/lib/tweet/tweet'",
 );
 // TweetID[]
 generate(
   tweetIDsJSONSchema,
   'validate-tweet-ids',
   'TweetID[]',
-  "import { TweetID } from '~/lib/tweet'",
+  "import { TweetID } from '~/lib/tweet/tweet'",
 );
 // DeletedTweetIDs[]
 generate(
   deletedTweetIDsListJSONSchema,
   'validate-deleted-tweet-ids-list',
   'DeletedTweetIDs[]',
-  "import { DeletedTweetIDs } from '~/lib/tweet'",
+  "import { DeletedTweetIDs } from '~/lib/tweet/deleted-tweets'",
 );
