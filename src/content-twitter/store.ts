@@ -3,6 +3,7 @@ import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
 import { TweetIDKey, toTweetIDKey } from '~/lib/storage/tweet-id-key';
 import { TweetID } from '~/lib/tweet/tweet';
+import { toArray } from '~/lib/utility';
 
 export interface ButtonStateNone {
   state: 'none';
@@ -45,13 +46,9 @@ const slice = createSlice({
       state: State,
       action: PayloadAction<UpdateButtonState | UpdateButtonState[]>,
     ) {
-      if (Array.isArray(action.payload)) {
-        action.payload.forEach(({ tweetID, state: buttonState }) => {
-          state[toTweetIDKey(tweetID)] = buttonState;
-        });
-      } else {
-        state[toTweetIDKey(action.payload.tweetID)] = action.payload.state;
-      }
+      toArray(action.payload).forEach(({ tweetID, state: buttonState }) => {
+        state[toTweetIDKey(tweetID)] = buttonState;
+      });
     },
     touch(state: State, action: PayloadAction<TweetID>) {
       const key = toTweetIDKey(action.payload);
