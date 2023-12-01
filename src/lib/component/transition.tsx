@@ -1,5 +1,7 @@
 import React from 'react';
-import { Transition, TransitionStatus } from 'react-transition-group';
+import Transition, {
+  TransitionStatus,
+} from 'react-transition-group/Transition';
 
 type TransitionTarget =
   | React.ReactNode
