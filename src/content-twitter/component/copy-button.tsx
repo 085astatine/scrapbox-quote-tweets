@@ -16,7 +16,7 @@ import {
   SaveTweetRequestMessage,
   SaveTweetResponseMessage,
 } from '~/lib/message';
-import { toTweetIDKey } from '~/lib/tweet-id-key';
+import { toTweetIDKey } from '~/lib/storage/tweet-id-key';
 import { TweetID } from '~/lib/tweet/tweet';
 import { parseTweet } from '../lib/parse-tweet';
 import { State, actions } from '../store';
