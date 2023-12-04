@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { getElement, mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
 import { Root } from './component/root';
+import './index.scss';
 
 logger.info('content scrapbox');
 

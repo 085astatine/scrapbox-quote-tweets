@@ -34,7 +34,8 @@
     {
       "matches": ["https://scrapbox.io/*"],
       "run_at": "document_start",
-      "js": ["content-scrapbox.js"]
+      "js": ["content-scrapbox.js"],
+      "css": ["content-scrapbox.css"]
     }
   ],
 
