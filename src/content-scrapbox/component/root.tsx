@@ -41,25 +41,8 @@ export const Root: React.FC<RootProps> = ({ store }) => {
           afterOpen: 'after-open',
           beforeClose: 'before-close',
         }}>
-        <Modal store={store} close={close} />
+        <App store={store} />
       </ReactModal>
-    </>
-  );
-};
-
-interface ModalProps {
-  store: Store;
-  close: () => void;
-}
-
-const Modal: React.FC<ModalProps> = ({ store, close }) => {
-  return (
-    <>
-      <h1>Modal Test</h1>
-      <button className="btn btn-danger" onClick={close}>
-        close
-      </button>
-      <App store={store} />
     </>
   );
 };
