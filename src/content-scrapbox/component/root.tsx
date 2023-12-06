@@ -53,12 +53,12 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({ store, close }) => {
   return (
-    <div>
+    <>
       <h1>Modal Test</h1>
       <button className="btn btn-danger" onClick={close}>
         close
       </button>
       <App store={store} />
-    </div>
+    </>
   );
 };

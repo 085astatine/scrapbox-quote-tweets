@@ -1,5 +1,10 @@
 @use 'sass:meta';
 
+$bs-prefix: sct-;
+@use './style/bootstrap' with (
+  $prefix: $bs-prefix
+);
+
 .scrapbox-copy-tweets {
   &.modal-portal {
     .overlay {
@@ -8,24 +13,28 @@
       right: 0;
       bottom: 0;
       left: 0;
-      background-color: rgba(255, 255, 255, 0.75);
+      z-index: 1040;
+      background-color: rgba(0, 0, 0, 0.8);
     }
 
     .content {
       position: absolute;
-      top: 40px;
-      right: 40px;
-      bottom: 40px;
-      left: 40px;
-      padding: 20px;
-      overflow: auto;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      outline: none;
-      --web-kit-overflow-scrolling: touch;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 1050;
+      display: flex;
+      flex-direction: column;
+      max-width: 744px;
+      height: 90vh;
+      padding-right: 12px;
+      padding-left: 12px;
+      margin: auto;
+      background: var(--#{$bs-prefix}body-bg);
+      border-radius: var(--#{$bs-prefix}border-radius);
     }
   }
 
-  @include meta.load-css('~/app/index');
+  @include meta.load-css('~/app/index', $with: (bs-prefix: $bs-prefix));
 }
