@@ -1,8 +1,14 @@
 import React from 'react';
 import ReactModal from 'react-modal';
+import { App } from '~/app';
+import { Store } from '~/app/store';
 import TwitterIcon from '~/icon/twitter.svg';
 
-export const Root = () => {
+export interface RootProps {
+  store: Store;
+}
+
+export const Root: React.FC<RootProps> = ({ store }) => {
   // state
   const [isOpen, setIsOpen] = React.useState(false);
   // open
@@ -34,23 +40,25 @@ export const Root = () => {
           afterOpen: 'after-open',
           beforeClose: 'before-close',
         }}>
-        <Modal close={close} />
+        <Modal store={store} close={close} />
       </ReactModal>
     </>
   );
 };
 
 interface ModalProps {
+  store: Store;
   close: () => void;
 }
 
-const Modal: React.FC<ModalProps> = ({ close }) => {
+const Modal: React.FC<ModalProps> = ({ store, close }) => {
   return (
     <div>
       <h1>Modal Test</h1>
       <button className="btn btn-danger" onClick={close}>
         close
       </button>
+      <App store={store} />
     </div>
   );
 };

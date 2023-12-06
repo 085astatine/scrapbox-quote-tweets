@@ -1,3 +1,5 @@
+@use 'sass:meta';
+
 .scrapbox-copy-tweets {
   &.modal-portal {
     .overlay {
@@ -24,4 +26,6 @@
       --web-kit-overflow-scrolling: touch;
     }
   }
+
+  @include meta.load-css('~/app/index');
 }
