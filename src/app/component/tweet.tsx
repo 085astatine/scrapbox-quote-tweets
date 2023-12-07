@@ -18,7 +18,7 @@ export const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
         id={tweet.id}
         name={tweet.author.name}
         username={tweet.author.username}
-        timestamp={tweet.timestamp}
+        timestamp={tweet.created_at}
       />
       <Body text={text} />
     </div>

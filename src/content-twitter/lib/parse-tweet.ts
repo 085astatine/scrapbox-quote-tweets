@@ -33,11 +33,11 @@ export const parseTweet = async (
     logger.warn(error);
     throw new ParseTweetError(id, error);
   }
-  // Tweet.timestamp
-  const timestamp = parseTimestamp(tweet, logger);
-  logger.debug('Tweet.timestamp', timestamp);
-  if (timestamp === null) {
-    const error = 'Failed to parse Tweet.timesamp';
+  // Tweet.created_at
+  const createdAt = parseTimestamp(tweet, logger);
+  logger.debug('Tweet.created_at', createdAt);
+  if (createdAt === null) {
+    const error = 'Failed to parse Tweet.created_at';
     logger.warn(error);
     throw new ParseTweetError(id, error);
   }
@@ -52,7 +52,7 @@ export const parseTweet = async (
   // Tweet.text
   const text = await parseTweetText(tweet, logger);
   logger.debug('Tweet.text', text);
-  const result: Tweet = { id, timestamp, author, text };
+  const result: Tweet = { id, created_at: createdAt, author, text };
   // card
   const card = await parseCard(id, tweet, logger);
   logger.debug('Tweet.card', card);

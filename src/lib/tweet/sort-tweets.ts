@@ -22,7 +22,8 @@ export const tweetSortFunction = ({
   const sign = order === 'asc' ? +1 : -1;
   switch (key) {
     case 'timestamp':
-      return (lhs: Tweet, rhs: Tweet) => sign * (lhs.timestamp - rhs.timestamp);
+      return (lhs: Tweet, rhs: Tweet) =>
+        sign * (lhs.created_at - rhs.created_at);
     case 'username': {
       const compareString = new Intl.Collator().compare;
       return (lhs: Tweet, rhs: Tweet) => {
@@ -33,7 +34,7 @@ export const tweetSortFunction = ({
         // if the usenames are equal, the newest first
         return compareUsername !== 0 ?
             sign * compareUsername
-          : rhs.timestamp - lhs.timestamp;
+          : rhs.created_at - lhs.created_at;
       };
     }
     default: {

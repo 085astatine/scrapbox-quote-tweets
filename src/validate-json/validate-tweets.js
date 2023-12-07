@@ -11,13 +11,13 @@ const schema11 = {
       type: 'object',
       properties: {
         id: { $ref: '#/definitions/tweet:id' },
-        timestamp: { type: 'integer' },
+        created_at: { type: 'integer' },
         author: { $ref: '#/definitions/user' },
         text: { type: 'array', items: { $ref: '#/definitions/entity' } },
         card: { $ref: '#/definitions/card' },
         media: { type: 'array', items: { $ref: '#/definitions/media' } },
       },
-      required: ['id', 'timestamp', 'author', 'text'],
+      required: ['id', 'created_at', 'author', 'text'],
       additionalProperties: false,
     },
     'tweet:id': { type: 'string', pattern: '^[0-9]+$' },
@@ -166,13 +166,13 @@ const schema12 = {
   type: 'object',
   properties: {
     id: { $ref: '#/definitions/tweet:id' },
-    timestamp: { type: 'integer' },
+    created_at: { type: 'integer' },
     author: { $ref: '#/definitions/user' },
     text: { type: 'array', items: { $ref: '#/definitions/entity' } },
     card: { $ref: '#/definitions/card' },
     media: { type: 'array', items: { $ref: '#/definitions/media' } },
   },
-  required: ['id', 'timestamp', 'author', 'text'],
+  required: ['id', 'created_at', 'author', 'text'],
   additionalProperties: false,
 };
 const schema13 = { type: 'string', pattern: '^[0-9]+$' };
@@ -2383,13 +2383,13 @@ function validate11(
       }
       errors++;
     }
-    if (data.timestamp === undefined) {
+    if (data.created_at === undefined) {
       const err1 = {
         instancePath,
         schemaPath: '#/required',
         keyword: 'required',
-        params: { missingProperty: 'timestamp' },
-        message: "must have required property '" + 'timestamp' + "'",
+        params: { missingProperty: 'created_at' },
+        message: "must have required property '" + 'created_at' + "'",
       };
       if (vErrors === null) {
         vErrors = [err1];
@@ -2432,7 +2432,7 @@ function validate11(
       if (
         !(
           key0 === 'id' ||
-          key0 === 'timestamp' ||
+          key0 === 'created_at' ||
           key0 === 'author' ||
           key0 === 'text' ||
           key0 === 'card' ||
@@ -2488,8 +2488,8 @@ function validate11(
         errors++;
       }
     }
-    if (data.timestamp !== undefined) {
-      let data1 = data.timestamp;
+    if (data.created_at !== undefined) {
+      let data1 = data.created_at;
       if (
         !(
           typeof data1 == 'number' &&
@@ -2499,8 +2499,8 @@ function validate11(
         )
       ) {
         const err7 = {
-          instancePath: instancePath + '/timestamp',
-          schemaPath: '#/properties/timestamp/type',
+          instancePath: instancePath + '/created_at',
+          schemaPath: '#/properties/created_at/type',
           keyword: 'type',
           params: { type: 'integer' },
           message: 'must be integer',
