@@ -29,6 +29,7 @@ export const Root: React.FC<RootProps> = ({ store }) => {
       <ReactModal
         isOpen={isOpen}
         onRequestClose={close}
+        closeTimeoutMS={300}
         bodyOpenClassName={null}
         portalClassName="scrapbox-copy-tweets modal-portal"
         className={{
