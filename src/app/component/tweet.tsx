@@ -1,10 +1,13 @@
 import classNames from 'classnames';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import ReturnIcon from '~/icon/bootstrap/arrow-return-left.svg';
 import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
+import { baseURL } from '~/lib/settings';
 import { Tweet as TweetData, TweetID } from '~/lib/tweet/tweet';
 import { toDate } from '~/lib/tweet/tweet-date';
+import { State } from '../store';
 
 export interface TweetProps {
   tweet: TweetData;
@@ -38,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({
   username,
   timestamp,
 }: HeaderProps) => {
-  const baseURL = 'https://twitter.com';
+  const baseURL = useSelector(baseURLSelector);
   const timezone = 'UTC';
   const dateFormat = 'YYYY/MM/DD HH:mm:ss';
   const userURL = `${baseURL}/${username}`;
@@ -94,4 +97,9 @@ const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
       </div>
     </div>
   );
+};
+
+// selectors
+const baseURLSelector = (state: State): string => {
+  return baseURL(state.settings.hostname);
 };

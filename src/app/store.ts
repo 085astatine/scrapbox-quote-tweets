@@ -1,6 +1,7 @@
 import { PayloadAction, configureStore, createSlice } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
+import { Hostname, Settings } from '~/lib/settings';
 import { DeletedTweets } from '~/lib/tweet/deleted-tweets';
 import { DeletedTweetsSort, TweetSort } from '~/lib/tweet/sort-tweets';
 import { Tweet } from '~/lib/tweet/tweet';
@@ -12,6 +13,7 @@ export interface State {
   trashbox: DeletedTweets[];
   selectedTweets: Tweet[];
   selectedDeletedTweets: Tweet[];
+  settings: Settings;
   tweetSort: TweetSort;
   deletedTweetsSort: DeletedTweetsSort;
 }
@@ -21,6 +23,9 @@ const initialState: State = {
   trashbox: [],
   selectedTweets: [],
   selectedDeletedTweets: [],
+  settings: {
+    hostname: 'twitter.com',
+  },
   tweetSort: {
     key: 'created_time',
     order: 'desc',
@@ -155,6 +160,9 @@ const slice = createSlice({
       );
       // clear selected deleted tweets
       state.selectedDeletedTweets = [];
+    },
+    updateHostname(state: State, action: PayloadAction<Hostname>): void {
+      state.settings.hostname = action.payload;
     },
     updateTweetSort(state: State, action: PayloadAction<TweetSort>): void {
       state.tweetSort = action.payload;
