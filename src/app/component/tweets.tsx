@@ -120,8 +120,10 @@ const SelectSort: React.FC = () => {
   const dispatch = useDispatch();
   // options
   const options: ReadonlyArray<readonly [TweetSortKey, SortOrder, string]> = [
-    ['timestamp', 'desc', 'Posted Time (Newest → Oldest)'],
-    ['timestamp', 'asc', 'Posted Time (Oldest → Newest)'],
+    ['created_time', 'desc', 'Posted Time (Newest → Oldest)'],
+    ['created_time', 'asc', 'Posted Time (Oldest → Newest)'],
+    ['saved_time', 'desc', 'Saved Time (Newest → Oldest)'],
+    ['saved_time', 'asc', 'Saved Time (Oldest → Newest)'],
     ['username', 'asc', 'Username (@A → @Z)'],
     ['username', 'desc', 'Username (@Z → @A)'],
   ];

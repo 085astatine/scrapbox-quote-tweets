@@ -208,8 +208,8 @@ const SelectSort: React.FC = () => {
   const options: ReadonlyArray<
     readonly [DeletedTweetsSortKey, SortOrder, string]
   > = [
-    ['timestamp', 'desc', 'Deleted Time (Newest → Oldest)'],
-    ['timestamp', 'asc', 'Deleted Time (Oldest → Newest)'],
+    ['deleted_time', 'desc', 'Deleted Time (Newest → Oldest)'],
+    ['deleted_time', 'asc', 'Deleted Time (Oldest → Newest)'],
   ];
   // event
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
