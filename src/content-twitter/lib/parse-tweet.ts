@@ -85,7 +85,7 @@ const parseTimestamp = (tweet: Element, logger: Logger): number | null => {
   if (isNaN(milliseconds)) {
     logger.warn(`Faild to parses "${datetime}" as Date`);
   }
-  return milliseconds / 1000;
+  return Math.trunc(milliseconds / 1000);
 };
 
 const parseUser = (tweet: Element, logger: Logger): User | null => {
