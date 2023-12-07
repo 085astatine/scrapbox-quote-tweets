@@ -1,0 +1,49 @@
+@use 'sass:meta';
+
+$bs-prefix: sct-;
+@use './style/bootstrap' with (
+  $prefix: $bs-prefix
+);
+
+.scrapbox-copy-tweets {
+  &.modal-portal {
+    .overlay {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 1040;
+      background-color: rgba(0, 0, 0, 0.8);
+      opacity: 0;
+      transition: opacity 300ms ease-in-out;
+
+      &.after-open {
+        opacity: 1;
+      }
+
+      &.before-close {
+        opacity: 0;
+      }
+    }
+
+    .content {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 1050;
+      display: flex;
+      flex-direction: column;
+      max-width: 744px;
+      height: 90vh;
+      padding: 10px 12px;
+      margin: auto;
+      background: var(--#{$bs-prefix}body-bg);
+      border-radius: var(--#{$bs-prefix}border-radius);
+    }
+  }
+
+  @include meta.load-css('~/app/index', $with: (bs-prefix: $bs-prefix));
+}

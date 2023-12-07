@@ -34,8 +34,10 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 .checkbox {
   display: flex;
   flex-shrink: 0;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.5em;
+  height: 1.5em;
+  padding: 0;
+  margin: 0;
   color: var(--#{$bs-prefix}secondary);
   cursor: pointer;
   background-color: var(--#{$bs-prefix}body-bg);
@@ -59,8 +61,8 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   }
 
   .icon {
-    width: calc(1.5rem - 2px);
-    height: calc(1.5rem - 2px);
+    width: calc(1.5em - 2px);
+    height: calc(1.5em - 2px);
     margin: auto;
   }
 
@@ -91,8 +93,8 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
     border-radius: var(--#{$bs-prefix}border-radius);
 
     .icon {
-      width: 2rem;
-      height: 2rem;
+      width: 2em;
+      height: 2em;
       margin: auto;
     }
 
@@ -123,7 +125,7 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
     color: var(--#{$bs-prefix}link-color);
     text-align: center;
     cursor: pointer;
-    background-color: $bs-body-bg;
+    background-color: transparent;
     border: $tab-border-width $tab-border-style transparent;
     border-top-left-radius: var(--#{$bs-prefix}border-radius);
     border-top-right-radius: var(--#{$bs-prefix}border-radius);
@@ -147,8 +149,8 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
     }
 
     .icon {
-      width: 2rem;
-      height: 2rem;
+      width: 2em;
+      height: 2em;
     }
   }
 }
@@ -178,6 +180,8 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
     align-items: center;
 
     .tool-label {
+      margin: 0;
+      font-weight: normal;
       white-space: nowrap;
 
       &.disabled {
@@ -215,6 +219,7 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
         color: var(--#{$bs-prefix}link-color);
         text-decoration: underline;
         outline: none;
+        box-shadow: none;
       }
     }
 
@@ -233,6 +238,7 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
         color: var(--#{$bs-prefix}link-color);
         text-decoration: underline;
         outline: none;
+        box-shadow: none;
       }
     }
 
@@ -252,7 +258,9 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
       &:focus-visible {
         color: var(--#{$bs-prefix}link-color);
         text-decoration: underline;
+        border-color: none;
         outline: none;
+        box-shadow: none;
       }
     }
   }
@@ -284,8 +292,8 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
       position: relative;
       display: flex;
       flex-shrink: 0;
-      width: map.get($bs-spacers, 4);
-      height: map.get($bs-spacers, 4);
+      width: 1.5em;
+      height: 1.5em;
 
       .expand-button-circle {
         position: absolute;
@@ -316,8 +324,8 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
         }
       }
       .icon {
-        width: map.get($bs-spacers, 3);
-        height: map.get($bs-spacers, 3);
+        width: 1em;
+        height: 1em;
         margin: auto;
       }
     }

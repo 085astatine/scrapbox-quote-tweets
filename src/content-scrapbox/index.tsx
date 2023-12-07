@@ -1,8 +1,11 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { actions, store } from '~/app/store';
 import { getElement, mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
+import { loadTrashbox, loadTweetsNotInTrashbox } from '~/lib/storage/trashbox';
 import { Root } from './component/root';
+import './index.scss';
 
 logger.info('content scrapbox');
 
@@ -30,7 +33,9 @@ const observerCallback = (records: MutationRecord[]): void => {
         return;
       }
       const reactRoot = createRoot(rootDiv);
-      reactRoot.render(<Root />);
+      reactRoot.render(<Root store={store} />);
+      // initialize store
+      initializeStore();
     });
   });
 };
@@ -51,4 +56,14 @@ const createReactRoot = (element: Element): Element | null => {
   root.id = 'scrapbox-copy-tweets';
   root.classList.add('dropdown');
   return root;
+};
+
+// initialize store
+const initializeStore = async (): Promise<void> => {
+  store.dispatch(
+    actions.initialize({
+      tweets: await loadTweetsNotInTrashbox(),
+      trashbox: await loadTrashbox(),
+    }),
+  );
 };
