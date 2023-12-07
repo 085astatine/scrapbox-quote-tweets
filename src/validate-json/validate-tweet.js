@@ -11,12 +11,13 @@ const schema11 = {
       properties: {
         id: { $ref: '#/definitions/tweet:id' },
         created_at: { type: 'integer' },
+        saved_at: { type: 'integer' },
         author: { $ref: '#/definitions/user' },
         text: { type: 'array', items: { $ref: '#/definitions/entity' } },
         card: { $ref: '#/definitions/card' },
         media: { type: 'array', items: { $ref: '#/definitions/media' } },
       },
-      required: ['id', 'created_at', 'author', 'text'],
+      required: ['id', 'created_at', 'saved_at', 'author', 'text'],
       additionalProperties: false,
     },
     'tweet:id': { type: 'string', pattern: '^[0-9]+$' },
@@ -166,12 +167,13 @@ const schema12 = {
   properties: {
     id: { $ref: '#/definitions/tweet:id' },
     created_at: { type: 'integer' },
+    saved_at: { type: 'integer' },
     author: { $ref: '#/definitions/user' },
     text: { type: 'array', items: { $ref: '#/definitions/entity' } },
     card: { $ref: '#/definitions/card' },
     media: { type: 'array', items: { $ref: '#/definitions/media' } },
   },
-  required: ['id', 'created_at', 'author', 'text'],
+  required: ['id', 'created_at', 'saved_at', 'author', 'text'],
   additionalProperties: false,
 };
 const schema13 = { type: 'string', pattern: '^[0-9]+$' };
@@ -2397,13 +2399,13 @@ function validate11(
       }
       errors++;
     }
-    if (data.author === undefined) {
+    if (data.saved_at === undefined) {
       const err2 = {
         instancePath,
         schemaPath: '#/required',
         keyword: 'required',
-        params: { missingProperty: 'author' },
-        message: "must have required property '" + 'author' + "'",
+        params: { missingProperty: 'saved_at' },
+        message: "must have required property '" + 'saved_at' + "'",
       };
       if (vErrors === null) {
         vErrors = [err2];
@@ -2412,13 +2414,13 @@ function validate11(
       }
       errors++;
     }
-    if (data.text === undefined) {
+    if (data.author === undefined) {
       const err3 = {
         instancePath,
         schemaPath: '#/required',
         keyword: 'required',
-        params: { missingProperty: 'text' },
-        message: "must have required property '" + 'text' + "'",
+        params: { missingProperty: 'author' },
+        message: "must have required property '" + 'author' + "'",
       };
       if (vErrors === null) {
         vErrors = [err3];
@@ -2427,18 +2429,34 @@ function validate11(
       }
       errors++;
     }
+    if (data.text === undefined) {
+      const err4 = {
+        instancePath,
+        schemaPath: '#/required',
+        keyword: 'required',
+        params: { missingProperty: 'text' },
+        message: "must have required property '" + 'text' + "'",
+      };
+      if (vErrors === null) {
+        vErrors = [err4];
+      } else {
+        vErrors.push(err4);
+      }
+      errors++;
+    }
     for (const key0 in data) {
       if (
         !(
           key0 === 'id' ||
           key0 === 'created_at' ||
+          key0 === 'saved_at' ||
           key0 === 'author' ||
           key0 === 'text' ||
           key0 === 'card' ||
           key0 === 'media'
         )
       ) {
-        const err4 = {
+        const err5 = {
           instancePath,
           schemaPath: '#/additionalProperties',
           keyword: 'additionalProperties',
@@ -2446,9 +2464,9 @@ function validate11(
           message: 'must NOT have additional properties',
         };
         if (vErrors === null) {
-          vErrors = [err4];
+          vErrors = [err5];
         } else {
-          vErrors.push(err4);
+          vErrors.push(err5);
         }
         errors++;
       }
@@ -2457,7 +2475,7 @@ function validate11(
       let data0 = data.id;
       if (typeof data0 === 'string') {
         if (!pattern0.test(data0)) {
-          const err5 = {
+          const err6 = {
             instancePath: instancePath + '/id',
             schemaPath: '#/definitions/tweet:id/pattern',
             keyword: 'pattern',
@@ -2465,14 +2483,14 @@ function validate11(
             message: 'must match pattern "' + '^[0-9]+$' + '"',
           };
           if (vErrors === null) {
-            vErrors = [err5];
+            vErrors = [err6];
           } else {
-            vErrors.push(err5);
+            vErrors.push(err6);
           }
           errors++;
         }
       } else {
-        const err6 = {
+        const err7 = {
           instancePath: instancePath + '/id',
           schemaPath: '#/definitions/tweet:id/type',
           keyword: 'type',
@@ -2480,9 +2498,9 @@ function validate11(
           message: 'must be string',
         };
         if (vErrors === null) {
-          vErrors = [err6];
+          vErrors = [err7];
         } else {
-          vErrors.push(err6);
+          vErrors.push(err7);
         }
         errors++;
       }
@@ -2497,7 +2515,7 @@ function validate11(
           isFinite(data1)
         )
       ) {
-        const err7 = {
+        const err8 = {
           instancePath: instancePath + '/created_at',
           schemaPath: '#/properties/created_at/type',
           keyword: 'type',
@@ -2505,9 +2523,34 @@ function validate11(
           message: 'must be integer',
         };
         if (vErrors === null) {
-          vErrors = [err7];
+          vErrors = [err8];
         } else {
-          vErrors.push(err7);
+          vErrors.push(err8);
+        }
+        errors++;
+      }
+    }
+    if (data.saved_at !== undefined) {
+      let data2 = data.saved_at;
+      if (
+        !(
+          typeof data2 == 'number' &&
+          !(data2 % 1) &&
+          !isNaN(data2) &&
+          isFinite(data2)
+        )
+      ) {
+        const err9 = {
+          instancePath: instancePath + '/saved_at',
+          schemaPath: '#/properties/saved_at/type',
+          keyword: 'type',
+          params: { type: 'integer' },
+          message: 'must be integer',
+        };
+        if (vErrors === null) {
+          vErrors = [err9];
+        } else {
+          vErrors.push(err9);
         }
         errors++;
       }
@@ -2529,14 +2572,14 @@ function validate11(
       }
     }
     if (data.text !== undefined) {
-      let data3 = data.text;
-      if (Array.isArray(data3)) {
-        const len0 = data3.length;
+      let data4 = data.text;
+      if (Array.isArray(data4)) {
+        const len0 = data4.length;
         for (let i0 = 0; i0 < len0; i0++) {
           if (
-            !validate14(data3[i0], {
+            !validate14(data4[i0], {
               instancePath: instancePath + '/text/' + i0,
-              parentData: data3,
+              parentData: data4,
               parentDataProperty: i0,
               rootData,
             })
@@ -2549,7 +2592,7 @@ function validate11(
           }
         }
       } else {
-        const err8 = {
+        const err10 = {
           instancePath: instancePath + '/text',
           schemaPath: '#/properties/text/type',
           keyword: 'type',
@@ -2557,9 +2600,9 @@ function validate11(
           message: 'must be array',
         };
         if (vErrors === null) {
-          vErrors = [err8];
+          vErrors = [err10];
         } else {
-          vErrors.push(err8);
+          vErrors.push(err10);
         }
         errors++;
       }
@@ -2581,14 +2624,14 @@ function validate11(
       }
     }
     if (data.media !== undefined) {
-      let data6 = data.media;
-      if (Array.isArray(data6)) {
-        const len1 = data6.length;
+      let data7 = data.media;
+      if (Array.isArray(data7)) {
+        const len1 = data7.length;
         for (let i1 = 0; i1 < len1; i1++) {
           if (
-            !validate31(data6[i1], {
+            !validate31(data7[i1], {
               instancePath: instancePath + '/media/' + i1,
-              parentData: data6,
+              parentData: data7,
               parentDataProperty: i1,
               rootData,
             })
@@ -2601,7 +2644,7 @@ function validate11(
           }
         }
       } else {
-        const err9 = {
+        const err11 = {
           instancePath: instancePath + '/media',
           schemaPath: '#/properties/media/type',
           keyword: 'type',
@@ -2609,15 +2652,15 @@ function validate11(
           message: 'must be array',
         };
         if (vErrors === null) {
-          vErrors = [err9];
+          vErrors = [err11];
         } else {
-          vErrors.push(err9);
+          vErrors.push(err11);
         }
         errors++;
       }
     }
   } else {
-    const err10 = {
+    const err12 = {
       instancePath,
       schemaPath: '#/type',
       keyword: 'type',
@@ -2625,9 +2668,9 @@ function validate11(
       message: 'must be object',
     };
     if (vErrors === null) {
-      vErrors = [err10];
+      vErrors = [err12];
     } else {
-      vErrors.push(err10);
+      vErrors.push(err12);
     }
     errors++;
   }

@@ -4,6 +4,7 @@ describe('tweet-to-string/tweet', () => {
   const tweet = {
     id: '1234567890123456789',
     created_at: 1330873445,
+    saved_at: 1365142028,
     author: {
       name: 'User Name',
       username: 'username',
@@ -108,6 +109,7 @@ describe('tweet-to-string/entity', () => {
   const tweet = {
     id: '1234567890123456789',
     created_at: 1330873445,
+    saved_at: 1365142028,
     author: {
       name: 'Alice',
       username: 'alice',
