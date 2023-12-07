@@ -52,7 +52,7 @@ export const deletedTweetsSortFunction = ({
   switch (key) {
     case 'timestamp':
       return (lhs: DeletedTweets, rhs: DeletedTweets) =>
-        sign * (lhs.timestamp - rhs.timestamp);
+        sign * (lhs.deleted_at - rhs.deleted_at);
     default: {
       const _: never = key;
       return _;

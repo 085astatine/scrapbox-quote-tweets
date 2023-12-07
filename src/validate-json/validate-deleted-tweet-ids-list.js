@@ -6,14 +6,14 @@ const schema11 = {
   items: {
     type: 'object',
     properties: {
-      timestamp: { type: 'integer' },
+      deleted_at: { type: 'integer' },
       tweetIDs: {
         type: 'array',
         items: { type: 'string', pattern: '^[0-9]+$' },
         minItems: 1,
       },
     },
-    required: ['timestamp', 'tweetIDs'],
+    required: ['deleted_at', 'tweetIDs'],
     additionalProperties: false,
   },
 };
@@ -29,13 +29,13 @@ function validate10(
     for (let i0 = 0; i0 < len0; i0++) {
       let data0 = data[i0];
       if (data0 && typeof data0 == 'object' && !Array.isArray(data0)) {
-        if (data0.timestamp === undefined) {
+        if (data0.deleted_at === undefined) {
           const err0 = {
             instancePath: instancePath + '/' + i0,
             schemaPath: '#/items/required',
             keyword: 'required',
-            params: { missingProperty: 'timestamp' },
-            message: "must have required property '" + 'timestamp' + "'",
+            params: { missingProperty: 'deleted_at' },
+            message: "must have required property '" + 'deleted_at' + "'",
           };
           if (vErrors === null) {
             vErrors = [err0];
@@ -60,7 +60,7 @@ function validate10(
           errors++;
         }
         for (const key0 in data0) {
-          if (!(key0 === 'timestamp' || key0 === 'tweetIDs')) {
+          if (!(key0 === 'deleted_at' || key0 === 'tweetIDs')) {
             const err2 = {
               instancePath: instancePath + '/' + i0,
               schemaPath: '#/items/additionalProperties',
@@ -76,8 +76,8 @@ function validate10(
             errors++;
           }
         }
-        if (data0.timestamp !== undefined) {
-          let data1 = data0.timestamp;
+        if (data0.deleted_at !== undefined) {
+          let data1 = data0.deleted_at;
           if (
             !(
               typeof data1 == 'number' &&
@@ -87,8 +87,8 @@ function validate10(
             )
           ) {
             const err3 = {
-              instancePath: instancePath + '/' + i0 + '/timestamp',
-              schemaPath: '#/items/properties/timestamp/type',
+              instancePath: instancePath + '/' + i0 + '/deleted_at',
+              schemaPath: '#/items/properties/deleted_at/type',
               keyword: 'type',
               params: { type: 'integer' },
               message: 'must be integer',

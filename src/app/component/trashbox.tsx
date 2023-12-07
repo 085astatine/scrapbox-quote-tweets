@@ -43,7 +43,7 @@ const DeletedTweetsList: React.FC = () => {
       <Toolbar />
       {deletedTweetsList.map((deletedTweets) => (
         <DeletedTweets
-          key={deletedTweets.timestamp}
+          key={deletedTweets.deleted_at}
           deletedTweets={deletedTweets}
         />
       ))}
@@ -56,7 +56,7 @@ interface DeletedTweetsProps {
 }
 
 const DeletedTweets: React.FC<DeletedTweetsProps> = ({
-  deletedTweets: { timestamp, tweets },
+  deletedTweets: { deleted_at: timestamp, tweets },
 }) => {
   // redux
   const selector = React.useCallback(

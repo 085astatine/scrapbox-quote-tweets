@@ -6,7 +6,7 @@ export const deletedTweetIDsJSONSchema: Readonly<
 > = {
   type: 'object',
   properties: {
-    timestamp: { type: 'integer' },
+    deleted_at: { type: 'integer' },
     tweetIDs: {
       type: 'array',
       items: {
@@ -16,7 +16,7 @@ export const deletedTweetIDsJSONSchema: Readonly<
       minItems: 1,
     },
   },
-  required: ['timestamp', 'tweetIDs'],
+  required: ['deleted_at', 'tweetIDs'],
   additionalProperties: false,
 };
 

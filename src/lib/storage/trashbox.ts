@@ -22,10 +22,10 @@ export const loadTweetsNotInTrashbox = async (): Promise<Tweet[]> => {
 
 export const addTweetsToTrashbox = async (
   tweets: Tweet[],
-  timestamp: number,
+  deletedAt: number,
 ): Promise<void> => {
   const newElement: DeletedTweetIDs = {
-    timestamp,
+    deleted_at: deletedAt,
     tweetIDs: tweets.map((tweet) => tweet.id).sort(),
   };
   const elements = await loadDeletedTweetIDsList();
@@ -43,8 +43,8 @@ export const loadTrashbox = async (): Promise<DeletedTweets[]> => {
     .flat();
   const tweets = await loadTweets(tweetIDs);
   // elements
-  return deletedTweetIDsList.map(({ timestamp, tweetIDs }) => ({
-    timestamp,
+  return deletedTweetIDsList.map(({ deleted_at: deletedAt, tweetIDs }) => ({
+    deleted_at: deletedAt,
     tweets: tweetIDs.reduce<Tweet[]>((result, id) => {
       const tweet = tweets.find((tweet) => tweet.id === id);
       if (tweet !== undefined) {
@@ -109,5 +109,5 @@ const sortDeletedTweetIDs = (
   lhs: DeletedTweetIDs,
   rhs: DeletedTweetIDs,
 ): number => {
-  return rhs.timestamp - lhs.timestamp;
+  return rhs.deleted_at - lhs.deleted_at;
 };

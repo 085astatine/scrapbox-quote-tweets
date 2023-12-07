@@ -76,7 +76,7 @@ const slice = createSlice({
       });
       // add to trashbox
       state.trashbox.push({
-        timestamp: action.payload,
+        deleted_at: action.payload,
         tweets: [...state.selectedTweets],
       });
       // clear selected tweets
