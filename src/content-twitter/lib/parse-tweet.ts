@@ -24,6 +24,7 @@ import { parseTweetText } from './parse-tweet-text';
 export const parseTweet = async (
   id: TweetID,
   element: Element,
+  savedAt: number,
   logger: Logger = defaultLogger,
 ): Promise<Tweet | null> => {
   const tweet = getElement('ancestor::article[@data-testid="tweet"]', element);
@@ -33,11 +34,11 @@ export const parseTweet = async (
     logger.warn(error);
     throw new ParseTweetError(id, error);
   }
-  // Tweet.timestamp
-  const timestamp = parseTimestamp(tweet, logger);
-  logger.debug('Tweet.timestamp', timestamp);
-  if (timestamp === null) {
-    const error = 'Failed to parse Tweet.timesamp';
+  // Tweet.created_at
+  const createdAt = parseTimestamp(tweet, logger);
+  logger.debug('Tweet.created_at', createdAt);
+  if (createdAt === null) {
+    const error = 'Failed to parse Tweet.created_at';
     logger.warn(error);
     throw new ParseTweetError(id, error);
   }
@@ -52,7 +53,13 @@ export const parseTweet = async (
   // Tweet.text
   const text = await parseTweetText(tweet, logger);
   logger.debug('Tweet.text', text);
-  const result: Tweet = { id, timestamp, author, text };
+  const result: Tweet = {
+    id,
+    created_at: createdAt,
+    saved_at: savedAt,
+    author,
+    text,
+  };
   // card
   const card = await parseCard(id, tweet, logger);
   logger.debug('Tweet.card', card);
@@ -85,7 +92,7 @@ const parseTimestamp = (tweet: Element, logger: Logger): number | null => {
   if (isNaN(milliseconds)) {
     logger.warn(`Faild to parses "${datetime}" as Date`);
   }
-  return milliseconds / 1000;
+  return Math.trunc(milliseconds / 1000);
 };
 
 const parseUser = (tweet: Element, logger: Logger): User | null => {

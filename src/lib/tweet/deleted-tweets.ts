@@ -1,11 +1,11 @@
 import { Tweet, TweetID } from './tweet';
 
 export interface DeletedTweets {
-  timestamp: number;
+  deleted_at: number;
   tweets: Tweet[];
 }
 
 export interface DeletedTweetIDs {
-  timestamp: number;
+  deleted_at: number;
   tweetIDs: TweetID[];
 }

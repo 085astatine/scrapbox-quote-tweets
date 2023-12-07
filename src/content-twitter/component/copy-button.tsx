@@ -112,18 +112,21 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
       logger.warn('reference to DOM is null');
       return;
     }
-    const tweet = await parseTweet(tweetID, ref.current, logger).catch(
-      (error) => {
-        logger.warn('failed to parse tweet', error);
-        dispatch(
-          actions.update({
-            tweetID,
-            state: { state: 'failure', message: error.message },
-          }),
-        );
-        return null;
-      },
-    );
+    const tweet = await parseTweet(
+      tweetID,
+      ref.current,
+      Math.trunc(Date.now() / 1000),
+      logger,
+    ).catch((error) => {
+      logger.warn('failed to parse tweet', error);
+      dispatch(
+        actions.update({
+          tweetID,
+          state: { state: 'failure', message: error.message },
+        }),
+      );
+      return null;
+    });
     logger.info('tweet', tweet);
     if (tweet === null) {
       return;

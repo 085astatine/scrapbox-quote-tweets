@@ -80,7 +80,8 @@ export type Card = CardSingle | CardCarousel;
 
 export interface Tweet {
   id: TweetID;
-  timestamp: number;
+  created_at: number;
+  saved_at: number;
   author: User;
   text: TweetEntity[];
   card?: Card;

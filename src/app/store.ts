@@ -22,11 +22,11 @@ const initialState: State = {
   selectedTweets: [],
   selectedDeletedTweets: [],
   tweetSort: {
-    key: 'timestamp',
+    key: 'created_time',
     order: 'desc',
   },
   deletedTweetsSort: {
-    key: 'timestamp',
+    key: 'deleted_time',
     order: 'desc',
   },
 };
@@ -76,7 +76,7 @@ const slice = createSlice({
       });
       // add to trashbox
       state.trashbox.push({
-        timestamp: action.payload,
+        deleted_at: action.payload,
         tweets: [...state.selectedTweets],
       });
       // clear selected tweets

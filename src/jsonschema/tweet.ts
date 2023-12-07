@@ -17,7 +17,8 @@ const definitions: SchemaObject = {
     type: 'object',
     properties: {
       id: { $ref: '#/definitions/tweet:id' },
-      timestamp: { type: 'integer' },
+      created_at: { type: 'integer' },
+      saved_at: { type: 'integer' },
       author: { $ref: '#/definitions/user' },
       text: {
         type: 'array',
@@ -29,7 +30,7 @@ const definitions: SchemaObject = {
         items: { $ref: '#/definitions/media' },
       },
     },
-    required: ['id', 'timestamp', 'author', 'text'],
+    required: ['id', 'created_at', 'saved_at', 'author', 'text'],
     additionalProperties: false,
   },
   // tweet id

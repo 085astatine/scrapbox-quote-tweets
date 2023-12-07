@@ -1,8 +1,8 @@
 import { DeletedTweets } from './deleted-tweets';
 import { Tweet } from './tweet';
 
-export type TweetSortKey = 'timestamp' | 'username';
-export type DeletedTweetsSortKey = 'timestamp';
+export type TweetSortKey = 'created_time' | 'saved_time' | 'username';
+export type DeletedTweetsSortKey = 'deleted_time';
 export type SortOrder = 'asc' | 'desc';
 
 export interface TweetSort {
@@ -21,8 +21,11 @@ export const tweetSortFunction = ({
 }: TweetSort): ((lhs: Tweet, rhs: Tweet) => number) => {
   const sign = order === 'asc' ? +1 : -1;
   switch (key) {
-    case 'timestamp':
-      return (lhs: Tweet, rhs: Tweet) => sign * (lhs.timestamp - rhs.timestamp);
+    case 'created_time':
+      return (lhs: Tweet, rhs: Tweet) =>
+        sign * (lhs.created_at - rhs.created_at);
+    case 'saved_time':
+      return (lhs: Tweet, rhs: Tweet) => sign * (lhs.saved_at - rhs.saved_at);
     case 'username': {
       const compareString = new Intl.Collator().compare;
       return (lhs: Tweet, rhs: Tweet) => {
@@ -33,7 +36,7 @@ export const tweetSortFunction = ({
         // if the usenames are equal, the newest first
         return compareUsername !== 0 ?
             sign * compareUsername
-          : rhs.timestamp - lhs.timestamp;
+          : rhs.created_at - lhs.created_at;
       };
     }
     default: {
@@ -49,9 +52,9 @@ export const deletedTweetsSortFunction = ({
 }: DeletedTweetsSort): ((lhs: DeletedTweets, rhs: DeletedTweets) => number) => {
   const sign = order === 'asc' ? +1 : -1;
   switch (key) {
-    case 'timestamp':
+    case 'deleted_time':
       return (lhs: DeletedTweets, rhs: DeletedTweets) =>
-        sign * (lhs.timestamp - rhs.timestamp);
+        sign * (lhs.deleted_at - rhs.deleted_at);
     default: {
       const _: never = key;
       return _;

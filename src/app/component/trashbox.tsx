@@ -43,7 +43,7 @@ const DeletedTweetsList: React.FC = () => {
       <Toolbar />
       {deletedTweetsList.map((deletedTweets) => (
         <DeletedTweets
-          key={deletedTweets.timestamp}
+          key={deletedTweets.deleted_at}
           deletedTweets={deletedTweets}
         />
       ))}
@@ -56,7 +56,7 @@ interface DeletedTweetsProps {
 }
 
 const DeletedTweets: React.FC<DeletedTweetsProps> = ({
-  deletedTweets: { timestamp, tweets },
+  deletedTweets: { deleted_at: timestamp, tweets },
 }) => {
   // redux
   const selector = React.useCallback(
@@ -208,8 +208,8 @@ const SelectSort: React.FC = () => {
   const options: ReadonlyArray<
     readonly [DeletedTweetsSortKey, SortOrder, string]
   > = [
-    ['timestamp', 'desc', 'Deleted Time (Newest → Oldest)'],
-    ['timestamp', 'asc', 'Deleted Time (Oldest → Newest)'],
+    ['deleted_time', 'desc', 'Deleted Time (Newest → Oldest)'],
+    ['deleted_time', 'asc', 'Deleted Time (Oldest → Newest)'],
   ];
   // event
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
