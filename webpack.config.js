@@ -1,4 +1,5 @@
 const path = require('path');
+const svgToMiniDataURI = require('mini-svg-data-uri');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const DotenvPlugin = require('dotenv-webpack');
@@ -74,7 +75,18 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.svg$/,
-          use: [svgrLoader],
+          oneOf: [
+            {
+              dependency: { not: ['url'] },
+              use: [svgrLoader],
+            },
+            {
+              type: 'asset/inline',
+              generator: {
+                dataUrl: (content) => svgToMiniDataURI(content.toString()),
+              },
+            },
+          ],
         },
         {
           type: 'javascript/auto',
