@@ -4,9 +4,9 @@ import { useSelector } from 'react-redux';
 import ReturnIcon from '~/icon/bootstrap/arrow-return-left.svg';
 import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
+import { toDatetime } from '~/lib/datetime';
 import { baseURL } from '~/lib/settings';
 import { Tweet as TweetData, TweetID } from '~/lib/tweet/tweet';
-import { toDate } from '~/lib/tweet/tweet-date';
 import { State } from '../store';
 
 export interface TweetProps {
@@ -46,7 +46,7 @@ const Header: React.FC<HeaderProps> = ({
   const dateFormat = 'YYYY/MM/DD HH:mm:ss';
   const userURL = `${baseURL}/${username}`;
   const tweetURL = `${userURL}/status/${id}`;
-  const date = toDate(timestamp, timezone).format(dateFormat);
+  const date = toDatetime(timestamp, timezone).format(dateFormat);
   return (
     <div className="header">
       <a className="name" href={userURL} target="_blink" rel="noreferrer">

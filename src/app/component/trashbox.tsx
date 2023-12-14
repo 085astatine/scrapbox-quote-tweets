@@ -4,6 +4,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import DeleteIcon from '~/icon/google-fonts/delete-forever.svg';
 import RestoreIcon from '~/icon/google-fonts/restore-from-trash.svg';
 import { Collapse } from '~/lib/component/transition';
+import { toDatetime } from '~/lib/datetime';
 import {
   deleteTweetsFromTrashbox,
   restoreTweetsFromTrashbox,
@@ -15,7 +16,6 @@ import {
   deletedTweetsSortFunction,
 } from '~/lib/tweet/sort-tweets';
 import { Tweet as TweetData } from '~/lib/tweet/tweet';
-import { toDate } from '~/lib/tweet/tweet-date';
 import { trimGoogleFontsIcon } from '~/lib/utility';
 import { State, actions } from '../store';
 import { Checkbox } from './checkbox';
@@ -103,7 +103,7 @@ const DeletedTweetsHeader: React.FC<DeletedTweetsHeaderProps> = ({
 }) => {
   const timezone = useSelector(timezoneSelector);
   const dateFormat = 'YYYY/MM/DD HH:mm:ss';
-  const deletedTime = toDate(timestamp, timezone).format(dateFormat);
+  const deletedTime = toDatetime(timestamp, timezone).format(dateFormat);
   return (
     <div className="deleted-tweets-header">
       <div>{`${tweetsLength} Tweets`}</div>

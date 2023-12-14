@@ -5,7 +5,10 @@ import dayjsUTC from 'dayjs/plugin/utc';
 dayjs.extend(dayjsUTC);
 dayjs.extend(dayjsTimezone);
 
-export const toDate = (timestamp: number, timezone?: string): dayjs.Dayjs => {
+export const toDatetime = (
+  timestamp: number,
+  timezone?: string,
+): dayjs.Dayjs => {
   return dayjs.unix(timestamp).tz(timezone);
 };
 
