@@ -34,7 +34,9 @@ const DeletedTweetsList: React.FC = () => {
   // redux
   const selector = React.useCallback((state: State) => {
     const deletedTweetsList = [...state.trashbox];
-    deletedTweetsList.sort(deletedTweetsSortFunction(state.deletedTweetsSort));
+    deletedTweetsList.sort(
+      deletedTweetsSortFunction(state.settings.deletedTweetsSort),
+    );
     return deletedTweetsList;
   }, []);
   const deletedTweetsList = useSelector(selector, shallowEqual);
@@ -199,7 +201,7 @@ const SelectSort: React.FC = () => {
   const id = 'select-deleted-tweets-sort';
   // redux
   const selector = React.useCallback(
-    (state: State) => state.deletedTweetsSort,
+    (state: State) => state.settings.deletedTweetsSort,
     [],
   );
   const { key: sortKey, order: sortOrder } = useSelector(selector);

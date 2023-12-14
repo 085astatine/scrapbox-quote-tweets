@@ -20,7 +20,7 @@ export const Tweets: React.FC = () => {
   // redux
   const selector = React.useCallback((state: State) => {
     const tweets = [...state.tweets];
-    tweets.sort(tweetSortFunction(state.tweetSort));
+    tweets.sort(tweetSortFunction(state.settings.tweetSort));
     return tweets;
   }, []);
   const tweets = useSelector(selector, shallowEqual);
@@ -115,7 +115,10 @@ const SelectAll: React.FC = () => {
 const SelectSort: React.FC = () => {
   const id = 'select-tweets-sort';
   // redux
-  const selector = React.useCallback((state: State) => state.tweetSort, []);
+  const selector = React.useCallback(
+    (state: State) => state.settings.tweetSort,
+    [],
+  );
   const { key: sortKey, order: sortOrder } = useSelector(selector);
   const dispatch = useDispatch();
   // options
@@ -160,7 +163,7 @@ const Commands: React.FC = () => {
   // redux
   const selector = React.useCallback((state: State) => {
     const selectedTweets = [...state.selectedTweets];
-    selectedTweets.sort(tweetSortFunction(state.tweetSort));
+    selectedTweets.sort(tweetSortFunction(state.settings.tweetSort));
     return selectedTweets;
   }, []);
   const tweets = useSelector(selector, shallowEqual);

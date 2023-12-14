@@ -14,8 +14,6 @@ export interface State {
   selectedTweets: Tweet[];
   selectedDeletedTweets: Tweet[];
   settings: Settings;
-  tweetSort: TweetSort;
-  deletedTweetsSort: DeletedTweetsSort;
 }
 
 const initialState: State = {
@@ -25,14 +23,14 @@ const initialState: State = {
   selectedDeletedTweets: [],
   settings: {
     hostname: 'twitter.com',
-  },
-  tweetSort: {
-    key: 'created_time',
-    order: 'desc',
-  },
-  deletedTweetsSort: {
-    key: 'deleted_time',
-    order: 'desc',
+    tweetSort: {
+      key: 'created_time',
+      order: 'desc',
+    },
+    deletedTweetsSort: {
+      key: 'deleted_time',
+      order: 'desc',
+    },
   },
 };
 
@@ -165,13 +163,13 @@ const slice = createSlice({
       state.settings.hostname = action.payload;
     },
     updateTweetSort(state: State, action: PayloadAction<TweetSort>): void {
-      state.tweetSort = action.payload;
+      state.settings.tweetSort = action.payload;
     },
     updateDeletedTweetsSort(
       state: State,
       action: PayloadAction<DeletedTweetsSort>,
     ): void {
-      state.deletedTweetsSort = action.payload;
+      state.settings.deletedTweetsSort = action.payload;
     },
   },
 });
