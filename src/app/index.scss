@@ -402,3 +402,34 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
     }
   }
 }
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 1;
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
+  overflow-y: scroll;
+}
+
+.settings-row {
+  display: flex;
+  flex-wrap: wrap;
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 3);
+}
+
+.settings-label {
+  font-weight: bold;
+}
+
+.settings-buttons {
+  display: flex;
+  flex-grow: 1;
+  flex-wrap: wrap;
+  column-gap: map.get($bs-spacers, 3);
+  justify-content: end;
+}
+
+.settings-form-label {
+  margin-bottom: 0;
+  font-weight: normal;
+}
