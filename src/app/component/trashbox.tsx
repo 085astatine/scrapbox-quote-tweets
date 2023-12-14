@@ -101,7 +101,7 @@ const DeletedTweetsHeader: React.FC<DeletedTweetsHeaderProps> = ({
   timestamp,
   tweetsLength,
 }) => {
-  const timezone = 'UTC';
+  const timezone = useSelector(timezoneSelector);
   const dateFormat = 'YYYY/MM/DD HH:mm:ss';
   const deletedTime = toDate(timestamp, timezone).format(dateFormat);
   return (
@@ -297,4 +297,8 @@ const Commands: React.FC = () => {
       }
     />
   );
+};
+
+const timezoneSelector = (state: State): string => {
+  return state.settings.timezone;
 };

@@ -42,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({
   timestamp,
 }: HeaderProps) => {
   const baseURL = useSelector(baseURLSelector);
-  const timezone = 'UTC';
+  const timezone = useSelector(timezoneSelector);
   const dateFormat = 'YYYY/MM/DD HH:mm:ss';
   const userURL = `${baseURL}/${username}`;
   const tweetURL = `${userURL}/status/${id}`;
@@ -102,4 +102,8 @@ const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
 // selectors
 const baseURLSelector = (state: State): string => {
   return baseURL(state.settings.hostname);
+};
+
+const timezoneSelector = (state: State): string => {
+  return state.settings.timezone;
 };
