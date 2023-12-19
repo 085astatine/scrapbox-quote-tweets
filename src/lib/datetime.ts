@@ -48,3 +48,7 @@ export const isValidTimezone = (timezone: string): boolean => {
   }
   return true;
 };
+
+export const defaultTimezone = (): string => {
+  return dayjs.tz.guess();
+};
