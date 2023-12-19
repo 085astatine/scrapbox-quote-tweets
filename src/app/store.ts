@@ -22,7 +22,7 @@ const initialState = (): State => {
     trashbox: [],
     selectedTweets: [],
     selectedDeletedTweets: [],
-    settings: { ...defaultSettings },
+    settings: defaultSettings(),
   };
 };
 
