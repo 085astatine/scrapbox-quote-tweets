@@ -16,12 +16,14 @@ export interface State {
   settings: Settings;
 }
 
-const initialState: State = {
-  tweets: [],
-  trashbox: [],
-  selectedTweets: [],
-  selectedDeletedTweets: [],
-  settings: { ...defaultSettings },
+const initialState = (): State => {
+  return {
+    tweets: [],
+    trashbox: [],
+    selectedTweets: [],
+    selectedDeletedTweets: [],
+    settings: { ...defaultSettings },
+  };
 };
 
 export interface Initializer {
@@ -31,7 +33,7 @@ export interface Initializer {
 
 const slice = createSlice({
   name: 'clipboard',
-  initialState,
+  initialState: initialState(),
   reducers: {
     initialize(state: State, action: PayloadAction<Initializer>): void {
       state.tweets = [...action.payload.tweets];
