@@ -30,3 +30,7 @@ export const defaultSettings = (): Settings => {
 export const baseURL = (hostname: string): string => {
   return `https://${hostname}`;
 };
+
+export const isHostname = (value: string): value is Hostname => {
+  return (hostnames as ReadonlyArray<string>).includes(value);
+};
