@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import browser from 'webextension-polyfill';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
-import { Hostname, baseURL } from '~/lib/settings';
+import { baseURL, hostnames } from '~/lib/settings';
 import { State, actions } from '../store';
 
 export const Settings: React.FC = () => {
@@ -23,7 +23,6 @@ const BaseURL: React.FC = () => {
   );
   const hostname = useSelector(selector);
   const dispatch = useDispatch();
-  const hostnames: ReadonlyArray<Hostname> = ['twitter.com', 'x.com'];
   return (
     <div className="settings-row">
       <div className="settings-label">Base URL</div>
