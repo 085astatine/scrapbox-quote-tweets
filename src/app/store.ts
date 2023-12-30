@@ -1,19 +1,33 @@
 import { PayloadAction, configureStore, createSlice } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
-import { Hostname, Settings, defaultSettings } from '~/lib/settings';
+import { isValidTimezone } from '~/lib/datetime';
+import {
+  Hostname,
+  Settings,
+  defaultSettings,
+  isHostname,
+} from '~/lib/settings';
 import { DeletedTweets } from '~/lib/tweet/deleted-tweets';
 import { DeletedTweetsSort, TweetSort } from '~/lib/tweet/sort-tweets';
 import { Tweet } from '~/lib/tweet/tweet';
 import { toArray } from '~/lib/utility';
 
 // state
+type EditingSettings = Partial<
+  Omit<Settings, 'tweetSort' | 'deletedTweetsSort'>
+>;
+
+type SettingsErrors = Partial<Record<keyof EditingSettings, string[]>>;
+
 export interface State {
   tweets: Tweet[];
   trashbox: DeletedTweets[];
   selectedTweets: Tweet[];
   selectedDeletedTweets: Tweet[];
   settings: Settings;
+  settingsEditing: EditingSettings;
+  settingsErrors: SettingsErrors;
 }
 
 const initialState = (): State => {
@@ -23,6 +37,8 @@ const initialState = (): State => {
     selectedTweets: [],
     selectedDeletedTweets: [],
     settings: defaultSettings(),
+    settingsEditing: {},
+    settingsErrors: {},
   };
 };
 
@@ -151,9 +167,6 @@ const slice = createSlice({
       // clear selected deleted tweets
       state.selectedDeletedTweets = [];
     },
-    updateHostname(state: State, action: PayloadAction<Hostname>): void {
-      state.settings.hostname = action.payload;
-    },
     updateTweetSort(state: State, action: PayloadAction<TweetSort>): void {
       state.settings.tweetSort = action.payload;
     },
@@ -162,6 +175,49 @@ const slice = createSlice({
       action: PayloadAction<DeletedTweetsSort>,
     ): void {
       state.settings.deletedTweetsSort = action.payload;
+    },
+    updateSettings(state: State): void {
+      // reset errors
+      state.settingsErrors = {};
+      // hostname (base URL)
+      if ('hostname' in state.settingsEditing) {
+        const newHostname = state.settingsEditing.hostname;
+        if (!isHostname(newHostname)) {
+          state.settingsErrors.hostname = [
+            `"${newHostname}" is not valid hostname.`,
+          ];
+        }
+      }
+      // timezone
+      if ('timezone' in state.settingsEditing) {
+        const newTimezone = state.settingsEditing.timezone;
+        if (!isValidTimezone(newTimezone)) {
+          state.settingsErrors.timezone = [
+            `"${newTimezone}" is not valid timezone.`,
+            'Please input the time zone in the IANA database.',
+            'Examples: "UTC", "Asia/Tokyo", "America/New_York"',
+          ];
+        }
+      }
+      // update if theare is no error
+      if (Object.keys(state.settingsErrors).length === 0) {
+        state.settings = {
+          ...state.settings,
+          ...state.settingsEditing,
+        };
+        state.settingsEditing = {};
+      }
+    },
+    resetEditingSettings(state: State): void {
+      state.settingsEditing = {};
+      state.settingsErrors = {};
+    },
+    updateHostname(state: State, action: PayloadAction<Hostname>): void {
+      if (state.settings.hostname !== action.payload) {
+        state.settingsEditing.hostname = action.payload;
+      } else if ('hostname' in state.settingsEditing) {
+        delete state.settingsEditing.hostname;
+      }
     },
   },
 });

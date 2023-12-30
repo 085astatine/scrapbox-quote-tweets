@@ -18,7 +18,7 @@ export const Settings: React.FC = () => {
 const BaseURL: React.FC = () => {
   const name = 'settings-hostname';
   const selector = React.useCallback(
-    (state: State) => state.settings.hostname,
+    (state: State) => state.settingsEditing.hostname ?? state.settings.hostname,
     [],
   );
   const hostname = useSelector(selector);
