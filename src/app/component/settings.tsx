@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import browser from 'webextension-polyfill';
@@ -17,15 +18,22 @@ export const Settings: React.FC = () => {
 
 const BaseURL: React.FC = () => {
   const name = 'settings-hostname';
-  const selector = React.useCallback(
+  const hostnameSelector = React.useCallback(
     (state: State) => state.settingsEditing.hostname ?? state.settings.hostname,
     [],
   );
-  const hostname = useSelector(selector);
+  const isUpdatedSelector = React.useCallback(
+    (state: State) => 'hostname' in state.settingsEditing,
+    [],
+  );
+  const hostname = useSelector(hostnameSelector);
+  const isUpdated = useSelector(isUpdatedSelector);
   const dispatch = useDispatch();
   return (
     <div className="settings-row">
-      <div className="settings-label">Base URL</div>
+      <div className={classNames('settings-label', { updated: isUpdated })}>
+        Base URL
+      </div>
       <div className="settings-buttons">
         {hostnames.map((host) => {
           const id = `settings-hostname-${host}`;

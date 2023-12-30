@@ -418,7 +418,16 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 }
 
 .settings-label {
+  display: flex;
   font-weight: bold;
+
+  &.updated::before {
+    width: 0.5em;
+    height: 100%;
+    margin-left: -0.5em;
+    content: '';
+    background-color: var(--#{$bs-prefix}form-valid-color);
+  }
 }
 
 .settings-buttons {
