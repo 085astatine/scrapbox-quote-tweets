@@ -2,17 +2,21 @@ import classNames from 'classnames';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import browser from 'webextension-polyfill';
+import { Collapse } from '~/lib/component/transition';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
 import { baseURL, hostnames } from '~/lib/settings';
 import { State, actions } from '../store';
 
 export const Settings: React.FC = () => {
   return (
-    <div className="settings fade-in">
-      <h1>Settings</h1>
-      <BaseURL />
-      <DownloadStorage />
-    </div>
+    <>
+      <div className="settings fade-in">
+        <h1>Settings</h1>
+        <BaseURL />
+        <DownloadStorage />
+      </div>
+      <Commands />
+    </>
   );
 };
 
@@ -68,4 +72,39 @@ const DownloadStorage: React.FC = () => {
     browser.runtime.sendMessage(message);
   };
   return <button onClick={onClick}>Download Storage</button>;
+};
+
+const Commands: React.FC = () => {
+  const ref = React.useRef(null);
+  const selector = React.useCallback(
+    (state: State) => Object.keys(state.settingsEditing).length > 0,
+    [],
+  );
+  const show = useSelector(selector);
+  const dispatch = useDispatch();
+  return (
+    <Collapse
+      nodeRef={ref}
+      in={show}
+      duration={300}
+      mountOnEnter
+      unmountOnExit
+      target={
+        <div ref={ref}>
+          <div className="settings-commands fade-in">
+            <button
+              className="button"
+              onClick={() => dispatch(actions.resetEditingSettings())}>
+              Reset editing
+            </button>
+            <button
+              className="button"
+              onClick={() => dispatch(actions.updateSettings())}>
+              Save settings
+            </button>
+          </div>
+        </div>
+      }
+    />
+  );
 };

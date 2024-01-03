@@ -31,6 +31,31 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   animation: #{$prefix}fade-in 0.2s;
 }
 
+.button {
+  padding: 0.375rem 0.75rem;
+  color: #fff;
+  background-color: var(--#{$bs-prefix}primary);
+  border-color: var(--#{$bs-prefix}primary);
+  border-style: solid;
+  border-width: var(--#{$bs-prefix}border-width);
+  border-radius: var(--#{$bs-prefix}border-radius);
+  transition:
+    box-shadow 0.15s ease-in-out,
+    outline 0.15s ease-in-out;
+
+  &:is(:focus, :hover) {
+    box-shadow: 0 0 0 var(--#{$bs-prefix}focus-ring-width)
+      rgba(
+        var(--#{$bs-prefix}primary-rgb),
+        var(--#{$bs-prefix}focus-ring-opacity)
+      );
+  }
+
+  &:focus-visible {
+    outline: $focus-visible-outline;
+  }
+}
+
 .checkbox {
   display: flex;
   flex-shrink: 0;
@@ -441,4 +466,20 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 .settings-form-label {
   margin-bottom: 0;
   font-weight: normal;
+}
+
+.settings-commands {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: map.get($bs-spacers, 1);
+  column-gap: map.get($bs-spacers, 3);
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 2);
+  border-color: var(--#{$bs-prefix}border-color);
+  border-style: var(--#{$bs-prefix}border-style);
+  border-width: var(--#{$bs-prefix}border-width);
+  border-radius: var(--#{$bs-prefix}border-radius);
+
+  .button {
+    flex-grow: 1;
+  }
 }
