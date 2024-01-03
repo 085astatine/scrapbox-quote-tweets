@@ -35,9 +35,10 @@ const BaseURL: React.FC = () => {
   const dispatch = useDispatch();
   return (
     <div className="settings-row">
-      <div className={classNames('settings-label', { updated: isUpdated })}>
-        Base URL
-      </div>
+      <div
+        className={classNames('settings-telomere', { updated: isUpdated })}
+      />
+      <div className="settings-label">Base URL</div>
       <div className="settings-buttons">
         {hostnames.map((host) => {
           const id = `settings-hostname-${host}`;
