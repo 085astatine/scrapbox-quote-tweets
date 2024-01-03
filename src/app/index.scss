@@ -436,10 +436,16 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   overflow-y: scroll;
 }
 
-.settings-row {
+.settings-item {
+  display: flex;
+  flex-direction: column;
+  column-gap: map.get($bs-spacers, 1);
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 3);
+}
+
+.settings-item-input {
   display: flex;
   flex-wrap: wrap;
-  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 3);
 }
 
 .settings-telomere {
@@ -450,19 +456,30 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   &.updated {
     background-color: var(--#{$bs-prefix}form-valid-color);
   }
+
+  &.invalid {
+    background-color: var(--#{$bs-prefix}form-invalid-color);
+  }
 }
 
 .settings-label {
   display: flex;
+  align-self: center;
+  margin-right: map.get($bs-spacers, 3);
   font-weight: bold;
 }
 
-.settings-buttons {
+.settings-form {
   display: flex;
   flex-grow: 1;
   flex-wrap: wrap;
   column-gap: map.get($bs-spacers, 3);
   justify-content: end;
+}
+
+.settings-item-errors {
+  padding-left: map.get($bs-spacers, 3);
+  color: var(--#{$bs-prefix}form-invalid-color);
 }
 
 .settings-form-label {

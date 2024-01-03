@@ -219,6 +219,13 @@ const slice = createSlice({
         delete state.settingsEditing.hostname;
       }
     },
+    updateTimezone(state: State, action: PayloadAction<string>): void {
+      if (state.settings.timezone !== action.payload) {
+        state.settingsEditing.timezone = action.payload;
+      } else if ('timezone' in state.settingsEditing) {
+        delete state.settingsEditing.timezone;
+      }
+    },
   },
 });
 
