@@ -14,6 +14,7 @@ export const Settings: React.FC = () => {
         <h1>Settings</h1>
         <BaseURL />
         <Timezone />
+        <DatetimeFormat />
         <DownloadStorage />
       </div>
       <Commands />
@@ -121,6 +122,31 @@ const Timezone: React.FC = () => {
   );
 };
 
+const DatetimeFormat: React.FC = () => {
+  const format = useSelector(datetimeFormatSelector);
+  const isUpdated = useSelector(isDatetimeFormatUpdatedSelector);
+  const errors = useSelector(datetimeFormatErrorsSelector, shallowEqual);
+  const dispatch = useDispatch();
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    dispatch(actions.updateDatetimeFormat(event.target.value));
+  };
+  return (
+    <SettingsItem
+      label="Datetime Format"
+      form={
+        <input
+          type="text"
+          className="form-control"
+          value={format}
+          onChange={onChange}
+        />
+      }
+      isUpdated={isUpdated}
+      errors={errors}
+    />
+  );
+};
+
 const DownloadStorage: React.FC = () => {
   const onClick = async () => {
     const message: SettingsDownloadStorageMessage = {
@@ -180,6 +206,15 @@ const isTimezoneUpdatedSelector = (state: State): boolean =>
 
 const timezoneErrorsSelector = (state: State): readonly string[] =>
   state.settingsErrors.timezone ?? [];
+
+const datetimeFormatSelector = (state: State): string =>
+  state.settingsEditing.datetimeFormat ?? state.settings.datetimeFormat;
+
+const isDatetimeFormatUpdatedSelector = (state: State): boolean =>
+  'datetimeFormat' in state.settingsEditing;
+
+const datetimeFormatErrorsSelector = (state: State): readonly string[] =>
+  state.settingsErrors.datetimeFormat ?? [];
 
 const showCommandsSelector = (state: State): boolean =>
   Object.keys(state.settingsEditing).length > 0;
