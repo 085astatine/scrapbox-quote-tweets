@@ -199,6 +199,7 @@ const slice = createSlice({
           ];
         }
       }
+      // datetimeFormat: no validation
       // update if theare is no error
       if (Object.keys(state.settingsErrors).length === 0) {
         state.settings = {
@@ -213,21 +214,28 @@ const slice = createSlice({
       state.settingsErrors = {};
     },
     updateHostname(state: State, action: PayloadAction<Hostname>): void {
-      if (state.settings.hostname !== action.payload) {
-        state.settingsEditing.hostname = action.payload;
-      } else if ('hostname' in state.settingsEditing) {
-        delete state.settingsEditing.hostname;
-      }
+      editSettings(state, 'hostname', action.payload);
     },
     updateTimezone(state: State, action: PayloadAction<string>): void {
-      if (state.settings.timezone !== action.payload) {
-        state.settingsEditing.timezone = action.payload;
-      } else if ('timezone' in state.settingsEditing) {
-        delete state.settingsEditing.timezone;
-      }
+      editSettings(state, 'timezone', action.payload);
+    },
+    updateDatetimeFormat(state: State, action: PayloadAction<string>): void {
+      editSettings(state, 'datetimeFormat', action.payload);
     },
   },
 });
+
+const editSettings = <Key extends keyof EditingSettings>(
+  state: State,
+  key: Key,
+  value: EditingSettings[Key],
+): void => {
+  if (state.settings[key] !== value) {
+    state.settingsEditing[key] = value;
+  } else if (key in state.settingsEditing) {
+    delete state.settingsEditing[key];
+  }
+};
 
 // actions
 export const actions: Readonly<typeof slice.actions> = slice.actions;

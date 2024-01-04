@@ -8,6 +8,7 @@ export type Hostname = (typeof hostnames)[number];
 export interface Settings {
   hostname: Hostname;
   timezone: string;
+  datetimeFormat: string;
   tweetSort: TweetSort;
   deletedTweetsSort: DeletedTweetsSort;
 }
@@ -16,6 +17,7 @@ export const defaultSettings = (): Settings => {
   return {
     hostname: 'twitter.com',
     timezone: defaultTimezone(),
+    datetimeFormat: 'YYYY/MM/DD HH:mm:ss',
     tweetSort: {
       key: 'created_time',
       order: 'desc',

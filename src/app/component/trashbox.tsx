@@ -98,8 +98,8 @@ const DeletedTweetsHeader: React.FC<DeletedTweetsHeaderProps> = ({
   tweetsLength,
 }) => {
   const timezone = useSelector(timezoneSelector);
-  const dateFormat = 'YYYY/MM/DD HH:mm:ss';
-  const deletedTime = toDatetime(timestamp, timezone).format(dateFormat);
+  const datetimeFormat = useSelector(datetimeFormatSelector);
+  const deletedTime = toDatetime(timestamp, timezone).format(datetimeFormat);
   return (
     <div className="deleted-tweets-header">
       <div>{`${tweetsLength} Tweets`}</div>
@@ -301,3 +301,6 @@ const deletedTweetsSortSelector = (state: State): DeletedTweetsSort =>
   state.settings.deletedTweetsSort;
 
 const timezoneSelector = (state: State): string => state.settings.timezone;
+
+const datetimeFormatSelector = (state: State): string =>
+  state.settings.datetimeFormat;

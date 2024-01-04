@@ -43,10 +43,10 @@ const Header: React.FC<HeaderProps> = ({
 }: HeaderProps) => {
   const baseURL = useSelector(baseURLSelector);
   const timezone = useSelector(timezoneSelector);
-  const dateFormat = 'YYYY/MM/DD HH:mm:ss';
+  const datetimeFormat = useSelector(datetimeFormatSelector);
   const userURL = `${baseURL}/${username}`;
   const tweetURL = `${userURL}/status/${id}`;
-  const date = toDatetime(timestamp, timezone).format(dateFormat);
+  const date = toDatetime(timestamp, timezone).format(datetimeFormat);
   return (
     <div className="header">
       <a className="name" href={userURL} target="_blink" rel="noreferrer">
@@ -100,10 +100,10 @@ const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
 };
 
 // selectors
-const baseURLSelector = (state: State): string => {
-  return baseURL(state.settings.hostname);
-};
+const baseURLSelector = (state: State): string =>
+  baseURL(state.settings.hostname);
 
-const timezoneSelector = (state: State): string => {
-  return state.settings.timezone;
-};
+const timezoneSelector = (state: State): string => state.settings.timezone;
+
+const datetimeFormatSelector = (state: State): string =>
+  state.settings.datetimeFormat;
