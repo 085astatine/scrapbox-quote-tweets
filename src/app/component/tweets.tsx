@@ -7,6 +7,7 @@ import { Collapse } from '~/lib/component/transition';
 import { addTweetsToTrashbox } from '~/lib/storage/trashbox';
 import {
   SortOrder,
+  TweetSort,
   TweetSortKey,
   tweetSortFunction,
 } from '~/lib/tweet/sort-tweets';
@@ -17,13 +18,7 @@ import { Checkbox } from './checkbox';
 import { Tweet as TweetInfo } from './tweet';
 
 export const Tweets: React.FC = () => {
-  // redux
-  const selector = React.useCallback((state: State) => {
-    const tweets = [...state.tweets];
-    tweets.sort(tweetSortFunction(state.settings.tweetSort));
-    return tweets;
-  }, []);
-  const tweets = useSelector(selector, shallowEqual);
+  const tweets = useSelector(tweetsSelector, shallowEqual);
   return (
     <>
       <div className="tweets fade-in">
@@ -42,7 +37,6 @@ interface TweetProps {
 }
 
 const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
-  // redux
   const selector = React.useCallback(
     (state: State) => state.selectedTweets.includes(tweet),
     [tweet],
@@ -76,16 +70,7 @@ const Toolbar: React.FC = () => {
 
 const SelectAll: React.FC = () => {
   const id = 'select-all-tweets';
-  // redux
-  const selector = React.useCallback(
-    (state: State): 'disabled' | 'checked' | 'unchecked' =>
-      state.tweets.length === 0 ? 'disabled'
-      : state.tweets.every((tweet) => state.selectedTweets.includes(tweet)) ?
-        'checked'
-      : 'unchecked',
-    [],
-  );
-  const state = useSelector(selector);
+  const state = useSelector(selectAllStateSelector);
   const dispatch = useDispatch();
   // select
   const select = () => {
@@ -114,12 +99,7 @@ const SelectAll: React.FC = () => {
 
 const SelectSort: React.FC = () => {
   const id = 'select-tweets-sort';
-  // redux
-  const selector = React.useCallback(
-    (state: State) => state.settings.tweetSort,
-    [],
-  );
-  const { key: sortKey, order: sortOrder } = useSelector(selector);
+  const { key: sortKey, order: sortOrder } = useSelector(tweetSortSelector);
   const dispatch = useDispatch();
   // options
   const options: ReadonlyArray<readonly [TweetSortKey, SortOrder, string]> = [
@@ -158,15 +138,8 @@ const SelectSort: React.FC = () => {
 };
 
 const Commands: React.FC = () => {
-  // ref
   const ref = React.useRef(null);
-  // redux
-  const selector = React.useCallback((state: State) => {
-    const selectedTweets = [...state.selectedTweets];
-    selectedTweets.sort(tweetSortFunction(state.settings.tweetSort));
-    return selectedTweets;
-  }, []);
-  const tweets = useSelector(selector, shallowEqual);
+  const tweets = useSelector(selectedTweetsSelector, shallowEqual);
   const dispatch = useDispatch();
   // clipboard
   const copyToClipboard = () => {
@@ -213,3 +186,26 @@ const Commands: React.FC = () => {
     />
   );
 };
+
+// Selectors
+const tweetsSelector = (state: State): TweetData[] => {
+  const tweets = [...state.tweets];
+  tweets.sort(tweetSortFunction(state.settings.tweetSort));
+  return tweets;
+};
+
+const selectedTweetsSelector = (state: State): TweetData[] => {
+  const selectedTweets = [...state.selectedTweets];
+  selectedTweets.sort(tweetSortFunction(state.settings.tweetSort));
+  return selectedTweets;
+};
+
+const selectAllStateSelector = (
+  state: State,
+): 'disabled' | 'checked' | 'unchecked' =>
+  state.tweets.length === 0 ? 'disabled'
+  : state.tweets.every((tweet) => state.selectedTweets.includes(tweet)) ?
+    'checked'
+  : 'unchecked';
+
+const tweetSortSelector = (state: State): TweetSort => state.settings.tweetSort;

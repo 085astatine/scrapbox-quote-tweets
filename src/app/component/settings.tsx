@@ -4,7 +4,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import browser from 'webextension-polyfill';
 import { Collapse } from '~/lib/component/transition';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
-import { baseURL, hostnames } from '~/lib/settings';
+import { Hostname, baseURL, hostnames } from '~/lib/settings';
 import { State, actions } from '../store';
 
 export const Settings: React.FC = () => {
@@ -25,7 +25,7 @@ interface SettingsItemProps {
   label: string;
   form: React.ReactElement;
   isUpdated: boolean;
-  errors: string[];
+  errors: readonly string[];
 }
 
 const SettingsItem: React.FC<SettingsItemProps> = ({
@@ -59,21 +59,9 @@ const SettingsItem: React.FC<SettingsItemProps> = ({
 
 const BaseURL: React.FC = () => {
   const name = 'settings-hostname';
-  const hostnameSelector = React.useCallback(
-    (state: State) => state.settingsEditing.hostname ?? state.settings.hostname,
-    [],
-  );
-  const isUpdatedSelector = React.useCallback(
-    (state: State) => 'hostname' in state.settingsEditing,
-    [],
-  );
-  const errorsSelector = React.useCallback(
-    (state: State) => state.settingsErrors.hostname ?? [],
-    [],
-  );
   const hostname = useSelector(hostnameSelector);
-  const isUpdated = useSelector(isUpdatedSelector);
-  const errors = useSelector(errorsSelector, shallowEqual);
+  const isUpdated = useSelector(isHostnameUpdatedSelector);
+  const errors = useSelector(hostnameErrorsSelector, shallowEqual);
   const dispatch = useDispatch();
   return (
     <SettingsItem
@@ -109,21 +97,9 @@ const BaseURL: React.FC = () => {
 };
 
 const Timezone: React.FC = () => {
-  const timezoneSelector = React.useCallback(
-    (state: State) => state.settingsEditing.timezone ?? state.settings.timezone,
-    [],
-  );
-  const isUpdatedSelector = React.useCallback(
-    (state: State) => 'timezone' in state.settingsEditing,
-    [],
-  );
-  const errorsSelector = React.useCallback(
-    (state: State) => state.settingsErrors.timezone ?? [],
-    [],
-  );
   const timezone = useSelector(timezoneSelector);
-  const isUpdated = useSelector(isUpdatedSelector);
-  const errors = useSelector(errorsSelector, shallowEqual);
+  const isUpdated = useSelector(isTimezoneUpdatedSelector);
+  const errors = useSelector(timezoneErrorsSelector, shallowEqual);
   const dispatch = useDispatch();
   const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     dispatch(actions.updateTimezone(event.target.value));
@@ -157,11 +133,7 @@ const DownloadStorage: React.FC = () => {
 
 const Commands: React.FC = () => {
   const ref = React.useRef(null);
-  const selector = React.useCallback(
-    (state: State) => Object.keys(state.settingsEditing).length > 0,
-    [],
-  );
-  const show = useSelector(selector);
+  const show = useSelector(showCommandsSelector);
   const dispatch = useDispatch();
   return (
     <Collapse
@@ -189,3 +161,25 @@ const Commands: React.FC = () => {
     />
   );
 };
+
+// Selectors
+const hostnameSelector = (state: State): Hostname =>
+  state.settingsEditing.hostname ?? state.settings.hostname;
+
+const isHostnameUpdatedSelector = (state: State): boolean =>
+  'hostname' in state.settingsEditing;
+
+const hostnameErrorsSelector = (state: State): readonly string[] =>
+  state.settingsErrors.hostname ?? [];
+
+const timezoneSelector = (state: State): string =>
+  state.settingsEditing.timezone ?? state.settings.timezone;
+
+const isTimezoneUpdatedSelector = (state: State): boolean =>
+  'timezone' in state.settingsEditing;
+
+const timezoneErrorsSelector = (state: State): readonly string[] =>
+  state.settingsErrors.timezone ?? [];
+
+const showCommandsSelector = (state: State): boolean =>
+  Object.keys(state.settingsEditing).length > 0;
