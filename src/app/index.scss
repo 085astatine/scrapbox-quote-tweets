@@ -502,3 +502,16 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
     flex-grow: 1;
   }
 }
+
+.settings-datetime-format-description {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+  padding-left: map.get($bs-spacers, 3);
+
+  .arrow-icon {
+    width: 1em;
+    height: 1em;
+  }
+}

@@ -2,7 +2,9 @@ import classNames from 'classnames';
 import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import browser from 'webextension-polyfill';
+import ArrowRightIcon from '~/icon/bootstrap/arrow-right.svg';
 import { Collapse } from '~/lib/component/transition';
+import { InvalidTimezoneError, toDatetime } from '~/lib/datetime';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
 import { Hostname, baseURL, hostnames } from '~/lib/settings';
 import { State, actions } from '../store';
@@ -27,6 +29,7 @@ interface SettingsItemProps {
   form: React.ReactElement;
   isUpdated: boolean;
   errors: readonly string[];
+  description?: React.ReactElement;
 }
 
 const SettingsItem: React.FC<SettingsItemProps> = ({
@@ -34,6 +37,7 @@ const SettingsItem: React.FC<SettingsItemProps> = ({
   form,
   isUpdated,
   errors,
+  description,
 }) => {
   return (
     <div className="settings-item">
@@ -47,6 +51,7 @@ const SettingsItem: React.FC<SettingsItemProps> = ({
         <div className="settings-label">{label}</div>
         <div className="settings-form">{form}</div>
       </div>
+      {description !== undefined && description}
       {errors.length > 0 && (
         <div className="settings-item-errors">
           {errors.map((error, index) => (
@@ -124,12 +129,27 @@ const Timezone: React.FC = () => {
 
 const DatetimeFormat: React.FC = () => {
   const format = useSelector(datetimeFormatSelector);
+  const timezone = useSelector(timezoneSelector);
   const isUpdated = useSelector(isDatetimeFormatUpdatedSelector);
   const errors = useSelector(datetimeFormatErrorsSelector, shallowEqual);
   const dispatch = useDispatch();
   const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     dispatch(actions.updateDatetimeFormat(event.target.value));
   };
+  const sampleTimestamp = 1330873445; // 2012-03-04T05:06:07Z
+  const sampleISO = toDatetime(sampleTimestamp, 'UTC').format(
+    'YYYY-MM-DD[T]HH:mm:ss[Z]',
+  );
+  const sampleFormatted = (() => {
+    try {
+      return toDatetime(sampleTimestamp, timezone).format(format);
+    } catch (error: unknown) {
+      if (error instanceof InvalidTimezoneError) {
+        return 'Invalid Time Zone';
+      }
+      return 'Unknown Error';
+    }
+  })();
   return (
     <SettingsItem
       label="Datetime Format"
@@ -143,6 +163,17 @@ const DatetimeFormat: React.FC = () => {
       }
       isUpdated={isUpdated}
       errors={errors}
+      description={
+        <div className="settings-datetime-format-description">
+          <div>{`${sampleISO} (ISO 8601)`}</div>
+          <ArrowRightIcon
+            className="arrow-icon"
+            width={undefined}
+            height={undefined}
+          />
+          <div>{sampleFormatted}</div>
+        </div>
+      }
     />
   );
 };
