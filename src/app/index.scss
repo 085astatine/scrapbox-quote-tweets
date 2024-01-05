@@ -471,10 +471,10 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 
 .settings-form {
   display: flex;
-  flex-grow: 1;
   flex-wrap: wrap;
   column-gap: map.get($bs-spacers, 3);
   justify-content: end;
+  margin-left: auto;
 }
 
 .settings-item-errors {
