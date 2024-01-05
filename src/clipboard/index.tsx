@@ -1,7 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { actions, store } from '~/app/store';
-import { loadTrashbox, loadTweetsNotInTrashbox } from '~/lib/storage/trashbox';
+import { initializeStoreWithStorage, store } from '~/app/store';
 import { Root } from './component/root';
 import './index.scss';
 
@@ -11,11 +10,5 @@ if (root !== null) {
   reactRoot.render(<Root store={store} />);
 }
 
-const initialize = async (): Promise<void> => {
-  const initializer = {
-    tweets: await loadTweetsNotInTrashbox(),
-    trashbox: await loadTrashbox(),
-  };
-  store.dispatch(actions.initialize(initializer));
-};
-initialize();
+// initialize store with data loaded from storage
+initializeStoreWithStorage();

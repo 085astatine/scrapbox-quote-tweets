@@ -8,6 +8,7 @@ import {
   defaultSettings,
   isHostname,
 } from '~/lib/settings';
+import { loadTrashbox, loadTweetsNotInTrashbox } from '~/lib/storage/trashbox';
 import { DeletedTweets } from '~/lib/tweet/deleted-tweets';
 import { DeletedTweetsSort, TweetSort } from '~/lib/tweet/sort-tweets';
 import { Tweet } from '~/lib/tweet/tweet';
@@ -259,3 +260,10 @@ export const store = configureStore({
 });
 
 export type Store = typeof store;
+
+// Initialize store with data loaded from storage
+export const initializeStoreWithStorage = async (): Promise<void> => {
+  const tweets = await loadTweetsNotInTrashbox();
+  const trashbox = await loadTrashbox();
+  store.dispatch(actions.initialize({ tweets, trashbox }));
+};
