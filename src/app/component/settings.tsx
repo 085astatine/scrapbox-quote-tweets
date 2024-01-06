@@ -3,6 +3,7 @@ import React from 'react';
 import { shallowEqual, useDispatch, useSelector, useStore } from 'react-redux';
 import browser from 'webextension-polyfill';
 import ArrowRightIcon from '~/icon/bootstrap/arrow-right.svg';
+import DownloadIcon from '~/icon/bootstrap/download.svg';
 import { Collapse } from '~/lib/component/transition';
 import { InvalidTimezoneError, toDatetime } from '~/lib/datetime';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
@@ -18,7 +19,7 @@ export const Settings: React.FC = () => {
         <BaseURL />
         <Timezone />
         <DatetimeFormat />
-        <DownloadStorage />
+        {process.env.NODE_ENV === 'development' && <DevTools />}
       </div>
       <Commands />
     </>
@@ -28,8 +29,8 @@ export const Settings: React.FC = () => {
 interface SettingsItemProps {
   label: string;
   form: React.ReactElement;
-  isUpdated: boolean;
-  errors: readonly string[];
+  isUpdated?: boolean;
+  errors?: readonly string[];
   description?: React.ReactElement;
 }
 
@@ -45,15 +46,15 @@ const SettingsItem: React.FC<SettingsItemProps> = ({
       <div className="settings-item-input">
         <div
           className={classNames('settings-telomere', {
-            updated: isUpdated && !errors.length,
-            invalid: errors.length,
+            updated: isUpdated && !errors?.length,
+            invalid: errors?.length,
           })}
         />
         <div className="settings-label">{label}</div>
         <div className="settings-form">{form}</div>
       </div>
       {description !== undefined && description}
-      {errors.length > 0 && (
+      {errors !== undefined && errors.length > 0 && (
         <div className="settings-item-errors">
           {errors.map((error, index) => (
             <div key={index}>{error}</div>
@@ -179,6 +180,15 @@ const DatetimeFormat: React.FC = () => {
   );
 };
 
+const DevTools: React.FC = () => {
+  return (
+    <>
+      <h2>Dev Tools</h2>
+      <DownloadStorage />
+    </>
+  );
+};
+
 const DownloadStorage: React.FC = () => {
   const onClick = async () => {
     const message: SettingsDownloadStorageMessage = {
@@ -186,7 +196,21 @@ const DownloadStorage: React.FC = () => {
     };
     browser.runtime.sendMessage(message);
   };
-  return <button onClick={onClick}>Download Storage</button>;
+  return (
+    <SettingsItem
+      label="Download Storage"
+      form={
+        <button className="button download-button" onClick={onClick}>
+          <DownloadIcon
+            className="download-icon"
+            width={undefined}
+            height={undefined}
+          />
+          <span>Download Storage</span>
+        </button>
+      }
+    />
+  );
 };
 
 const Commands: React.FC = () => {
