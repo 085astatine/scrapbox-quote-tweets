@@ -4,18 +4,19 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import DeleteIcon from '~/icon/google-fonts/delete-forever.svg';
 import RestoreIcon from '~/icon/google-fonts/restore-from-trash.svg';
 import { Collapse } from '~/lib/component/transition';
+import { toDatetime } from '~/lib/datetime';
 import {
   deleteTweetsFromTrashbox,
   restoreTweetsFromTrashbox,
 } from '~/lib/storage/trashbox';
 import { DeletedTweets as DeletedTweetsData } from '~/lib/tweet/deleted-tweets';
 import {
+  DeletedTweetsSort,
   DeletedTweetsSortKey,
   SortOrder,
   deletedTweetsSortFunction,
 } from '~/lib/tweet/sort-tweets';
 import { Tweet as TweetData } from '~/lib/tweet/tweet';
-import { toDate } from '~/lib/tweet/tweet-date';
 import { trimGoogleFontsIcon } from '~/lib/utility';
 import { State, actions } from '../store';
 import { Checkbox } from './checkbox';
@@ -31,13 +32,10 @@ export const Trashbox: React.FC = () => {
 };
 
 const DeletedTweetsList: React.FC = () => {
-  // redux
-  const selector = React.useCallback((state: State) => {
-    const deletedTweetsList = [...state.trashbox];
-    deletedTweetsList.sort(deletedTweetsSortFunction(state.deletedTweetsSort));
-    return deletedTweetsList;
-  }, []);
-  const deletedTweetsList = useSelector(selector, shallowEqual);
+  const deletedTweetsList = useSelector(
+    deletedTweetsListSelector,
+    shallowEqual,
+  );
   return (
     <div className="deleted-tweets-list">
       <Toolbar />
@@ -99,9 +97,9 @@ const DeletedTweetsHeader: React.FC<DeletedTweetsHeaderProps> = ({
   timestamp,
   tweetsLength,
 }) => {
-  const timezone = 'UTC';
-  const dateFormat = 'YYYY/MM/DD HH:mm:ss';
-  const deletedTime = toDate(timestamp, timezone).format(dateFormat);
+  const timezone = useSelector(timezoneSelector);
+  const datetimeFormat = useSelector(datetimeFormatSelector);
+  const deletedTime = toDatetime(timestamp, timezone).format(datetimeFormat);
   return (
     <div className="deleted-tweets-header">
       <div>{`${tweetsLength} Tweets`}</div>
@@ -149,26 +147,7 @@ const Toolbar: React.FC = () => {
 
 const SelectAll: React.FC = () => {
   const id = 'select-all-trashbox';
-  // redux
-  const selector = React.useCallback(
-    (state: State): 'disabled' | 'checked' | 'unchecked' => {
-      const deletedTweetIDs = state.trashbox
-        .map((deletedTweets) => deletedTweets.tweets.map((tweet) => tweet.id))
-        .flat();
-      return (
-        deletedTweetIDs.length === 0 ? 'disabled'
-        : (
-          deletedTweetIDs.every((tweetID) =>
-            state.selectedDeletedTweets.some((tweet) => tweet.id === tweetID),
-          )
-        ) ?
-          'checked'
-        : 'unchecked'
-      );
-    },
-    [],
-  );
-  const state = useSelector(selector);
+  const state = useSelector(selectAllStateSelector);
   const dispatch = useDispatch();
   // select
   const select = () => {
@@ -197,12 +176,9 @@ const SelectAll: React.FC = () => {
 
 const SelectSort: React.FC = () => {
   const id = 'select-deleted-tweets-sort';
-  // redux
-  const selector = React.useCallback(
-    (state: State) => state.deletedTweetsSort,
-    [],
+  const { key: sortKey, order: sortOrder } = useSelector(
+    deletedTweetsSortSelector,
   );
-  const { key: sortKey, order: sortOrder } = useSelector(selector);
   const dispatch = useDispatch();
   // options
   const options: ReadonlyArray<
@@ -239,14 +215,8 @@ const SelectSort: React.FC = () => {
 };
 
 const Commands: React.FC = () => {
-  // ref
   const ref = React.useRef(null);
-  // redux
-  const selector = React.useCallback(
-    (state: State) => state.selectedDeletedTweets,
-    [],
-  );
-  const tweets = useSelector(selector, shallowEqual);
+  const tweets = useSelector(selectedDeletedTweetsSelector, shallowEqual);
   const dispatch = useDispatch();
   // restore
   const restoreTweets = () => {
@@ -296,3 +266,41 @@ const Commands: React.FC = () => {
     />
   );
 };
+
+// Selectors
+const deletedTweetsListSelector = (state: State): DeletedTweetsData[] => {
+  const deletedTweetsList = [...state.trashbox];
+  deletedTweetsList.sort(
+    deletedTweetsSortFunction(state.settings.deletedTweetsSort),
+  );
+  return deletedTweetsList;
+};
+
+const selectedDeletedTweetsSelector = (state: State): TweetData[] =>
+  state.selectedDeletedTweets;
+
+const selectAllStateSelector = (
+  state: State,
+): 'disabled' | 'checked' | 'unchecked' => {
+  const deletedTweetIDs = state.trashbox
+    .map((deletedTweets) => deletedTweets.tweets.map((tweet) => tweet.id))
+    .flat();
+  return (
+    deletedTweetIDs.length === 0 ? 'disabled'
+    : (
+      deletedTweetIDs.every((tweetID) =>
+        state.selectedDeletedTweets.some((tweet) => tweet.id === tweetID),
+      )
+    ) ?
+      'checked'
+    : 'unchecked'
+  );
+};
+
+const deletedTweetsSortSelector = (state: State): DeletedTweetsSort =>
+  state.settings.deletedTweetsSort;
+
+const timezoneSelector = (state: State): string => state.settings.timezone;
+
+const datetimeFormatSelector = (state: State): string =>
+  state.settings.datetimeFormat;

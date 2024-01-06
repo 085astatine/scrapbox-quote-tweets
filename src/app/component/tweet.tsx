@@ -1,10 +1,13 @@
 import classNames from 'classnames';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import ReturnIcon from '~/icon/bootstrap/arrow-return-left.svg';
 import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
+import { toDatetime } from '~/lib/datetime';
+import { baseURL } from '~/lib/settings';
 import { Tweet as TweetData, TweetID } from '~/lib/tweet/tweet';
-import { toDate } from '~/lib/tweet/tweet-date';
+import { State } from '../store';
 
 export interface TweetProps {
   tweet: TweetData;
@@ -38,12 +41,12 @@ const Header: React.FC<HeaderProps> = ({
   username,
   timestamp,
 }: HeaderProps) => {
-  const baseURL = 'https://twitter.com';
-  const timezone = 'UTC';
-  const dateFormat = 'YYYY/MM/DD HH:mm:ss';
+  const baseURL = useSelector(baseURLSelector);
+  const timezone = useSelector(timezoneSelector);
+  const datetimeFormat = useSelector(datetimeFormatSelector);
   const userURL = `${baseURL}/${username}`;
   const tweetURL = `${userURL}/status/${id}`;
-  const date = toDate(timestamp, timezone).format(dateFormat);
+  const date = toDatetime(timestamp, timezone).format(datetimeFormat);
   return (
     <div className="header">
       <a className="name" href={userURL} target="_blink" rel="noreferrer">
@@ -95,3 +98,12 @@ const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
     </div>
   );
 };
+
+// selectors
+const baseURLSelector = (state: State): string =>
+  baseURL(state.settings.hostname);
+
+const timezoneSelector = (state: State): string => state.settings.timezone;
+
+const datetimeFormatSelector = (state: State): string =>
+  state.settings.datetimeFormat;

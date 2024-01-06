@@ -31,6 +31,31 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   animation: #{$prefix}fade-in 0.2s;
 }
 
+.button {
+  padding: 0.375rem 0.75rem;
+  color: #fff;
+  background-color: var(--#{$bs-prefix}primary);
+  border-color: var(--#{$bs-prefix}primary);
+  border-style: solid;
+  border-width: var(--#{$bs-prefix}border-width);
+  border-radius: var(--#{$bs-prefix}border-radius);
+  transition:
+    box-shadow 0.15s ease-in-out,
+    outline 0.15s ease-in-out;
+
+  &:is(:focus, :hover) {
+    box-shadow: 0 0 0 var(--#{$bs-prefix}focus-ring-width)
+      rgba(
+        var(--#{$bs-prefix}primary-rgb),
+        var(--#{$bs-prefix}focus-ring-opacity)
+      );
+  }
+
+  &:focus-visible {
+    outline: $focus-visible-outline;
+  }
+}
+
 .checkbox {
   display: flex;
   flex-shrink: 0;
@@ -400,5 +425,104 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
       flex-grow: 1;
       overflow: hidden;
     }
+  }
+}
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 1;
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
+  overflow-y: scroll;
+}
+
+.settings-item {
+  display: flex;
+  flex-direction: column;
+  column-gap: map.get($bs-spacers, 1);
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 3);
+}
+
+.settings-item-input {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.settings-telomere {
+  width: 0.5rem;
+  margin-right: 0.5rem;
+  background-color: transparent;
+
+  &.updated {
+    background-color: var(--#{$bs-prefix}form-valid-color);
+  }
+
+  &.invalid {
+    background-color: var(--#{$bs-prefix}form-invalid-color);
+  }
+}
+
+.settings-label {
+  display: flex;
+  align-self: center;
+  margin-right: map.get($bs-spacers, 3);
+  font-weight: bold;
+}
+
+.settings-form {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: map.get($bs-spacers, 3);
+  justify-content: end;
+  margin-left: auto;
+}
+
+.settings-item-errors {
+  padding-left: map.get($bs-spacers, 3);
+  color: var(--#{$bs-prefix}form-invalid-color);
+}
+
+.settings-form-label {
+  margin-bottom: 0;
+  font-weight: normal;
+}
+
+.settings-commands {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: map.get($bs-spacers, 1);
+  column-gap: map.get($bs-spacers, 3);
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 2);
+  border-color: var(--#{$bs-prefix}border-color);
+  border-style: var(--#{$bs-prefix}border-style);
+  border-width: var(--#{$bs-prefix}border-width);
+  border-radius: var(--#{$bs-prefix}border-radius);
+
+  .button {
+    flex-grow: 1;
+  }
+}
+
+.settings-datetime-format-description {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+  padding-left: map.get($bs-spacers, 3);
+
+  .arrow-icon {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+.download-button {
+  display: flex;
+  column-gap: map.get($bs-spacers, 1);
+  align-items: center;
+
+  .download-icon {
+    width: 1.5em;
+    height: 1.5em;
   }
 }

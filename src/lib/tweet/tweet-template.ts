@@ -1,5 +1,5 @@
 import difflib from 'difflib';
-import { validateTimezone } from './tweet-date';
+import { validateTimezone } from '../datetime';
 
 export interface TweetTemplate {
   tweet: string;

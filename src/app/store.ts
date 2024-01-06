@@ -1,48 +1,63 @@
 import { PayloadAction, configureStore, createSlice } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
+import { isValidTimezone } from '~/lib/datetime';
+import {
+  Hostname,
+  Settings,
+  defaultSettings,
+  isHostname,
+} from '~/lib/settings';
+import { loadSettings } from '~/lib/storage/settings';
+import { loadTrashbox, loadTweetsNotInTrashbox } from '~/lib/storage/trashbox';
 import { DeletedTweets } from '~/lib/tweet/deleted-tweets';
 import { DeletedTweetsSort, TweetSort } from '~/lib/tweet/sort-tweets';
 import { Tweet } from '~/lib/tweet/tweet';
 import { toArray } from '~/lib/utility';
 
 // state
+type EditingSettings = Partial<
+  Omit<Settings, 'tweetSort' | 'deletedTweetsSort'>
+>;
+
+type SettingsErrors = Partial<Record<keyof EditingSettings, string[]>>;
+
 export interface State {
   tweets: Tweet[];
   trashbox: DeletedTweets[];
   selectedTweets: Tweet[];
   selectedDeletedTweets: Tweet[];
-  tweetSort: TweetSort;
-  deletedTweetsSort: DeletedTweetsSort;
+  settings: Settings;
+  settingsEditing: EditingSettings;
+  settingsErrors: SettingsErrors;
 }
 
-const initialState: State = {
-  tweets: [],
-  trashbox: [],
-  selectedTweets: [],
-  selectedDeletedTweets: [],
-  tweetSort: {
-    key: 'created_time',
-    order: 'desc',
-  },
-  deletedTweetsSort: {
-    key: 'deleted_time',
-    order: 'desc',
-  },
+const initialState = (): State => {
+  return {
+    tweets: [],
+    trashbox: [],
+    selectedTweets: [],
+    selectedDeletedTweets: [],
+    settings: defaultSettings(),
+    settingsEditing: {},
+    settingsErrors: {},
+  };
 };
 
 export interface Initializer {
   tweets: Tweet[];
   trashbox: DeletedTweets[];
+  settings: Settings;
 }
 
 const slice = createSlice({
   name: 'clipboard',
-  initialState,
+  initialState: initialState(),
   reducers: {
     initialize(state: State, action: PayloadAction<Initializer>): void {
       state.tweets = [...action.payload.tweets];
       state.trashbox = [...action.payload.trashbox];
+      state.settings = { ...action.payload.settings };
     },
     selectTweet(state: State, action: PayloadAction<Tweet>): void {
       const exist = state.selectedTweets.find(
@@ -157,16 +172,74 @@ const slice = createSlice({
       state.selectedDeletedTweets = [];
     },
     updateTweetSort(state: State, action: PayloadAction<TweetSort>): void {
-      state.tweetSort = action.payload;
+      state.settings.tweetSort = action.payload;
     },
     updateDeletedTweetsSort(
       state: State,
       action: PayloadAction<DeletedTweetsSort>,
     ): void {
-      state.deletedTweetsSort = action.payload;
+      state.settings.deletedTweetsSort = action.payload;
+    },
+    updateSettings(state: State): void {
+      // reset errors
+      state.settingsErrors = {};
+      // hostname (base URL)
+      if ('hostname' in state.settingsEditing) {
+        const newHostname = state.settingsEditing.hostname;
+        if (!isHostname(newHostname)) {
+          state.settingsErrors.hostname = [
+            `"${newHostname}" is not valid hostname.`,
+          ];
+        }
+      }
+      // timezone
+      if ('timezone' in state.settingsEditing) {
+        const newTimezone = state.settingsEditing.timezone;
+        if (!isValidTimezone(newTimezone)) {
+          state.settingsErrors.timezone = [
+            `"${newTimezone}" is not valid timezone.`,
+            'Please input the time zone in the IANA database.',
+            'Examples: "UTC", "Asia/Tokyo", "America/New_York"',
+          ];
+        }
+      }
+      // datetimeFormat: no validation
+      // update if theare is no error
+      if (Object.keys(state.settingsErrors).length === 0) {
+        state.settings = {
+          ...state.settings,
+          ...state.settingsEditing,
+        };
+        state.settingsEditing = {};
+      }
+    },
+    resetEditingSettings(state: State): void {
+      state.settingsEditing = {};
+      state.settingsErrors = {};
+    },
+    updateHostname(state: State, action: PayloadAction<Hostname>): void {
+      editSettings(state, 'hostname', action.payload);
+    },
+    updateTimezone(state: State, action: PayloadAction<string>): void {
+      editSettings(state, 'timezone', action.payload);
+    },
+    updateDatetimeFormat(state: State, action: PayloadAction<string>): void {
+      editSettings(state, 'datetimeFormat', action.payload);
     },
   },
 });
+
+const editSettings = <Key extends keyof EditingSettings>(
+  state: State,
+  key: Key,
+  value: EditingSettings[Key],
+): void => {
+  if (state.settings[key] !== value) {
+    state.settingsEditing[key] = value;
+  } else if (key in state.settingsEditing) {
+    delete state.settingsEditing[key];
+  }
+};
 
 // actions
 export const actions: Readonly<typeof slice.actions> = slice.actions;
@@ -190,3 +263,11 @@ export const store = configureStore({
 });
 
 export type Store = typeof store;
+
+// Initialize store with data loaded from storage
+export const initializeStoreWithStorage = async (): Promise<void> => {
+  const tweets = await loadTweetsNotInTrashbox();
+  const trashbox = await loadTrashbox();
+  const settings = (await loadSettings()) ?? defaultSettings();
+  store.dispatch(actions.initialize({ tweets, trashbox, settings }));
+};

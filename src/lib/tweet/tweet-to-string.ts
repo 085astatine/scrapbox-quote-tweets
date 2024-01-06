@@ -1,3 +1,4 @@
+import { toDatetime } from '../datetime';
 import {
   Tweet,
   TweetEntity,
@@ -7,7 +8,6 @@ import {
   TweetEntityText,
   TweetEntityURL,
 } from './tweet';
-import { toDate } from './tweet-date';
 import {
   EntityCashtagField,
   EntityHashtagField,
@@ -55,19 +55,19 @@ const fillTweetTemplateElement = (
         case 'user.username':
           return tweet.author.username;
         case 'date.iso':
-          return toDate(tweet.created_at, template.timezone).format();
+          return toDatetime(tweet.created_at, template.timezone).format();
         case 'date.year':
-          return toDate(tweet.created_at, template.timezone).format('YYYY');
+          return toDatetime(tweet.created_at, template.timezone).format('YYYY');
         case 'date.month':
-          return toDate(tweet.created_at, template.timezone).format('MM');
+          return toDatetime(tweet.created_at, template.timezone).format('MM');
         case 'date.day':
-          return toDate(tweet.created_at, template.timezone).format('DD');
+          return toDatetime(tweet.created_at, template.timezone).format('DD');
         case 'date.hours':
-          return toDate(tweet.created_at, template.timezone).format('HH');
+          return toDatetime(tweet.created_at, template.timezone).format('HH');
         case 'date.minutes':
-          return toDate(tweet.created_at, template.timezone).format('mm');
+          return toDatetime(tweet.created_at, template.timezone).format('mm');
         case 'date.seconds':
-          return toDate(tweet.created_at, template.timezone).format('ss');
+          return toDatetime(tweet.created_at, template.timezone).format('ss');
         case 'date.timestamp':
           return tweet.created_at.toString();
       }
