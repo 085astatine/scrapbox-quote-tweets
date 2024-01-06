@@ -8,6 +8,7 @@ import {
   defaultSettings,
   isHostname,
 } from '~/lib/settings';
+import { loadSettings } from '~/lib/storage/settings';
 import { loadTrashbox, loadTweetsNotInTrashbox } from '~/lib/storage/trashbox';
 import { DeletedTweets } from '~/lib/tweet/deleted-tweets';
 import { DeletedTweetsSort, TweetSort } from '~/lib/tweet/sort-tweets';
@@ -46,6 +47,7 @@ const initialState = (): State => {
 export interface Initializer {
   tweets: Tweet[];
   trashbox: DeletedTweets[];
+  settings: Settings;
 }
 
 const slice = createSlice({
@@ -55,6 +57,7 @@ const slice = createSlice({
     initialize(state: State, action: PayloadAction<Initializer>): void {
       state.tweets = [...action.payload.tweets];
       state.trashbox = [...action.payload.trashbox];
+      state.settings = { ...action.payload.settings };
     },
     selectTweet(state: State, action: PayloadAction<Tweet>): void {
       const exist = state.selectedTweets.find(
@@ -265,5 +268,6 @@ export type Store = typeof store;
 export const initializeStoreWithStorage = async (): Promise<void> => {
   const tweets = await loadTweetsNotInTrashbox();
   const trashbox = await loadTrashbox();
-  store.dispatch(actions.initialize({ tweets, trashbox }));
+  const settings = (await loadSettings()) ?? defaultSettings();
+  store.dispatch(actions.initialize({ tweets, trashbox, settings }));
 };

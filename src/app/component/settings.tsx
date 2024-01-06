@@ -1,12 +1,13 @@
 import classNames from 'classnames';
 import React from 'react';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector, useStore } from 'react-redux';
 import browser from 'webextension-polyfill';
 import ArrowRightIcon from '~/icon/bootstrap/arrow-right.svg';
 import { Collapse } from '~/lib/component/transition';
 import { InvalidTimezoneError, toDatetime } from '~/lib/datetime';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
 import { Hostname, baseURL, hostnames } from '~/lib/settings';
+import { saveSettings } from '~/lib/storage/settings';
 import { State, actions } from '../store';
 
 export const Settings: React.FC = () => {
@@ -192,6 +193,7 @@ const Commands: React.FC = () => {
   const ref = React.useRef(null);
   const show = useSelector(showCommandsSelector);
   const dispatch = useDispatch();
+  const store = useStore<State>();
   return (
     <Collapse
       nodeRef={ref}
@@ -209,7 +211,12 @@ const Commands: React.FC = () => {
             </button>
             <button
               className="button"
-              onClick={() => dispatch(actions.updateSettings())}>
+              onClick={() => {
+                // update store
+                dispatch(actions.updateSettings());
+                // save to storage
+                saveSettings(store.getState().settings);
+              }}>
               Save settings
             </button>
           </div>
