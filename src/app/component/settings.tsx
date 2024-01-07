@@ -86,7 +86,9 @@ const BaseURL: React.FC = () => {
                   id={id}
                   name={name}
                   checked={host === hostname}
-                  onChange={() => dispatch(actions.updateHostname(host))}
+                  onChange={() =>
+                    dispatch(actions.settings.updateHostname(host))
+                  }
                 />
                 <label
                   className="form-check-label settings-form-label"
@@ -110,7 +112,7 @@ const Timezone: React.FC = () => {
   const errors = useSelector(timezoneErrorsSelector, shallowEqual);
   const dispatch = useDispatch();
   const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    dispatch(actions.updateTimezone(event.target.value));
+    dispatch(actions.settings.updateTimezone(event.target.value));
   };
   return (
     <SettingsItem
@@ -136,7 +138,7 @@ const DatetimeFormat: React.FC = () => {
   const errors = useSelector(datetimeFormatErrorsSelector, shallowEqual);
   const dispatch = useDispatch();
   const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    dispatch(actions.updateDatetimeFormat(event.target.value));
+    dispatch(actions.settings.updateDatetimeFormat(event.target.value));
   };
   const sampleTimestamp = 1330873445; // 2012-03-04T05:06:07Z
   const sampleISO = toDatetime(sampleTimestamp, 'UTC').format(
@@ -230,16 +232,16 @@ const Commands: React.FC = () => {
           <div className="settings-commands fade-in">
             <button
               className="button"
-              onClick={() => dispatch(actions.resetEditingSettings())}>
+              onClick={() => dispatch(actions.settings.reset())}>
               Reset editing
             </button>
             <button
               className="button"
               onClick={() => {
                 // update store
-                dispatch(actions.updateSettings());
+                dispatch(actions.settings.update());
                 // save to storage
-                saveSettings(store.getState().settings);
+                saveSettings(store.getState().settings.current);
               }}>
               Save settings
             </button>
@@ -252,31 +254,32 @@ const Commands: React.FC = () => {
 
 // Selectors
 const hostnameSelector = (state: State): Hostname =>
-  state.settingsEditing.hostname ?? state.settings.hostname;
+  state.settings.editing.hostname ?? state.settings.current.hostname;
 
 const isHostnameUpdatedSelector = (state: State): boolean =>
-  'hostname' in state.settingsEditing;
+  'hostname' in state.settings.editing;
 
 const hostnameErrorsSelector = (state: State): readonly string[] =>
-  state.settingsErrors.hostname ?? [];
+  state.settings.errors.hostname ?? [];
 
 const timezoneSelector = (state: State): string =>
-  state.settingsEditing.timezone ?? state.settings.timezone;
+  state.settings.editing.timezone ?? state.settings.current.timezone;
 
 const isTimezoneUpdatedSelector = (state: State): boolean =>
-  'timezone' in state.settingsEditing;
+  'timezone' in state.settings.editing;
 
 const timezoneErrorsSelector = (state: State): readonly string[] =>
-  state.settingsErrors.timezone ?? [];
+  state.settings.errors.timezone ?? [];
 
 const datetimeFormatSelector = (state: State): string =>
-  state.settingsEditing.datetimeFormat ?? state.settings.datetimeFormat;
+  state.settings.editing.datetimeFormat ??
+  state.settings.current.datetimeFormat;
 
 const isDatetimeFormatUpdatedSelector = (state: State): boolean =>
-  'datetimeFormat' in state.settingsEditing;
+  'datetimeFormat' in state.settings.editing;
 
 const datetimeFormatErrorsSelector = (state: State): readonly string[] =>
-  state.settingsErrors.datetimeFormat ?? [];
+  state.settings.errors.datetimeFormat ?? [];
 
 const showCommandsSelector = (state: State): boolean =>
-  Object.keys(state.settingsEditing).length > 0;
+  Object.keys(state.settings.editing).length > 0;

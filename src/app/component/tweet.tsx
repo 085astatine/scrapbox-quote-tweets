@@ -101,9 +101,10 @@ const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
 
 // selectors
 const baseURLSelector = (state: State): string =>
-  baseURL(state.settings.hostname);
+  baseURL(state.settings.current.hostname);
 
-const timezoneSelector = (state: State): string => state.settings.timezone;
+const timezoneSelector = (state: State): string =>
+  state.settings.current.timezone;
 
 const datetimeFormatSelector = (state: State): string =>
-  state.settings.datetimeFormat;
+  state.settings.current.datetimeFormat;

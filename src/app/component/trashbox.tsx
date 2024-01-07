@@ -59,7 +59,9 @@ const DeletedTweets: React.FC<DeletedTweetsProps> = ({
   // redux
   const selector = React.useCallback(
     (state: State) =>
-      tweets.every((tweet) => state.selectedDeletedTweets.includes(tweet)),
+      tweets.every((tweet) =>
+        state.tweet.selectedDeletedTweets.includes(tweet),
+      ),
     [tweets],
   );
   const isAllSelected = useSelector(selector);
@@ -67,9 +69,9 @@ const DeletedTweets: React.FC<DeletedTweetsProps> = ({
   // select
   const selectAll = () => {
     if (isAllSelected) {
-      dispatch(actions.unselectDeletedTweet(tweets));
+      dispatch(actions.tweet.unselectDeletedTweet(tweets));
     } else {
-      dispatch(actions.selectDeletedTweet(tweets));
+      dispatch(actions.tweet.selectDeletedTweet(tweets));
     }
   };
   return (
@@ -115,7 +117,7 @@ interface TweetProps {
 const Tweet: React.FC<TweetProps> = ({ tweet }) => {
   // redux
   const selector = React.useCallback(
-    (state: State) => state.selectedDeletedTweets.includes(tweet),
+    (state: State) => state.tweet.selectedDeletedTweets.includes(tweet),
     [tweet],
   );
   const isSelected = useSelector(selector);
@@ -123,9 +125,9 @@ const Tweet: React.FC<TweetProps> = ({ tweet }) => {
   // select
   const select = () => {
     if (isSelected) {
-      dispatch(actions.unselectDeletedTweet(tweet));
+      dispatch(actions.tweet.unselectDeletedTweet(tweet));
     } else {
-      dispatch(actions.selectDeletedTweet(tweet));
+      dispatch(actions.tweet.selectDeletedTweet(tweet));
     }
   };
   return (
@@ -152,9 +154,9 @@ const SelectAll: React.FC = () => {
   // select
   const select = () => {
     if (state === 'checked') {
-      dispatch(actions.unselectAllDeletedTweets());
+      dispatch(actions.tweet.unselectAllDeletedTweets());
     } else if (state === 'unchecked') {
-      dispatch(actions.selectAllDeletedTweets());
+      dispatch(actions.tweet.selectAllDeletedTweets());
     }
   };
   return (
@@ -190,7 +192,7 @@ const SelectSort: React.FC = () => {
   // event
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const [key, order] = options[event.target.selectedIndex];
-    dispatch(actions.updateDeletedTweetsSort({ key, order }));
+    dispatch(actions.settings.updateDeletedTweetsSort({ key, order }));
   };
   return (
     <div className="tool">
@@ -221,14 +223,14 @@ const Commands: React.FC = () => {
   // restore
   const restoreTweets = () => {
     // store
-    dispatch(actions.restoreSelectedDeletedTweets());
+    dispatch(actions.tweet.restoreSelectedDeletedTweets());
     // storage
     restoreTweetsFromTrashbox(tweets.map((tweet) => tweet.id));
   };
   // delete
   const deleteTweets = () => {
     // store
-    dispatch(actions.deleteSelectedDeletedTweets());
+    dispatch(actions.tweet.deleteSelectedDeletedTweets());
     // storage
     deleteTweetsFromTrashbox(tweets.map((tweet) => tweet.id));
   };
@@ -269,27 +271,27 @@ const Commands: React.FC = () => {
 
 // Selectors
 const deletedTweetsListSelector = (state: State): DeletedTweetsData[] => {
-  const deletedTweetsList = [...state.trashbox];
+  const deletedTweetsList = [...state.tweet.trashbox];
   deletedTweetsList.sort(
-    deletedTweetsSortFunction(state.settings.deletedTweetsSort),
+    deletedTweetsSortFunction(state.settings.current.deletedTweetsSort),
   );
   return deletedTweetsList;
 };
 
 const selectedDeletedTweetsSelector = (state: State): TweetData[] =>
-  state.selectedDeletedTweets;
+  state.tweet.selectedDeletedTweets;
 
 const selectAllStateSelector = (
   state: State,
 ): 'disabled' | 'checked' | 'unchecked' => {
-  const deletedTweetIDs = state.trashbox
+  const deletedTweetIDs = state.tweet.trashbox
     .map((deletedTweets) => deletedTweets.tweets.map((tweet) => tweet.id))
     .flat();
   return (
     deletedTweetIDs.length === 0 ? 'disabled'
     : (
       deletedTweetIDs.every((tweetID) =>
-        state.selectedDeletedTweets.some((tweet) => tweet.id === tweetID),
+        state.tweet.selectedDeletedTweets.some((tweet) => tweet.id === tweetID),
       )
     ) ?
       'checked'
@@ -298,9 +300,10 @@ const selectAllStateSelector = (
 };
 
 const deletedTweetsSortSelector = (state: State): DeletedTweetsSort =>
-  state.settings.deletedTweetsSort;
+  state.settings.current.deletedTweetsSort;
 
-const timezoneSelector = (state: State): string => state.settings.timezone;
+const timezoneSelector = (state: State): string =>
+  state.settings.current.timezone;
 
 const datetimeFormatSelector = (state: State): string =>
-  state.settings.datetimeFormat;
+  state.settings.current.datetimeFormat;
