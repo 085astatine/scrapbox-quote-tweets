@@ -54,7 +54,7 @@ export const settings = createSlice({
         if (!isValidTimezone(timezone)) {
           state.errors.timezone = [
             `"${timezone}" is not valid timezone.`,
-            'Please input the time zone in the IANA database.',
+            'Please enter the time zone in the IANA database.',
             'Examples: "UTC", "Asia/Tokyo", "America/New_York"',
           ];
         }

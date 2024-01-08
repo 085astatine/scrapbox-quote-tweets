@@ -19,7 +19,6 @@ export const Settings: React.FC = () => {
         <BaseURL />
         <Timezone />
         <DatetimeFormat />
-        <DatetimeFormatSample />
         {process.env.NODE_ENV === 'development' && <DevTools />}
       </div>
       <Commands />
@@ -128,6 +127,18 @@ const Timezone: React.FC = () => {
       }
       isUpdated={isUpdated}
       errors={errors}
+      description={
+        <div className="settings-item-description">
+          Enter the time zone found in the{' '}
+          <a
+            href="https://www.iana.org/time-zones"
+            target="_blink"
+            rel="noreferrer">
+            IANA database
+          </a>
+          .
+        </div>
+      }
     />
   );
 };
@@ -153,6 +164,21 @@ const DatetimeFormat: React.FC = () => {
       }
       isUpdated={isUpdated}
       errors={errors}
+      description={
+        <>
+          <div className="settings-item-description">
+            Enter the{' '}
+            <a
+              href="https://day.js.org/docs/en/display/format"
+              target="_blink"
+              rel="noreferrer">
+              Day.js Format
+            </a>
+            .
+          </div>
+          <DatetimeFormatSample />
+        </>
+      }
     />
   );
 };
