@@ -186,7 +186,7 @@ const DatetimeFormat: React.FC = () => {
 const DatetimeFormatSample: React.FC = () => {
   const timezone = useSelector(timezoneSelector);
   const format = useSelector(datetimeFormatSelector);
-  const timestamp = 1330873445; // 2012-03-04T05:06:07Z
+  const [timestamp] = React.useState(Math.trunc(Date.now() / 1000));
   const isoFormatted = toDatetime(timestamp, 'UTC').format(
     'YYYY-MM-DD[T]HH:mm:ss[Z]',
   );
