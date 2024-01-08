@@ -477,8 +477,12 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   margin-left: auto;
 }
 
+.settings-item-description {
+  padding-left: map.get($bs-spacers, 5);
+}
+
 .settings-item-errors {
-  padding-left: map.get($bs-spacers, 3);
+  padding-left: map.get($bs-spacers, 5);
   color: var(--#{$bs-prefix}form-invalid-color);
 }
 
@@ -503,12 +507,12 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   }
 }
 
-.settings-datetime-format-description {
+.settings-datetime-format-sample {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-around;
-  padding-left: map.get($bs-spacers, 3);
+  justify-content: space-between;
+  padding-left: map.get($bs-spacers, 5);
 
   .arrow-icon {
     width: 1em;

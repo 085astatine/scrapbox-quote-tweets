@@ -5,7 +5,7 @@ import browser from 'webextension-polyfill';
 import ArrowRightIcon from '~/icon/bootstrap/arrow-right.svg';
 import DownloadIcon from '~/icon/bootstrap/download.svg';
 import { Collapse } from '~/lib/component/transition';
-import { InvalidTimezoneError, toDatetime } from '~/lib/datetime';
+import { isValidTimezone, toDatetime } from '~/lib/datetime';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
 import { Hostname, baseURL, hostnames } from '~/lib/settings';
 import { saveSettings } from '~/lib/storage/settings';
@@ -127,33 +127,30 @@ const Timezone: React.FC = () => {
       }
       isUpdated={isUpdated}
       errors={errors}
+      description={
+        <div className="settings-item-description">
+          Enter the time zone found in the{' '}
+          <a
+            href="https://www.iana.org/time-zones"
+            target="_blink"
+            rel="noreferrer">
+            IANA database
+          </a>
+          .
+        </div>
+      }
     />
   );
 };
 
 const DatetimeFormat: React.FC = () => {
   const format = useSelector(datetimeFormatSelector);
-  const timezone = useSelector(timezoneSelector);
   const isUpdated = useSelector(isDatetimeFormatUpdatedSelector);
   const errors = useSelector(datetimeFormatErrorsSelector, shallowEqual);
   const dispatch = useDispatch();
   const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     dispatch(actions.settings.updateDatetimeFormat(event.target.value));
   };
-  const sampleTimestamp = 1330873445; // 2012-03-04T05:06:07Z
-  const sampleISO = toDatetime(sampleTimestamp, 'UTC').format(
-    'YYYY-MM-DD[T]HH:mm:ss[Z]',
-  );
-  const sampleFormatted = (() => {
-    try {
-      return toDatetime(sampleTimestamp, timezone).format(format);
-    } catch (error: unknown) {
-      if (error instanceof InvalidTimezoneError) {
-        return 'Invalid Time Zone';
-      }
-      return 'Unknown Error';
-    }
-  })();
   return (
     <SettingsItem
       label="Datetime Format"
@@ -168,17 +165,45 @@ const DatetimeFormat: React.FC = () => {
       isUpdated={isUpdated}
       errors={errors}
       description={
-        <div className="settings-datetime-format-description">
-          <div>{`${sampleISO} (ISO 8601)`}</div>
-          <ArrowRightIcon
-            className="arrow-icon"
-            width={undefined}
-            height={undefined}
-          />
-          <div>{sampleFormatted}</div>
-        </div>
+        <>
+          <div className="settings-item-description">
+            Enter the{' '}
+            <a
+              href="https://day.js.org/docs/en/display/format"
+              target="_blink"
+              rel="noreferrer">
+              Day.js Format
+            </a>
+            .
+          </div>
+          <DatetimeFormatSample />
+        </>
       }
     />
+  );
+};
+
+const DatetimeFormatSample: React.FC = () => {
+  const timezone = useSelector(timezoneSelector);
+  const format = useSelector(datetimeFormatSelector);
+  const [timestamp] = React.useState(Math.trunc(Date.now() / 1000));
+  const isoFormatted = toDatetime(timestamp, 'UTC').format(
+    'YYYY-MM-DD[T]HH:mm:ss[Z]',
+  );
+  const customFormatted =
+    isValidTimezone(timezone) ?
+      toDatetime(timestamp, timezone).format(format)
+    : 'Invalid Time Zone';
+  return (
+    <div className="settings-datetime-format-sample">
+      <div>{`${isoFormatted} (ISO 8601)`}</div>
+      <ArrowRightIcon
+        className="arrow-icon"
+        width={undefined}
+        height={undefined}
+      />
+      <div>{customFormatted}</div>
+    </div>
   );
 };
 
