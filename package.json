@@ -37,6 +37,7 @@
   },
   "homepage": "https://github.com/085astatine/scrapbox-copy-tweets#readme",
   "devDependencies": {
+    "@eslint/js": "^8.56.0",
     "@svgr/webpack": "^8.1.0",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/chrome": "^0.0.256",
