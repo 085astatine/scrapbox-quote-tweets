@@ -73,7 +73,6 @@ const onMessageListener = async (
         : await forwardExpandTCoURLRequestToOffscreen(message);
     case 'SaveTweet/Request':
       return await respondToSaveTweetRequest(message.tweet);
-      break;
     case 'Settings/DownloadStorage':
       await downloadStorage();
       break;
