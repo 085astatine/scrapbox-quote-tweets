@@ -22,6 +22,9 @@ module.exports = [
         ...globals.node,
       },
     },
+    linterOptions: {
+      reportUnusedDisableDirectives: 'error',
+    },
     plugins: {
       '@typescript-eslint': typescript,
       react,
