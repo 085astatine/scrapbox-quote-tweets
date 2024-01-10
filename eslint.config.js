@@ -10,7 +10,7 @@ const prettier = require('eslint-config-prettier');
 
 module.exports = [
   {
-    files: ['src/**/*.{ts,tsx}', 'test/**/*.ts'],
+    files: ['src/**/*.{ts,tsx}'],
     ignores: ['src/validate-json/*.js'],
     languageOptions: {
       parser: typescriptParser,
@@ -18,7 +18,6 @@ module.exports = [
         ...globals.browser,
         ...globals.es2021,
         ...globals.webextensions,
-        ...globals.jest,
         ...globals.node,
       },
     },
@@ -44,6 +43,30 @@ module.exports = [
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       ...reactRedux.configs.recommended.rules,
+      ...prettier.rules,
+    },
+  },
+  {
+    files: ['test/**/*.ts'],
+    languageOptions: {
+      parser: typescriptParser,
+      globals: {
+        ...globals.es2021,
+        ...globals.jest,
+        ...globals.node,
+      },
+    },
+    linterOptions: {
+      reportUnusedDisableDirectives: 'error',
+    },
+    plugins: {
+      '@typescript-eslint': typescript,
+    },
+    rules: {
+      ...google.rules,
+      'require-jsdoc': 'off',
+      ...js.configs.recommended.rules,
+      ...typescript.configs.recommended.rules,
       ...prettier.rules,
     },
   },
