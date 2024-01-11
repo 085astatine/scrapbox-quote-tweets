@@ -72,7 +72,7 @@ const fillTweetTemplateElement = (
           return tweet.created_at.toString();
       }
   }
-  ((_: never) => _)(templateElement);
+  const _: never = templateElement;
   return '';
 };
 
@@ -101,9 +101,10 @@ const fillTweetEntity = (
       return template.entity.mention
         .map((element) => fillTweetEntityMention(element, entity))
         .join('');
-    default:
-      ((_: never) => _)(entity);
+    default: {
+      const _: never = entity;
       return '';
+    }
   }
 };
 
@@ -120,7 +121,7 @@ const fillTweetEntityText = (
           return entity.text;
       }
   }
-  ((_: never) => _)(templateElement);
+  const _: never = templateElement;
   return '';
 };
 
@@ -145,7 +146,7 @@ const fillTweetEntityURL = (
           return entity.title ?? '';
       }
   }
-  ((_: never) => _)(templateElement);
+  const _: never = templateElement;
   return '';
 };
 
@@ -166,7 +167,7 @@ const fillTweetEntityHashtag = (
           return entity.hashmoji ?? '';
       }
   }
-  ((_: never) => _)(templateElement);
+  const _: never = templateElement;
   return '';
 };
 
@@ -185,7 +186,7 @@ const fillTweetEntityCashtag = (
           return entity.tag;
       }
   }
-  ((_: never) => _)(templateElement);
+  const _: never = templateElement;
   return '';
 };
 
@@ -204,6 +205,6 @@ const fillTweetEntityMention = (
           return entity.username;
       }
   }
-  ((_: never) => _)(templateElement);
+  const _: never = templateElement;
   return '';
 };
