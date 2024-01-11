@@ -29,16 +29,9 @@ const tweetFields = [
   'tweet.url',
   'tweet.id',
   'tweet.text',
+  'tweet.datetime',
   'user.name',
   'user.username',
-  'date.iso',
-  'date.year',
-  'date.month',
-  'date.day',
-  'date.hours',
-  'date.minutes',
-  'date.seconds',
-  'date.timestamp',
 ] as const;
 
 const entityTextFields = ['text'] as const;

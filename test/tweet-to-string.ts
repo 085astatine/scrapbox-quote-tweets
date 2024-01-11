@@ -57,6 +57,54 @@ describe('tweet-to-string/tweet', () => {
       tweetToString(tweet, { ...entityTemplate, ...template }, option),
     ).toBe('tweet.url: https://x.com/username/status/1234567890123456789');
   });
+  test('tweet.datetime(UTC, ISO8601)', () => {
+    const template = {
+      tweet: 'tweet.datetime: ${tweet.datetime}',
+    };
+    const option = {
+      timezone: 'UTC',
+      datetimeFormat: 'YYYY-MM-DD[T]HH:mm:ss[Z]',
+    };
+    expect(
+      tweetToString(tweet, { ...entityTemplate, ...template }, option),
+    ).toBe('tweet.datetime: 2012-03-04T15:04:05Z');
+  });
+  test('tweet.datetime(Asia/Tokyo, ISO8601)', () => {
+    const template = {
+      tweet: 'tweet.datetime: ${tweet.datetime}',
+    };
+    const option = {
+      timezone: 'Asia/Tokyo',
+      datetimeFormat: 'YYYY-MM-DD[T]HH:mm:ssZ',
+    };
+    expect(
+      tweetToString(tweet, { ...entityTemplate, ...template }, option),
+    ).toBe('tweet.datetime: 2012-03-05T00:04:05+09:00');
+  });
+  test('tweet.datetime(UTC, Costom Format)', () => {
+    const template = {
+      tweet: 'tweet.datetime: ${tweet.datetime}',
+    };
+    const option = {
+      timezone: 'UTC',
+      datetimeFormat: 'YYYY/MM/DD HH:mm:ss',
+    };
+    expect(
+      tweetToString(tweet, { ...entityTemplate, ...template }, option),
+    ).toBe('tweet.datetime: 2012/03/04 15:04:05');
+  });
+  test('tweet.datetime(Asia/Tokyo, Custom Format)', () => {
+    const template = {
+      tweet: 'tweet.datetime: ${tweet.datetime}',
+    };
+    const option = {
+      timezone: 'Asia/Tokyo',
+      datetimeFormat: 'YYYY/MM/DD HH:mm:ss',
+    };
+    expect(
+      tweetToString(tweet, { ...entityTemplate, ...template }, option),
+    ).toBe('tweet.datetime: 2012/03/05 00:04:05');
+  });
   test('user.name', () => {
     const template = {
       tweet: 'user.name: ${user.name}',
@@ -72,60 +120,6 @@ describe('tweet-to-string/tweet', () => {
     expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
       'user.username: username',
     );
-  });
-  test('date.timestamp', () => {
-    const template = {
-      tweet: 'date.timestamp: ${date.timestamp}',
-    };
-    expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'date.timestamp: 1330873445',
-    );
-  });
-  test('date.iso(utc)', () => {
-    const template = {
-      tweet: 'date.iso: ${date.iso}',
-    };
-    const option = {
-      timezone: 'UTC',
-    };
-    expect(
-      tweetToString(tweet, { ...entityTemplate, ...template }, option),
-    ).toBe('date.iso: 2012-03-04T15:04:05Z');
-  });
-  test('date.iso(Asia/Tokyo)', () => {
-    const template = {
-      tweet: 'date.iso: ${date.iso}',
-    };
-    const option = {
-      timezone: 'Asia/Tokyo',
-    };
-    expect(
-      tweetToString(tweet, { ...entityTemplate, ...template }, option),
-    ).toBe('date.iso: 2012-03-05T00:04:05+09:00');
-  });
-  test('date(UTC)', () => {
-    const template = {
-      tweet:
-        'date: ${date.year}/${date.month}/${date.day} ${date.hours}:${date.minutes}:${date.seconds}',
-    };
-    const option = {
-      timezone: 'UTC',
-    };
-    expect(
-      tweetToString(tweet, { ...entityTemplate, ...template }, option),
-    ).toBe('date: 2012/03/04 15:04:05');
-  });
-  test('date(Asia/Tokyo)', () => {
-    const template = {
-      tweet:
-        'date: ${date.year}/${date.month}/${date.day} ${date.hours}:${date.minutes}:${date.seconds}',
-    };
-    const option = {
-      timezone: 'Asia/Tokyo',
-    };
-    expect(
-      tweetToString(tweet, { ...entityTemplate, ...template }, option),
-    ).toBe('date: 2012/03/05 00:04:05');
   });
 });
 

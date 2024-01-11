@@ -25,12 +25,14 @@ import {
 export interface TweetToStringOption {
   hostname?: Hostname;
   timezone?: string;
+  datetimeFormat?: string;
 }
 
 const defaultOption = (): Required<TweetToStringOption> => {
   return {
     hostname: 'twitter.com',
     timezone: defaultTimezone(),
+    datetimeFormat: 'YYYY-MM-DD[T]HH:mm:ssZ',
   };
 };
 
@@ -73,26 +75,14 @@ const fillTweetTemplateElement = (
           return tweet.text
             .map((entity) => fillTweetEntity(entity, template))
             .join('');
+        case 'tweet.datetime':
+          return toDatetime(tweet.created_at, option.timezone).format(
+            option.datetimeFormat,
+          );
         case 'user.name':
           return tweet.author.name;
         case 'user.username':
           return tweet.author.username;
-        case 'date.iso':
-          return toDatetime(tweet.created_at, option.timezone).format();
-        case 'date.year':
-          return toDatetime(tweet.created_at, option.timezone).format('YYYY');
-        case 'date.month':
-          return toDatetime(tweet.created_at, option.timezone).format('MM');
-        case 'date.day':
-          return toDatetime(tweet.created_at, option.timezone).format('DD');
-        case 'date.hours':
-          return toDatetime(tweet.created_at, option.timezone).format('HH');
-        case 'date.minutes':
-          return toDatetime(tweet.created_at, option.timezone).format('mm');
-        case 'date.seconds':
-          return toDatetime(tweet.created_at, option.timezone).format('ss');
-        case 'date.timestamp':
-          return tweet.created_at.toString();
       }
   }
   const _: never = templateElement;
