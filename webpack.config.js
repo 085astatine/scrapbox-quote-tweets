@@ -3,7 +3,6 @@ const svgToMiniDataURI = require('mini-svg-data-uri');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const DotenvPlugin = require('dotenv-webpack');
-const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
@@ -116,10 +115,6 @@ module.exports = (env, argv) => {
     plugins: [
       new DotenvPlugin({
         systemvars: true,
-      }),
-      new ESLintPlugin({
-        extensions: ['ts', 'tsx'],
-        exclude: ['node_modules'],
       }),
       new HtmlPlugin({
         filename: 'clipboard.html',
