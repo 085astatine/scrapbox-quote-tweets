@@ -1,4 +1,5 @@
-import { toDatetime } from '../datetime';
+import { defaultTimezone, toDatetime } from '../datetime';
+import { Hostname, baseURL } from '../settings';
 import {
   Tweet,
   TweetEntity,
@@ -21,13 +22,32 @@ import {
   parseTweetTemplate,
 } from './tweet-template';
 
+export interface TweetToStringOption {
+  hostname?: Hostname;
+  timezone?: string;
+}
+
+const defaultOption = (): Required<TweetToStringOption> => {
+  return {
+    hostname: 'twitter.com',
+    timezone: defaultTimezone(),
+  };
+};
+
 export const tweetToString = (
   tweet: Tweet,
   template: TweetTemplate,
+  option?: TweetToStringOption,
 ): string => {
+  const options = {
+    ...defaultOption(),
+    ...(option ?? {}),
+  };
   const parsedTemplate = parseTweetTemplate(template);
   const filledOutTemplate = parsedTemplate.tweet
-    .map((element) => fillTweetTemplateElement(element, tweet, parsedTemplate))
+    .map((element) =>
+      fillTweetTemplateElement(element, tweet, parsedTemplate, options),
+    )
     .join('');
   return filledOutTemplate;
 };
@@ -36,6 +56,7 @@ const fillTweetTemplateElement = (
   templateElement: TemplateElement<TweetField>,
   tweet: Tweet,
   template: ParsedTweetTemplate,
+  option: Required<TweetToStringOption>,
 ): string => {
   switch (templateElement.type) {
     case 'text':
@@ -43,7 +64,9 @@ const fillTweetTemplateElement = (
     case 'placeholder':
       switch (templateElement.field) {
         case 'tweet.url':
-          return `https://twitter.com/${tweet.author.username}/status/${tweet.id}`;
+          return `${baseURL(option.hostname)}/${tweet.author.username}/status/${
+            tweet.id
+          }`;
         case 'tweet.id':
           return tweet.id;
         case 'tweet.text':
@@ -55,19 +78,19 @@ const fillTweetTemplateElement = (
         case 'user.username':
           return tweet.author.username;
         case 'date.iso':
-          return toDatetime(tweet.created_at, template.timezone).format();
+          return toDatetime(tweet.created_at, option.timezone).format();
         case 'date.year':
-          return toDatetime(tweet.created_at, template.timezone).format('YYYY');
+          return toDatetime(tweet.created_at, option.timezone).format('YYYY');
         case 'date.month':
-          return toDatetime(tweet.created_at, template.timezone).format('MM');
+          return toDatetime(tweet.created_at, option.timezone).format('MM');
         case 'date.day':
-          return toDatetime(tweet.created_at, template.timezone).format('DD');
+          return toDatetime(tweet.created_at, option.timezone).format('DD');
         case 'date.hours':
-          return toDatetime(tweet.created_at, template.timezone).format('HH');
+          return toDatetime(tweet.created_at, option.timezone).format('HH');
         case 'date.minutes':
-          return toDatetime(tweet.created_at, template.timezone).format('mm');
+          return toDatetime(tweet.created_at, option.timezone).format('mm');
         case 'date.seconds':
-          return toDatetime(tweet.created_at, template.timezone).format('ss');
+          return toDatetime(tweet.created_at, option.timezone).format('ss');
         case 'date.timestamp':
           return tweet.created_at.toString();
       }

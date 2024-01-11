@@ -1,5 +1,4 @@
 import difflib from 'difflib';
-import { validateTimezone } from '../datetime';
 
 export interface TweetTemplate {
   tweet: string;
@@ -10,7 +9,6 @@ export interface TweetTemplate {
     cashtag: string;
     mention: string;
   };
-  timezone?: string;
 }
 
 export interface TemplateElementText {
@@ -80,16 +78,11 @@ export interface ParsedTweetTemplate {
     cashtag: readonly TemplateElement<EntityCashtagField>[];
     mention: readonly TemplateElement<EntityMentionField>[];
   };
-  timezone?: string;
 }
 
 export const parseTweetTemplate = (
   template: TweetTemplate,
 ): ParsedTweetTemplate => {
-  // validate timezone
-  if (template.timezone !== undefined) {
-    validateTimezone(template.timezone);
-  }
   // parse template
   const parser = tweetTemplateParser;
   return {
@@ -101,7 +94,6 @@ export const parseTweetTemplate = (
       cashtag: parser.entity.cashtag(template.entity.cashtag),
       mention: parser.entity.mention(template.entity.mention),
     },
-    ...(template.timezone !== undefined ? { timezone: template.timezone } : {}),
   };
 };
 
