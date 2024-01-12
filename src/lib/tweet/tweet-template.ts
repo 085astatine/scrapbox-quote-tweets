@@ -9,6 +9,10 @@ export interface TweetTemplate {
     cashtag: string;
     mention: string;
   };
+  media: {
+    photo: string;
+    video: string;
+  };
   quote: boolean;
 }
 
@@ -51,6 +55,10 @@ const entityCashtagFields = ['text', 'tag'] as const;
 
 const entityMentionFields = ['text', 'username'] as const;
 
+const mediaPhotoFields = ['url'] as const;
+
+const mediaVideoFields = ['thumbnail'] as const;
+
 export type TweetField = (typeof tweetFields)[number];
 
 export type EntityTextField = (typeof entityTextFields)[number];
@@ -63,6 +71,10 @@ export type EntityCashtagField = (typeof entityCashtagFields)[number];
 
 export type EntityMentionField = (typeof entityMentionFields)[number];
 
+export type MediaPhotoField = (typeof mediaPhotoFields)[number];
+
+export type MediaVideoField = (typeof mediaVideoFields)[number];
+
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
   entity: {
@@ -71,6 +83,10 @@ export interface ParsedTweetTemplate {
     hashtag: readonly TemplateElement<EntityHashtagField>[];
     cashtag: readonly TemplateElement<EntityCashtagField>[];
     mention: readonly TemplateElement<EntityMentionField>[];
+  };
+  media: {
+    photo: readonly TemplateElement<MediaPhotoField>[];
+    video: readonly TemplateElement<MediaVideoField>[];
   };
   quote: boolean;
 }
@@ -88,6 +104,10 @@ export const parseTweetTemplate = (
       hashtag: parser.entity.hashtag(template.entity.hashtag),
       cashtag: parser.entity.cashtag(template.entity.cashtag),
       mention: parser.entity.mention(template.entity.mention),
+    },
+    media: {
+      photo: parser.media.photo(template.media.photo),
+      video: parser.media.video(template.media.video),
     },
     quote: template.quote,
   };
@@ -165,5 +185,9 @@ export const tweetTemplateParser = {
     hashtag: fieldParser(entityHashtagFields),
     cashtag: fieldParser(entityCashtagFields),
     mention: fieldParser(entityMentionFields),
+  },
+  media: {
+    photo: fieldParser(mediaPhotoFields),
+    video: fieldParser(mediaVideoFields),
   },
 } as const;

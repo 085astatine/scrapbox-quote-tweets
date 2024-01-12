@@ -25,6 +25,10 @@ describe('tweet-to-string/tweet', () => {
       cashtag: '$${tag}',
       mention: '@${username}',
     },
+    media: {
+      photo: '[${url}]',
+      video: '[${thumbnail}]',
+    },
     quote: false,
   };
   test('tweet.id', () => {
@@ -154,6 +158,10 @@ describe('tweet-to-string/entity', () => {
       hashtag: '#${tag}',
       cashtag: '$${tag}',
       mention: '@${username}',
+    },
+    media: {
+      photo: '[${url}]',
+      video: '[${thumbnail}]',
     },
     quote: false,
   };
