@@ -16,6 +16,24 @@ export interface TweetTemplate {
   quote: boolean;
 }
 
+export const defaultTweetTemplate = (): TweetTemplate => {
+  return {
+    tweet: '[${tweet.url} ${user.name}(@${user.username})]: ${tweet.text}',
+    entity: {
+      text: '${text}',
+      url: '[${decoded_url} ${title}]',
+      hashtag: '${text}',
+      cashtag: '${text}',
+      mention: '[${user_url} ${text}]',
+    },
+    media: {
+      photo: '[${url}]',
+      video: '[${thumbnail}]',
+    },
+    quote: true,
+  };
+};
+
 export interface TemplateElementText {
   type: 'text';
   text: string;
