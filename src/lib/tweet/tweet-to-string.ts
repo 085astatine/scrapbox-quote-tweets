@@ -46,12 +46,17 @@ export const tweetToString = (
     ...(option ?? {}),
   };
   const parsedTemplate = parseTweetTemplate(template);
-  const filledOutTemplate = parsedTemplate.tweet
-    .map((element) =>
+  const textElements: string[] = [];
+  // tweet
+  textElements.push(
+    ...parsedTemplate.tweet.map((element) =>
       fillTweetTemplateElement(element, tweet, parsedTemplate, options),
-    )
-    .join('');
-  return filledOutTemplate;
+    ),
+  );
+  // quote
+  return parsedTemplate.quote ?
+      quoteText(textElements.join(''))
+    : textElements.join('');
 };
 
 const fillTweetTemplateElement = (
@@ -220,4 +225,11 @@ const fillTweetEntityMention = (
   }
   const _: never = templateElement;
   return '';
+};
+
+const quoteText = (text: string): string => {
+  return text
+    .split('\n')
+    .map((line) => (line ? `>${line}` : ''))
+    .join('\n');
 };

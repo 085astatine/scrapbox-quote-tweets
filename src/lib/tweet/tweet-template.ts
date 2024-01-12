@@ -9,6 +9,7 @@ export interface TweetTemplate {
     cashtag: string;
     mention: string;
   };
+  quote: boolean;
 }
 
 export interface TemplateElementText {
@@ -71,6 +72,7 @@ export interface ParsedTweetTemplate {
     cashtag: readonly TemplateElement<EntityCashtagField>[];
     mention: readonly TemplateElement<EntityMentionField>[];
   };
+  quote: boolean;
 }
 
 export const parseTweetTemplate = (
@@ -87,6 +89,7 @@ export const parseTweetTemplate = (
       cashtag: parser.entity.cashtag(template.entity.cashtag),
       mention: parser.entity.mention(template.entity.mention),
     },
+    quote: template.quote,
   };
 };
 

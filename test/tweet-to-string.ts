@@ -25,6 +25,7 @@ describe('tweet-to-string/tweet', () => {
       cashtag: '$${tag}',
       mention: '@${username}',
     },
+    quote: false,
   };
   test('tweet.id', () => {
     const template = {
@@ -125,6 +126,14 @@ describe('tweet-to-string/tweet', () => {
     };
     expect(tweetToString(tweet, template)).toBe('user.username: username');
   });
+  test('quote', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: 'foo\nbar\nbaz\n',
+      quote: true,
+    };
+    expect(tweetToString(tweet, template)).toBe('>foo\n>bar\n>baz\n');
+  });
 });
 
 describe('tweet-to-string/entity', () => {
@@ -146,6 +155,7 @@ describe('tweet-to-string/entity', () => {
       cashtag: '$${tag}',
       mention: '@${username}',
     },
+    quote: false,
   };
   test('text', () => {
     const text = {
