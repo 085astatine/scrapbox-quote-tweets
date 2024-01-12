@@ -130,6 +130,30 @@ describe('tweet-to-string/tweet', () => {
     };
     expect(tweetToString(tweet, template)).toBe('user.username: username');
   });
+  test('user.url(twitter.com)', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: 'user.url: ${user.url}',
+    };
+    const option = {
+      hostname: 'twitter.com' as const,
+    };
+    expect(tweetToString(tweet, template, option)).toBe(
+      'user.url: https://twitter.com/username',
+    );
+  });
+  test('user.url(x.com)', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: 'user.url: ${user.url}',
+    };
+    const option = {
+      hostname: 'x.com' as const,
+    };
+    expect(tweetToString(tweet, template, option)).toBe(
+      'user.url: https://x.com/username',
+    );
+  });
   test('quote', () => {
     const template = {
       ...baseTemplate,
@@ -263,10 +287,21 @@ describe('tweet-to-string/entity', () => {
     const template = { ...baseTemplate };
     template.entity = {
       ...template.entity,
-      mention: ['text: "${text}"', 'username: "${username}"'].join('\n'),
+      mention: [
+        'text: "${text}"',
+        'username: "${username}"',
+        'url: "${user_url}"',
+      ].join('\n'),
     };
-    expect(tweetToString({ ...tweet, ...text }, template)).toBe(
-      ['text: "@bob"', 'username: "bob"'].join('\n'),
+    const option = {
+      hostname: 'twitter.com' as const,
+    };
+    expect(tweetToString({ ...tweet, ...text }, template, option)).toBe(
+      [
+        'text: "@bob"',
+        'username: "bob"',
+        'url: "https://twitter.com/bob"',
+      ].join('\n'),
     );
   });
 });

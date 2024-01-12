@@ -37,6 +37,7 @@ const tweetFields = [
   'tweet.datetime',
   'user.name',
   'user.username',
+  'user.url',
 ] as const;
 
 const entityTextFields = ['text'] as const;
@@ -53,7 +54,7 @@ const entityHashtagFields = ['text', 'tag', 'hashmoji'] as const;
 
 const entityCashtagFields = ['text', 'tag'] as const;
 
-const entityMentionFields = ['text', 'username'] as const;
+const entityMentionFields = ['text', 'username', 'user_url'] as const;
 
 const mediaPhotoFields = ['url'] as const;
 

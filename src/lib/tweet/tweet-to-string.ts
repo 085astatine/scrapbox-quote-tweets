@@ -78,7 +78,7 @@ const fillTweetTemplateElement = (
           return tweet.id;
         case 'tweet.text':
           return tweet.text
-            .map((entity) => fillTweetEntity(entity, template))
+            .map((entity) => fillTweetEntity(entity, template, option))
             .join('');
         case 'tweet.datetime':
           return toDatetime(tweet.created_at, option.timezone).format(
@@ -88,6 +88,8 @@ const fillTweetTemplateElement = (
           return tweet.author.name;
         case 'user.username':
           return tweet.author.username;
+        case 'user.url':
+          return `${baseURL(option.hostname)}/${tweet.author.username}`;
       }
   }
   const _: never = templateElement;
@@ -97,6 +99,7 @@ const fillTweetTemplateElement = (
 const fillTweetEntity = (
   entity: TweetEntity,
   template: ParsedTweetTemplate,
+  option: Required<TweetToStringOption>,
 ): string => {
   switch (entity.type) {
     case 'text':
@@ -117,7 +120,7 @@ const fillTweetEntity = (
         .join('');
     case 'mention':
       return template.entity.mention
-        .map((element) => fillTweetEntityMention(element, entity))
+        .map((element) => fillTweetEntityMention(element, entity, option))
         .join('');
     default: {
       const _: never = entity;
@@ -211,6 +214,7 @@ const fillTweetEntityCashtag = (
 const fillTweetEntityMention = (
   templateElement: TemplateElement<EntityMentionField>,
   entity: TweetEntityMention,
+  option: Required<TweetToStringOption>,
 ): string => {
   switch (templateElement.type) {
     case 'text':
@@ -221,6 +225,8 @@ const fillTweetEntityMention = (
           return entity.text;
         case 'username':
           return entity.username;
+        case 'user_url':
+          return `${baseURL(option.hostname)}/${entity.username}`;
       }
   }
   const _: never = templateElement;
