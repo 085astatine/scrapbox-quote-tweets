@@ -48,15 +48,26 @@ export const tweetToString = (
   const parsedTemplate = parseTweetTemplate(template);
   const textElements: string[] = [];
   // tweet
-  textElements.push(
-    ...parsedTemplate.tweet.map((element) =>
-      fillTweetTemplateElement(element, tweet, parsedTemplate, options),
-    ),
-  );
+  textElements.push(fillTweet(tweet, parsedTemplate, options));
   // quote
   return parsedTemplate.quote ?
       quoteText(textElements.join(''))
     : textElements.join('');
+};
+
+const fillTweet = (
+  tweet: Tweet,
+  template: ParsedTweetTemplate,
+  option: Required<TweetToStringOption>,
+): string => {
+  // fill out TweetTemplate.tweet
+  const text = template.tweet
+    .map((element) =>
+      fillTweetTemplateElement(element, tweet, template, option),
+    )
+    .join('');
+  // EOL
+  return text.replace(/\n+$/, '').replace(/$/, '\n');
 };
 
 const fillTweetTemplateElement = (
@@ -235,7 +246,8 @@ const fillTweetEntityMention = (
 
 const quoteText = (text: string): string => {
   return text
+    .replace(/\n+$/, '')
     .split('\n')
-    .map((line) => (line ? `>${line}` : ''))
-    .join('\n');
+    .map((line) => `>${line}\n`)
+    .join('');
 };
