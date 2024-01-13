@@ -48,29 +48,35 @@ export const tweetToString = (
   const parsedTemplate = parseTweetTemplate(template);
   const textElements: string[] = [];
   // tweet
-  textElements.push(fillTweet(tweet, parsedTemplate, options));
+  textElements.push(
+    substituteTweetTemplates(
+      parsedTemplate.tweet,
+      tweet,
+      parsedTemplate,
+      options,
+    ),
+  );
   // quote
   return parsedTemplate.quote ?
       quoteText(textElements.join(''))
     : textElements.join('');
 };
 
-const fillTweet = (
+const substituteTweetTemplates = (
+  tweetTemplates: readonly TemplateElement<TweetField>[],
   tweet: Tweet,
   template: ParsedTweetTemplate,
   option: Required<TweetToStringOption>,
 ): string => {
-  // fill out TweetTemplate.tweet
-  const text = template.tweet
-    .map((element) =>
-      fillTweetTemplateElement(element, tweet, template, option),
-    )
+  // substitute tweet templates
+  const text = tweetTemplates
+    .map((element) => substituteTweetTemplate(element, tweet, template, option))
     .join('');
   // EOL
   return text.replace(/\n+$/, '').replace(/$/, '\n');
 };
 
-const fillTweetTemplateElement = (
+const substituteTweetTemplate = (
   templateElement: TemplateElement<TweetField>,
   tweet: Tweet,
   template: ParsedTweetTemplate,
@@ -89,7 +95,7 @@ const fillTweetTemplateElement = (
           return tweet.id;
         case 'tweet.text':
           return tweet.text
-            .map((entity) => fillTweetEntity(entity, template, option))
+            .map((entity) => tweetEntityToString(entity, template, option))
             .join('');
         case 'tweet.datetime':
           return toDatetime(tweet.created_at, option.timezone).format(
@@ -107,7 +113,7 @@ const fillTweetTemplateElement = (
   return '';
 };
 
-const fillTweetEntity = (
+const tweetEntityToString = (
   entity: TweetEntity,
   template: ParsedTweetTemplate,
   option: Required<TweetToStringOption>,
@@ -115,23 +121,25 @@ const fillTweetEntity = (
   switch (entity.type) {
     case 'text':
       return template.entity.text
-        .map((element) => fillTweetEntityText(element, entity))
+        .map((element) => substituteEntityTextTemplate(element, entity))
         .join('');
     case 'url':
       return template.entity.url
-        .map((element) => fillTweetEntityURL(element, entity))
+        .map((element) => substituteEntityURLTemplate(element, entity))
         .join('');
     case 'hashtag':
       return template.entity.hashtag
-        .map((element) => fillTweetEntityHashtag(element, entity))
+        .map((element) => substituteEntityHashtagTemplate(element, entity))
         .join('');
     case 'cashtag':
       return template.entity.cashtag
-        .map((element) => fillTweetEntityCashtag(element, entity))
+        .map((element) => substituteEntityCashtagTemplate(element, entity))
         .join('');
     case 'mention':
       return template.entity.mention
-        .map((element) => fillTweetEntityMention(element, entity, option))
+        .map((element) =>
+          substituteEntityMentionTemplate(element, entity, option),
+        )
         .join('');
     default: {
       const _: never = entity;
@@ -140,7 +148,7 @@ const fillTweetEntity = (
   }
 };
 
-const fillTweetEntityText = (
+const substituteEntityTextTemplate = (
   templateElement: TemplateElement<EntityTextField>,
   entity: TweetEntityText,
 ): string => {
@@ -157,7 +165,7 @@ const fillTweetEntityText = (
   return '';
 };
 
-const fillTweetEntityURL = (
+const substituteEntityURLTemplate = (
   templateElement: TemplateElement<EntityURLField>,
   entity: TweetEntityURL,
 ): string => {
@@ -182,7 +190,7 @@ const fillTweetEntityURL = (
   return '';
 };
 
-const fillTweetEntityHashtag = (
+const substituteEntityHashtagTemplate = (
   templateElement: TemplateElement<EntityHashtagField>,
   entity: TweetEntityHashtag,
 ): string => {
@@ -203,7 +211,7 @@ const fillTweetEntityHashtag = (
   return '';
 };
 
-const fillTweetEntityCashtag = (
+const substituteEntityCashtagTemplate = (
   templateElement: TemplateElement<EntityCashtagField>,
   entity: TweetEntityCashtag,
 ): string => {
@@ -222,7 +230,7 @@ const fillTweetEntityCashtag = (
   return '';
 };
 
-const fillTweetEntityMention = (
+const substituteEntityMentionTemplate = (
   templateElement: TemplateElement<EntityMentionField>,
   entity: TweetEntityMention,
   option: Required<TweetToStringOption>,
