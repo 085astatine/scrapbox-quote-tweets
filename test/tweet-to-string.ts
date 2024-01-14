@@ -162,6 +162,21 @@ describe('tweet-to-string/tweet', () => {
     };
     expect(tweetToString(tweet, template)).toBe('>foo\n>\n>bar\n>\n>baz\n');
   });
+  test('empty_string', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: '',
+    };
+    expect(tweetToString(tweet, template)).toBe('');
+  });
+  test('empty_string(quote)', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: '',
+      quote: true,
+    };
+    expect(tweetToString(tweet, template)).toBe('');
+  });
 });
 
 describe('tweet-to-string/entity', () => {

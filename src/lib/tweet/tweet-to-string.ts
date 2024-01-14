@@ -81,6 +81,10 @@ const substituteTweetTemplates = (
   const text = tweetTemplates
     .map((element) => substituteTweetTemplate(element, tweet, template, option))
     .join('');
+  // if the text is emapty, do not add EOL
+  if (!text) {
+    return '';
+  }
   // EOL
   return text.replace(/\n+$/, '').replace(/$/, '\n');
 };
@@ -323,6 +327,10 @@ const substituteMediaVideoTemplate = (
 };
 
 const quoteText = (text: string): string => {
+  // if the text is emapty, do not add EOL
+  if (!text) {
+    return '';
+  }
   return text
     .replace(/\n+$/, '')
     .split('\n')
