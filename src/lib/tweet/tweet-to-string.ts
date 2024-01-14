@@ -1,6 +1,9 @@
 import { defaultTimezone, toDatetime } from '../datetime';
 import { Hostname, baseURL } from '../settings';
 import {
+  Media,
+  MediaPhoto,
+  MediaVideo,
   Tweet,
   TweetEntity,
   TweetEntityCashtag,
@@ -15,6 +18,8 @@ import {
   EntityMentionField,
   EntityTextField,
   EntityURLField,
+  MediaPhotoField,
+  MediaVideoField,
   ParsedTweetTemplate,
   TemplateElement,
   TweetField,
@@ -56,6 +61,10 @@ export const tweetToString = (
       options,
     ),
   );
+  // media
+  if (tweet.media !== undefined) {
+    textElements.push(mediaListToString(tweet.media, parsedTemplate));
+  }
   // quote
   return parsedTemplate.quote ?
       quoteText(textElements.join(''))
@@ -246,6 +255,67 @@ const substituteEntityMentionTemplate = (
           return entity.username;
         case 'user_url':
           return `${baseURL(option.hostname)}/${entity.username}`;
+      }
+  }
+  const _: never = templateElement;
+  return '';
+};
+
+const mediaListToString = (
+  mediaList: Media[],
+  template: ParsedTweetTemplate,
+): string => {
+  // media to string
+  const text = mediaList
+    .map((media) => mediaToString(media, template))
+    .join('');
+  // EOL
+  return text.replace(/\n+$/, '').replace(/$/, '\n');
+};
+
+const mediaToString = (media: Media, template: ParsedTweetTemplate): string => {
+  switch (media.type) {
+    case 'photo':
+      return template.media.photo
+        .map((element) => substituteMediaPhotoTemplate(element, media))
+        .join('');
+    case 'video':
+      return template.media.video
+        .map((element) => substituteMediaVideoTemplate(element, media))
+        .join('');
+  }
+  const _: never = media;
+  return '';
+};
+
+const substituteMediaPhotoTemplate = (
+  templateElement: TemplateElement<MediaPhotoField>,
+  media: MediaPhoto,
+): string => {
+  switch (templateElement.type) {
+    case 'text':
+      return templateElement.text;
+    case 'placeholder':
+      switch (templateElement.field) {
+        case 'url':
+          return media.url;
+      }
+  }
+  const _: never = templateElement;
+  return '';
+};
+
+const substituteMediaVideoTemplate = (
+  templateElement: TemplateElement<MediaVideoField>,
+  media: MediaVideo,
+): string => {
+  switch (templateElement.type) {
+    case 'text':
+      return templateElement.text;
+    case 'placeholder':
+      switch (templateElement.field) {
+        case 'thumbnail':
+          return media.thumbnail;
       }
   }
   const _: never = templateElement;
