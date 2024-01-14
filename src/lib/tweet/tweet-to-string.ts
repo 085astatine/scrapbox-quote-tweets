@@ -65,6 +65,15 @@ export const tweetToString = (
   if (tweet.media !== undefined) {
     textElements.push(mediaListToString(tweet.media, parsedTemplate));
   }
+  // footer
+  textElements.push(
+    substituteTweetTemplates(
+      parsedTemplate.footer,
+      tweet,
+      parsedTemplate,
+      options,
+    ),
+  );
   // quote
   return parsedTemplate.quote ?
       quoteText(textElements.join(''))

@@ -18,6 +18,7 @@ describe('tweet-to-string/tweet', () => {
   };
   const baseTemplate = {
     tweet: '',
+    footer: '',
     entity: {
       text: '${text}',
       url: '[${decoded_url} ${title}]',
@@ -177,6 +178,20 @@ describe('tweet-to-string/tweet', () => {
     };
     expect(tweetToString(tweet, template)).toBe('');
   });
+  test('footer', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: '@${user.username}: ${tweet.text}',
+      footer: '${tweet.datetime}',
+    };
+    const option = {
+      timezone: 'UTC',
+      datetimeFormat: 'YYYY-MM-DD[T]HH:mm:ss[Z]',
+    };
+    expect(tweetToString(tweet, template, option)).toBe(
+      ['@username: text\n', '2012-03-04T15:04:05Z\n'].join(''),
+    );
+  });
 });
 
 describe('tweet-to-string/entity', () => {
@@ -191,6 +206,7 @@ describe('tweet-to-string/entity', () => {
   };
   const baseTemplate = {
     tweet: '${tweet.text}',
+    footer: '',
     entity: {
       text: '${text}',
       url: '[${decoded_url} ${title}]',

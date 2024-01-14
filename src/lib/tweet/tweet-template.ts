@@ -2,6 +2,7 @@ import difflib from 'difflib';
 
 export interface TweetTemplate {
   tweet: string;
+  footer: string;
   entity: {
     text: string;
     url: string;
@@ -19,6 +20,7 @@ export interface TweetTemplate {
 export const defaultTweetTemplate = (): TweetTemplate => {
   return {
     tweet: '[${tweet.url} ${user.name}(@${user.username})]: ${tweet.text}',
+    footer: '${tweet.datetime}',
     entity: {
       text: '${text}',
       url: '[${decoded_url} ${title}]',
@@ -96,6 +98,7 @@ export type MediaVideoField = (typeof mediaVideoFields)[number];
 
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
+  footer: readonly TemplateElement<TweetField>[];
   entity: {
     text: readonly TemplateElement<EntityTextField>[];
     url: readonly TemplateElement<EntityURLField>[];
@@ -117,6 +120,7 @@ export const parseTweetTemplate = (
   const parser = tweetTemplateParser;
   return {
     tweet: parser.tweet(template.tweet),
+    footer: parser.tweet(template.footer),
     entity: {
       text: parser.entity.text(template.entity.text),
       url: parser.entity.url(template.entity.url),
