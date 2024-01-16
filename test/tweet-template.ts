@@ -4,10 +4,15 @@ import {
 } from '~/lib/tweet/tweet-template';
 
 describe('tweet-template/tweet', () => {
+  test('empty', () => {
+    const template = '';
+    const expected: ReturnType<typeof tweetTemplateParser.tweet> = [];
+    expect(tweetTemplateParser.tweet(template)).toStrictEqual(expected);
+  });
   test('parse', () => {
-    const template = '>[${tweet.url} @${user.username}]';
+    const template = '[${tweet.url} @${user.username}]';
     const expected = [
-      { type: 'text', text: '>[' },
+      { type: 'text', text: '[' },
       { type: 'placeholder', field: 'tweet.url' },
       { type: 'text', text: ' @' },
       { type: 'placeholder', field: 'user.username' },
@@ -15,17 +20,17 @@ describe('tweet-template/tweet', () => {
     ];
     expect(tweetTemplateParser.tweet(template)).toStrictEqual(expected);
   });
-  test('excaped_placeholder', () => {
-    const template = '>[\\${tweet.url} @${user.username}]';
+  test('escaped_placeholder', () => {
+    const template = '[\\${tweet.url} @${user.username}]';
     const expected = [
-      { type: 'text', text: '>[\\${tweet.url} @' },
+      { type: 'text', text: '[\\${tweet.url} @' },
       { type: 'placeholder', field: 'user.username' },
       { type: 'text', text: ']' },
     ];
     expect(tweetTemplateParser.tweet(template)).toStrictEqual(expected);
   });
   test('unexpected_field', () => {
-    const template = '>[${tweet.url} @${user.usrname}]';
+    const template = '[${tweet.url} @${user.usrname}]';
     try {
       expect(() => tweetTemplateParser.tweet(template)).toThrow(
         UnexpectedPlaceholderError,

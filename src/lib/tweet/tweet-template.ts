@@ -1,8 +1,8 @@
 import difflib from 'difflib';
-import { validateTimezone } from '../datetime';
 
 export interface TweetTemplate {
   tweet: string;
+  footer: string;
   entity: {
     text: string;
     url: string;
@@ -10,8 +10,31 @@ export interface TweetTemplate {
     cashtag: string;
     mention: string;
   };
-  timezone?: string;
+  media: {
+    photo: string;
+    video: string;
+  };
+  quote: boolean;
 }
+
+export const defaultTweetTemplate = (): TweetTemplate => {
+  return {
+    tweet: '[${tweet.url} ${user.name}(@${user.username})]: ${tweet.text}',
+    footer: '${tweet.datetime}',
+    entity: {
+      text: '${text}',
+      url: '[${decoded_url} ${title}]',
+      hashtag: '${text}',
+      cashtag: '${text}',
+      mention: '[${user_url} ${text}]',
+    },
+    media: {
+      photo: '[${url}]',
+      video: '[${thumbnail}]',
+    },
+    quote: true,
+  };
+};
 
 export interface TemplateElementText {
   type: 'text';
@@ -31,16 +54,10 @@ const tweetFields = [
   'tweet.url',
   'tweet.id',
   'tweet.text',
+  'tweet.datetime',
   'user.name',
   'user.username',
-  'date.iso',
-  'date.year',
-  'date.month',
-  'date.day',
-  'date.hours',
-  'date.minutes',
-  'date.seconds',
-  'date.timestamp',
+  'user.url',
 ] as const;
 
 const entityTextFields = ['text'] as const;
@@ -57,7 +74,11 @@ const entityHashtagFields = ['text', 'tag', 'hashmoji'] as const;
 
 const entityCashtagFields = ['text', 'tag'] as const;
 
-const entityMentionFields = ['text', 'username'] as const;
+const entityMentionFields = ['text', 'username', 'user_url'] as const;
+
+const mediaPhotoFields = ['url'] as const;
+
+const mediaVideoFields = ['thumbnail'] as const;
 
 export type TweetField = (typeof tweetFields)[number];
 
@@ -71,8 +92,13 @@ export type EntityCashtagField = (typeof entityCashtagFields)[number];
 
 export type EntityMentionField = (typeof entityMentionFields)[number];
 
+export type MediaPhotoField = (typeof mediaPhotoFields)[number];
+
+export type MediaVideoField = (typeof mediaVideoFields)[number];
+
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
+  footer: readonly TemplateElement<TweetField>[];
   entity: {
     text: readonly TemplateElement<EntityTextField>[];
     url: readonly TemplateElement<EntityURLField>[];
@@ -80,20 +106,21 @@ export interface ParsedTweetTemplate {
     cashtag: readonly TemplateElement<EntityCashtagField>[];
     mention: readonly TemplateElement<EntityMentionField>[];
   };
-  timezone?: string;
+  media: {
+    photo: readonly TemplateElement<MediaPhotoField>[];
+    video: readonly TemplateElement<MediaVideoField>[];
+  };
+  quote: boolean;
 }
 
 export const parseTweetTemplate = (
   template: TweetTemplate,
 ): ParsedTweetTemplate => {
-  // validate timezone
-  if (template.timezone !== undefined) {
-    validateTimezone(template.timezone);
-  }
   // parse template
   const parser = tweetTemplateParser;
   return {
     tweet: parser.tweet(template.tweet),
+    footer: parser.tweet(template.footer),
     entity: {
       text: parser.entity.text(template.entity.text),
       url: parser.entity.url(template.entity.url),
@@ -101,7 +128,11 @@ export const parseTweetTemplate = (
       cashtag: parser.entity.cashtag(template.entity.cashtag),
       mention: parser.entity.mention(template.entity.mention),
     },
-    ...(template.timezone !== undefined ? { timezone: template.timezone } : {}),
+    media: {
+      photo: parser.media.photo(template.media.photo),
+      video: parser.media.video(template.media.video),
+    },
+    quote: template.quote,
   };
 };
 
@@ -177,5 +208,9 @@ export const tweetTemplateParser = {
     hashtag: fieldParser(entityHashtagFields),
     cashtag: fieldParser(entityCashtagFields),
     mention: fieldParser(entityMentionFields),
+  },
+  media: {
+    photo: fieldParser(mediaPhotoFields),
+    video: fieldParser(mediaVideoFields),
   },
 } as const;

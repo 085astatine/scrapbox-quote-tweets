@@ -16,7 +16,9 @@ describe('tweet-to-string/tweet', () => {
       },
     ],
   };
-  const entityTemplate = {
+  const baseTemplate = {
+    tweet: '',
+    footer: '',
     entity: {
       text: '${text}',
       url: '[${decoded_url} ${title}]',
@@ -24,83 +26,170 @@ describe('tweet-to-string/tweet', () => {
       cashtag: '$${tag}',
       mention: '@${username}',
     },
+    media: {
+      photo: '[${url}]',
+      video: '[${thumbnail}]',
+    },
+    quote: false,
   };
   test('tweet.id', () => {
     const template = {
+      ...baseTemplate,
       tweet: 'tweet.id: ${tweet.id}',
     };
-    expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'tweet.id: 1234567890123456789',
+    expect(tweetToString(tweet, template)).toBe(
+      'tweet.id: 1234567890123456789\n',
     );
   });
-  test('tweet.url', () => {
+  test('tweet.url(twitter.com)', () => {
     const template = {
+      ...baseTemplate,
       tweet: 'tweet.url: ${tweet.url}',
     };
-    expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'tweet.url: https://twitter.com/username/status/1234567890123456789',
+    const option = {
+      hostname: 'twitter.com' as const,
+    };
+    expect(tweetToString(tweet, template, option)).toBe(
+      'tweet.url: https://twitter.com/username/status/1234567890123456789\n',
+    );
+  });
+  test('tweet.url(x.com)', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: 'tweet.url: ${tweet.url}',
+    };
+    const option = {
+      hostname: 'x.com' as const,
+    };
+    expect(tweetToString(tweet, template, option)).toBe(
+      'tweet.url: https://x.com/username/status/1234567890123456789\n',
+    );
+  });
+  test('tweet.datetime(UTC, ISO8601)', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: 'tweet.datetime: ${tweet.datetime}',
+    };
+    const option = {
+      timezone: 'UTC',
+      datetimeFormat: 'YYYY-MM-DD[T]HH:mm:ss[Z]',
+    };
+    expect(tweetToString(tweet, template, option)).toBe(
+      'tweet.datetime: 2012-03-04T15:04:05Z\n',
+    );
+  });
+  test('tweet.datetime(Asia/Tokyo, ISO8601)', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: 'tweet.datetime: ${tweet.datetime}',
+    };
+    const option = {
+      timezone: 'Asia/Tokyo',
+      datetimeFormat: 'YYYY-MM-DD[T]HH:mm:ssZ',
+    };
+    expect(tweetToString(tweet, template, option)).toBe(
+      'tweet.datetime: 2012-03-05T00:04:05+09:00\n',
+    );
+  });
+  test('tweet.datetime(UTC, Costom Format)', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: 'tweet.datetime: ${tweet.datetime}',
+    };
+    const option = {
+      timezone: 'UTC',
+      datetimeFormat: 'YYYY/MM/DD HH:mm:ss',
+    };
+    expect(tweetToString(tweet, template, option)).toBe(
+      'tweet.datetime: 2012/03/04 15:04:05\n',
+    );
+  });
+  test('tweet.datetime(Asia/Tokyo, Custom Format)', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: 'tweet.datetime: ${tweet.datetime}',
+    };
+    const option = {
+      timezone: 'Asia/Tokyo',
+      datetimeFormat: 'YYYY/MM/DD HH:mm:ss',
+    };
+    expect(tweetToString(tweet, template, option)).toBe(
+      'tweet.datetime: 2012/03/05 00:04:05\n',
     );
   });
   test('user.name', () => {
     const template = {
+      ...baseTemplate,
       tweet: 'user.name: ${user.name}',
     };
-    expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'user.name: User Name',
-    );
+    expect(tweetToString(tweet, template)).toBe('user.name: User Name\n');
   });
   test('user.username', () => {
     const template = {
+      ...baseTemplate,
       tweet: 'user.username: ${user.username}',
     };
-    expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'user.username: username',
-    );
+    expect(tweetToString(tweet, template)).toBe('user.username: username\n');
   });
-  test('date.timestamp', () => {
+  test('user.url(twitter.com)', () => {
     const template = {
-      tweet: 'date.timestamp: ${date.timestamp}',
+      ...baseTemplate,
+      tweet: 'user.url: ${user.url}',
     };
-    expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'date.timestamp: 1330873445',
+    const option = {
+      hostname: 'twitter.com' as const,
+    };
+    expect(tweetToString(tweet, template, option)).toBe(
+      'user.url: https://twitter.com/username\n',
     );
   });
-  test('date.iso(utc)', () => {
+  test('user.url(x.com)', () => {
     const template = {
-      tweet: 'date.iso: ${date.iso}',
+      ...baseTemplate,
+      tweet: 'user.url: ${user.url}',
+    };
+    const option = {
+      hostname: 'x.com' as const,
+    };
+    expect(tweetToString(tweet, template, option)).toBe(
+      'user.url: https://x.com/username\n',
+    );
+  });
+  test('quote', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: 'foo\n\nbar\n\nbaz\n\n',
+      quote: true,
+    };
+    expect(tweetToString(tweet, template)).toBe('>foo\n>\n>bar\n>\n>baz\n');
+  });
+  test('empty_string', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: '',
+    };
+    expect(tweetToString(tweet, template)).toBe('');
+  });
+  test('empty_string(quote)', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: '',
+      quote: true,
+    };
+    expect(tweetToString(tweet, template)).toBe('');
+  });
+  test('footer', () => {
+    const template = {
+      ...baseTemplate,
+      tweet: '@${user.username}: ${tweet.text}',
+      footer: '${tweet.datetime}',
+    };
+    const option = {
       timezone: 'UTC',
+      datetimeFormat: 'YYYY-MM-DD[T]HH:mm:ss[Z]',
     };
-    expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'date.iso: 2012-03-04T15:04:05Z',
-    );
-  });
-  test('date.iso(Asia/Tokyp)', () => {
-    const template = {
-      tweet: 'date.iso: ${date.iso}',
-      timezone: 'Asia/Tokyo',
-    };
-    expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'date.iso: 2012-03-05T00:04:05+09:00',
-    );
-  });
-  test('date(UTC)', () => {
-    const template = {
-      tweet:
-        'date: ${date.year}/${date.month}/${date.day} ${date.hours}:${date.minutes}:${date.seconds}',
-      timezone: 'UTC',
-    };
-    expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'date: 2012/03/04 15:04:05',
-    );
-  });
-  test('date(Asia/Tokyo)', () => {
-    const template = {
-      tweet:
-        'date: ${date.year}/${date.month}/${date.day} ${date.hours}:${date.minutes}:${date.seconds}',
-      timezone: 'Asia/Tokyo',
-    };
-    expect(tweetToString(tweet, { ...entityTemplate, ...template })).toBe(
-      'date: 2012/03/05 00:04:05',
+    expect(tweetToString(tweet, template, option)).toBe(
+      ['@username: text\n', '2012-03-04T15:04:05Z\n'].join(''),
     );
   });
 });
@@ -117,6 +206,7 @@ describe('tweet-to-string/entity', () => {
   };
   const baseTemplate = {
     tweet: '${tweet.text}',
+    footer: '',
     entity: {
       text: '${text}',
       url: '[${decoded_url} ${title}]',
@@ -124,6 +214,11 @@ describe('tweet-to-string/entity', () => {
       cashtag: '$${tag}',
       mention: '@${username}',
     },
+    media: {
+      photo: '[${url}]',
+      video: '[${thumbnail}]',
+    },
+    quote: false,
   };
   test('text', () => {
     const text = {
@@ -132,10 +227,10 @@ describe('tweet-to-string/entity', () => {
     const template = { ...baseTemplate };
     template.entity = {
       ...baseTemplate.entity,
-      ...{ text: 'text: "${text}"' },
+      text: 'text: "${text}"\n',
     };
     expect(tweetToString({ ...tweet, ...text }, template)).toBe(
-      'text: "This is the test text."',
+      'text: "This is the test text."\n',
     );
   });
   test('url', () => {
@@ -154,24 +249,22 @@ describe('tweet-to-string/entity', () => {
     const template = { ...baseTemplate };
     template.entity = {
       ...template.entity,
-      ...{
-        url: [
-          'text: "${text}"',
-          'short_url: "${short_url}"',
-          'expanded_url: "${expanded_url}"',
-          'decoded_url: "${decoded_url}"',
-          'title: "${title}"',
-        ].join('\n'),
-      },
+      url: [
+        'text: "${text}"\n',
+        'short_url: "${short_url}"\n',
+        'expanded_url: "${expanded_url}"\n',
+        'decoded_url: "${decoded_url}"\n',
+        'title: "${title}"\n',
+      ].join(''),
     };
     expect(tweetToString({ ...tweet, ...text }, template)).toBe(
       [
-        'text: "example.com/sample/i..."',
-        'short_url: "https://t.co/XXXXXXXXXX"',
-        'expanded_url: "https://example.com/%E4%BE%8B"',
-        'decoded_url: "https://example.com/例"',
-        'title: "Example.com"',
-      ].join('\n'),
+        'text: "example.com/sample/i..."\n',
+        'short_url: "https://t.co/XXXXXXXXXX"\n',
+        'expanded_url: "https://example.com/%E4%BE%8B"\n',
+        'decoded_url: "https://example.com/例"\n',
+        'title: "Example.com"\n',
+      ].join(''),
     );
   });
   test('hashtag', () => {
@@ -187,12 +280,10 @@ describe('tweet-to-string/entity', () => {
     const template = { ...baseTemplate };
     template.entity = {
       ...template.entity,
-      ...{
-        hashtag: ['text: "${text}"', 'tag: "${tag}"'].join('\n'),
-      },
+      hashtag: ['text: "${text}"\n', 'tag: "${tag}"\n'].join(''),
     };
     expect(tweetToString({ ...tweet, ...text }, template)).toBe(
-      ['text: "#Twitter"', 'tag: "Twitter"'].join('\n'),
+      ['text: "#Twitter"\n', 'tag: "Twitter"\n'].join(''),
     );
   });
   test('cashtag', () => {
@@ -208,12 +299,10 @@ describe('tweet-to-string/entity', () => {
     const template = { ...baseTemplate };
     template.entity = {
       ...template.entity,
-      ...{
-        cashtag: ['text: "${text}"', 'tag: "${tag}"'].join('\n'),
-      },
+      cashtag: ['text: "${text}"\n', 'tag: "${tag}"\n'].join(''),
     };
     expect(tweetToString({ ...tweet, ...text }, template)).toBe(
-      ['text: "$TWTR"', 'tag: "TWTR"'].join('\n'),
+      ['text: "$TWTR"\n', 'tag: "TWTR"\n'].join(''),
     );
   });
   test('mention', () => {
@@ -229,12 +318,21 @@ describe('tweet-to-string/entity', () => {
     const template = { ...baseTemplate };
     template.entity = {
       ...template.entity,
-      ...{
-        mention: ['text: "${text}"', 'username: "${username}"'].join('\n'),
-      },
+      mention: [
+        'text: "${text}"\n',
+        'username: "${username}"\n',
+        'url: "${user_url}"\n',
+      ].join(''),
     };
-    expect(tweetToString({ ...tweet, ...text }, template)).toBe(
-      ['text: "@bob"', 'username: "bob"'].join('\n'),
+    const option = {
+      hostname: 'twitter.com' as const,
+    };
+    expect(tweetToString({ ...tweet, ...text }, template, option)).toBe(
+      [
+        'text: "@bob"\n',
+        'username: "bob"\n',
+        'url: "https://twitter.com/bob"\n',
+      ].join(''),
     );
   });
 });

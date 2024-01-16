@@ -37,13 +37,17 @@ module.exports = [
     },
     rules: {
       ...google.rules,
-      'require-jsdoc': 'off',
       ...js.configs.recommended.rules,
       ...typescript.configs.recommended.rules,
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       ...reactRedux.configs.recommended.rules,
       ...prettier.rules,
+      'require-jsdoc': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { varsIgnorePattern: '^_', args: 'none' },
+      ],
     },
   },
   {
@@ -64,10 +68,14 @@ module.exports = [
     },
     rules: {
       ...google.rules,
-      'require-jsdoc': 'off',
       ...js.configs.recommended.rules,
       ...typescript.configs.recommended.rules,
       ...prettier.rules,
+      'require-jsdoc': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { varsIgnorePattern: '^_', args: 'none' },
+      ],
     },
   },
 ];

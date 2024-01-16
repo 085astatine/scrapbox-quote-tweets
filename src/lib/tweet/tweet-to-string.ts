@@ -1,5 +1,9 @@
-import { toDatetime } from '../datetime';
+import { defaultTimezone, toDatetime } from '../datetime';
+import { Hostname, baseURL } from '../settings';
 import {
+  Media,
+  MediaPhoto,
+  MediaVideo,
   Tweet,
   TweetEntity,
   TweetEntityCashtag,
@@ -14,6 +18,8 @@ import {
   EntityMentionField,
   EntityTextField,
   EntityURLField,
+  MediaPhotoField,
+  MediaVideoField,
   ParsedTweetTemplate,
   TemplateElement,
   TweetField,
@@ -21,21 +27,82 @@ import {
   parseTweetTemplate,
 } from './tweet-template';
 
+export interface TweetToStringOption {
+  hostname?: Hostname;
+  timezone?: string;
+  datetimeFormat?: string;
+}
+
+const defaultOption = (): Required<TweetToStringOption> => {
+  return {
+    hostname: 'twitter.com',
+    timezone: defaultTimezone(),
+    datetimeFormat: 'YYYY-MM-DD[T]HH:mm:ssZ',
+  };
+};
+
 export const tweetToString = (
   tweet: Tweet,
   template: TweetTemplate,
+  option?: TweetToStringOption,
 ): string => {
+  const options = {
+    ...defaultOption(),
+    ...(option ?? {}),
+  };
   const parsedTemplate = parseTweetTemplate(template);
-  const filledOutTemplate = parsedTemplate.tweet
-    .map((element) => fillTweetTemplateElement(element, tweet, parsedTemplate))
-    .join('');
-  return filledOutTemplate;
+  const textElements: string[] = [];
+  // tweet
+  textElements.push(
+    substituteTweetTemplates(
+      parsedTemplate.tweet,
+      tweet,
+      parsedTemplate,
+      options,
+    ),
+  );
+  // media
+  if (tweet.media !== undefined) {
+    textElements.push(mediaListToString(tweet.media, parsedTemplate));
+  }
+  // footer
+  textElements.push(
+    substituteTweetTemplates(
+      parsedTemplate.footer,
+      tweet,
+      parsedTemplate,
+      options,
+    ),
+  );
+  // quote
+  return parsedTemplate.quote ?
+      quoteText(textElements.join(''))
+    : textElements.join('');
 };
 
-const fillTweetTemplateElement = (
+const substituteTweetTemplates = (
+  tweetTemplates: readonly TemplateElement<TweetField>[],
+  tweet: Tweet,
+  template: ParsedTweetTemplate,
+  option: Required<TweetToStringOption>,
+): string => {
+  // substitute tweet templates
+  const text = tweetTemplates
+    .map((element) => substituteTweetTemplate(element, tweet, template, option))
+    .join('');
+  // if the text is emapty, do not add EOL
+  if (!text) {
+    return '';
+  }
+  // EOL
+  return text.replace(/\n+$/, '').replace(/$/, '\n');
+};
+
+const substituteTweetTemplate = (
   templateElement: TemplateElement<TweetField>,
   tweet: Tweet,
   template: ParsedTweetTemplate,
+  option: Required<TweetToStringOption>,
 ): string => {
   switch (templateElement.type) {
     case 'text':
@@ -43,71 +110,67 @@ const fillTweetTemplateElement = (
     case 'placeholder':
       switch (templateElement.field) {
         case 'tweet.url':
-          return `https://twitter.com/${tweet.author.username}/status/${tweet.id}`;
+          return `${baseURL(option.hostname)}/${tweet.author.username}/status/${
+            tweet.id
+          }`;
         case 'tweet.id':
           return tweet.id;
         case 'tweet.text':
           return tweet.text
-            .map((entity) => fillTweetEntity(entity, template))
+            .map((entity) => tweetEntityToString(entity, template, option))
             .join('');
+        case 'tweet.datetime':
+          return toDatetime(tweet.created_at, option.timezone).format(
+            option.datetimeFormat,
+          );
         case 'user.name':
           return tweet.author.name;
         case 'user.username':
           return tweet.author.username;
-        case 'date.iso':
-          return toDatetime(tweet.created_at, template.timezone).format();
-        case 'date.year':
-          return toDatetime(tweet.created_at, template.timezone).format('YYYY');
-        case 'date.month':
-          return toDatetime(tweet.created_at, template.timezone).format('MM');
-        case 'date.day':
-          return toDatetime(tweet.created_at, template.timezone).format('DD');
-        case 'date.hours':
-          return toDatetime(tweet.created_at, template.timezone).format('HH');
-        case 'date.minutes':
-          return toDatetime(tweet.created_at, template.timezone).format('mm');
-        case 'date.seconds':
-          return toDatetime(tweet.created_at, template.timezone).format('ss');
-        case 'date.timestamp':
-          return tweet.created_at.toString();
+        case 'user.url':
+          return `${baseURL(option.hostname)}/${tweet.author.username}`;
       }
   }
-  ((_: never) => _)(templateElement);
+  const _: never = templateElement;
   return '';
 };
 
-const fillTweetEntity = (
+const tweetEntityToString = (
   entity: TweetEntity,
   template: ParsedTweetTemplate,
+  option: Required<TweetToStringOption>,
 ): string => {
   switch (entity.type) {
     case 'text':
       return template.entity.text
-        .map((element) => fillTweetEntityText(element, entity))
+        .map((element) => substituteEntityTextTemplate(element, entity))
         .join('');
     case 'url':
       return template.entity.url
-        .map((element) => fillTweetEntityURL(element, entity))
+        .map((element) => substituteEntityURLTemplate(element, entity))
         .join('');
     case 'hashtag':
       return template.entity.hashtag
-        .map((element) => fillTweetEntityHashtag(element, entity))
+        .map((element) => substituteEntityHashtagTemplate(element, entity))
         .join('');
     case 'cashtag':
       return template.entity.cashtag
-        .map((element) => fillTweetEntityCashtag(element, entity))
+        .map((element) => substituteEntityCashtagTemplate(element, entity))
         .join('');
     case 'mention':
       return template.entity.mention
-        .map((element) => fillTweetEntityMention(element, entity))
+        .map((element) =>
+          substituteEntityMentionTemplate(element, entity, option),
+        )
         .join('');
-    default:
-      ((_: never) => _)(entity);
+    default: {
+      const _: never = entity;
       return '';
+    }
   }
 };
 
-const fillTweetEntityText = (
+const substituteEntityTextTemplate = (
   templateElement: TemplateElement<EntityTextField>,
   entity: TweetEntityText,
 ): string => {
@@ -120,11 +183,11 @@ const fillTweetEntityText = (
           return entity.text;
       }
   }
-  ((_: never) => _)(templateElement);
+  const _: never = templateElement;
   return '';
 };
 
-const fillTweetEntityURL = (
+const substituteEntityURLTemplate = (
   templateElement: TemplateElement<EntityURLField>,
   entity: TweetEntityURL,
 ): string => {
@@ -145,11 +208,11 @@ const fillTweetEntityURL = (
           return entity.title ?? '';
       }
   }
-  ((_: never) => _)(templateElement);
+  const _: never = templateElement;
   return '';
 };
 
-const fillTweetEntityHashtag = (
+const substituteEntityHashtagTemplate = (
   templateElement: TemplateElement<EntityHashtagField>,
   entity: TweetEntityHashtag,
 ): string => {
@@ -166,11 +229,11 @@ const fillTweetEntityHashtag = (
           return entity.hashmoji ?? '';
       }
   }
-  ((_: never) => _)(templateElement);
+  const _: never = templateElement;
   return '';
 };
 
-const fillTweetEntityCashtag = (
+const substituteEntityCashtagTemplate = (
   templateElement: TemplateElement<EntityCashtagField>,
   entity: TweetEntityCashtag,
 ): string => {
@@ -185,13 +248,14 @@ const fillTweetEntityCashtag = (
           return entity.tag;
       }
   }
-  ((_: never) => _)(templateElement);
+  const _: never = templateElement;
   return '';
 };
 
-const fillTweetEntityMention = (
+const substituteEntityMentionTemplate = (
   templateElement: TemplateElement<EntityMentionField>,
   entity: TweetEntityMention,
+  option: Required<TweetToStringOption>,
 ): string => {
   switch (templateElement.type) {
     case 'text':
@@ -202,8 +266,83 @@ const fillTweetEntityMention = (
           return entity.text;
         case 'username':
           return entity.username;
+        case 'user_url':
+          return `${baseURL(option.hostname)}/${entity.username}`;
       }
   }
-  ((_: never) => _)(templateElement);
+  const _: never = templateElement;
   return '';
+};
+
+const mediaListToString = (
+  mediaList: Media[],
+  template: ParsedTweetTemplate,
+): string => {
+  // media to string
+  const text = mediaList
+    .map((media) => mediaToString(media, template))
+    .join('');
+  // EOL
+  return text.replace(/\n+$/, '').replace(/$/, '\n');
+};
+
+const mediaToString = (media: Media, template: ParsedTweetTemplate): string => {
+  switch (media.type) {
+    case 'photo':
+      return template.media.photo
+        .map((element) => substituteMediaPhotoTemplate(element, media))
+        .join('');
+    case 'video':
+      return template.media.video
+        .map((element) => substituteMediaVideoTemplate(element, media))
+        .join('');
+  }
+  const _: never = media;
+  return '';
+};
+
+const substituteMediaPhotoTemplate = (
+  templateElement: TemplateElement<MediaPhotoField>,
+  media: MediaPhoto,
+): string => {
+  switch (templateElement.type) {
+    case 'text':
+      return templateElement.text;
+    case 'placeholder':
+      switch (templateElement.field) {
+        case 'url':
+          return media.url;
+      }
+  }
+  const _: never = templateElement;
+  return '';
+};
+
+const substituteMediaVideoTemplate = (
+  templateElement: TemplateElement<MediaVideoField>,
+  media: MediaVideo,
+): string => {
+  switch (templateElement.type) {
+    case 'text':
+      return templateElement.text;
+    case 'placeholder':
+      switch (templateElement.field) {
+        case 'thumbnail':
+          return media.thumbnail;
+      }
+  }
+  const _: never = templateElement;
+  return '';
+};
+
+const quoteText = (text: string): string => {
+  // if the text is emapty, do not add EOL
+  if (!text) {
+    return '';
+  }
+  return text
+    .replace(/\n+$/, '')
+    .split('\n')
+    .map((line) => `>${line}\n`)
+    .join('');
 };

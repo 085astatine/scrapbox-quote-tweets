@@ -12,6 +12,11 @@ import {
   tweetSortFunction,
 } from '~/lib/tweet/sort-tweets';
 import { Tweet as TweetData } from '~/lib/tweet/tweet';
+import { defaultTweetTemplate } from '~/lib/tweet/tweet-template';
+import {
+  TweetToStringOption,
+  tweetToString,
+} from '~/lib/tweet/tweet-to-string';
 import { trimGoogleFontsIcon } from '~/lib/utility';
 import { State, actions } from '../store';
 import { Checkbox } from './checkbox';
@@ -140,10 +145,18 @@ const SelectSort: React.FC = () => {
 const Commands: React.FC = () => {
   const ref = React.useRef(null);
   const tweets = useSelector(selectedTweetsSelector, shallowEqual);
+  const toStringOption = useSelector(tweetToStringOptionSelector, shallowEqual);
   const dispatch = useDispatch();
   // clipboard
   const copyToClipboard = () => {
-    // TODO: copy to clipboard
+    // copy to clipboard
+    const text = tweets
+      .map((tweet) =>
+        tweetToString(tweet, defaultTweetTemplate(), toStringOption),
+      )
+      .join('\n');
+    navigator.clipboard.writeText(text);
+    // move to trashbox
     moveToTrashbox();
   };
   // move to trashbox
@@ -214,3 +227,8 @@ const selectAllStateSelector = (
 
 const tweetSortSelector = (state: State): TweetSort =>
   state.settings.current.tweetSort;
+
+const tweetToStringOptionSelector = (state: State): TweetToStringOption => {
+  const { hostname, timezone, datetimeFormat } = state.settings.current;
+  return { hostname, timezone, datetimeFormat };
+};
