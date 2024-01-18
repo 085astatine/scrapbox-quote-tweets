@@ -16,24 +16,6 @@ $fav-color: rgb(249, 24, 128);
   transition-property: background-color, border-color;
 }
 
-@keyframes scrapbox-copy-tweets-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes scrapbox-copy-tweets-fade-out {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
 @keyframes scrapbox-copy-tweets-in-progress {
   0% {
     border-color: transparent transparent transparent transparent;
@@ -127,13 +109,6 @@ $fav-color: rgb(249, 24, 128);
             color: red;
           }
         }
-      }
-
-      &.fade-in {
-        animation: scrapbox-copy-tweets-fade-in 0.2s;
-      }
-      &.fade-out {
-        animation: scrapbox-copy-tweets-fade-out 0.2s;
       }
     }
   }

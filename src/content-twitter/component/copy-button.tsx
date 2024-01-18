@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import browser from 'webextension-polyfill';
 import CloseIcon from '~/icon/bootstrap/x.svg';
 import ScrapboxIcon from '~/icon/scrapbox.svg';
+import { Fade } from '~/lib/component/transition';
 import { createLogger } from '~/lib/logger';
 import {
   SaveTweetRequestMessage,
@@ -22,7 +23,6 @@ import { parseTweet } from '../lib/parse-tweet';
 import { State, actions } from '../store';
 
 type TooltipType = 'notification' | 'error';
-type TooltipVisibility = 'none' | 'fade-in' | 'visible' | 'fade-out';
 
 interface TooltipMessage {
   type: TooltipType;
@@ -51,61 +51,18 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     placement: 'top',
     middleware: [offset(10), shift(), arrow({ element: arrowRef })],
   });
-  // state
-  const [isClicked, setIsClicked] = React.useState(false);
-  const [tooltipVisibility, setTooltipVisibility] =
-    React.useState<TooltipVisibility>('none');
   // tooltip
+  const [showTooltip, setShowTooltip] = React.useState(false);
   const tooltipMessage: TooltipMessage | null =
-    !isClicked ? null
-    : buttonState.state === 'success' ?
+    buttonState.state === 'success' ?
       { type: 'notification', message: 'Copied' }
     : buttonState.state === 'failure' ?
       { type: 'error', message: buttonState.message }
     : null;
-  if (tooltipMessage !== null && tooltipVisibility === 'none') {
-    setTooltipVisibility('fade-in');
-  }
-  // effect: tooltip visibility
-  React.useEffect(() => {
-    switch (tooltipVisibility) {
-      case 'none':
-        break;
-      case 'fade-in': {
-        const timeoutID = setTimeout(
-          () => setTooltipVisibility('visible'),
-          200,
-        );
-        return () => clearTimeout(timeoutID);
-      }
-      case 'visible': {
-        if (tooltipMessage?.type === 'notification') {
-          const timeoutID = setTimeout(
-            () => setTooltipVisibility('fade-out'),
-            2000,
-          );
-          return () => clearTimeout(timeoutID);
-        }
-        break;
-      }
-      case 'fade-out': {
-        const timeoutID = setTimeout(() => {
-          setIsClicked(false);
-          setTooltipVisibility('none');
-        }, 200);
-        return () => clearTimeout(timeoutID);
-      }
-      default: {
-        const _: never = tooltipVisibility;
-        return _;
-      }
-    }
-  }, [tooltipVisibility, tooltipMessage?.type]);
   // click: copy button
   const onClick = async (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     // set state
-    setIsClicked(true);
     dispatch(actions.update({ tweetID, state: { state: 'in-progress' } }));
     // parse tweet
     if (!ref?.current) {
@@ -125,6 +82,8 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
           state: { state: 'failure', message: error.message },
         }),
       );
+      // show error message with tooltip
+      setShowTooltip(true);
       return null;
     });
     logger.info('tweet', tweet);
@@ -152,13 +111,9 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
         );
       }
     }
+    // show result with tooltip
+    setShowTooltip(true);
   };
-  // click: tooltip close
-  const onTooltipClose = React.useCallback(() => {
-    if (tooltipMessage?.type === 'error') {
-      setTooltipVisibility('fade-out');
-    }
-  }, [tooltipMessage?.type]);
   return (
     <div className="copy-button" ref={ref}>
       <div
@@ -181,23 +136,32 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
           height={undefined}
         />
       </div>
-      {tooltipVisibility !== 'none' && tooltipMessage !== null ?
-        <div
-          className={classNames('tooltip', {
-            'fade-in': tooltipVisibility === 'fade-in',
-            'fade-out': tooltipVisibility === 'fade-out',
-          })}
-          ref={refs.setFloating}
-          style={floatingStyles}>
-          <TooltipBody
-            message={tooltipMessage.message}
-            {...(tooltipMessage.type === 'error' ?
-              { onClose: onTooltipClose }
-            : {})}
-          />
-          <FloatingArrow className="arrow" ref={arrowRef} context={context} />
-        </div>
-      : <></>}
+      <Fade
+        nodeRef={refs.floating}
+        in={showTooltip}
+        duration={200}
+        mountOnEnter
+        unmountOnExit
+        onEntered={() => {
+          if (tooltipMessage?.type === 'notification') {
+            setTimeout(() => setShowTooltip(false), 2000);
+          }
+        }}
+        target={
+          <div
+            className="tooltip"
+            ref={refs.setFloating}
+            style={floatingStyles}>
+            <TooltipBody
+              message={tooltipMessage?.message ?? ''}
+              {...(tooltipMessage?.type === 'error' ?
+                { onClose: () => setShowTooltip(false) }
+              : {})}
+            />
+            <FloatingArrow className="arrow" ref={arrowRef} context={context} />
+          </div>
+        }
+      />
     </div>
   );
 };
