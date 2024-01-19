@@ -23,7 +23,7 @@ export const insertReactRoot = (
       return;
     }
     // create <div class="scrapbox-copy-tweets" />
-    const reactRoot = createRootDiv(element, logger);
+    const reactRoot = createRootDiv(element, tweetID, logger);
     if (reactRoot === null) {
       return;
     }
@@ -119,7 +119,11 @@ const parseTweetIdInTweetPage = (
   return null;
 };
 
-const createRootDiv = (element: Element, logger: Logger): Element | null => {
+const createRootDiv = (
+  element: Element,
+  tweetID: TweetID,
+  logger: Logger,
+): Element | null => {
   // button group
   const group = getElement('(.//div[@role="group"])[last()]', element);
   if (group === null) {
@@ -135,5 +139,6 @@ const createRootDiv = (element: Element, logger: Logger): Element | null => {
   logger.info('create <div class="scrapbox-copy-tweets" />');
   const root = group.appendChild(document.createElement('div'));
   root.classList.add('scrapbox-copy-tweets');
+  root.setAttribute('tweet-id', tweetID);
   return root;
 };
