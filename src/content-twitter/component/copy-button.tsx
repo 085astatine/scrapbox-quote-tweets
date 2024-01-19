@@ -12,13 +12,13 @@ import browser from 'webextension-polyfill';
 import CloseIcon from '~/icon/bootstrap/x.svg';
 import ScrapboxIcon from '~/icon/scrapbox.svg';
 import { Fade } from '~/lib/component/transition';
-import { createLogger } from '~/lib/logger';
+import { Logger, createLogger } from '~/lib/logger';
 import {
   SaveTweetRequestMessage,
   SaveTweetResponseMessage,
 } from '~/lib/message';
 import { toTweetIDKey } from '~/lib/storage/tweet-id-key';
-import { TweetID } from '~/lib/tweet/tweet';
+import { Tweet, TweetID } from '~/lib/tweet/tweet';
 import { parseTweet } from '../lib/parse-tweet';
 import { State, actions } from '../store';
 
@@ -65,51 +65,16 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     // set state
     dispatch(actions.update({ tweetID, state: { state: 'in-progress' } }));
     // parse tweet
-    if (!ref?.current) {
-      logger.warn('reference to DOM is null');
-      return;
-    }
-    const tweet = await parseTweet(
-      tweetID,
-      ref.current,
-      Math.trunc(Date.now() / 1000),
-      logger,
-    ).catch((error) => {
-      logger.warn('failed to parse tweet', error);
+    const result = await addTweet(tweetID, ref.current, logger);
+    if (result.ok) {
+      dispatch(actions.update({ tweetID, state: { state: 'success' } }));
+    } else {
       dispatch(
         actions.update({
           tweetID,
-          state: { state: 'failure', message: error.message },
+          state: { state: 'failure', message: result.error },
         }),
       );
-      // show error message with tooltip
-      setShowTooltip(true);
-      return null;
-    });
-    logger.info('tweet', tweet);
-    if (tweet === null) {
-      return;
-    }
-    // send message to background
-    logger.info('save request');
-    const request: SaveTweetRequestMessage = {
-      type: 'SaveTweet/Request',
-      tweet,
-    };
-    const response: SaveTweetResponseMessage =
-      await browser.runtime.sendMessage(request);
-    logger.debug('response', response);
-    if (response?.type === 'SaveTweet/Response') {
-      if (response.ok) {
-        dispatch(actions.update({ tweetID, state: { state: 'success' } }));
-      } else {
-        dispatch(
-          actions.update({
-            tweetID,
-            state: { state: 'failure', message: response.error },
-          }),
-        );
-      }
     }
     // show result with tooltip
     setShowTooltip(true);
@@ -191,4 +156,62 @@ const TooltipBody: React.FC<TooltipBodyProps> = ({
       <span>{message}</span>
     </div>
   );
+};
+
+interface AddTweetSuccess {
+  ok: true;
+  tweet: Tweet;
+}
+
+interface AddTweetFailure {
+  ok: false;
+  error: string;
+}
+
+type AddTweetResult = AddTweetSuccess | AddTweetFailure;
+
+const addTweet = async (
+  tweetID: TweetID,
+  element: HTMLElement | null,
+  logger: Logger,
+): Promise<AddTweetResult> => {
+  // check ref
+  if (element === null) {
+    logger.warn('Reference to DOM is null');
+    return { ok: false, error: 'Reference to DOM is null' };
+  }
+  // current timestamp
+  const timestamp = Math.trunc(Date.now() / 1000);
+  // parse tweet from DOM
+  const result = await parseTweet(tweetID, element, timestamp, logger)
+    .then((tweet): AddTweetResult => {
+      logger.info('tweet', tweet);
+      return tweet !== null ?
+          { ok: true, tweet }
+        : { ok: false, error: 'Failed to parse tweet' };
+    })
+    .catch((error): AddTweetFailure => {
+      logger.warn('failed to parse tweet', error);
+      return { ok: false, error: error.message };
+    });
+  if (!result.ok) {
+    return result;
+  }
+  // send message to background
+  logger.info('save request');
+  const request: SaveTweetRequestMessage = {
+    type: 'SaveTweet/Request',
+    tweet: result.tweet,
+  };
+  const response: SaveTweetResponseMessage =
+    await browser.runtime.sendMessage(request);
+  logger.debug('response', response);
+  if (response?.type === 'SaveTweet/Response') {
+    if (response.ok) {
+      return result;
+    } else {
+      return { ok: false, error: response.error };
+    }
+  }
+  return { ok: false, error: 'Unknown responses from background script' };
 };
