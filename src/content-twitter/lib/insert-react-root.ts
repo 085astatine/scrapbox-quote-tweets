@@ -133,6 +133,13 @@ const createRootDiv = (
     logger.warn('<div role="group"> is not found');
     return null;
   }
+  // check if this tweet is a promotion
+  if (
+    getElement("../../following-sibling::div//*[name()='svg']", group) !== null
+  ) {
+    logger.info('this tweet is a promotion', element);
+    return null;
+  }
   // check if react root exists
   if (getElement('./div[@class="scrapbox-copy-tweets"]', group) !== null) {
     logger.info('<div classse="scrapbox-copy-tweets:" /> already exists');
