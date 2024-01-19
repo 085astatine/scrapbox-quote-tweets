@@ -35,10 +35,12 @@ export const insertReactRoot = (
   return result;
 };
 
+const origins: readonly string[] = ['https://twitter.com', 'https://x.com'];
+
 type URLType = 'twitter' | 'tweet' | 'other';
 
 const matchURLType = (url: URL): URLType => {
-  if (url.origin === 'https://twitter.com') {
+  if (origins.includes(url.origin)) {
     const tweetLink = parseTweetLink(url);
     return tweetLink !== null ? 'tweet' : 'twitter';
   }
@@ -56,7 +58,7 @@ interface TweetLink {
 
 const parseTweetLink = (url: URL): TweetLink | null => {
   // check origin
-  if (url.origin !== 'https://twitter.com') {
+  if (!origins.includes(url.origin)) {
     return null;
   }
   // parse username & tweet ID
