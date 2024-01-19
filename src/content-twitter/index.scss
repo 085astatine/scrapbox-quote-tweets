@@ -18,19 +18,11 @@ $fav-color: rgb(249, 24, 128);
 
 @keyframes scrapbox-copy-tweets-in-progress {
   0% {
-    border-color: transparent transparent transparent transparent;
-  }
-  25% {
-    border-color: $fav-color transparent transparent transparent;
+    transform: scale(0);
   }
   50% {
-    border-color: $fav-color $fav-color transparent transparent;
-  }
-  75% {
-    border-color: $fav-color $fav-color $fav-color transparent;
-  }
-  100% {
-    border-color: $fav-color $fav-color $fav-color $fav-color;
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -64,8 +56,9 @@ $fav-color: rgb(249, 24, 128);
       }
       .circle-in-progress {
         @include circle;
-        background-color: transparent;
-        transform: rotate(45deg);
+        background-color: rgba($fav-color, 0.1);
+        border-color: transparent;
+        opacity: 0;
         animation: scrapbox-copy-tweets-in-progress 1s infinite;
       }
 
