@@ -29,11 +29,11 @@ interface TooltipMessage {
   message: string;
 }
 
-export interface CopyButtonProps {
+export interface ScrapboxButtonProps {
   tweetID: TweetID;
 }
 
-export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
+export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
   // logger
   const logger = createLogger({ prefix: `[Tweet ID: ${tweetID}] ` });
   // ref
@@ -59,7 +59,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     : buttonState.state === 'failure' ?
       { type: 'error', message: buttonState.message }
     : null;
-  // click: copy button
+  // click button
   const onClick = async (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     // set state
@@ -80,7 +80,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ tweetID }) => {
     setShowTooltip(true);
   };
   return (
-    <div className="copy-button" ref={ref}>
+    <div className="scrapbox-button" ref={ref}>
       <div
         className="button"
         role="button"
