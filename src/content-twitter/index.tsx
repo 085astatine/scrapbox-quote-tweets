@@ -6,7 +6,7 @@ import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
 import { SaveTweetReportMessage } from '~/lib/message';
 import { savedTweetIDs } from '~/lib/storage/tweet';
-import { CopyButton } from './component/copy-button';
+import { ScrapboxButton } from './component/scrapbox-button';
 import './index.scss';
 import { insertReactRoot } from './lib/insert-react-root';
 import { actions, store } from './store';
@@ -22,7 +22,7 @@ const observerCallback = (records: MutationRecord[]): void => {
   records.forEach((record) => {
     // tweet nodes
     record.addedNodes.forEach((node) => {
-      insertReactRoot(node, document.URL, logger).forEach(
+      insertReactRoot(node, new URL(document.URL), logger).forEach(
         ({ tweetID, reactRoot }) => {
           // update store
           store.dispatch(actions.touch(tweetID));
@@ -30,7 +30,7 @@ const observerCallback = (records: MutationRecord[]): void => {
           const root = createRoot(reactRoot);
           root.render(
             <Provider store={store}>
-              <CopyButton tweetID={tweetID} />
+              <ScrapboxButton tweetID={tweetID} />
             </Provider>,
           );
         },
