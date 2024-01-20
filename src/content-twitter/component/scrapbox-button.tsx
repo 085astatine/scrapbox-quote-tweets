@@ -113,18 +113,24 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
           }
         }}
         target={
-          <div
-            className="tooltip"
-            ref={refs.setFloating}
-            style={floatingStyles}>
-            <TooltipBody
-              message={tooltipMessage?.message ?? ''}
-              {...(tooltipMessage?.type === 'error' ?
-                { onClose: () => setShowTooltip(false) }
-              : {})}
-            />
-            <FloatingArrow className="arrow" ref={arrowRef} context={context} />
-          </div>
+          tooltipMessage !== null && (
+            <div
+              className="tooltip"
+              ref={refs.setFloating}
+              style={floatingStyles}>
+              <TooltipBody
+                message={tooltipMessage.message}
+                {...(tooltipMessage.type === 'error' ?
+                  { onClose: () => setShowTooltip(false) }
+                : {})}
+              />
+              <FloatingArrow
+                className="arrow"
+                ref={arrowRef}
+                context={context}
+              />
+            </div>
+          )
         }
       />
     </div>
