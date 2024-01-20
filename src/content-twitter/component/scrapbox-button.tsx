@@ -14,6 +14,8 @@ import ScrapboxIcon from '~/icon/scrapbox.svg';
 import { Fade } from '~/lib/component/transition';
 import { Logger, createLogger } from '~/lib/logger';
 import {
+  TweetDeleteRequestMessage,
+  TweetDeleteResponseMessage,
   TweetSaveRequestMessage,
   TweetSaveResponseMessage,
 } from '~/lib/message';
@@ -56,12 +58,11 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
   const [showTooltip, setShowTooltip] = React.useState(false);
   const [tooltipMessage, setTooltipMessage] =
     React.useState<TooltipMessage | null>(null);
-  // click button
-  const onClick = async (event: React.MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation();
-    // set state
+  // click: add tweet
+  const onClickAddTweet = async () => {
+    // change to in-progress
     dispatch(actions.update({ tweetID, state: { state: 'in-progress' } }));
-    // parse tweet
+    // add tweet
     const result = await addTweet(tweetID, tweetRef.current, logger);
     if (result.ok) {
       dispatch(actions.update({ tweetID, state: { state: 'success' } }));
@@ -82,6 +83,38 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
     }
     // show result with tooltip
     setShowTooltip(true);
+  };
+  // click: delete tweet
+  const onClickDeleteTweet = async () => {
+    // change to in-progress
+    dispatch(actions.update({ tweetID, state: { state: 'in-progress' } }));
+    // delete tweet
+    const result = await deleteTweet(tweetID, logger);
+    if (result.ok) {
+      dispatch(actions.update({ tweetID, state: { state: 'none' } }));
+      setTooltipMessage({ type: 'notification', message: 'Deleted' });
+    } else {
+      setTooltipMessage({
+        type: 'error',
+        message: result.error,
+        onClosed: () =>
+          dispatch(actions.update({ tweetID, state: { state: 'success' } })),
+      });
+    }
+    // show result with tooltip
+    setShowTooltip(true);
+  };
+  // click
+  const onClick = async (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    switch (buttonState.state) {
+      case 'none':
+        await onClickAddTweet();
+        break;
+      case 'success':
+        await onClickDeleteTweet();
+        break;
+    }
   };
   return (
     <div className="scrapbox-button" ref={tweetRef}>
@@ -228,4 +261,42 @@ const addTweet = async (
     }
   }
   return { ok: false, error: 'Unknown responses from background script' };
+};
+
+interface DeleteTweetSuccess {
+  ok: true;
+}
+
+interface DeleteTweetFailure {
+  ok: false;
+  error: string;
+}
+
+type DeleteTweetResult = DeleteTweetSuccess | DeleteTweetFailure;
+
+const deleteTweet = async (
+  tweetID: TweetID,
+  logger: Logger,
+): Promise<DeleteTweetResult> => {
+  // send request to background
+  logger.info('Send delete request');
+  const request: TweetDeleteRequestMessage = {
+    type: 'Tweet/DeleteRequest',
+    tweetID,
+  };
+  const response: TweetDeleteResponseMessage =
+    await browser.runtime.sendMessage(request);
+  // response from background
+  logger.info('Receive delete response', response);
+  if (response?.type === 'Tweet/DeleteResponse') {
+    if (response.tweetID !== tweetID) {
+      return { ok: false, error: 'Tweet ID does not match' };
+    }
+    if (response.ok) {
+      return { ok: true };
+    } else {
+      return { ok: false, error: response.error };
+    }
+  }
+  return { ok: false, error: 'Unknown response form background script' };
 };
