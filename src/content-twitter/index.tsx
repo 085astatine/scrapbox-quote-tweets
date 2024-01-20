@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import browser from 'webextension-polyfill';
 import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
-import { SaveTweetReportMessage } from '~/lib/message';
+import { TweetSaveReportMessage } from '~/lib/message';
 import { savedTweetIDs } from '~/lib/storage/tweet';
 import { ScrapboxButton } from './component/scrapbox-button';
 import './index.scss';
@@ -62,12 +62,12 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // onMessage listener
-type Message = SaveTweetReportMessage;
+type Message = TweetSaveReportMessage;
 
 const onMessageListener = (message: Message) => {
   logger.debug('on message', message);
   switch (message.type) {
-    case 'SaveTweet/Report':
+    case 'Tweet/SaveReport':
       store.dispatch(
         actions.update({
           tweetID: message.tweetID,

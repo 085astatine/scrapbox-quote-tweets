@@ -14,8 +14,8 @@ import ScrapboxIcon from '~/icon/scrapbox.svg';
 import { Fade } from '~/lib/component/transition';
 import { Logger, createLogger } from '~/lib/logger';
 import {
-  SaveTweetRequestMessage,
-  SaveTweetResponseMessage,
+  TweetSaveRequestMessage,
+  TweetSaveResponseMessage,
 } from '~/lib/message';
 import { toTweetIDKey } from '~/lib/storage/tweet-id-key';
 import { Tweet, TweetID } from '~/lib/tweet/tweet';
@@ -205,14 +205,14 @@ const addTweet = async (
   }
   // send message to background
   logger.info('Save request');
-  const request: SaveTweetRequestMessage = {
-    type: 'SaveTweet/Request',
+  const request: TweetSaveRequestMessage = {
+    type: 'Tweet/SaveRequest',
     tweet: result.tweet,
   };
-  const response: SaveTweetResponseMessage =
+  const response: TweetSaveResponseMessage =
     await browser.runtime.sendMessage(request);
   logger.debug('Save response', response);
-  if (response?.type === 'SaveTweet/Response') {
+  if (response?.type === 'Tweet/SaveResponse') {
     if (response.ok) {
       return result;
     } else {

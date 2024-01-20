@@ -40,30 +40,30 @@ export interface ForwardToOffscreenMessage<Message> {
   message: Message;
 }
 
-export interface SaveTweetRequestMessage {
-  type: 'SaveTweet/Request';
+export interface TweetSaveRequestMessage {
+  type: 'Tweet/SaveRequest';
   tweet: Tweet;
 }
 
-export interface SaveTweetResponseSuccessMessage {
-  type: 'SaveTweet/Response';
+export interface TweetSaveResponseSuccessMessage {
+  type: 'Tweet/SaveResponse';
   ok: true;
   tweetID: TweetID;
 }
 
-export interface SaveTweetResponseFailureMessage {
-  type: 'SaveTweet/Response';
+export interface TweetSaveResponseFailureMessage {
+  type: 'Tweet/SaveResponse';
   ok: false;
   tweetID: TweetID;
   error: string;
 }
 
-export type SaveTweetResponseMessage =
-  | SaveTweetResponseSuccessMessage
-  | SaveTweetResponseFailureMessage;
+export type TweetSaveResponseMessage =
+  | TweetSaveResponseSuccessMessage
+  | TweetSaveResponseFailureMessage;
 
-export interface SaveTweetReportMessage {
-  type: 'SaveTweet/Report';
+export interface TweetSaveReportMessage {
+  type: 'Tweet/SaveReport';
   tweetID: TweetID;
 }
 

@@ -8,12 +8,12 @@ import {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
   ForwardToOffscreenMessage,
-  SaveTweetReportMessage,
-  SaveTweetRequestMessage,
-  SaveTweetResponseFailureMessage,
-  SaveTweetResponseMessage,
-  SaveTweetResponseSuccessMessage,
   SettingsDownloadStorageMessage,
+  TweetSaveReportMessage,
+  TweetSaveRequestMessage,
+  TweetSaveResponseFailureMessage,
+  TweetSaveResponseMessage,
+  TweetSaveResponseSuccessMessage,
 } from '~/lib/message';
 import { loadTestData } from '~/lib/storage';
 import { saveTweet } from '~/lib/storage/tweet';
@@ -46,10 +46,10 @@ type RequestMessage =
   | ClipboardCloseAllRequestMessage
   | ClipboardOpenRequestMessage
   | ExpandTCoURLRequestMessage
-  | SaveTweetRequestMessage
+  | TweetSaveRequestMessage
   | SettingsDownloadStorageMessage;
 
-type ResponseMessage = ExpandTCoURLResponseMessage | SaveTweetResponseMessage;
+type ResponseMessage = ExpandTCoURLResponseMessage | TweetSaveResponseMessage;
 
 const onMessageListener = async (
   message: RequestMessage,
@@ -71,8 +71,8 @@ const onMessageListener = async (
       return process.env.TARGET_BROWSER !== 'chrome' ?
           await respondToExpandTCoURLRequest(message.shortURL)
         : await forwardExpandTCoURLRequestToOffscreen(message);
-    case 'SaveTweet/Request':
-      return await respondToSaveTweetRequest(message.tweet);
+    case 'Tweet/SaveRequest':
+      return await respondToTweetSaveRequest(message.tweet);
     case 'Settings/DownloadStorage':
       await downloadStorage();
       break;
@@ -168,21 +168,22 @@ const forwardExpandTCoURLRequestToOffscreen = async (
   return response;
 };
 
-// Respond to SaveTweet/Request
-const respondToSaveTweetRequest = async (
+// Respond to Tweet/SaveRequest
+const respondToTweetSaveRequest = async (
   tweet: Tweet,
-): Promise<SaveTweetResponseMessage> => {
+): Promise<TweetSaveResponseMessage> => {
   return await saveTweet(tweet)
     .then(() => {
       logger.info('save tweet', tweet);
-      // send SaveTweet/Report to all content-twitter
-      const report: SaveTweetReportMessage = {
-        type: 'SaveTweet/Report',
+      // send Tweet/SaveReport to all content-twitter
+      const report: TweetSaveReportMessage = {
+        type: 'Tweet/SaveReport',
         tweetID: tweet.id,
       };
       sendMessageToAllContentTwitter(report);
-      const response: SaveTweetResponseSuccessMessage = {
-        type: 'SaveTweet/Response',
+      // respond to sender
+      const response: TweetSaveResponseSuccessMessage = {
+        type: 'Tweet/SaveResponse',
         ok: true,
         tweetID: tweet.id,
       };
@@ -194,8 +195,8 @@ const respondToSaveTweetRequest = async (
         error instanceof JSONSchemaValidationError ? 'Validation Error' : (
           'Unknown Error'
         );
-      const response: SaveTweetResponseFailureMessage = {
-        type: 'SaveTweet/Response',
+      const response: TweetSaveResponseFailureMessage = {
+        type: 'Tweet/SaveResponse',
         ok: false,
         tweetID: tweet.id,
         error: message,
@@ -206,7 +207,7 @@ const respondToSaveTweetRequest = async (
 
 // Send message to all content-twitter
 const sendMessageToAllContentTwitter = async (
-  message: SaveTweetReportMessage,
+  message: TweetSaveReportMessage,
 ) => {
   browser.tabs.query({ url: 'https://twitter.com/*' }).then((tabs) => {
     logger.debug('send message to tabs', {
