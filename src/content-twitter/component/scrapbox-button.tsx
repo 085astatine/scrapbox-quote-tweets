@@ -53,12 +53,8 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
   });
   // tooltip
   const [showTooltip, setShowTooltip] = React.useState(false);
-  const tooltipMessage: TooltipMessage | null =
-    buttonState.state === 'success' ?
-      { type: 'notification', message: 'Copied' }
-    : buttonState.state === 'failure' ?
-      { type: 'error', message: buttonState.message }
-    : null;
+  const [tooltipMessage, setTooltipMessage] =
+    React.useState<TooltipMessage | null>(null);
   // click button
   const onClick = async (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -68,6 +64,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
     const result = await addTweet(tweetID, tweetRef.current, logger);
     if (result.ok) {
       dispatch(actions.update({ tweetID, state: { state: 'success' } }));
+      setTooltipMessage({ type: 'notification', message: 'Copied' });
     } else {
       dispatch(
         actions.update({
@@ -75,6 +72,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
           state: { state: 'failure', message: result.error },
         }),
       );
+      setTooltipMessage({ type: 'error', message: result.error });
     }
     // show result with tooltip
     setShowTooltip(true);
@@ -103,7 +101,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
       </div>
       <Fade
         nodeRef={refs.floating}
-        in={showTooltip}
+        in={showTooltip && tooltipMessage !== null}
         duration={200}
         mountOnEnter
         unmountOnExit
@@ -112,6 +110,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
             setTimeout(() => setShowTooltip(false), 2000);
           }
         }}
+        onExited={() => setTooltipMessage(null)}
         target={
           tooltipMessage !== null && (
             <div
