@@ -36,8 +36,8 @@ export interface ScrapboxButtonProps {
 export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
   // logger
   const logger = createLogger({ prefix: `[Tweet ID: ${tweetID}] ` });
-  // ref
-  const ref = React.useRef<HTMLDivElement>(null);
+  // reference for parsing this tweet
+  const tweetRef = React.useRef(null);
   // redux
   const selector = React.useCallback(
     (state: State) => state[toTweetIDKey(tweetID)],
@@ -45,7 +45,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
   );
   const buttonState = useSelector(selector);
   const dispatch = useDispatch();
-  // floting
+  // floting-ui
   const arrowRef = React.useRef(null);
   const { refs, floatingStyles, context } = useFloating({
     placement: 'top',
@@ -65,7 +65,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
     // set state
     dispatch(actions.update({ tweetID, state: { state: 'in-progress' } }));
     // parse tweet
-    const result = await addTweet(tweetID, ref.current, logger);
+    const result = await addTweet(tweetID, tweetRef.current, logger);
     if (result.ok) {
       dispatch(actions.update({ tweetID, state: { state: 'success' } }));
     } else {
@@ -80,7 +80,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
     setShowTooltip(true);
   };
   return (
-    <div className="scrapbox-button" ref={ref}>
+    <div className="scrapbox-button" ref={tweetRef}>
       <div
         className="button"
         role="button"
@@ -175,7 +175,7 @@ const addTweet = async (
   element: HTMLElement | null,
   logger: Logger,
 ): Promise<AddTweetResult> => {
-  // check ref
+  // check if reference is not null
   if (element === null) {
     logger.warn('Reference to DOM is null');
     return { ok: false, error: 'Reference to DOM is null' };
@@ -191,21 +191,21 @@ const addTweet = async (
         : { ok: false, error: 'Failed to parse tweet' };
     })
     .catch((error): AddTweetFailure => {
-      logger.warn('failed to parse tweet', error);
+      logger.warn('Failed to parse tweet', error);
       return { ok: false, error: error.message };
     });
   if (!result.ok) {
     return result;
   }
   // send message to background
-  logger.info('save request');
+  logger.info('Save request');
   const request: SaveTweetRequestMessage = {
     type: 'SaveTweet/Request',
     tweet: result.tweet,
   };
   const response: SaveTweetResponseMessage =
     await browser.runtime.sendMessage(request);
-  logger.debug('response', response);
+  logger.debug('Save response', response);
   if (response?.type === 'SaveTweet/Response') {
     if (response.ok) {
       return result;
