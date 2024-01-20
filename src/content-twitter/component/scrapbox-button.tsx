@@ -27,6 +27,7 @@ type TooltipType = 'notification' | 'error';
 interface TooltipMessage {
   type: TooltipType;
   message: string;
+  onClosed?: () => void;
 }
 
 export interface ScrapboxButtonProps {
@@ -72,7 +73,12 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
           state: { state: 'failure', message: result.error },
         }),
       );
-      setTooltipMessage({ type: 'error', message: result.error });
+      setTooltipMessage({
+        type: 'error',
+        message: result.error,
+        onClosed: () =>
+          dispatch(actions.update({ tweetID, state: { state: 'none' } })),
+      });
     }
     // show result with tooltip
     setShowTooltip(true);
@@ -87,7 +93,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
         ref={refs.setReference}>
         <div
           className={classNames({
-            'circle-inactive': ['none', 'error'].includes(buttonState.state),
+            'circle-inactive': ['none', 'failure'].includes(buttonState.state),
             'circle-in-progress': buttonState.state === 'in-progress',
             'circle-active': buttonState.state === 'success',
           })}
@@ -110,7 +116,10 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
             setTimeout(() => setShowTooltip(false), 2000);
           }
         }}
-        onExited={() => setTooltipMessage(null)}
+        onExited={() => {
+          setTooltipMessage(null);
+          tooltipMessage?.onClosed?.();
+        }}
         target={
           tooltipMessage !== null && (
             <div
