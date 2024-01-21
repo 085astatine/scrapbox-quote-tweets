@@ -254,6 +254,9 @@ const addTweet = async (
     await browser.runtime.sendMessage(request);
   logger.debug('Save response', response);
   if (response?.type === 'Tweet/SaveResponse') {
+    if (response.tweetID !== tweetID) {
+      return { ok: false, error: 'Tweet ID does not match' };
+    }
     if (response.ok) {
       return result;
     } else {
