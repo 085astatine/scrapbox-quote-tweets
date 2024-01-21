@@ -21,7 +21,7 @@ import {
   TweetSaveResponseSuccessMessage,
 } from '~/lib/message';
 import { loadTestData } from '~/lib/storage';
-import { deleteTweet, saveTweet } from '~/lib/storage/tweet';
+import { deleteTweet, saveTweet, savedTweetIDs } from '~/lib/storage/tweet';
 import { Tweet, TweetID } from '~/lib/tweet/tweet';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
 import { JSONSchemaValidationError } from '~/validate-json/error';
@@ -220,6 +220,16 @@ const respondToTweetSaveRequest = async (
 const respondToTweetDeleteRequest = async (
   tweetID: TweetID,
 ): Promise<TweetDeleteResponseMessage> => {
+  // chefk if tweet exists in storage
+  if (!(await savedTweetIDs()).includes(tweetID)) {
+    const response: TweetDeleteResponseFailureMessage = {
+      type: 'Tweet/DeleteResponse',
+      ok: false,
+      tweetID,
+      error: 'Tweet is not found in storage',
+    };
+    return response;
+  }
   return await deleteTweet(tweetID)
     .then(() => {
       // send Tweet/DeleteReport to all content-twitter
