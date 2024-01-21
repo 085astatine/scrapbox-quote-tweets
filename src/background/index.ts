@@ -81,9 +81,9 @@ const onMessageListener = async (
           await respondToExpandTCoURLRequest(message.shortURL)
         : await forwardExpandTCoURLRequestToOffscreen(message);
     case 'Tweet/SaveRequest':
-      return await respondToTweetSaveRequest(message.tweet);
+      return await respondToTweetSaveRequest(message.tweet, sender);
     case 'Tweet/DeleteRequest':
-      return await respondToTweetDeleteRequest(message.tweetID);
+      return await respondToTweetDeleteRequest(message.tweetID, sender);
     case 'Settings/DownloadStorage':
       await downloadStorage();
       break;
@@ -182,6 +182,7 @@ const forwardExpandTCoURLRequestToOffscreen = async (
 // Respond to Tweet/SaveRequest
 const respondToTweetSaveRequest = async (
   tweet: Tweet,
+  sender: browser.Runtime.MessageSender,
 ): Promise<TweetSaveResponseMessage> => {
   return await saveTweet(tweet)
     .then(() => {
@@ -191,7 +192,7 @@ const respondToTweetSaveRequest = async (
         type: 'Tweet/SaveReport',
         tweetID: tweet.id,
       };
-      sendMessageToAllContentTwitter(report);
+      sendMessageToAllContentTwitter(report, sender);
       // respond to sender
       const response: TweetSaveResponseSuccessMessage = {
         type: 'Tweet/SaveResponse',
@@ -219,6 +220,7 @@ const respondToTweetSaveRequest = async (
 // Respond to Tweet/DeleteRequest
 const respondToTweetDeleteRequest = async (
   tweetID: TweetID,
+  sender: browser.Runtime.MessageSender,
 ): Promise<TweetDeleteResponseMessage> => {
   // chefk if tweet exists in storage
   if (!(await savedTweetIDs()).includes(tweetID)) {
@@ -237,7 +239,7 @@ const respondToTweetDeleteRequest = async (
         type: 'Tweet/DeleteReport',
         tweetID,
       };
-      sendMessageToAllContentTwitter(report);
+      sendMessageToAllContentTwitter(report, sender);
       // respond to sender
       const response: TweetDeleteResponseSuccessMessage = {
         type: 'Tweet/DeleteResponse',
@@ -262,17 +264,19 @@ const respondToTweetDeleteRequest = async (
 // Send message to all content-twitter
 const sendMessageToAllContentTwitter = async (
   message: TweetSaveReportMessage | TweetDeleteReportMessage,
+  sender: browser.Runtime.MessageSender,
 ) => {
-  browser.tabs.query({ url: 'https://twitter.com/*' }).then((tabs) => {
-    logger.debug('send message to tabs', {
-      message,
-      tabs: tabs.map(({ index, id, url }) => ({ index, id, url })),
-    });
-    tabs.forEach((tab) => {
-      if (tab.id !== undefined) {
-        browser.tabs.sendMessage(tab.id, message);
-      }
-    });
+  const tabs = (
+    await browser.tabs.query({ url: 'https://twitter.com/*' })
+  ).filter((tab) => sender?.tab?.id === undefined || tab.id !== sender.tab.id);
+  logger.debug('send message to tabs', {
+    message,
+    tabs: tabs.map(({ index, id, url }) => ({ index, id, url })),
+  });
+  tabs.forEach((tab) => {
+    if (tab.id !== undefined) {
+      browser.tabs.sendMessage(tab.id, message);
+    }
   });
 };
 
