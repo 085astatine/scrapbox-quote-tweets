@@ -87,8 +87,8 @@ const onMessageListener = (message: Message) => {
       );
       break;
     default: {
-      const _: never = message.type;
-      logger.error(`unexpected message "${message}"`);
+      const _: never = message;
+      logger.error('unexpected message', message);
       return _;
     }
   }

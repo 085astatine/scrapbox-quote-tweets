@@ -244,7 +244,7 @@ const addTweet = async (
   if (!result.ok) {
     return result;
   }
-  // send message to background
+  // send request to background
   logger.info('Save request');
   const request: TweetSaveRequestMessage = {
     type: 'Tweet/SaveRequest',
@@ -260,7 +260,7 @@ const addTweet = async (
       return { ok: false, error: response.error };
     }
   }
-  return { ok: false, error: 'Unknown responses from background script' };
+  return { ok: false, error: 'Unknown response from background script' };
 };
 
 interface DeleteTweetSuccess {
