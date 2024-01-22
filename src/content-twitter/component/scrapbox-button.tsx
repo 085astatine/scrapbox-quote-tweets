@@ -76,7 +76,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
       );
       setTooltipMessage({
         type: 'error',
-        message: result.error,
+        message: `Failed: ${result.error}`,
         onClosed: () =>
           dispatch(actions.update({ tweetID, state: { state: 'none' } })),
       });
@@ -96,7 +96,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
     } else {
       setTooltipMessage({
         type: 'error',
-        message: result.error,
+        message: `Failed: ${result.error}`,
         onClosed: () =>
           dispatch(actions.update({ tweetID, state: { state: 'success' } })),
       });
@@ -263,7 +263,7 @@ const addTweet = async (
       return { ok: false, error: response.error };
     }
   }
-  return { ok: false, error: 'Unknown response from background script' };
+  return { ok: false, error: 'Unknown response' };
 };
 
 interface DeleteTweetSuccess {
@@ -301,5 +301,5 @@ const deleteTweet = async (
       return { ok: false, error: response.error };
     }
   }
-  return { ok: false, error: 'Unknown response form background script' };
+  return { ok: false, error: 'Unknown response' };
 };

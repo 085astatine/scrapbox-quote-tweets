@@ -255,7 +255,7 @@ const respondToTweetDeleteRequest = async (
         type: 'Tweet/DeleteResponse',
         ok: false,
         tweetID,
-        error: 'Failed to Delete Tweet',
+        error: 'Failed to delete Tweet',
       };
       return response;
     });
