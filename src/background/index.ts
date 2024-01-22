@@ -8,16 +8,21 @@ import {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
   ForwardToOffscreenMessage,
-  SaveTweetReportMessage,
-  SaveTweetRequestMessage,
-  SaveTweetResponseFailureMessage,
-  SaveTweetResponseMessage,
-  SaveTweetResponseSuccessMessage,
   SettingsDownloadStorageMessage,
+  TweetDeleteReportMessage,
+  TweetDeleteRequestMessage,
+  TweetDeleteResponseFailureMessage,
+  TweetDeleteResponseMessage,
+  TweetDeleteResponseSuccessMessage,
+  TweetSaveReportMessage,
+  TweetSaveRequestMessage,
+  TweetSaveResponseFailureMessage,
+  TweetSaveResponseMessage,
+  TweetSaveResponseSuccessMessage,
 } from '~/lib/message';
 import { loadTestData } from '~/lib/storage';
-import { saveTweet } from '~/lib/storage/tweet';
-import { Tweet } from '~/lib/tweet/tweet';
+import { deleteTweet, saveTweet, savedTweetIDs } from '~/lib/storage/tweet';
+import { Tweet, TweetID } from '~/lib/tweet/tweet';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import { setupOffscreen } from './offscreen';
@@ -46,10 +51,14 @@ type RequestMessage =
   | ClipboardCloseAllRequestMessage
   | ClipboardOpenRequestMessage
   | ExpandTCoURLRequestMessage
-  | SaveTweetRequestMessage
+  | TweetSaveRequestMessage
+  | TweetDeleteRequestMessage
   | SettingsDownloadStorageMessage;
 
-type ResponseMessage = ExpandTCoURLResponseMessage | SaveTweetResponseMessage;
+type ResponseMessage =
+  | ExpandTCoURLResponseMessage
+  | TweetSaveResponseMessage
+  | TweetDeleteResponseMessage;
 
 const onMessageListener = async (
   message: RequestMessage,
@@ -71,8 +80,10 @@ const onMessageListener = async (
       return process.env.TARGET_BROWSER !== 'chrome' ?
           await respondToExpandTCoURLRequest(message.shortURL)
         : await forwardExpandTCoURLRequestToOffscreen(message);
-    case 'SaveTweet/Request':
-      return await respondToSaveTweetRequest(message.tweet);
+    case 'Tweet/SaveRequest':
+      return await respondToTweetSaveRequest(message.tweet, sender);
+    case 'Tweet/DeleteRequest':
+      return await respondToTweetDeleteRequest(message.tweetID, sender);
     case 'Settings/DownloadStorage':
       await downloadStorage();
       break;
@@ -168,34 +179,36 @@ const forwardExpandTCoURLRequestToOffscreen = async (
   return response;
 };
 
-// Respond to SaveTweet/Request
-const respondToSaveTweetRequest = async (
+// Respond to Tweet/SaveRequest
+const respondToTweetSaveRequest = async (
   tweet: Tweet,
-): Promise<SaveTweetResponseMessage> => {
+  sender: browser.Runtime.MessageSender,
+): Promise<TweetSaveResponseMessage> => {
   return await saveTweet(tweet)
     .then(() => {
       logger.info('save tweet', tweet);
-      // send SaveTweet/Report to all content-twitter
-      const report: SaveTweetReportMessage = {
-        type: 'SaveTweet/Report',
+      // send Tweet/SaveReport to all content-twitter
+      const report: TweetSaveReportMessage = {
+        type: 'Tweet/SaveReport',
         tweetID: tweet.id,
       };
-      sendMessageToAllContentTwitter(report);
-      const response: SaveTweetResponseSuccessMessage = {
-        type: 'SaveTweet/Response',
+      sendMessageToAllContentTwitter(report, sender);
+      // respond to sender
+      const response: TweetSaveResponseSuccessMessage = {
+        type: 'Tweet/SaveResponse',
         ok: true,
         tweetID: tweet.id,
       };
       return response;
     })
     .catch((error) => {
-      logger.warn('Failed to save to storage', error);
+      logger.warn('Failed to save tweet to storage', error);
       const message =
         error instanceof JSONSchemaValidationError ? 'Validation Error' : (
           'Unknown Error'
         );
-      const response: SaveTweetResponseFailureMessage = {
-        type: 'SaveTweet/Response',
+      const response: TweetSaveResponseFailureMessage = {
+        type: 'Tweet/SaveResponse',
         ok: false,
         tweetID: tweet.id,
         error: message,
@@ -204,20 +217,66 @@ const respondToSaveTweetRequest = async (
     });
 };
 
+// Respond to Tweet/DeleteRequest
+const respondToTweetDeleteRequest = async (
+  tweetID: TweetID,
+  sender: browser.Runtime.MessageSender,
+): Promise<TweetDeleteResponseMessage> => {
+  // chefk if tweet exists in storage
+  if (!(await savedTweetIDs()).includes(tweetID)) {
+    const response: TweetDeleteResponseFailureMessage = {
+      type: 'Tweet/DeleteResponse',
+      ok: false,
+      tweetID,
+      error: 'Tweet is not found in storage',
+    };
+    return response;
+  }
+  return await deleteTweet(tweetID)
+    .then(() => {
+      // send Tweet/DeleteReport to all content-twitter
+      const report: TweetDeleteReportMessage = {
+        type: 'Tweet/DeleteReport',
+        tweetID,
+      };
+      sendMessageToAllContentTwitter(report, sender);
+      // respond to sender
+      const response: TweetDeleteResponseSuccessMessage = {
+        type: 'Tweet/DeleteResponse',
+        ok: true,
+        tweetID,
+      };
+      return response;
+    })
+    .catch((error) => {
+      logger.warn('Failed to delete tweet from storage', error);
+      // respond to sender
+      const response: TweetDeleteResponseFailureMessage = {
+        type: 'Tweet/DeleteResponse',
+        ok: false,
+        tweetID,
+        error: 'Failed to delete Tweet',
+      };
+      return response;
+    });
+};
+
 // Send message to all content-twitter
 const sendMessageToAllContentTwitter = async (
-  message: SaveTweetReportMessage,
+  message: TweetSaveReportMessage | TweetDeleteReportMessage,
+  sender: browser.Runtime.MessageSender,
 ) => {
-  browser.tabs.query({ url: 'https://twitter.com/*' }).then((tabs) => {
-    logger.debug('send message to tabs', {
-      message,
-      tabs: tabs.map(({ index, id, url }) => ({ index, id, url })),
-    });
-    tabs.forEach((tab) => {
-      if (tab.id !== undefined) {
-        browser.tabs.sendMessage(tab.id, message);
-      }
-    });
+  const tabs = (
+    await browser.tabs.query({ url: 'https://twitter.com/*' })
+  ).filter((tab) => sender?.tab?.id === undefined || tab.id !== sender.tab.id);
+  logger.debug('send message to tabs', {
+    message,
+    tabs: tabs.map(({ index, id, url }) => ({ index, id, url })),
+  });
+  tabs.forEach((tab) => {
+    if (tab.id !== undefined) {
+      browser.tabs.sendMessage(tab.id, message);
+    }
   });
 };
 

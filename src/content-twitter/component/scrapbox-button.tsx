@@ -14,8 +14,10 @@ import ScrapboxIcon from '~/icon/scrapbox.svg';
 import { Fade } from '~/lib/component/transition';
 import { Logger, createLogger } from '~/lib/logger';
 import {
-  SaveTweetRequestMessage,
-  SaveTweetResponseMessage,
+  TweetDeleteRequestMessage,
+  TweetDeleteResponseMessage,
+  TweetSaveRequestMessage,
+  TweetSaveResponseMessage,
 } from '~/lib/message';
 import { toTweetIDKey } from '~/lib/storage/tweet-id-key';
 import { Tweet, TweetID } from '~/lib/tweet/tweet';
@@ -27,6 +29,7 @@ type TooltipType = 'notification' | 'error';
 interface TooltipMessage {
   type: TooltipType;
   message: string;
+  onClosed?: () => void;
 }
 
 export interface ScrapboxButtonProps {
@@ -53,21 +56,17 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
   });
   // tooltip
   const [showTooltip, setShowTooltip] = React.useState(false);
-  const tooltipMessage: TooltipMessage | null =
-    buttonState.state === 'success' ?
-      { type: 'notification', message: 'Copied' }
-    : buttonState.state === 'failure' ?
-      { type: 'error', message: buttonState.message }
-    : null;
-  // click button
-  const onClick = async (event: React.MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation();
-    // set state
+  const [tooltipMessage, setTooltipMessage] =
+    React.useState<TooltipMessage | null>(null);
+  // click: add tweet
+  const onClickAddTweet = async () => {
+    // change to in-progress
     dispatch(actions.update({ tweetID, state: { state: 'in-progress' } }));
-    // parse tweet
+    // add tweet
     const result = await addTweet(tweetID, tweetRef.current, logger);
     if (result.ok) {
       dispatch(actions.update({ tweetID, state: { state: 'success' } }));
+      setTooltipMessage({ type: 'notification', message: 'Copied' });
     } else {
       dispatch(
         actions.update({
@@ -75,9 +74,47 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
           state: { state: 'failure', message: result.error },
         }),
       );
+      setTooltipMessage({
+        type: 'error',
+        message: `Failed: ${result.error}`,
+        onClosed: () =>
+          dispatch(actions.update({ tweetID, state: { state: 'none' } })),
+      });
     }
     // show result with tooltip
     setShowTooltip(true);
+  };
+  // click: delete tweet
+  const onClickDeleteTweet = async () => {
+    // change to in-progress
+    dispatch(actions.update({ tweetID, state: { state: 'in-progress' } }));
+    // delete tweet
+    const result = await deleteTweet(tweetID, logger);
+    if (result.ok) {
+      dispatch(actions.update({ tweetID, state: { state: 'none' } }));
+      setTooltipMessage({ type: 'notification', message: 'Deleted' });
+    } else {
+      setTooltipMessage({
+        type: 'error',
+        message: `Failed: ${result.error}`,
+        onClosed: () =>
+          dispatch(actions.update({ tweetID, state: { state: 'success' } })),
+      });
+    }
+    // show result with tooltip
+    setShowTooltip(true);
+  };
+  // click
+  const onClick = async (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    switch (buttonState.state) {
+      case 'none':
+        await onClickAddTweet();
+        break;
+      case 'success':
+        await onClickDeleteTweet();
+        break;
+    }
   };
   return (
     <div className="scrapbox-button" ref={tweetRef}>
@@ -89,7 +126,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
         ref={refs.setReference}>
         <div
           className={classNames({
-            'circle-inactive': ['none', 'error'].includes(buttonState.state),
+            'circle-inactive': ['none', 'failure'].includes(buttonState.state),
             'circle-in-progress': buttonState.state === 'in-progress',
             'circle-active': buttonState.state === 'success',
           })}
@@ -103,7 +140,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
       </div>
       <Fade
         nodeRef={refs.floating}
-        in={showTooltip}
+        in={showTooltip && tooltipMessage !== null}
         duration={200}
         mountOnEnter
         unmountOnExit
@@ -111,6 +148,10 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
           if (tooltipMessage?.type === 'notification') {
             setTimeout(() => setShowTooltip(false), 2000);
           }
+        }}
+        onExited={() => {
+          setTooltipMessage(null);
+          tooltipMessage?.onClosed?.();
         }}
         target={
           tooltipMessage !== null && (
@@ -203,21 +244,62 @@ const addTweet = async (
   if (!result.ok) {
     return result;
   }
-  // send message to background
+  // send request to background
   logger.info('Save request');
-  const request: SaveTweetRequestMessage = {
-    type: 'SaveTweet/Request',
+  const request: TweetSaveRequestMessage = {
+    type: 'Tweet/SaveRequest',
     tweet: result.tweet,
   };
-  const response: SaveTweetResponseMessage =
+  const response: TweetSaveResponseMessage =
     await browser.runtime.sendMessage(request);
   logger.debug('Save response', response);
-  if (response?.type === 'SaveTweet/Response') {
+  if (response?.type === 'Tweet/SaveResponse') {
+    if (response.tweetID !== tweetID) {
+      return { ok: false, error: 'Tweet ID does not match' };
+    }
     if (response.ok) {
       return result;
     } else {
       return { ok: false, error: response.error };
     }
   }
-  return { ok: false, error: 'Unknown responses from background script' };
+  return { ok: false, error: 'Unknown response' };
+};
+
+interface DeleteTweetSuccess {
+  ok: true;
+}
+
+interface DeleteTweetFailure {
+  ok: false;
+  error: string;
+}
+
+type DeleteTweetResult = DeleteTweetSuccess | DeleteTweetFailure;
+
+const deleteTweet = async (
+  tweetID: TweetID,
+  logger: Logger,
+): Promise<DeleteTweetResult> => {
+  // send request to background
+  logger.info('Send delete request');
+  const request: TweetDeleteRequestMessage = {
+    type: 'Tweet/DeleteRequest',
+    tweetID,
+  };
+  const response: TweetDeleteResponseMessage =
+    await browser.runtime.sendMessage(request);
+  // response from background
+  logger.info('Receive delete response', response);
+  if (response?.type === 'Tweet/DeleteResponse') {
+    if (response.tweetID !== tweetID) {
+      return { ok: false, error: 'Tweet ID does not match' };
+    }
+    if (response.ok) {
+      return { ok: true };
+    } else {
+      return { ok: false, error: response.error };
+    }
+  }
+  return { ok: false, error: 'Unknown response' };
 };

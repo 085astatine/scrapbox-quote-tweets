@@ -4,7 +4,10 @@ import { Provider } from 'react-redux';
 import browser from 'webextension-polyfill';
 import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
-import { SaveTweetReportMessage } from '~/lib/message';
+import {
+  TweetDeleteReportMessage,
+  TweetSaveReportMessage,
+} from '~/lib/message';
 import { savedTweetIDs } from '~/lib/storage/tweet';
 import { ScrapboxButton } from './component/scrapbox-button';
 import './index.scss';
@@ -62,12 +65,12 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // onMessage listener
-type Message = SaveTweetReportMessage;
+type Message = TweetSaveReportMessage | TweetDeleteReportMessage;
 
 const onMessageListener = (message: Message) => {
   logger.debug('on message', message);
   switch (message.type) {
-    case 'SaveTweet/Report':
+    case 'Tweet/SaveReport':
       store.dispatch(
         actions.update({
           tweetID: message.tweetID,
@@ -75,9 +78,17 @@ const onMessageListener = (message: Message) => {
         }),
       );
       break;
+    case 'Tweet/DeleteReport':
+      store.dispatch(
+        actions.update({
+          tweetID: message.tweetID,
+          state: { state: 'none' },
+        }),
+      );
+      break;
     default: {
-      const _: never = message.type;
-      logger.error(`unexpected message "${message}"`);
+      const _: never = message;
+      logger.error('unexpected message', message);
       return _;
     }
   }
