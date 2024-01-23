@@ -66,23 +66,27 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // storage listener
 const storageListener = createStorageListener({
-  onTweetAdded(tweetID: TweetID): void {
+  onTweetAdded(tweetIDs: TweetID[]): void {
     if (!document.hasFocus()) {
       store.dispatch(
-        actions.update({
-          tweetID,
-          state: { state: 'success' },
-        }),
+        actions.update(
+          tweetIDs.map((tweetID) => ({
+            tweetID,
+            state: { state: 'success' },
+          })),
+        ),
       );
     }
   },
-  onTweetDeleted(tweetID: TweetID): void {
+  onTweetDeleted(tweetIDs: TweetID[]): void {
     if (!document.hasFocus()) {
       store.dispatch(
-        actions.update({
-          tweetID,
-          state: { state: 'none' },
-        }),
+        actions.update(
+          tweetIDs.map((tweetID) => ({
+            tweetID,
+            state: { state: 'none' },
+          })),
+        ),
       );
     }
   },

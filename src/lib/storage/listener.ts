@@ -4,9 +4,9 @@ import { TweetID } from '../tweet/tweet';
 import { isTweetIDKey, toTweetID } from './tweet-id-key';
 
 export interface StorageListener {
-  onTweetAdded?: (tweetID: TweetID) => void;
-  onTweetDeleted?: (tweetID: TweetID) => void;
-  onTweetUpdated?: (tweetID: TweetID) => void;
+  onTweetAdded?: (tweetIDs: TweetID[]) => void;
+  onTweetDeleted?: (tweetIDs: TweetID[]) => void;
+  onTweetUpdated?: (tweetIDs: TweetID[]) => void;
   logger?: Logger;
 }
 
@@ -23,32 +23,28 @@ export const createStorageListener = ({
   return (changes: browser.Storage.StorageAreaOnChangedChangesType) => {
     logger?.debug('Storage changes', changes);
     const keys = Object.keys(changes);
+    // tweets
+    const addedTweetIDs: TweetID[] = [];
+    const deletedTweetIDs: TweetID[] = [];
+    const updatedTweetIDs: TweetID[] = [];
     for (const key of keys) {
       // tweet
       if (isTweetIDKey(key)) {
         const tweetID = toTweetID(key);
         if (changes[key].oldValue === undefined) {
-          logger?.debug('Tweet is added to storage', {
-            tweetID,
-            new: changes[key].newValue,
-          });
-          onTweetAdded?.(tweetID);
+          addedTweetIDs.push(tweetID);
         } else if (changes[key].newValue === undefined) {
-          logger?.debug('Tweet is deleted from storage', {
-            tweetID,
-            old: changes[key].oldValue,
-          });
-          onTweetDeleted?.(tweetID);
+          deletedTweetIDs.push(tweetID);
         } else {
-          logger?.debug('Tweet is updated in storagae', {
-            tweetID,
-            old: changes[key].oldValue,
-            new: changes[key].newValue,
-          });
-          onTweetUpdated?.(tweetID);
+          updatedTweetIDs.push(tweetID);
         }
       }
     }
+    logger?.debug('diff', { addedTweetIDs, deletedTweetIDs, updatedTweetIDs });
+    // execute callbacks
+    addedTweetIDs.length > 0 && onTweetAdded?.(addedTweetIDs);
+    deletedTweetIDs.length > 0 && onTweetDeleted?.(deletedTweetIDs);
+    updatedTweetIDs.length > 0 && onTweetUpdated?.(updatedTweetIDs);
   };
 };
 
