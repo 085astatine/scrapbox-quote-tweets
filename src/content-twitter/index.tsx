@@ -1,14 +1,14 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import browser from 'webextension-polyfill';
 import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
 import {
-  TweetDeleteReportMessage,
-  TweetSaveReportMessage,
-} from '~/lib/message';
+  addStorageListener,
+  createStorageListener,
+} from '~/lib/storage/listener';
 import { savedTweetIDs } from '~/lib/storage/tweet';
+import { TweetID } from '~/lib/tweet/tweet';
 import { ScrapboxButton } from './component/scrapbox-button';
 import './index.scss';
 import { insertReactRoot } from './lib/insert-react-root';
@@ -64,33 +64,28 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// onMessage listener
-type Message = TweetSaveReportMessage | TweetDeleteReportMessage;
-
-const onMessageListener = (message: Message) => {
-  logger.debug('on message', message);
-  switch (message.type) {
-    case 'Tweet/SaveReport':
+// storage listener
+const storageListener = createStorageListener({
+  onTweetAdded(tweetID: TweetID): void {
+    if (!document.hasFocus()) {
       store.dispatch(
         actions.update({
-          tweetID: message.tweetID,
+          tweetID,
           state: { state: 'success' },
         }),
       );
-      break;
-    case 'Tweet/DeleteReport':
+    }
+  },
+  onTweetDeleted(tweetID: TweetID): void {
+    if (!document.hasFocus()) {
       store.dispatch(
         actions.update({
-          tweetID: message.tweetID,
+          tweetID,
           state: { state: 'none' },
         }),
       );
-      break;
-    default: {
-      const _: never = message;
-      logger.error('unexpected message', message);
-      return _;
     }
-  }
-};
-browser.runtime.onMessage.addListener(onMessageListener);
+  },
+  logger,
+});
+addStorageListener(storageListener);

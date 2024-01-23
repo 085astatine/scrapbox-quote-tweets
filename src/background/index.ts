@@ -9,12 +9,10 @@ import {
   ExpandTCoURLResponseMessage,
   ForwardToOffscreenMessage,
   SettingsDownloadStorageMessage,
-  TweetDeleteReportMessage,
   TweetDeleteRequestMessage,
   TweetDeleteResponseFailureMessage,
   TweetDeleteResponseMessage,
   TweetDeleteResponseSuccessMessage,
-  TweetSaveReportMessage,
   TweetSaveRequestMessage,
   TweetSaveResponseFailureMessage,
   TweetSaveResponseMessage,
@@ -187,13 +185,6 @@ const respondToTweetSaveRequest = async (
   return await saveTweet(tweet)
     .then(() => {
       logger.info('save tweet', tweet);
-      // send Tweet/SaveReport to all content-twitter
-      const report: TweetSaveReportMessage = {
-        type: 'Tweet/SaveReport',
-        tweetID: tweet.id,
-      };
-      sendMessageToAllContentTwitter(report, sender);
-      // respond to sender
       const response: TweetSaveResponseSuccessMessage = {
         type: 'Tweet/SaveResponse',
         ok: true,
@@ -234,13 +225,6 @@ const respondToTweetDeleteRequest = async (
   }
   return await deleteTweet(tweetID)
     .then(() => {
-      // send Tweet/DeleteReport to all content-twitter
-      const report: TweetDeleteReportMessage = {
-        type: 'Tweet/DeleteReport',
-        tweetID,
-      };
-      sendMessageToAllContentTwitter(report, sender);
-      // respond to sender
       const response: TweetDeleteResponseSuccessMessage = {
         type: 'Tweet/DeleteResponse',
         ok: true,
@@ -259,25 +243,6 @@ const respondToTweetDeleteRequest = async (
       };
       return response;
     });
-};
-
-// Send message to all content-twitter
-const sendMessageToAllContentTwitter = async (
-  message: TweetSaveReportMessage | TweetDeleteReportMessage,
-  sender: browser.Runtime.MessageSender,
-) => {
-  const tabs = (
-    await browser.tabs.query({ url: 'https://twitter.com/*' })
-  ).filter((tab) => sender?.tab?.id === undefined || tab.id !== sender.tab.id);
-  logger.debug('send message to tabs', {
-    message,
-    tabs: tabs.map(({ index, id, url }) => ({ index, id, url })),
-  });
-  tabs.forEach((tab) => {
-    if (tab.id !== undefined) {
-      browser.tabs.sendMessage(tab.id, message);
-    }
-  });
 };
 
 // Download storage (in development)

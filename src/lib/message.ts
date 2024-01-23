@@ -62,11 +62,6 @@ export type TweetSaveResponseMessage =
   | TweetSaveResponseSuccessMessage
   | TweetSaveResponseFailureMessage;
 
-export interface TweetSaveReportMessage {
-  type: 'Tweet/SaveReport';
-  tweetID: TweetID;
-}
-
 export interface TweetDeleteRequestMessage {
   type: 'Tweet/DeleteRequest';
   tweetID: TweetID;
@@ -88,11 +83,6 @@ export interface TweetDeleteResponseFailureMessage {
 export type TweetDeleteResponseMessage =
   | TweetDeleteResponseSuccessMessage
   | TweetDeleteResponseFailureMessage;
-
-export interface TweetDeleteReportMessage {
-  type: 'Tweet/DeleteReport';
-  tweetID: TweetID;
-}
 
 export interface SettingsDownloadStorageMessage {
   type: 'Settings/DownloadStorage';
