@@ -135,7 +135,8 @@ const createRootDiv = (
   }
   // check if this tweet is a promotion
   if (
-    getElement("../../following-sibling::div//*[name()='svg']", group) !== null
+    getElement("../../following-sibling::div[1]//*[name()='svg']", group) !==
+    null
   ) {
     logger.info('this tweet is a promotion', element);
     return null;
