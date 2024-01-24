@@ -1,5 +1,4 @@
 import browser from 'webextension-polyfill';
-import { setupClipboardWindows } from '~/lib/clipboard/windows';
 import { logger } from '~/lib/logger';
 import {
   ExpandTCoURLRequestMessage,
@@ -58,20 +57,6 @@ const onMessageListener = async (
   }
 };
 browser.runtime.onMessage.addListener(onMessageListener);
-
-// Tab onRemoved
-const onTabRemovedListener = (
-  tabID: number,
-  removedInfo: browser.Tabs.OnRemovedRemoveInfoType,
-) => {
-  logger.debug(`Tab onRemoved (tab ID=${tabID})`, removedInfo);
-  // clipboard windows
-  clipboards.onTabRemoved(tabID);
-};
-browser.tabs.onRemoved.addListener(onTabRemovedListener);
-
-// Clipboard
-const clipboards = setupClipboardWindows();
 
 // browser action
 browser.action.onClicked.addListener(
