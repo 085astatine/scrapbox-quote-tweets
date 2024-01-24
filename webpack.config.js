@@ -41,7 +41,6 @@ module.exports = (env, argv) => {
       'content-scrapbox': './src/content-scrapbox/index.tsx',
       'content-twitter': './src/content-twitter/index.tsx',
       options: './src/options/index.tsx',
-      popup: './src/popup/index.tsx',
       manifest: './src/manifest.json',
       ...(browser === 'chrome' ?
         { offscreen: './src/offscreen/index.ts' }
@@ -125,11 +124,6 @@ module.exports = (env, argv) => {
         filename: 'options.html',
         template: 'src/options/index.html',
         chunks: ['options'],
-      }),
-      new HtmlPlugin({
-        filename: 'popup.html',
-        template: 'src/popup/index.html',
-        chunks: ['popup'],
       }),
       ...(browser === 'chrome' ?
         [
