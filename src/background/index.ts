@@ -89,14 +89,14 @@ browser.tabs.onRemoved.addListener(onTabRemovedListener);
 const clipboards = setupClipboardWindows();
 
 // browser action
-if (process.env.TARGET_BROWSER === 'firefox') {
-  browser.action.onClicked.addListener(
-    async (
-      tab: browser.Tabs.Tab,
-      info: browser.Action.OnClickData | undefined,
-    ) => {
-      logger.debug('browser.action.onClicked', { tab, info });
-      // request permision
+browser.action.onClicked.addListener(
+  async (
+    tab: browser.Tabs.Tab,
+    info: browser.Action.OnClickData | undefined,
+  ) => {
+    logger.debug('browser.action.onClicked', { tab, info });
+    // request permision
+    if (process.env.TARGET_BROWSER === 'firefox') {
       browser.permissions.request({
         origins: [
           'https://twitter.com/*',
@@ -104,14 +104,10 @@ if (process.env.TARGET_BROWSER === 'firefox') {
           'https://*/*',
         ],
       });
-      // open popup
-      browser.action.setPopup({ popup: browser.runtime.getURL('popup.html') });
-      browser.action.openPopup();
-      // reset popup to re-fire this event
-      browser.action.setPopup({ popup: null });
-    },
-  );
-}
+    }
+    browser.tabs.create({ url: '/clipboard.html' });
+  },
+);
 
 // offscreen (for chrome)
 const offscreen = setupOffscreen(logger);

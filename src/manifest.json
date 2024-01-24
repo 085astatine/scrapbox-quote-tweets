@@ -51,9 +51,7 @@
     }
   ],
 
-  "action": {
-    "__chrome__default_popup": "popup.html"
-  },
+  "action": {},
 
   "options_ui": {
     "page": "options.html",
