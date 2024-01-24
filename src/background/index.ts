@@ -2,9 +2,6 @@ import browser from 'webextension-polyfill';
 import { setupClipboardWindows } from '~/lib/clipboard/windows';
 import { logger } from '~/lib/logger';
 import {
-  ClipboardCloseAllRequestMessage,
-  ClipboardCloseRequestMessage,
-  ClipboardOpenRequestMessage,
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
   ForwardToOffscreenMessage,
@@ -34,9 +31,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 // onMessage Listener
 type RequestMessage =
-  | ClipboardCloseRequestMessage
-  | ClipboardCloseAllRequestMessage
-  | ClipboardOpenRequestMessage
   | ExpandTCoURLRequestMessage
   | SettingsDownloadStorageMessage;
 
@@ -48,15 +42,6 @@ const onMessageListener = async (
 ): Promise<void | ResponseMessage> => {
   logger.debug('on message', { message, sender });
   switch (message.type) {
-    case 'Clipboard/OpenRequest':
-      clipboards.open(sender.tab?.id);
-      break;
-    case 'Clipboard/CloseRequest':
-      clipboards.close(sender.tab?.id);
-      break;
-    case 'Clipboard/CloseAllRequest':
-      clipboards.closeAll();
-      break;
     case 'ExpandTCoURL/Request':
       logger.info(`Request to expand URL("${message.shortURL}")`);
       return process.env.TARGET_BROWSER !== 'chrome' ?
