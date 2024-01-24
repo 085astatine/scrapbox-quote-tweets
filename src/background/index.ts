@@ -9,18 +9,14 @@ import {
   ExpandTCoURLResponseMessage,
   ForwardToOffscreenMessage,
   SettingsDownloadStorageMessage,
-  TweetDeleteRequestMessage,
-  TweetDeleteResponseFailureMessage,
-  TweetDeleteResponseMessage,
-  TweetDeleteResponseSuccessMessage,
   TweetSaveRequestMessage,
   TweetSaveResponseFailureMessage,
   TweetSaveResponseMessage,
   TweetSaveResponseSuccessMessage,
 } from '~/lib/message';
 import { loadTestData } from '~/lib/storage';
-import { deleteTweet, saveTweet, savedTweetIDs } from '~/lib/storage/tweet';
-import { Tweet, TweetID } from '~/lib/tweet/tweet';
+import { saveTweet } from '~/lib/storage/tweet';
+import { Tweet } from '~/lib/tweet/tweet';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import { setupOffscreen } from './offscreen';
@@ -50,13 +46,9 @@ type RequestMessage =
   | ClipboardOpenRequestMessage
   | ExpandTCoURLRequestMessage
   | TweetSaveRequestMessage
-  | TweetDeleteRequestMessage
   | SettingsDownloadStorageMessage;
 
-type ResponseMessage =
-  | ExpandTCoURLResponseMessage
-  | TweetSaveResponseMessage
-  | TweetDeleteResponseMessage;
+type ResponseMessage = ExpandTCoURLResponseMessage | TweetSaveResponseMessage;
 
 const onMessageListener = async (
   message: RequestMessage,
@@ -80,8 +72,6 @@ const onMessageListener = async (
         : await forwardExpandTCoURLRequestToOffscreen(message);
     case 'Tweet/SaveRequest':
       return await respondToTweetSaveRequest(message.tweet, sender);
-    case 'Tweet/DeleteRequest':
-      return await respondToTweetDeleteRequest(message.tweetID, sender);
     case 'Settings/DownloadStorage':
       await downloadStorage();
       break;
@@ -203,43 +193,6 @@ const respondToTweetSaveRequest = async (
         ok: false,
         tweetID: tweet.id,
         error: message,
-      };
-      return response;
-    });
-};
-
-// Respond to Tweet/DeleteRequest
-const respondToTweetDeleteRequest = async (
-  tweetID: TweetID,
-  sender: browser.Runtime.MessageSender,
-): Promise<TweetDeleteResponseMessage> => {
-  // chefk if tweet exists in storage
-  if (!(await savedTweetIDs()).includes(tweetID)) {
-    const response: TweetDeleteResponseFailureMessage = {
-      type: 'Tweet/DeleteResponse',
-      ok: false,
-      tweetID,
-      error: 'Tweet is not found in storage',
-    };
-    return response;
-  }
-  return await deleteTweet(tweetID)
-    .then(() => {
-      const response: TweetDeleteResponseSuccessMessage = {
-        type: 'Tweet/DeleteResponse',
-        ok: true,
-        tweetID,
-      };
-      return response;
-    })
-    .catch((error) => {
-      logger.warn('Failed to delete tweet from storage', error);
-      // respond to sender
-      const response: TweetDeleteResponseFailureMessage = {
-        type: 'Tweet/DeleteResponse',
-        ok: false,
-        tweetID,
-        error: 'Failed to delete Tweet',
       };
       return response;
     });

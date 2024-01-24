@@ -14,11 +14,13 @@ import ScrapboxIcon from '~/icon/scrapbox.svg';
 import { Fade } from '~/lib/component/transition';
 import { Logger, createLogger } from '~/lib/logger';
 import {
-  TweetDeleteRequestMessage,
-  TweetDeleteResponseMessage,
   TweetSaveRequestMessage,
   TweetSaveResponseMessage,
 } from '~/lib/message';
+import {
+  deleteTweet as deleteTweetFromStorage,
+  savedTweetIDs,
+} from '~/lib/storage/tweet';
 import { toTweetIDKey } from '~/lib/storage/tweet-id-key';
 import { Tweet, TweetID } from '~/lib/tweet/tweet';
 import { parseTweet } from '../lib/parse-tweet';
@@ -91,7 +93,6 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
     // delete tweet
     const result = await deleteTweet(tweetID, logger);
     if (result.ok) {
-      dispatch(actions.update({ tweetID, state: { state: 'none' } }));
       setTooltipMessage({ type: 'notification', message: 'Deleted' });
     } else {
       setTooltipMessage({
@@ -281,25 +282,17 @@ const deleteTweet = async (
   tweetID: TweetID,
   logger: Logger,
 ): Promise<DeleteTweetResult> => {
-  // send request to background
-  logger.info('Send delete request');
-  const request: TweetDeleteRequestMessage = {
-    type: 'Tweet/DeleteRequest',
-    tweetID,
-  };
-  const response: TweetDeleteResponseMessage =
-    await browser.runtime.sendMessage(request);
-  // response from background
-  logger.info('Receive delete response', response);
-  if (response?.type === 'Tweet/DeleteResponse') {
-    if (response.tweetID !== tweetID) {
-      return { ok: false, error: 'Tweet ID does not match' };
-    }
-    if (response.ok) {
-      return { ok: true };
-    } else {
-      return { ok: false, error: response.error };
-    }
+  // check if the tweet exists in storage
+  if (!(await savedTweetIDs()).includes(tweetID)) {
+    return { ok: false, error: 'Tweet is not found in storage' };
   }
-  return { ok: false, error: 'Unknown response' };
+  // delete tweet
+  return await deleteTweetFromStorage(tweetID)
+    .then((): DeleteTweetSuccess => {
+      return { ok: true };
+    })
+    .catch((error): DeleteTweetFailure => {
+      logger.error('Failed to delete tweet from storage', error);
+      return { ok: false, error: 'Failed to delete from storage' };
+    });
 };

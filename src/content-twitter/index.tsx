@@ -79,16 +79,14 @@ const storageListener = createStorageListener({
     }
   },
   onTweetDeleted(tweetIDs: TweetID[]): void {
-    if (!document.hasFocus()) {
-      store.dispatch(
-        actions.update(
-          tweetIDs.map((tweetID) => ({
-            tweetID,
-            state: { state: 'none' },
-          })),
-        ),
-      );
-    }
+    store.dispatch(
+      actions.update(
+        tweetIDs.map((tweetID) => ({
+          tweetID,
+          state: { state: 'none' },
+        })),
+      ),
+    );
   },
   logger,
 });
