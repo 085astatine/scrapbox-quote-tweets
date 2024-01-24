@@ -9,16 +9,9 @@ import {
   ExpandTCoURLResponseMessage,
   ForwardToOffscreenMessage,
   SettingsDownloadStorageMessage,
-  TweetSaveRequestMessage,
-  TweetSaveResponseFailureMessage,
-  TweetSaveResponseMessage,
-  TweetSaveResponseSuccessMessage,
 } from '~/lib/message';
 import { loadTestData } from '~/lib/storage';
-import { saveTweet } from '~/lib/storage/tweet';
-import { Tweet } from '~/lib/tweet/tweet';
 import { expandTCoURL, getURLTitle } from '~/lib/url';
-import { JSONSchemaValidationError } from '~/validate-json/error';
 import { setupOffscreen } from './offscreen';
 
 logger.info('background script');
@@ -45,10 +38,9 @@ type RequestMessage =
   | ClipboardCloseAllRequestMessage
   | ClipboardOpenRequestMessage
   | ExpandTCoURLRequestMessage
-  | TweetSaveRequestMessage
   | SettingsDownloadStorageMessage;
 
-type ResponseMessage = ExpandTCoURLResponseMessage | TweetSaveResponseMessage;
+type ResponseMessage = ExpandTCoURLResponseMessage;
 
 const onMessageListener = async (
   message: RequestMessage,
@@ -70,8 +62,6 @@ const onMessageListener = async (
       return process.env.TARGET_BROWSER !== 'chrome' ?
           await respondToExpandTCoURLRequest(message.shortURL)
         : await forwardExpandTCoURLRequestToOffscreen(message);
-    case 'Tweet/SaveRequest':
-      return await respondToTweetSaveRequest(message.tweet, sender);
     case 'Settings/DownloadStorage':
       await downloadStorage();
       break;
@@ -165,37 +155,6 @@ const forwardExpandTCoURLRequestToOffscreen = async (
   logger.debug('response from offscreen', response);
   await offscreen.close();
   return response;
-};
-
-// Respond to Tweet/SaveRequest
-const respondToTweetSaveRequest = async (
-  tweet: Tweet,
-  sender: browser.Runtime.MessageSender,
-): Promise<TweetSaveResponseMessage> => {
-  return await saveTweet(tweet)
-    .then(() => {
-      logger.info('save tweet', tweet);
-      const response: TweetSaveResponseSuccessMessage = {
-        type: 'Tweet/SaveResponse',
-        ok: true,
-        tweetID: tweet.id,
-      };
-      return response;
-    })
-    .catch((error) => {
-      logger.warn('Failed to save tweet to storage', error);
-      const message =
-        error instanceof JSONSchemaValidationError ? 'Validation Error' : (
-          'Unknown Error'
-        );
-      const response: TweetSaveResponseFailureMessage = {
-        type: 'Tweet/SaveResponse',
-        ok: false,
-        tweetID: tweet.id,
-        error: message,
-      };
-      return response;
-    });
 };
 
 // Download storage (in development)

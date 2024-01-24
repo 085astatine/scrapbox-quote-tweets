@@ -1,5 +1,3 @@
-import { Tweet, TweetID } from './tweet/tweet';
-
 export interface ClipboardOpenRequestMessage {
   type: 'Clipboard/OpenRequest';
 }
@@ -39,28 +37,6 @@ export interface ForwardToOffscreenMessage<Message> {
   type: 'Forward/ToOffscreen';
   message: Message;
 }
-
-export interface TweetSaveRequestMessage {
-  type: 'Tweet/SaveRequest';
-  tweet: Tweet;
-}
-
-export interface TweetSaveResponseSuccessMessage {
-  type: 'Tweet/SaveResponse';
-  ok: true;
-  tweetID: TweetID;
-}
-
-export interface TweetSaveResponseFailureMessage {
-  type: 'Tweet/SaveResponse';
-  ok: false;
-  tweetID: TweetID;
-  error: string;
-}
-
-export type TweetSaveResponseMessage =
-  | TweetSaveResponseSuccessMessage
-  | TweetSaveResponseFailureMessage;
 
 export interface SettingsDownloadStorageMessage {
   type: 'Settings/DownloadStorage';

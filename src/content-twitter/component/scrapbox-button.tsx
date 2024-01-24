@@ -8,21 +8,18 @@ import {
 import classNames from 'classnames';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import browser from 'webextension-polyfill';
 import CloseIcon from '~/icon/bootstrap/x.svg';
 import ScrapboxIcon from '~/icon/scrapbox.svg';
 import { Fade } from '~/lib/component/transition';
 import { Logger, createLogger } from '~/lib/logger';
 import {
-  TweetSaveRequestMessage,
-  TweetSaveResponseMessage,
-} from '~/lib/message';
-import {
   deleteTweet as deleteTweetFromStorage,
+  saveTweet,
   savedTweetIDs,
 } from '~/lib/storage/tweet';
 import { toTweetIDKey } from '~/lib/storage/tweet-id-key';
 import { Tweet, TweetID } from '~/lib/tweet/tweet';
+import { JSONSchemaValidationError } from '~/validate-json/error';
 import { parseTweet } from '../lib/parse-tweet';
 import { State, actions } from '../store';
 
@@ -67,7 +64,6 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
     // add tweet
     const result = await addTweet(tweetID, tweetRef.current, logger);
     if (result.ok) {
-      dispatch(actions.update({ tweetID, state: { state: 'success' } }));
       setTooltipMessage({ type: 'notification', message: 'Copied' });
     } else {
       dispatch(
@@ -245,26 +241,22 @@ const addTweet = async (
   if (!result.ok) {
     return result;
   }
-  // send request to background
-  logger.info('Save request');
-  const request: TweetSaveRequestMessage = {
-    type: 'Tweet/SaveRequest',
-    tweet: result.tweet,
-  };
-  const response: TweetSaveResponseMessage =
-    await browser.runtime.sendMessage(request);
-  logger.debug('Save response', response);
-  if (response?.type === 'Tweet/SaveResponse') {
-    if (response.tweetID !== tweetID) {
-      return { ok: false, error: 'Tweet ID does not match' };
-    }
-    if (response.ok) {
+  // save to storage
+  return await saveTweet(result.tweet)
+    .then(() => {
+      logger.debug('Save tweet to storage', result.tweet);
       return result;
-    } else {
-      return { ok: false, error: response.error };
-    }
-  }
-  return { ok: false, error: 'Unknown response' };
+    })
+    .catch((error) => {
+      logger.warn('Faled to save tweet to storage', error);
+      return {
+        ok: false,
+        error:
+          error instanceof JSONSchemaValidationError ? 'Validation Error' : (
+            'Unknown Error'
+          ),
+      };
+    });
 };
 
 interface DeleteTweetSuccess {
