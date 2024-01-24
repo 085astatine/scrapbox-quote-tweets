@@ -1,5 +1,3 @@
-import { Tweet, TweetID } from './tweet/tweet';
-
 export interface ClipboardOpenRequestMessage {
   type: 'Clipboard/OpenRequest';
 }
@@ -38,60 +36,6 @@ export type ExpandTCoURLResponseMessage =
 export interface ForwardToOffscreenMessage<Message> {
   type: 'Forward/ToOffscreen';
   message: Message;
-}
-
-export interface TweetSaveRequestMessage {
-  type: 'Tweet/SaveRequest';
-  tweet: Tweet;
-}
-
-export interface TweetSaveResponseSuccessMessage {
-  type: 'Tweet/SaveResponse';
-  ok: true;
-  tweetID: TweetID;
-}
-
-export interface TweetSaveResponseFailureMessage {
-  type: 'Tweet/SaveResponse';
-  ok: false;
-  tweetID: TweetID;
-  error: string;
-}
-
-export type TweetSaveResponseMessage =
-  | TweetSaveResponseSuccessMessage
-  | TweetSaveResponseFailureMessage;
-
-export interface TweetSaveReportMessage {
-  type: 'Tweet/SaveReport';
-  tweetID: TweetID;
-}
-
-export interface TweetDeleteRequestMessage {
-  type: 'Tweet/DeleteRequest';
-  tweetID: TweetID;
-}
-
-export interface TweetDeleteResponseSuccessMessage {
-  type: 'Tweet/DeleteResponse';
-  ok: true;
-  tweetID: TweetID;
-}
-
-export interface TweetDeleteResponseFailureMessage {
-  type: 'Tweet/DeleteResponse';
-  ok: false;
-  tweetID: TweetID;
-  error: string;
-}
-
-export type TweetDeleteResponseMessage =
-  | TweetDeleteResponseSuccessMessage
-  | TweetDeleteResponseFailureMessage;
-
-export interface TweetDeleteReportMessage {
-  type: 'Tweet/DeleteReport';
-  tweetID: TweetID;
 }
 
 export interface SettingsDownloadStorageMessage {
