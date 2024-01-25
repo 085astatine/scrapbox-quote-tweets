@@ -1,10 +1,6 @@
 import browser from 'webextension-polyfill';
-import { setupClipboardWindows } from '~/lib/clipboard/windows';
 import { logger } from '~/lib/logger';
 import {
-  ClipboardCloseAllRequestMessage,
-  ClipboardCloseRequestMessage,
-  ClipboardOpenRequestMessage,
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
   ForwardToOffscreenMessage,
@@ -34,9 +30,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 // onMessage Listener
 type RequestMessage =
-  | ClipboardCloseRequestMessage
-  | ClipboardCloseAllRequestMessage
-  | ClipboardOpenRequestMessage
   | ExpandTCoURLRequestMessage
   | SettingsDownloadStorageMessage;
 
@@ -48,15 +41,6 @@ const onMessageListener = async (
 ): Promise<void | ResponseMessage> => {
   logger.debug('on message', { message, sender });
   switch (message.type) {
-    case 'Clipboard/OpenRequest':
-      clipboards.open(sender.tab?.id);
-      break;
-    case 'Clipboard/CloseRequest':
-      clipboards.close(sender.tab?.id);
-      break;
-    case 'Clipboard/CloseAllRequest':
-      clipboards.closeAll();
-      break;
     case 'ExpandTCoURL/Request':
       logger.info(`Request to expand URL("${message.shortURL}")`);
       return process.env.TARGET_BROWSER !== 'chrome' ?
@@ -74,29 +58,15 @@ const onMessageListener = async (
 };
 browser.runtime.onMessage.addListener(onMessageListener);
 
-// Tab onRemoved
-const onTabRemovedListener = (
-  tabID: number,
-  removedInfo: browser.Tabs.OnRemovedRemoveInfoType,
-) => {
-  logger.debug(`Tab onRemoved (tab ID=${tabID})`, removedInfo);
-  // clipboard windows
-  clipboards.onTabRemoved(tabID);
-};
-browser.tabs.onRemoved.addListener(onTabRemovedListener);
-
-// Clipboard
-const clipboards = setupClipboardWindows();
-
 // browser action
-if (process.env.TARGET_BROWSER === 'firefox') {
-  browser.action.onClicked.addListener(
-    async (
-      tab: browser.Tabs.Tab,
-      info: browser.Action.OnClickData | undefined,
-    ) => {
-      logger.debug('browser.action.onClicked', { tab, info });
-      // request permision
+browser.action.onClicked.addListener(
+  async (
+    tab: browser.Tabs.Tab,
+    info: browser.Action.OnClickData | undefined,
+  ) => {
+    logger.debug('browser.action.onClicked', { tab, info });
+    // request permision
+    if (process.env.TARGET_BROWSER === 'firefox') {
       browser.permissions.request({
         origins: [
           'https://twitter.com/*',
@@ -104,14 +74,10 @@ if (process.env.TARGET_BROWSER === 'firefox') {
           'https://*/*',
         ],
       });
-      // open popup
-      browser.action.setPopup({ popup: browser.runtime.getURL('popup.html') });
-      browser.action.openPopup();
-      // reset popup to re-fire this event
-      browser.action.setPopup({ popup: null });
-    },
-  );
-}
+    }
+    browser.tabs.create({ url: '/clipboard.html' });
+  },
+);
 
 // offscreen (for chrome)
 const offscreen = setupOffscreen(logger);

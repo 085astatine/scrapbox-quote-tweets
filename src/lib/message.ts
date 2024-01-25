@@ -1,15 +1,3 @@
-export interface ClipboardOpenRequestMessage {
-  type: 'Clipboard/OpenRequest';
-}
-
-export interface ClipboardCloseRequestMessage {
-  type: 'Clipboard/CloseRequest';
-}
-
-export interface ClipboardCloseAllRequestMessage {
-  type: 'Clipboard/CloseAllRequest';
-}
-
 export interface ExpandTCoURLRequestMessage {
   type: 'ExpandTCoURL/Request';
   shortURL: string;

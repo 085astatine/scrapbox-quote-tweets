@@ -51,14 +51,7 @@
     }
   ],
 
-  "action": {
-    "__chrome__default_popup": "popup.html"
-  },
-
-  "options_ui": {
-    "page": "options.html",
-    "open_in_tab": true
-  },
+  "action": {},
 
   "__chrome__minimum_chrome_version": "116"
 }
