@@ -1,50 +1,56 @@
 import browser from 'webextension-polyfill';
 import { Logger } from '../logger';
-import { TweetID } from '../tweet/tweet';
+import { Tweet, TweetID } from '../tweet/tweet';
 import { isTweetIDKey, toTweetID } from './tweet-id-key';
-
-export interface StorageListener {
-  onTweetAdded?: (tweetIDs: TweetID[]) => void;
-  onTweetDeleted?: (tweetIDs: TweetID[]) => void;
-  onTweetUpdated?: (tweetIDs: TweetID[]) => void;
-  logger?: Logger;
-}
 
 type OnChangedListener = (
   changes: browser.Storage.StorageAreaOnChangedChangesType,
 ) => void;
 
-export const createStorageListener = ({
-  onTweetAdded,
-  onTweetDeleted,
-  onTweetUpdated,
-  logger,
-}: StorageListener): OnChangedListener => {
+export interface UpdatedTweet {
+  id: TweetID;
+  before: Tweet;
+  after: Tweet;
+}
+
+export interface StorageChanges {
+  addedTweets: Tweet[];
+  deletedTweets: Tweet[];
+  updatedTweets: UpdatedTweet[];
+}
+
+export const createStorageListener = (
+  listener: (changes: StorageChanges) => void,
+  logger?: Logger,
+): OnChangedListener => {
   return (changes: browser.Storage.StorageAreaOnChangedChangesType) => {
     logger?.debug('Storage changes', changes);
-    const keys = Object.keys(changes);
-    // tweets
-    const addedTweetIDs: TweetID[] = [];
-    const deletedTweetIDs: TweetID[] = [];
-    const updatedTweetIDs: TweetID[] = [];
-    for (const key of keys) {
+    // diff
+    const diff: StorageChanges = {
+      addedTweets: [],
+      deletedTweets: [],
+      updatedTweets: [],
+    };
+    for (const [key, value] of Object.entries(changes)) {
       // tweet
       if (isTweetIDKey(key)) {
         const tweetID = toTweetID(key);
-        if (changes[key].oldValue === undefined) {
-          addedTweetIDs.push(tweetID);
-        } else if (changes[key].newValue === undefined) {
-          deletedTweetIDs.push(tweetID);
+        if (value.oldValue === undefined) {
+          diff.addedTweets.push(value.newValue);
+        } else if (value.newValue === undefined) {
+          diff.deletedTweets.push(value.oldValue);
         } else {
-          updatedTweetIDs.push(tweetID);
+          diff.updatedTweets.push({
+            id: tweetID,
+            before: value.oldValue,
+            after: value.newValue,
+          });
         }
       }
     }
-    logger?.debug('diff', { addedTweetIDs, deletedTweetIDs, updatedTweetIDs });
-    // execute callbacks
-    addedTweetIDs.length > 0 && onTweetAdded?.(addedTweetIDs);
-    deletedTweetIDs.length > 0 && onTweetDeleted?.(deletedTweetIDs);
-    updatedTweetIDs.length > 0 && onTweetUpdated?.(updatedTweetIDs);
+    logger?.debug('diff', diff);
+    // execute listener
+    listener(diff);
   };
 };
 

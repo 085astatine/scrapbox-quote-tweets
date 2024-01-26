@@ -4,15 +4,15 @@ import { Provider } from 'react-redux';
 import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
 import {
+  StorageChanges,
   addStorageListener,
   createStorageListener,
 } from '~/lib/storage/listener';
 import { savedTweetIDs } from '~/lib/storage/tweet';
-import { TweetID } from '~/lib/tweet/tweet';
 import { ScrapboxButton } from './component/scrapbox-button';
 import './index.scss';
 import { insertReactRoot } from './lib/insert-react-root';
-import { actions, store } from './store';
+import { UpdateButtonState, actions, store } from './store';
 
 logger.info('content script');
 
@@ -65,27 +65,32 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // storage listener
-const storageListener = createStorageListener({
-  onTweetAdded(tweetIDs: TweetID[]): void {
-    store.dispatch(
-      actions.update(
-        tweetIDs.map((tweetID) => ({
-          tweetID,
+const storageListener = createStorageListener(
+  ({ addedTweets, deletedTweets }: StorageChanges) => {
+    const buttonStates: UpdateButtonState[] = [];
+    // added tweets
+    buttonStates.push(
+      ...addedTweets.map(
+        (tweet): UpdateButtonState => ({
+          tweetID: tweet.id,
           state: { state: 'success' },
-        })),
+        }),
       ),
     );
-  },
-  onTweetDeleted(tweetIDs: TweetID[]): void {
-    store.dispatch(
-      actions.update(
-        tweetIDs.map((tweetID) => ({
-          tweetID,
+    // deleted tweets
+    buttonStates.push(
+      ...deletedTweets.map(
+        (tweet): UpdateButtonState => ({
+          tweetID: tweet.id,
           state: { state: 'none' },
-        })),
+        }),
       ),
     );
+    // update state
+    if (buttonStates.length) {
+      store.dispatch(actions.update(buttonStates));
+    }
   },
   logger,
-});
+);
 addStorageListener(storageListener);
