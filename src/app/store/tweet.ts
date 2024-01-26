@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { StorageChanges } from '~/lib/storage/listener';
 import { DeletedTweets } from '~/lib/tweet/deleted-tweets';
 import { Tweet } from '~/lib/tweet/tweet';
 import { toArray } from '~/lib/utility';
@@ -149,3 +150,18 @@ export const tweet = createSlice({
 
 // actions
 export const tweetActions: Readonly<typeof tweet.actions> = tweet.actions;
+
+// storage listener
+export const tweetStorageListener = ({
+  addedTweets,
+  deletedTweets,
+}: StorageChanges): void => {
+  // added tweets
+  if (addedTweets.length) {
+    console.log('Added tweets', addedTweets);
+  }
+  // deleted tweets
+  if (deletedTweets.length) {
+    console.log('Deleted tweets', deletedTweets);
+  }
+};
