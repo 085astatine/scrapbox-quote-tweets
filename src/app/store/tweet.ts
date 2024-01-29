@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { StorageChanges } from '~/lib/storage/listener';
 import { DeletedTweets } from '~/lib/tweet/deleted-tweets';
-import { Tweet } from '~/lib/tweet/tweet';
+import { Tweet, TweetID } from '~/lib/tweet/tweet';
 import { toArray } from '~/lib/utility';
 
 export interface TweetState {
@@ -42,12 +42,10 @@ export const tweet = createSlice({
       }
     },
     unselectTweet(state: TweetState, action: PayloadAction<Tweet>): void {
-      const index = state.selectedTweets.findIndex(
-        (tweet) => tweet.id === action.payload.id,
+      state.selectedTweets = removeTweetFromTweets(
+        state.selectedTweets,
+        action.payload.id,
       );
-      if (index !== -1) {
-        state.selectedTweets.splice(index, 1);
-      }
     },
     selectAllTweets(state: TweetState): void {
       state.selectedTweets = [...state.tweets];
@@ -57,12 +55,10 @@ export const tweet = createSlice({
     },
     moveToTrashbox(state: TweetState, action: PayloadAction<number>): void {
       // remove from tweets
-      state.selectedTweets.forEach((target) => {
-        const index = state.tweets.findIndex((tweet) => tweet.id === target.id);
-        if (index !== -1) {
-          state.tweets.splice(index, 1);
-        }
-      });
+      state.tweets = removeTweetFromTweets(
+        state.tweets,
+        state.selectedTweets.map((tweet) => tweet.id),
+      );
       // add to trashbox
       state.trashbox.push({
         deleted_at: action.payload,
@@ -88,14 +84,10 @@ export const tweet = createSlice({
       state: TweetState,
       action: PayloadAction<Tweet | Tweet[]>,
     ): void {
-      toArray(action.payload).forEach((selectedTweet) => {
-        const index = state.selectedDeletedTweets.findIndex(
-          (tweet) => tweet.id === selectedTweet.id,
-        );
-        if (index !== -1) {
-          state.selectedDeletedTweets.splice(index, 1);
-        }
-      });
+      state.selectedDeletedTweets = removeTweetFromTweets(
+        state.selectedDeletedTweets,
+        toArray(action.payload).map((tweet) => tweet.id),
+      );
     },
     selectAllDeletedTweets(state: TweetState) {
       state.selectedDeletedTweets = state.trashbox
@@ -109,38 +101,18 @@ export const tweet = createSlice({
       // restore to tweets
       state.tweets.push(...state.selectedDeletedTweets);
       // remove from trashbox
-      state.trashbox = state.trashbox.reduce<DeletedTweets[]>(
-        (result, element) => {
-          element.tweets = element.tweets.filter((tweet) =>
-            state.selectedDeletedTweets.every(
-              (selected) => selected.id !== tweet.id,
-            ),
-          );
-          if (element.tweets.length > 0) {
-            result.push(element);
-          }
-          return result;
-        },
-        [],
+      state.trashbox = removeTweetFromTrashbox(
+        state.trashbox,
+        state.selectedDeletedTweets.map((tweet) => tweet.id),
       );
       // clear selected deleted tweets
       state.selectedDeletedTweets = [];
     },
     deleteSelectedDeletedTweets(state: TweetState): void {
       // remove from trashbox
-      state.trashbox = state.trashbox.reduce<DeletedTweets[]>(
-        (result, element) => {
-          element.tweets = element.tweets.filter((tweet) =>
-            state.selectedDeletedTweets.every(
-              (selected) => selected.id !== tweet.id,
-            ),
-          );
-          if (element.tweets.length > 0) {
-            result.push(element);
-          }
-          return result;
-        },
-        [],
+      state.trashbox = removeTweetFromTrashbox(
+        state.trashbox,
+        state.selectedDeletedTweets.map((tweet) => tweet.id),
       );
       // clear selected deleted tweets
       state.selectedDeletedTweets = [];
@@ -164,4 +136,31 @@ export const tweetStorageListener = ({
   if (deletedTweets.length) {
     console.log('Deleted tweets', deletedTweets);
   }
+};
+
+// utilities
+const removeTweetFromTweets = (
+  tweets: Tweet[],
+  target: TweetID | TweetID[],
+): Tweet[] => {
+  const targets = toArray(target);
+  return tweets.filter((tweet) =>
+    targets.every((tweetID) => tweetID !== tweet.id),
+  );
+};
+
+const removeTweetFromTrashbox = (
+  trashbox: DeletedTweets[],
+  target: TweetID | TweetID[],
+): DeletedTweets[] => {
+  const targets = toArray(target);
+  return trashbox.reduce<DeletedTweets[]>((result, element) => {
+    element.tweets = element.tweets.filter((tweet) =>
+      targets.every((tweetID) => tweetID !== tweet.id),
+    );
+    if (element.tweets.length) {
+      result.push(element);
+    }
+    return result;
+  }, []);
 };
