@@ -1,4 +1,27 @@
-import { DeletedTweets, DeletedTweetsSort, Tweet, TweetSort } from './types';
+import {
+  DeletedTweets,
+  DeletedTweetsSort,
+  SortOrder,
+  Tweet,
+  TweetID,
+  TweetSort,
+} from './types';
+
+const tweetIDCompareFunction = (lhs: TweetID, rhs: TweetID) => {
+  return (
+    lhs.length !== rhs.length ? lhs.length - rhs.length
+    : lhs < rhs ? -1
+    : +1
+  );
+};
+
+export const tweetIDSortFunction = (
+  order: SortOrder,
+): ((lhs: TweetID, rhs: TweetID) => number) => {
+  const sign = order === 'asc' ? +1 : -1;
+  return (lhs: TweetID, rhs: TweetID) =>
+    sign * tweetIDCompareFunction(lhs, rhs);
+};
 
 export const tweetSortFunction = ({
   key,
