@@ -87,3 +87,18 @@ export interface Tweet {
   card?: Card;
   media?: Media[];
 }
+
+export interface DeletedTweetID {
+  deleted_at: number;
+  tweet_id: TweetID;
+}
+
+export interface DeletedTweetIDs {
+  deleted_at: number;
+  tweetIDs: TweetID[];
+}
+
+export interface DeletedTweets {
+  deleted_at: number;
+  tweets: Tweet[];
+}

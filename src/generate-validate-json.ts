@@ -81,7 +81,7 @@ generate(
   deletedTweetIDsListJSONSchema,
   'validate-deleted-tweet-ids-list',
   'DeletedTweetIDs[]',
-  "import { DeletedTweetIDs } from '~/lib/tweet/deleted-tweets'",
+  "import { DeletedTweetIDs } from '~/lib/tweet/types'",
 );
 // Settings
 generate(

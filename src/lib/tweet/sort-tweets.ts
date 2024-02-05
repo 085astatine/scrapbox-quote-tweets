@@ -1,5 +1,4 @@
-import { DeletedTweets } from './deleted-tweets';
-import { Tweet } from './types';
+import { DeletedTweets, Tweet } from './types';
 
 export type TweetSortKey = 'created_time' | 'saved_time' | 'username';
 export type DeletedTweetsSortKey = 'deleted_time';

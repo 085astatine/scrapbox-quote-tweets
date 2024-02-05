@@ -1,7 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { StorageChanges } from '~/lib/storage/listener';
-import { DeletedTweets } from '~/lib/tweet/deleted-tweets';
-import { Tweet, TweetID } from '~/lib/tweet/types';
+import { DeletedTweets, Tweet, TweetID } from '~/lib/tweet/types';
 import { toArray } from '~/lib/utility';
 
 export interface TweetState {
