@@ -18,7 +18,7 @@ import {
   savedTweetIDs,
 } from '~/lib/storage/tweet';
 import { toTweetIDKey } from '~/lib/storage/tweet-id-key';
-import { Tweet, TweetID } from '~/lib/tweet/tweet';
+import { Tweet, TweetID } from '~/lib/tweet/types';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import { parseTweet } from '../lib/parse-tweet';
 import { State, actions } from '../store';

@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 import { Logger } from '../logger';
-import { Tweet, TweetID } from '../tweet/tweet';
+import { Tweet, TweetID } from '../tweet/types';
 import { isTweetIDKey, toTweetID } from './tweet-id-key';
 
 type OnChangedListener = (

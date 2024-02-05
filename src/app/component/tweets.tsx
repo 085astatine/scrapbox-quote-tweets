@@ -11,12 +11,12 @@ import {
   TweetSortKey,
   tweetSortFunction,
 } from '~/lib/tweet/sort-tweets';
-import { Tweet as TweetData } from '~/lib/tweet/tweet';
 import { defaultTweetTemplate } from '~/lib/tweet/tweet-template';
 import {
   TweetToStringOption,
   tweetToString,
 } from '~/lib/tweet/tweet-to-string';
+import { Tweet as TweetData } from '~/lib/tweet/types';
 import { trimGoogleFontsIcon } from '~/lib/utility';
 import { State, actions } from '../store';
 import { Checkbox } from './checkbox';

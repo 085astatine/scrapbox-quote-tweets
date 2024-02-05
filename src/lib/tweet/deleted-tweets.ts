@@ -1,4 +1,4 @@
-import { Tweet, TweetID } from './tweet';
+import { Tweet, TweetID } from './types';
 
 export interface DeletedTweets {
   deleted_at: number;

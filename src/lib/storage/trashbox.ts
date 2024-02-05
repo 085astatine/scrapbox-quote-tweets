@@ -3,7 +3,7 @@ import { deletedTweetIDsListJSONSchema } from '~/jsonschema/deleted-tweets';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateDeletedTweetIDsList from '~/validate-json/validate-deleted-tweet-ids-list';
 import { DeletedTweetIDs, DeletedTweets } from '../tweet/deleted-tweets';
-import { Tweet, TweetID } from '../tweet/tweet';
+import { Tweet, TweetID } from '../tweet/types';
 import { deleteTweets, loadTweets, savedTweetIDs } from './tweet';
 
 const keyTrashbox = 'trashbox';

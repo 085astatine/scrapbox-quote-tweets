@@ -60,21 +60,21 @@ generate(
   tweetJSONSchema,
   'validate-tweet',
   'Tweet',
-  "import { Tweet } from '~/lib/tweet/tweet'",
+  "import { Tweet } from '~/lib/tweet/types'",
 );
 // Tweet[]
 generate(
   tweetsJSONSchema,
   'validate-tweets',
   'Tweet[]',
-  "import { Tweet } from '~/lib/tweet/tweet'",
+  "import { Tweet } from '~/lib/tweet/types'",
 );
 // TweetID[]
 generate(
   tweetIDsJSONSchema,
   'validate-tweet-ids',
   'TweetID[]',
-  "import { TweetID } from '~/lib/tweet/tweet'",
+  "import { TweetID } from '~/lib/tweet/types'",
 );
 // DeletedTweetIDs[]
 generate(

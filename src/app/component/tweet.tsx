@@ -6,7 +6,7 @@ import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
 import { toDatetime } from '~/lib/datetime';
 import { baseURL } from '~/lib/settings';
-import { Tweet as TweetData, TweetID } from '~/lib/tweet/tweet';
+import { Tweet as TweetData, TweetID } from '~/lib/tweet/types';
 import { State } from '../store';
 
 export interface TweetProps {

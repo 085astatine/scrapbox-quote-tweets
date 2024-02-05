@@ -2,7 +2,7 @@ import { PayloadAction, configureStore, createSlice } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
 import { TweetIDKey, toTweetIDKey } from '~/lib/storage/tweet-id-key';
-import { TweetID } from '~/lib/tweet/tweet';
+import { TweetID } from '~/lib/tweet/types';
 import { toArray } from '~/lib/utility';
 
 export interface ButtonStateNone {
