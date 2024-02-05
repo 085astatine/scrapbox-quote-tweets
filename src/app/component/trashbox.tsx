@@ -9,14 +9,12 @@ import {
   deleteTweetsFromTrashbox,
   restoreTweetsFromTrashbox,
 } from '~/lib/storage/trashbox';
+import { deletedTweetsSortFunction } from '~/lib/tweet/sort-tweets';
 import {
+  DeletedTweets as DeletedTweetsData,
   DeletedTweetsSort,
   DeletedTweetsSortKey,
   SortOrder,
-  deletedTweetsSortFunction,
-} from '~/lib/tweet/sort-tweets';
-import {
-  DeletedTweets as DeletedTweetsData,
   Tweet as TweetData,
 } from '~/lib/tweet/types';
 import { trimGoogleFontsIcon } from '~/lib/utility';

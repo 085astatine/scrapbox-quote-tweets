@@ -1,5 +1,5 @@
 import { defaultTimezone } from './datetime';
-import { DeletedTweetsSort, TweetSort } from './tweet/sort-tweets';
+import { DeletedTweetsSort, TweetSort } from './tweet/types';
 
 export const hostnames = ['twitter.com', 'x.com'] as const;
 

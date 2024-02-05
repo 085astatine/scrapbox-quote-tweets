@@ -5,18 +5,18 @@ import ClipboardIcon from '~/icon/bootstrap/clipboard.svg';
 import TrashboxIcon from '~/icon/google-fonts/delete.svg';
 import { Collapse } from '~/lib/component/transition';
 import { addTweetsToTrashbox } from '~/lib/storage/trashbox';
-import {
-  SortOrder,
-  TweetSort,
-  TweetSortKey,
-  tweetSortFunction,
-} from '~/lib/tweet/sort-tweets';
+import { tweetSortFunction } from '~/lib/tweet/sort-tweets';
 import { defaultTweetTemplate } from '~/lib/tweet/tweet-template';
 import {
   TweetToStringOption,
   tweetToString,
 } from '~/lib/tweet/tweet-to-string';
-import { Tweet as TweetData } from '~/lib/tweet/types';
+import {
+  SortOrder,
+  Tweet as TweetData,
+  TweetSort,
+  TweetSortKey,
+} from '~/lib/tweet/types';
 import { trimGoogleFontsIcon } from '~/lib/utility';
 import { State, actions } from '../store';
 import { Checkbox } from './checkbox';

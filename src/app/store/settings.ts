@@ -6,7 +6,7 @@ import {
   defaultSettings,
   isHostname,
 } from '~/lib/settings';
-import { DeletedTweetsSort, TweetSort } from '~/lib/tweet/sort-tweets';
+import { DeletedTweetsSort, TweetSort } from '~/lib/tweet/types';
 
 // state
 type EditingSettings = Partial<
