@@ -104,11 +104,17 @@ export interface DeletedTweets {
 }
 
 export type TweetSortKey = 'created_time' | 'saved_time' | 'username';
+export type DeletedTweetIDSortKey = 'deleted_time' | 'tweet_id';
 export type DeletedTweetsSortKey = 'deleted_time';
 export type SortOrder = 'asc' | 'desc';
 
 export interface TweetSort {
   key: TweetSortKey;
+  order: SortOrder;
+}
+
+export interface DeletedTweetIDSort {
+  key: DeletedTweetIDSortKey;
   order: SortOrder;
 }
 
