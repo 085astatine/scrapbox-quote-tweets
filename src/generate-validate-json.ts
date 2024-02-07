@@ -5,6 +5,7 @@ import addFormatsDraft2019 from 'ajv-formats-draft2019';
 import standaloneCode from 'ajv/dist/standalone';
 import * as fs from 'fs';
 import * as path from 'path';
+import { deletedTweetIDsJSONSchema } from './jsonschema/deleted-tweet-id';
 import { deletedTweetIDsListJSONSchema } from './jsonschema/deleted-tweets';
 import { settingsJSONSchema } from './jsonschema/settings';
 import {
@@ -75,6 +76,13 @@ generate(
   'validate-tweet-ids',
   'TweetID[]',
   "import { TweetID } from '~/lib/tweet/types'",
+);
+// DeletedTweetID[]
+generate(
+  deletedTweetIDsJSONSchema,
+  'validate-deleted-tweet-ids',
+  'DeletedTweetID[]',
+  "import { DeletedTweetID } from '~/lib/tweet/types'",
 );
 // DeletedTweetIDs[]
 generate(
