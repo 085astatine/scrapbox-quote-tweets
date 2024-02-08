@@ -93,6 +93,11 @@ export interface DeletedTweetID {
   tweet_id: TweetID;
 }
 
+export interface DeletedTweet {
+  deleted_at: number;
+  tweet: Tweet;
+}
+
 export interface DeletedTweetIDs {
   deleted_at: number;
   tweetIDs: TweetID[];
@@ -105,6 +110,7 @@ export interface DeletedTweets {
 
 export type TweetSortKey = 'created_time' | 'saved_time' | 'username';
 export type DeletedTweetIDSortKey = 'deleted_time' | 'tweet_id';
+export type DeletedTweetSortKey = 'deleted_time' | TweetSortKey;
 export type DeletedTweetsSortKey = 'deleted_time';
 export type SortOrder = 'asc' | 'desc';
 
@@ -115,6 +121,11 @@ export interface TweetSort {
 
 export interface DeletedTweetIDSort {
   key: DeletedTweetIDSortKey;
+  order: SortOrder;
+}
+
+export interface DeletedTweetSort {
+  key: DeletedTweetSortKey;
   order: SortOrder;
 }
 
