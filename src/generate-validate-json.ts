@@ -6,7 +6,6 @@ import standaloneCode from 'ajv/dist/standalone';
 import * as fs from 'fs';
 import * as path from 'path';
 import { deletedTweetIDsJSONSchema } from './jsonschema/deleted-tweet-id';
-import { deletedTweetIDsListJSONSchema } from './jsonschema/deleted-tweets';
 import { settingsJSONSchema } from './jsonschema/settings';
 import {
   tweetIDsJSONSchema,
@@ -83,13 +82,6 @@ generate(
   'validate-deleted-tweet-ids',
   'DeletedTweetID[]',
   "import { DeletedTweetID } from '~/lib/tweet/types'",
-);
-// DeletedTweetIDs[]
-generate(
-  deletedTweetIDsListJSONSchema,
-  'validate-deleted-tweet-ids-list',
-  'DeletedTweetIDs[]',
-  "import { DeletedTweetIDs } from '~/lib/tweet/types'",
 );
 // Settings
 generate(
