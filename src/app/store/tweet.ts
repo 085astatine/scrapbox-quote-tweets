@@ -143,6 +143,11 @@ const removeTweetFromTweets = (
   target: TweetID | TweetID[],
 ): Tweet[] => {
   const targets = toArray(target);
+  // check if targets in tweets
+  const tweetIDs = tweets.map((tweet) => tweet.id);
+  if (targets.every((tweetID) => !tweetIDs.includes(tweetID))) {
+    return tweets;
+  }
   return tweets.filter((tweet) =>
     targets.every((tweetID) => tweetID !== tweet.id),
   );
