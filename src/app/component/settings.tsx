@@ -7,9 +7,21 @@ import DownloadIcon from '~/icon/bootstrap/download.svg';
 import { Collapse } from '~/lib/component/transition';
 import { isValidTimezone, toDatetime } from '~/lib/datetime';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
-import { Hostname, baseURL, hostnames } from '~/lib/settings';
+import { baseURL, hostnames } from '~/lib/settings';
 import { saveSettings } from '~/lib/storage/settings';
 import { State, actions } from '../store';
+import {
+  selectDatetimeFormat,
+  selectDatetimeFormatErrors,
+  selectEditingDatetimeFormat,
+  selectEditingHostname,
+  selectEditingTimezone,
+  selectHostname,
+  selectHostnameErrors,
+  selectIsSettingsEdited,
+  selectTimezone,
+  selectTimezoneErrors,
+} from '../store/selector';
 
 export const Settings: React.FC = () => {
   return (
@@ -66,34 +78,37 @@ const SettingsItem: React.FC<SettingsItemProps> = ({
 };
 
 const BaseURL: React.FC = () => {
-  const name = 'settings-hostname';
-  const hostname = useSelector(hostnameSelector);
-  const isUpdated = useSelector(isHostnameUpdatedSelector);
-  const errors = useSelector(hostnameErrorsSelector, shallowEqual);
+  const currentValue = useSelector(selectHostname);
+  const editingValue = useSelector(selectEditingHostname);
+  const errors = useSelector(selectHostnameErrors, shallowEqual);
   const dispatch = useDispatch();
+
+  const name = 'settings-hostname';
+  const value = editingValue ?? currentValue;
+  const isUpdated = editingValue !== undefined;
   return (
     <SettingsItem
       label="Base URL"
       form={
         <>
-          {hostnames.map((host) => {
-            const id = `settings-hostname-${host}`;
+          {hostnames.map((hostname) => {
+            const id = `settings-hostname-${hostname}`;
             return (
-              <div className="form-check" key={host}>
+              <div className="form-check" key={hostname}>
                 <input
                   type="radio"
                   className="form-check-input"
                   id={id}
                   name={name}
-                  checked={host === hostname}
+                  checked={hostname === value}
                   onChange={() =>
-                    dispatch(actions.settings.updateHostname(host))
+                    dispatch(actions.settings.updateHostname(hostname))
                   }
                 />
                 <label
                   className="form-check-label settings-form-label"
                   htmlFor={id}>
-                  {baseURL(host)}
+                  {baseURL(hostname)}
                 </label>
               </div>
             );
@@ -107,10 +122,13 @@ const BaseURL: React.FC = () => {
 };
 
 const Timezone: React.FC = () => {
-  const timezone = useSelector(timezoneSelector);
-  const isUpdated = useSelector(isTimezoneUpdatedSelector);
-  const errors = useSelector(timezoneErrorsSelector, shallowEqual);
+  const currentValue = useSelector(selectTimezone);
+  const editingValue = useSelector(selectEditingTimezone);
+  const errors = useSelector(selectTimezoneErrors, shallowEqual);
   const dispatch = useDispatch();
+
+  const value = editingValue ?? currentValue;
+  const isUpdated = editingValue !== undefined;
   const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     dispatch(actions.settings.updateTimezone(event.target.value));
   };
@@ -121,7 +139,7 @@ const Timezone: React.FC = () => {
         <input
           type="text"
           className="form-control"
-          value={timezone}
+          value={value}
           onChange={onChange}
         />
       }
@@ -144,10 +162,13 @@ const Timezone: React.FC = () => {
 };
 
 const DatetimeFormat: React.FC = () => {
-  const format = useSelector(datetimeFormatSelector);
-  const isUpdated = useSelector(isDatetimeFormatUpdatedSelector);
-  const errors = useSelector(datetimeFormatErrorsSelector, shallowEqual);
+  const currentValue = useSelector(selectDatetimeFormat);
+  const editingValue = useSelector(selectEditingDatetimeFormat);
+  const errors = useSelector(selectDatetimeFormatErrors, shallowEqual);
   const dispatch = useDispatch();
+
+  const value = editingValue ?? currentValue;
+  const isUpdated = editingValue !== undefined;
   const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     dispatch(actions.settings.updateDatetimeFormat(event.target.value));
   };
@@ -158,7 +179,7 @@ const DatetimeFormat: React.FC = () => {
         <input
           type="text"
           className="form-control"
-          value={format}
+          value={value}
           onChange={onChange}
         />
       }
@@ -184,8 +205,13 @@ const DatetimeFormat: React.FC = () => {
 };
 
 const DatetimeFormatSample: React.FC = () => {
-  const timezone = useSelector(timezoneSelector);
-  const format = useSelector(datetimeFormatSelector);
+  const currentTimezone = useSelector(selectTimezone);
+  const editingTimezone = useSelector(selectEditingTimezone);
+  const currentFormat = useSelector(selectDatetimeFormat);
+  const editingFormat = useSelector(selectEditingDatetimeFormat);
+
+  const timezone = editingTimezone ?? currentTimezone;
+  const format = editingFormat ?? currentFormat;
   const [timestamp] = React.useState(Math.trunc(Date.now() / 1000));
   const isoFormatted = toDatetime(timestamp, 'UTC').format(
     'YYYY-MM-DD[T]HH:mm:ss[Z]',
@@ -242,7 +268,7 @@ const DownloadStorage: React.FC = () => {
 
 const Commands: React.FC = () => {
   const ref = React.useRef(null);
-  const show = useSelector(showCommandsSelector);
+  const show = useSelector(selectIsSettingsEdited);
   const dispatch = useDispatch();
   const store = useStore<State>();
   return (
@@ -276,35 +302,3 @@ const Commands: React.FC = () => {
     />
   );
 };
-
-// Selectors
-const hostnameSelector = (state: State): Hostname =>
-  state.settings.editing.hostname ?? state.settings.current.hostname;
-
-const isHostnameUpdatedSelector = (state: State): boolean =>
-  'hostname' in state.settings.editing;
-
-const hostnameErrorsSelector = (state: State): readonly string[] =>
-  state.settings.errors.hostname ?? [];
-
-const timezoneSelector = (state: State): string =>
-  state.settings.editing.timezone ?? state.settings.current.timezone;
-
-const isTimezoneUpdatedSelector = (state: State): boolean =>
-  'timezone' in state.settings.editing;
-
-const timezoneErrorsSelector = (state: State): readonly string[] =>
-  state.settings.errors.timezone ?? [];
-
-const datetimeFormatSelector = (state: State): string =>
-  state.settings.editing.datetimeFormat ??
-  state.settings.current.datetimeFormat;
-
-const isDatetimeFormatUpdatedSelector = (state: State): boolean =>
-  'datetimeFormat' in state.settings.editing;
-
-const datetimeFormatErrorsSelector = (state: State): readonly string[] =>
-  state.settings.errors.datetimeFormat ?? [];
-
-const showCommandsSelector = (state: State): boolean =>
-  Object.keys(state.settings.editing).length > 0;
