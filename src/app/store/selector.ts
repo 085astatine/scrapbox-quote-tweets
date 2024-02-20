@@ -56,21 +56,21 @@ export const selectEditingDatetimeFormat = (
 
 // settings errors
 export const selectHostnameErrors = (state: State): string[] => {
-  return state.settings.errors.hostname ?? [];
+  return fallbackToEmptyArray(state.settings.errors.hostname ?? []);
 };
 export const selectTimezoneErrors = (state: State): string[] => {
-  return state.settings.errors.timezone ?? [];
+  return fallbackToEmptyArray(state.settings.errors.timezone ?? []);
 };
 
 export const selectDatetimeFormatErrors = (state: State): string[] => {
-  return state.settings.errors.datetimeFormat ?? [];
+  return fallbackToEmptyArray(state.settings.errors.datetimeFormat ?? []);
 };
 
 // tweets
 export const selectTweets = createSelector(
   [(state: State): Tweet[] => state.tweet.tweets, selectTweetSort],
   (tweets: Tweet[], sort: TweetSort): Tweet[] => {
-    return [...tweets].sort(tweetSortFunction(sort));
+    return fallbackToEmptyArray([...tweets].sort(tweetSortFunction(sort)));
   },
 );
 
@@ -91,7 +91,9 @@ export const selectIsSelectedTweet = createSelector(
 export const selectSelectedTweets = createSelector(
   [(state: State): Tweet[] => state.tweet.selectedTweets, selectTweetSort],
   (selectedTweets: Tweet[], sort: TweetSort): Tweet[] => {
-    return [...selectedTweets].sort(tweetSortFunction(sort));
+    return fallbackToEmptyArray(
+      [...selectedTweets].sort(tweetSortFunction(sort)),
+    );
   },
 );
 
@@ -120,7 +122,9 @@ export const selectDeletedTweetsList = createSelector(
       state.settings.current.deletedTweetsSort,
   ],
   (trashbox: DeletedTweets[], sort: DeletedTweetsSort): DeletedTweets[] => {
-    return [...trashbox].sort(deletedTweetsSortFunction(sort));
+    return fallbackToEmptyArray(
+      [...trashbox].sort(deletedTweetsSortFunction(sort)),
+    );
   },
 );
 
@@ -205,3 +209,10 @@ export const selectTweetToStringOption = createSelector(
     return { hostname, timezone, datetimeFormat };
   },
 );
+
+// utilities
+const EMPTY_ARRAY: [] = [];
+
+const fallbackToEmptyArray = <T>(array: T[]): T[] => {
+  return array.length === 0 ? EMPTY_ARRAY : array;
+};
