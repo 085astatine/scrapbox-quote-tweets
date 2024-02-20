@@ -5,8 +5,6 @@ import { defaultSettings } from '~/lib/settings';
 import { StorageChanges } from '~/lib/storage/listener';
 import { loadSettings } from '~/lib/storage/settings';
 import { loadTrashbox, loadTweetsNotInTrashbox } from '~/lib/storage/trashbox';
-import { deletedTweetSortFunction } from '~/lib/tweet/sort-tweets';
-import { DeletedTweets } from '~/lib/tweet/types';
 import { settings, settingsActions } from './settings';
 import { tweet, tweetActions, tweetStorageListener } from './tweet';
 
@@ -48,20 +46,7 @@ export const storageListener = (changes: StorageChanges): void => {
 // Initialize store with data loaded from storage
 export const initializeStoreWithStorage = async (): Promise<void> => {
   const tweets = await loadTweetsNotInTrashbox();
-  const trashbox = (await loadTrashbox())
-    .sort(deletedTweetSortFunction({ key: 'deleted_time', order: 'asc' }))
-    .reduce<DeletedTweets[]>((deletedTweets, deletedTweet) => {
-      const last = deletedTweets[deletedTweets.length - 1];
-      if (last?.deleted_at === deletedTweet.deleted_at) {
-        last.tweets.push(deletedTweet.tweet);
-      } else {
-        deletedTweets.push({
-          deleted_at: deletedTweet.deleted_at,
-          tweets: [deletedTweet.tweet],
-        });
-      }
-      return deletedTweets;
-    }, []);
+  const trashbox = await loadTrashbox();
   const settings = (await loadSettings()) ?? defaultSettings();
   store.dispatch(actions.tweet.initialize({ tweets, trashbox }));
   store.dispatch(actions.settings.initialize(settings));

@@ -1,11 +1,13 @@
 import { createSelector, weakMapMemoize } from '@reduxjs/toolkit';
 import { Hostname, baseURL } from '~/lib/settings';
 import {
+  deletedTweetSortFunction,
   deletedTweetsSortFunction,
   tweetSortFunction,
 } from '~/lib/tweet/sort-tweets';
 import { TweetToStringOption } from '~/lib/tweet/tweet-to-string';
 import {
+  DeletedTweet,
   DeletedTweets,
   DeletedTweetsSort,
   Tweet,
@@ -115,9 +117,31 @@ export const selectAllTweetsSelectButtonState = createSelector(
 );
 
 // trashbox
+export const selectTrashboxElements = createSelector(
+  [(state: State): DeletedTweet[] => state.tweet.trashbox],
+  (deletedTweets: DeletedTweet[]): DeletedTweets[] => {
+    return fallbackToEmptyArray(
+      [...deletedTweets]
+        .sort(deletedTweetSortFunction({ key: 'deleted_time', order: 'asc' }))
+        .reduce<DeletedTweets[]>((trashboxElements, deletedTweet) => {
+          const last = trashboxElements[trashboxElements.length - 1];
+          if (last?.deleted_at === deletedTweet.deleted_at) {
+            last.tweets.push(deletedTweet.tweet);
+          } else {
+            trashboxElements.push({
+              deleted_at: deletedTweet.deleted_at,
+              tweets: [deletedTweet.tweet],
+            });
+          }
+          return trashboxElements;
+        }, []),
+    );
+  },
+);
+
 export const selectDeletedTweetsList = createSelector(
   [
-    (state: State): DeletedTweets[] => state.tweet.trashbox,
+    selectTrashboxElements,
     (state: State): DeletedTweetsSort =>
       state.settings.current.deletedTweetsSort,
   ],
@@ -144,22 +168,22 @@ export const selectIsDeletedTweetSelected = createSelector(
 
 export const selectIsAllDeletedTweetsSelected = createSelector(
   [
-    (state: State): DeletedTweets[] => state.tweet.trashbox,
+    (state: State): DeletedTweet[] => state.tweet.trashbox,
     (state: State): Tweet[] => state.tweet.selectedDeletedTweets,
     (state: State, deletedTime: number): number => deletedTime,
   ],
   (
-    trashbox: DeletedTweets[],
+    trashbox: DeletedTweet[],
     selected: Tweet[],
     deletedTime: number,
   ): boolean => {
-    const deletedTweets = trashbox.find(
-      (deletedTweets) => deletedTweets.deleted_at === deletedTime,
+    const targetTweets = trashbox
+      .filter((deletedTweet) => deletedTweet.deleted_at === deletedTime)
+      .map((deletedTweet) => deletedTweet.tweet);
+    return (
+      targetTweets.length > 0 &&
+      targetTweets.every((tweet) => selected.includes(tweet))
     );
-    if (deletedTweets === undefined) {
-      return false;
-    }
-    return deletedTweets.tweets.every((tweet) => selected.includes(tweet));
   },
   {
     memoize: weakMapMemoize,
@@ -173,16 +197,14 @@ export const selectSelectedDeletedTweets = (state: State): Tweet[] => {
 
 export const selectAllTrashboxSelectButtonState = createSelector(
   [
-    (state: State): DeletedTweets[] => state.tweet.trashbox,
+    (state: State): DeletedTweet[] => state.tweet.trashbox,
     (state: State): Tweet[] => state.tweet.selectedDeletedTweets,
   ],
   (
-    trashbox: DeletedTweets[],
+    trashbox: DeletedTweet[],
     selected: Tweet[],
   ): 'disabled' | 'checked' | 'unchecked' => {
-    const deletedTweets = trashbox
-      .map((deletedTweets) => deletedTweets.tweets)
-      .flat();
+    const deletedTweets = trashbox.map((deletedTweet) => deletedTweet.tweet);
     return (
       deletedTweets.length === 0 ? 'disabled'
       : deletedTweets.every((tweet) => selected.includes(tweet)) ? 'checked'
