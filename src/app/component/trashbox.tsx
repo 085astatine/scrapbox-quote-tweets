@@ -10,7 +10,6 @@ import {
   restoreTweetsFromTrashbox,
 } from '~/lib/storage/trashbox';
 import {
-  DeletedTweets as DeletedTweetsData,
   DeletedTweetsSortKey,
   SortOrder,
   Tweet as TweetData,
@@ -20,7 +19,8 @@ import { State, actions } from '../store';
 import {
   selectAllTrashboxSelectButtonState,
   selectDatetimeFormat,
-  selectDeletedTweetsList,
+  selectDeletedTimes,
+  selectDeletedTweets,
   selectDeletedTweetsSort,
   selectIsAllDeletedTweetsSelected,
   selectIsDeletedTweetSelected,
@@ -40,30 +40,30 @@ export const Trashbox: React.FC = () => {
 };
 
 const DeletedTweetsList: React.FC = () => {
-  const deletedTweetsList = useSelector(selectDeletedTweetsList, shallowEqual);
+  const deletedTimes = useSelector(selectDeletedTimes, shallowEqual);
   return (
     <div className="deleted-tweets-list">
       <Toolbar />
-      {deletedTweetsList.map((deletedTweets) => (
-        <DeletedTweets
-          key={deletedTweets.deleted_at}
-          deletedTweets={deletedTweets}
-        />
+      {deletedTimes.map((deletedTime) => (
+        <DeletedTweets key={deletedTime} deletedTime={deletedTime} />
       ))}
     </div>
   );
 };
 
 interface DeletedTweetsProps {
-  deletedTweets: DeletedTweetsData;
+  deletedTime: number;
 }
 
-const DeletedTweets: React.FC<DeletedTweetsProps> = ({
-  deletedTweets: { deleted_at: timestamp, tweets },
-}) => {
+const DeletedTweets: React.FC<DeletedTweetsProps> = ({ deletedTime }) => {
+  const selectTweets = React.useCallback(
+    (state: State) => selectDeletedTweets(state, deletedTime),
+    [deletedTime],
+  );
+  const tweets = useSelector(selectTweets);
   const selectIsAllSelected = React.useCallback(
-    (state: State) => selectIsAllDeletedTweetsSelected(state, timestamp),
-    [timestamp],
+    (state: State) => selectIsAllDeletedTweetsSelected(state, deletedTime),
+    [deletedTime],
   );
   const isAllSelected = useSelector(selectIsAllSelected);
   const dispatch = useDispatch();
@@ -80,7 +80,7 @@ const DeletedTweets: React.FC<DeletedTweetsProps> = ({
       <Checkbox checked={isAllSelected} onClick={selectAll} />
       <div className="deleted-tweets">
         <DeletedTweetsHeader
-          timestamp={timestamp}
+          timestamp={deletedTime}
           tweetsLength={tweets.length}
         />
         {tweets.map((tweet) => (

@@ -10,6 +10,7 @@ import {
   DeletedTweet,
   DeletedTweets,
   DeletedTweetsSort,
+  SortOrder,
   Tweet,
   TweetID,
   TweetSort,
@@ -152,6 +153,47 @@ export const selectDeletedTweetsList = createSelector(
   },
 );
 
+export const selectDeletedTimes = createSelector(
+  [
+    (state: State): DeletedTweet[] => state.tweet.trashbox,
+    (state: State): SortOrder => state.settings.current.deletedTweetsSort.order,
+  ],
+  (trashbox: DeletedTweet[], order: SortOrder) => {
+    return fallbackToEmptyArray(
+      trashbox
+        .map((deletedTweet) => deletedTweet.deleted_at)
+        .sort(
+          order === 'asc' ? (lhs, rhs) => lhs - rhs : (lhs, rhs) => rhs - lhs,
+        )
+        .reduce<number[]>((times, time) => {
+          if (times[times.length - 1] !== time) {
+            times.push(time);
+          }
+          return times;
+        }, []),
+    );
+  },
+);
+
+export const selectDeletedTweets = createSelector(
+  [
+    (state: State): DeletedTweet[] => state.tweet.trashbox,
+    (state: State, deletedTime: number): number => deletedTime,
+  ],
+  (trashbox: DeletedTweet[], deletedTime: number): Tweet[] => {
+    return fallbackToEmptyArray(
+      trashbox
+        .filter((deletedTweet) => deletedTweet.deleted_at === deletedTime)
+        .map((deletedTweet) => deletedTweet.tweet)
+        .sort(tweetSortFunction({ key: 'created_time', order: 'asc' })),
+    );
+  },
+  {
+    memoize: weakMapMemoize,
+    argsMemoize: weakMapMemoize,
+  },
+);
+
 export const selectIsDeletedTweetSelected = createSelector(
   [
     (state: State): Tweet[] => state.tweet.selectedDeletedTweets,
@@ -168,21 +210,12 @@ export const selectIsDeletedTweetSelected = createSelector(
 
 export const selectIsAllDeletedTweetsSelected = createSelector(
   [
-    (state: State): DeletedTweet[] => state.tweet.trashbox,
+    selectDeletedTweets,
     (state: State): Tweet[] => state.tweet.selectedDeletedTweets,
-    (state: State, deletedTime: number): number => deletedTime,
   ],
-  (
-    trashbox: DeletedTweet[],
-    selected: Tweet[],
-    deletedTime: number,
-  ): boolean => {
-    const targetTweets = trashbox
-      .filter((deletedTweet) => deletedTweet.deleted_at === deletedTime)
-      .map((deletedTweet) => deletedTweet.tweet);
+  (tweets: Tweet[], selected: Tweet[]): boolean => {
     return (
-      targetTweets.length > 0 &&
-      targetTweets.every((tweet) => selected.includes(tweet))
+      tweets.length > 0 && tweets.every((tweet) => selected.includes(tweet))
     );
   },
   {
