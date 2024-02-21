@@ -1,14 +1,9 @@
 import { createSelector, weakMapMemoize } from '@reduxjs/toolkit';
 import { Hostname, baseURL } from '~/lib/settings';
-import {
-  deletedTweetSortFunction,
-  deletedTweetsSortFunction,
-  tweetSortFunction,
-} from '~/lib/tweet/sort-tweets';
+import { tweetSortFunction } from '~/lib/tweet/sort-tweets';
 import { TweetToStringOption } from '~/lib/tweet/tweet-to-string';
 import {
   DeletedTweet,
-  DeletedTweets,
   DeletedTweetsSort,
   SortOrder,
   Tweet,
@@ -118,41 +113,6 @@ export const selectAllTweetsSelectButtonState = createSelector(
 );
 
 // trashbox
-export const selectTrashboxElements = createSelector(
-  [(state: State): DeletedTweet[] => state.tweet.trashbox],
-  (deletedTweets: DeletedTweet[]): DeletedTweets[] => {
-    return fallbackToEmptyArray(
-      [...deletedTweets]
-        .sort(deletedTweetSortFunction({ key: 'deleted_time', order: 'asc' }))
-        .reduce<DeletedTweets[]>((trashboxElements, deletedTweet) => {
-          const last = trashboxElements[trashboxElements.length - 1];
-          if (last?.deleted_at === deletedTweet.deleted_at) {
-            last.tweets.push(deletedTweet.tweet);
-          } else {
-            trashboxElements.push({
-              deleted_at: deletedTweet.deleted_at,
-              tweets: [deletedTweet.tweet],
-            });
-          }
-          return trashboxElements;
-        }, []),
-    );
-  },
-);
-
-export const selectDeletedTweetsList = createSelector(
-  [
-    selectTrashboxElements,
-    (state: State): DeletedTweetsSort =>
-      state.settings.current.deletedTweetsSort,
-  ],
-  (trashbox: DeletedTweets[], sort: DeletedTweetsSort): DeletedTweets[] => {
-    return fallbackToEmptyArray(
-      [...trashbox].sort(deletedTweetsSortFunction(sort)),
-    );
-  },
-);
-
 export const selectDeletedTimes = createSelector(
   [
     (state: State): DeletedTweet[] => state.tweet.trashbox,
