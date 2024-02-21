@@ -3,8 +3,6 @@ import {
   DeletedTweetID,
   DeletedTweetIDSort,
   DeletedTweetSort,
-  DeletedTweets,
-  DeletedTweetsSort,
   SortOrder,
   Tweet,
   TweetID,
@@ -98,21 +96,5 @@ export const deletedTweetSortFunction = ({
     default:
       return (lhs: DeletedTweet, rhs: DeletedTweet) =>
         tweetSortFunction({ key, order })(lhs.tweet, rhs.tweet);
-  }
-};
-
-export const deletedTweetsSortFunction = ({
-  key,
-  order,
-}: DeletedTweetsSort): ((lhs: DeletedTweets, rhs: DeletedTweets) => number) => {
-  const sign = order === 'asc' ? +1 : -1;
-  switch (key) {
-    case 'deleted_time':
-      return (lhs: DeletedTweets, rhs: DeletedTweets) =>
-        sign * (lhs.deleted_at - rhs.deleted_at);
-    default: {
-      const _: never = key;
-      return _;
-    }
   }
 };
