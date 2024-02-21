@@ -1,16 +1,21 @@
 import { defaultTimezone } from './datetime';
-import { DeletedTweetsSort, TweetSort } from './tweet/types';
+import { SortOrder, TweetSort } from './tweet/types';
 
 export const hostnames = ['twitter.com', 'x.com'] as const;
 
 export type Hostname = (typeof hostnames)[number];
+
+export interface TrashboxSort {
+  key: 'deleted_time';
+  order: SortOrder;
+}
 
 export interface Settings {
   hostname: Hostname;
   timezone: string;
   datetimeFormat: string;
   tweetSort: TweetSort;
-  deletedTweetsSort: DeletedTweetsSort;
+  trashboxSort: TrashboxSort;
 }
 
 export const defaultSettings = (): Settings => {
@@ -22,7 +27,7 @@ export const defaultSettings = (): Settings => {
       key: 'created_time',
       order: 'desc',
     },
-    deletedTweetsSort: {
+    trashboxSort: {
       key: 'deleted_time',
       order: 'desc',
     },

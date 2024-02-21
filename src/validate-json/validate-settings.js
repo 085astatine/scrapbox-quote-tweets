@@ -6,7 +6,7 @@ const schema11 = {
   definitions: {
     hostname: { enum: ['twitter.com', 'x.com'] },
     tweetSortKey: { enum: ['created_time', 'saved_time', 'username'] },
-    deletedTweetsSortKey: { enum: ['deleted_time'] },
+    trashboxSortKey: { enum: ['deleted_time'] },
     sortOrder: { enum: ['asc', 'desc'] },
     tweetSort: {
       type: 'object',
@@ -17,10 +17,10 @@ const schema11 = {
       required: ['key', 'order'],
       additionalProperties: false,
     },
-    deletedTweetsSort: {
+    trashboxSort: {
       type: 'object',
       properties: {
-        key: { $ref: '#/definitions/deletedTweetsSortKey' },
+        key: { $ref: '#/definitions/trashboxSortKey' },
         order: { $ref: '#/definitions/sortOrder' },
       },
       required: ['key', 'order'],
@@ -33,14 +33,14 @@ const schema11 = {
         timezone: { type: 'string' },
         datetimeFormat: { type: 'string' },
         tweetSort: { $ref: '#/definitions/tweetSort' },
-        deletedTweetsSort: { $ref: '#/definitions/deletedTweetsSort' },
+        trashboxSort: { $ref: '#/definitions/trashboxSort' },
       },
       required: [
         'hostname',
         'timezone',
         'datetimeFormat',
         'tweetSort',
-        'deletedTweetsSort',
+        'trashboxSort',
       ],
       additionalProperties: false,
     },
@@ -53,14 +53,14 @@ const schema12 = {
     timezone: { type: 'string' },
     datetimeFormat: { type: 'string' },
     tweetSort: { $ref: '#/definitions/tweetSort' },
-    deletedTweetsSort: { $ref: '#/definitions/deletedTweetsSort' },
+    trashboxSort: { $ref: '#/definitions/trashboxSort' },
   },
   required: [
     'hostname',
     'timezone',
     'datetimeFormat',
     'tweetSort',
-    'deletedTweetsSort',
+    'trashboxSort',
   ],
   additionalProperties: false,
 };
@@ -193,7 +193,7 @@ function validate12(
 const schema17 = {
   type: 'object',
   properties: {
-    key: { $ref: '#/definitions/deletedTweetsSortKey' },
+    key: { $ref: '#/definitions/trashboxSortKey' },
     order: { $ref: '#/definitions/sortOrder' },
   },
   required: ['key', 'order'],
@@ -258,7 +258,7 @@ function validate14(
       if (!(data.key === 'deleted_time')) {
         const err3 = {
           instancePath: instancePath + '/key',
-          schemaPath: '#/definitions/deletedTweetsSortKey/enum',
+          schemaPath: '#/definitions/trashboxSortKey/enum',
           keyword: 'enum',
           params: { allowedValues: schema18.enum },
           message: 'must be equal to one of the allowed values',
@@ -374,13 +374,13 @@ function validate11(
       }
       errors++;
     }
-    if (data.deletedTweetsSort === undefined) {
+    if (data.trashboxSort === undefined) {
       const err4 = {
         instancePath,
         schemaPath: '#/required',
         keyword: 'required',
-        params: { missingProperty: 'deletedTweetsSort' },
-        message: "must have required property '" + 'deletedTweetsSort' + "'",
+        params: { missingProperty: 'trashboxSort' },
+        message: "must have required property '" + 'trashboxSort' + "'",
       };
       if (vErrors === null) {
         vErrors = [err4];
@@ -396,7 +396,7 @@ function validate11(
           key0 === 'timezone' ||
           key0 === 'datetimeFormat' ||
           key0 === 'tweetSort' ||
-          key0 === 'deletedTweetsSort'
+          key0 === 'trashboxSort'
         )
       ) {
         const err5 = {
@@ -482,12 +482,12 @@ function validate11(
         errors = vErrors.length;
       }
     }
-    if (data.deletedTweetsSort !== undefined) {
+    if (data.trashboxSort !== undefined) {
       if (
-        !validate14(data.deletedTweetsSort, {
-          instancePath: instancePath + '/deletedTweetsSort',
+        !validate14(data.trashboxSort, {
+          instancePath: instancePath + '/trashboxSort',
           parentData: data,
-          parentDataProperty: 'deletedTweetsSort',
+          parentDataProperty: 'trashboxSort',
           rootData,
         })
       ) {

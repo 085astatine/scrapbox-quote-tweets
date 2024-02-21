@@ -1,10 +1,9 @@
 import { createSelector, weakMapMemoize } from '@reduxjs/toolkit';
-import { Hostname, baseURL } from '~/lib/settings';
+import { Hostname, TrashboxSort, baseURL } from '~/lib/settings';
 import { tweetSortFunction } from '~/lib/tweet/sort-tweets';
 import { TweetToStringOption } from '~/lib/tweet/tweet-to-string';
 import {
   DeletedTweet,
-  DeletedTweetsSort,
   SortOrder,
   Tweet,
   TweetID,
@@ -29,8 +28,8 @@ export const selectTweetSort = (state: State): TweetSort => {
   return state.settings.current.tweetSort;
 };
 
-export const selectDeletedTweetsSort = (state: State): DeletedTweetsSort => {
-  return state.settings.current.deletedTweetsSort;
+export const selectTrashboxSort = (state: State): TrashboxSort => {
+  return state.settings.current.trashboxSort;
 };
 
 // editing settings
@@ -116,7 +115,7 @@ export const selectAllTweetsSelectButtonState = createSelector(
 export const selectDeletedTimes = createSelector(
   [
     (state: State): DeletedTweet[] => state.tweet.trashbox,
-    (state: State): SortOrder => state.settings.current.deletedTweetsSort.order,
+    (state: State): SortOrder => state.settings.current.trashboxSort.order,
   ],
   (trashbox: DeletedTweet[], order: SortOrder) => {
     return fallbackToEmptyArray(

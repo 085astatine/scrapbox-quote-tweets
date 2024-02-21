@@ -5,15 +5,12 @@ import DeleteIcon from '~/icon/google-fonts/delete-forever.svg';
 import RestoreIcon from '~/icon/google-fonts/restore-from-trash.svg';
 import { Collapse } from '~/lib/component/transition';
 import { toDatetime } from '~/lib/datetime';
+import { TrashboxSort } from '~/lib/settings';
 import {
   deleteTweetsFromTrashbox,
   restoreTweetsFromTrashbox,
 } from '~/lib/storage/trashbox';
-import {
-  DeletedTweetsSortKey,
-  SortOrder,
-  Tweet as TweetData,
-} from '~/lib/tweet/types';
+import { Tweet as TweetData } from '~/lib/tweet/types';
 import { trimGoogleFontsIcon } from '~/lib/utility';
 import { State, actions } from '../store';
 import {
@@ -21,11 +18,11 @@ import {
   selectDatetimeFormat,
   selectDeletedTimes,
   selectDeletedTweets,
-  selectDeletedTweetsSort,
   selectIsAllDeletedTweetsSelected,
   selectIsDeletedTweetSelected,
   selectSelectedDeletedTweets,
   selectTimezone,
+  selectTrashboxSort,
 } from '../store/selector';
 import { Checkbox } from './checkbox';
 import { Tweet as TweetInfo } from './tweet';
@@ -179,13 +176,11 @@ const SelectAll: React.FC = () => {
 
 const SelectSort: React.FC = () => {
   const id = 'select-deleted-tweets-sort';
-  const { key: sortKey, order: sortOrder } = useSelector(
-    selectDeletedTweetsSort,
-  );
+  const { key: sortKey, order: sortOrder } = useSelector(selectTrashboxSort);
   const dispatch = useDispatch();
   // options
   const options: ReadonlyArray<
-    readonly [DeletedTweetsSortKey, SortOrder, string]
+    readonly [TrashboxSort['key'], TrashboxSort['order'], string]
   > = [
     ['deleted_time', 'desc', 'Deleted Time (Newest → Oldest)'],
     ['deleted_time', 'asc', 'Deleted Time (Oldest → Newest)'],
@@ -193,7 +188,7 @@ const SelectSort: React.FC = () => {
   // event
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const [key, order] = options[event.target.selectedIndex];
-    dispatch(actions.settings.updateDeletedTweetsSort({ key, order }));
+    dispatch(actions.settings.updateTrashboxSort({ key, order }));
   };
   return (
     <div className="tool">
