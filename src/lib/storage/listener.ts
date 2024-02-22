@@ -13,34 +13,36 @@ export interface UpdatedTweet {
   after: Tweet;
 }
 
-export interface StorageChanges {
-  addedTweets: Tweet[];
-  deletedTweets: Tweet[];
-  updatedTweets: UpdatedTweet[];
+export interface TweetChanges {
+  added?: Tweet[];
+  deleted?: Tweet[];
+  updated?: UpdatedTweet[];
+}
+
+export interface StorageListenerArguments {
+  tweet?: TweetChanges;
 }
 
 export const createStorageListener = (
-  listener: (changes: StorageChanges) => void,
+  listener: (args: StorageListenerArguments) => void,
   logger?: Logger,
 ): OnChangedListener => {
   return (changes: browser.Storage.StorageAreaOnChangedChangesType) => {
     logger?.debug('Storage changes', changes);
     // diff
-    const diff: StorageChanges = {
-      addedTweets: [],
-      deletedTweets: [],
-      updatedTweets: [],
-    };
+    const addedTweets: Tweet[] = [];
+    const deletedTweets: Tweet[] = [];
+    const updatedTweets: UpdatedTweet[] = [];
     for (const [key, value] of Object.entries(changes)) {
       // tweet
       if (isTweetIDKey(key)) {
         const tweetID = toTweetID(key);
         if (value.oldValue === undefined) {
-          diff.addedTweets.push(value.newValue);
+          addedTweets.push(value.newValue);
         } else if (value.newValue === undefined) {
-          diff.deletedTweets.push(value.oldValue);
+          deletedTweets.push(value.oldValue);
         } else {
-          diff.updatedTweets.push({
+          updatedTweets.push({
             id: tweetID,
             before: value.oldValue,
             after: value.newValue,
@@ -48,9 +50,18 @@ export const createStorageListener = (
         }
       }
     }
-    logger?.debug('diff', diff);
+    // listener arguments
+    const tweetChanges: TweetChanges = {
+      ...(addedTweets.length > 0 && { added: addedTweets }),
+      ...(deletedTweets.length > 0 && { deleted: deletedTweets }),
+      ...(updatedTweets.length > 0 && { updated: updatedTweets }),
+    };
+    const listenerArgs: StorageListenerArguments = {
+      ...(Object.keys(tweetChanges).length > 0 && { tweet: tweetChanges }),
+    };
+    logger?.debug('listener arguments', listenerArgs);
     // execute listener
-    listener(diff);
+    listener(listenerArgs);
   };
 };
 

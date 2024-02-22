@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
 import {
-  StorageChanges,
+  StorageListenerArguments,
   addStorageListener,
   createStorageListener,
 } from '~/lib/storage/listener';
@@ -66,26 +66,30 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // storage listener
 const storageListener = createStorageListener(
-  ({ addedTweets, deletedTweets }: StorageChanges) => {
+  (args: StorageListenerArguments) => {
     const buttonStates: UpdateButtonState[] = [];
     // added tweets
-    buttonStates.push(
-      ...addedTweets.map(
-        (tweet): UpdateButtonState => ({
-          tweetID: tweet.id,
-          state: { state: 'success' },
-        }),
-      ),
-    );
+    if (args.tweet?.added?.length) {
+      buttonStates.push(
+        ...args.tweet.added.map(
+          (tweet): UpdateButtonState => ({
+            tweetID: tweet.id,
+            state: { state: 'success' },
+          }),
+        ),
+      );
+    }
     // deleted tweets
-    buttonStates.push(
-      ...deletedTweets.map(
-        (tweet): UpdateButtonState => ({
-          tweetID: tweet.id,
-          state: { state: 'none' },
-        }),
-      ),
-    );
+    if (args.tweet?.deleted?.length) {
+      buttonStates.push(
+        ...args.tweet.deleted.map(
+          (tweet): UpdateButtonState => ({
+            tweetID: tweet.id,
+            state: { state: 'none' },
+          }),
+        ),
+      );
+    }
     // update state
     if (buttonStates.length) {
       store.dispatch(actions.update(buttonStates));
