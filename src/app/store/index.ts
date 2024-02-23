@@ -40,7 +40,7 @@ export const actions = {
 } as const;
 
 export const storageListener = (args: StorageListenerArguments): void => {
-  tweetStorageListener(args);
+  tweetStorageListener(args, store.dispatch);
 };
 
 // Initialize store with data loaded from storage
