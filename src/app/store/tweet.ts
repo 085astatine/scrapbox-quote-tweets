@@ -32,13 +32,24 @@ export const tweet = createSlice({
       state.selectedTweets = [];
       state.selectedDeletedTweets = [];
     },
-    selectTweet(state: TweetState, action: PayloadAction<Tweet>): void {
-      const exist = state.selectedTweets.find(
-        (tweet) => tweet.id === action.payload.id,
+    addTweet(state: TweetState, action: PayloadAction<Tweet[]>): void {
+      addTweetToTweets(state.tweets, action.payload);
+    },
+    deleteTweet(state: TweetState, action: PayloadAction<Tweet[]>): void {
+      const targets = action.payload.map((tweet) => tweet.id);
+      state.tweets = removeTweetFromTweets(state.tweets, targets);
+      state.trashbox = removeTweetFromDeletedTweets(state.trashbox, targets);
+      state.selectedTweets = removeTweetFromTweets(
+        state.selectedTweets,
+        targets,
       );
-      if (!exist) {
-        state.selectedTweets.push(action.payload);
-      }
+      state.selectedDeletedTweets = removeTweetFromTweets(
+        state.selectedDeletedTweets,
+        targets,
+      );
+    },
+    selectTweet(state: TweetState, action: PayloadAction<Tweet>): void {
+      addTweetToTweets(state.selectedTweets, action.payload);
     },
     unselectTweet(state: TweetState, action: PayloadAction<Tweet>): void {
       state.selectedTweets = removeTweetFromTweets(
@@ -59,8 +70,9 @@ export const tweet = createSlice({
         state.selectedTweets.map((tweet) => tweet.id),
       );
       // add to trashbox
-      state.trashbox.push(
-        ...state.selectedTweets.map((tweet) => ({
+      addTweetToDeletedTweets(
+        state.trashbox,
+        state.selectedTweets.map((tweet) => ({
           deleted_at: action.payload,
           tweet,
         })),
@@ -72,14 +84,7 @@ export const tweet = createSlice({
       state: TweetState,
       action: PayloadAction<Tweet | Tweet[]>,
     ): void {
-      toArray(action.payload).forEach((selectedTweet) => {
-        const exist = state.selectedDeletedTweets.find(
-          (tweet) => tweet.id === selectedTweet.id,
-        );
-        if (!exist) {
-          state.selectedDeletedTweets.push(selectedTweet);
-        }
-      });
+      addTweetToTweets(state.selectedDeletedTweets, action.payload);
     },
     unselectDeletedTweet(
       state: TweetState,
@@ -137,6 +142,31 @@ export const tweetStorageListener = (args: StorageListenerArguments): void => {
 };
 
 // utilities
+const addTweetToTweets = (tweets: Tweet[], target: Tweet | Tweet[]): void => {
+  toArray(target).forEach((target) => {
+    // check if tweet already exists
+    if (tweets.every((tweet) => tweet.id !== target.id)) {
+      tweets.push(target);
+    }
+  });
+};
+
+const addTweetToDeletedTweets = (
+  deletedTweets: DeletedTweet[],
+  target: DeletedTweet | DeletedTweet[],
+): void => {
+  toArray(target).forEach((target) => {
+    // check if tweet already exists
+    if (
+      deletedTweets.every(
+        (deletedTweet) => deletedTweet.tweet.id !== target.tweet.id,
+      )
+    ) {
+      deletedTweets.push(target);
+    }
+  });
+};
+
 const removeTweetFromTweets = (
   tweets: Tweet[],
   target: TweetID | TweetID[],
