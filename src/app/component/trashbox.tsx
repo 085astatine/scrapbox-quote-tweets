@@ -215,19 +215,12 @@ const SelectSort: React.FC = () => {
 const Commands: React.FC = () => {
   const ref = React.useRef(null);
   const tweets = useSelector(selectSelectedDeletedTweets, shallowEqual);
-  const dispatch = useDispatch();
   // restore
   const restoreTweets = () => {
-    // store
-    dispatch(actions.tweet.restoreSelectedDeletedTweets());
-    // storage
     restoreTweetsFromTrashbox(tweets.map((tweet) => tweet.id));
   };
   // delete
   const deleteTweets = () => {
-    // store
-    dispatch(actions.tweet.deleteSelectedDeletedTweets());
-    // storage
     deleteTweetsFromTrashbox(tweets.map((tweet) => tweet.id));
   };
   return (

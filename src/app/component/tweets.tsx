@@ -145,7 +145,6 @@ const Commands: React.FC = () => {
   const ref = React.useRef(null);
   const tweets = useSelector(selectSelectedTweets, shallowEqual);
   const toStringOption = useSelector(selectTweetToStringOption, shallowEqual);
-  const dispatch = useDispatch();
   // clipboard
   const copyToClipboard = () => {
     // copy to clipboard
@@ -161,8 +160,6 @@ const Commands: React.FC = () => {
   // move to trashbox
   const moveToTrashbox = () => {
     const timestamp = Math.trunc(Date.now() / 1000);
-    // store
-    dispatch(actions.tweet.moveToTrashbox(timestamp));
     // storage
     addTweetsToTrashbox(tweets, timestamp);
   };

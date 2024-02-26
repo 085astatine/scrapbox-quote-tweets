@@ -72,10 +72,10 @@ export const restoreTweetsFromTrashbox = async (
 export const deleteTweetsFromTrashbox = async (
   tweetIDs: TweetID[],
 ): Promise<void> => {
-  // delete from trashbox
-  await restoreTweetsFromTrashbox(tweetIDs);
   // delete from storage
   await deleteTweets(tweetIDs);
+  // delete from trashbox
+  await restoreTweetsFromTrashbox(tweetIDs);
 };
 
 export const clearTrashbox = async (): Promise<void> => {
