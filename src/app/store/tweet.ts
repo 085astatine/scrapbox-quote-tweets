@@ -129,23 +129,6 @@ export const tweet = createSlice({
         addTweetToTweets(state.tweets, tweets);
       }
     },
-    moveToTrashbox(state: TweetState, action: PayloadAction<number>): void {
-      // remove from tweets
-      state.tweets = removeTweetFromTweets(
-        state.tweets,
-        state.selectedTweets.map((tweet) => tweet.id),
-      );
-      // add to trashbox
-      addTweetToDeletedTweets(
-        state.trashbox,
-        state.selectedTweets.map((tweet) => ({
-          deleted_at: action.payload,
-          tweet,
-        })),
-      );
-      // clear selected tweets
-      state.selectedTweets = [];
-    },
     selectDeletedTweet(
       state: TweetState,
       action: PayloadAction<Tweet | Tweet[]>,
@@ -167,26 +150,6 @@ export const tweet = createSlice({
       );
     },
     unselectAllDeletedTweets(state: TweetState) {
-      state.selectedDeletedTweets = [];
-    },
-    restoreSelectedDeletedTweets(state: TweetState): void {
-      // restore to tweets
-      state.tweets.push(...state.selectedDeletedTweets);
-      // remove from trashbox
-      state.trashbox = removeTweetFromDeletedTweets(
-        state.trashbox,
-        state.selectedDeletedTweets.map((tweet) => tweet.id),
-      );
-      // clear selected deleted tweets
-      state.selectedDeletedTweets = [];
-    },
-    deleteSelectedDeletedTweets(state: TweetState): void {
-      // remove from trashbox
-      state.trashbox = removeTweetFromDeletedTweets(
-        state.trashbox,
-        state.selectedDeletedTweets.map((tweet) => tweet.id),
-      );
-      // clear selected deleted tweets
       state.selectedDeletedTweets = [];
     },
   },
