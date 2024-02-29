@@ -2,10 +2,11 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
 import { defaultSettings } from '~/lib/settings';
+import { StorageListenerArguments } from '~/lib/storage/listener';
 import { loadSettings } from '~/lib/storage/settings';
 import { loadTrashbox, loadTweetsNotInTrashbox } from '~/lib/storage/trashbox';
 import { settings, settingsActions } from './settings';
-import { tweet, tweetActions } from './tweet';
+import { tweet, tweetActions, tweetStorageListener } from './tweet';
 
 // store
 const middlewares: Middleware[] = [];
@@ -37,6 +38,10 @@ export const actions = {
   tweet: tweetActions,
   settings: settingsActions,
 } as const;
+
+export const storageListener = (args: StorageListenerArguments): void => {
+  tweetStorageListener(args, store.dispatch);
+};
 
 // Initialize store with data loaded from storage
 export const initializeStoreWithStorage = async (): Promise<void> => {

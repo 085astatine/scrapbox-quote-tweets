@@ -5,25 +5,24 @@ import ClipboardIcon from '~/icon/bootstrap/clipboard.svg';
 import TrashboxIcon from '~/icon/google-fonts/delete.svg';
 import { Collapse } from '~/lib/component/transition';
 import { addTweetsToTrashbox } from '~/lib/storage/trashbox';
-import {
-  SortOrder,
-  TweetSort,
-  TweetSortKey,
-  tweetSortFunction,
-} from '~/lib/tweet/sort-tweets';
-import { Tweet as TweetData } from '~/lib/tweet/tweet';
 import { defaultTweetTemplate } from '~/lib/tweet/tweet-template';
-import {
-  TweetToStringOption,
-  tweetToString,
-} from '~/lib/tweet/tweet-to-string';
+import { tweetToString } from '~/lib/tweet/tweet-to-string';
+import { SortOrder, Tweet as TweetData, TweetSortKey } from '~/lib/tweet/types';
 import { trimGoogleFontsIcon } from '~/lib/utility';
 import { State, actions } from '../store';
+import {
+  selectAllTweetsSelectButtonState,
+  selectIsSelectedTweet,
+  selectSelectedTweets,
+  selectTweetSort,
+  selectTweetToStringOption,
+  selectTweets,
+} from '../store/selector';
 import { Checkbox } from './checkbox';
 import { Tweet as TweetInfo } from './tweet';
 
 export const Tweets: React.FC = () => {
-  const tweets = useSelector(tweetsSelector, shallowEqual);
+  const tweets = useSelector(selectTweets, shallowEqual);
   return (
     <>
       <div className="tweets fade-in">
@@ -42,11 +41,11 @@ interface TweetProps {
 }
 
 const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
-  const selector = React.useCallback(
-    (state: State) => state.tweet.selectedTweets.includes(tweet),
-    [tweet],
+  const selectIsSelected = React.useCallback(
+    (state: State) => selectIsSelectedTweet(state, tweet.id),
+    [tweet.id],
   );
-  const isSelected = useSelector(selector);
+  const isSelected = useSelector(selectIsSelected);
   const dispatch = useDispatch();
   // select
   const select = () => {
@@ -75,7 +74,7 @@ const Toolbar: React.FC = () => {
 
 const SelectAll: React.FC = () => {
   const id = 'select-all-tweets';
-  const state = useSelector(selectAllStateSelector);
+  const state = useSelector(selectAllTweetsSelectButtonState);
   const dispatch = useDispatch();
   // select
   const select = () => {
@@ -104,7 +103,7 @@ const SelectAll: React.FC = () => {
 
 const SelectSort: React.FC = () => {
   const id = 'select-tweets-sort';
-  const { key: sortKey, order: sortOrder } = useSelector(tweetSortSelector);
+  const { key: sortKey, order: sortOrder } = useSelector(selectTweetSort);
   const dispatch = useDispatch();
   // options
   const options: ReadonlyArray<readonly [TweetSortKey, SortOrder, string]> = [
@@ -144,9 +143,8 @@ const SelectSort: React.FC = () => {
 
 const Commands: React.FC = () => {
   const ref = React.useRef(null);
-  const tweets = useSelector(selectedTweetsSelector, shallowEqual);
-  const toStringOption = useSelector(tweetToStringOptionSelector, shallowEqual);
-  const dispatch = useDispatch();
+  const tweets = useSelector(selectSelectedTweets, shallowEqual);
+  const toStringOption = useSelector(selectTweetToStringOption, shallowEqual);
   // clipboard
   const copyToClipboard = () => {
     // copy to clipboard
@@ -162,8 +160,6 @@ const Commands: React.FC = () => {
   // move to trashbox
   const moveToTrashbox = () => {
     const timestamp = Math.trunc(Date.now() / 1000);
-    // store
-    dispatch(actions.tweet.moveToTrashbox(timestamp));
     // storage
     addTweetsToTrashbox(tweets, timestamp);
   };
@@ -198,37 +194,4 @@ const Commands: React.FC = () => {
       }
     />
   );
-};
-
-// Selectors
-const tweetsSelector = (state: State): TweetData[] => {
-  const tweets = [...state.tweet.tweets];
-  tweets.sort(tweetSortFunction(state.settings.current.tweetSort));
-  return tweets;
-};
-
-const selectedTweetsSelector = (state: State): TweetData[] => {
-  const selectedTweets = [...state.tweet.selectedTweets];
-  selectedTweets.sort(tweetSortFunction(state.settings.current.tweetSort));
-  return selectedTweets;
-};
-
-const selectAllStateSelector = (
-  state: State,
-): 'disabled' | 'checked' | 'unchecked' =>
-  state.tweet.tweets.length === 0 ? 'disabled'
-  : (
-    state.tweet.tweets.every((tweet) =>
-      state.tweet.selectedTweets.includes(tweet),
-    )
-  ) ?
-    'checked'
-  : 'unchecked';
-
-const tweetSortSelector = (state: State): TweetSort =>
-  state.settings.current.tweetSort;
-
-const tweetToStringOptionSelector = (state: State): TweetToStringOption => {
-  const { hostname, timezone, datetimeFormat } = state.settings.current;
-  return { hostname, timezone, datetimeFormat };
 };

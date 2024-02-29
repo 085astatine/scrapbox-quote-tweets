@@ -10,8 +10,8 @@ const definitions: SchemaObject = {
   tweetSortKey: {
     enum: ['created_time', 'saved_time', 'username'],
   },
-  // DeletedTweetsSortKey
-  deletedTweetsSortKey: {
+  // TrashboxSortKey
+  trashboxSortKey: {
     enum: ['deleted_time'],
   },
   // SortOrder
@@ -28,11 +28,11 @@ const definitions: SchemaObject = {
     required: ['key', 'order'],
     additionalProperties: false,
   },
-  // DeletedTweetsSort
-  deletedTweetsSort: {
+  // TrashboxSort
+  trashboxSort: {
     type: 'object',
     properties: {
-      key: { $ref: '#/definitions/deletedTweetsSortKey' },
+      key: { $ref: '#/definitions/trashboxSortKey' },
       order: { $ref: '#/definitions/sortOrder' },
     },
     required: ['key', 'order'],
@@ -46,14 +46,14 @@ const definitions: SchemaObject = {
       timezone: { type: 'string' },
       datetimeFormat: { type: 'string' },
       tweetSort: { $ref: '#/definitions/tweetSort' },
-      deletedTweetsSort: { $ref: '#/definitions/deletedTweetsSort' },
+      trashboxSort: { $ref: '#/definitions/trashboxSort' },
     },
     required: [
       'hostname',
       'timezone',
       'datetimeFormat',
       'tweetSort',
-      'deletedTweetsSort',
+      'trashboxSort',
     ],
     additionalProperties: false,
   },

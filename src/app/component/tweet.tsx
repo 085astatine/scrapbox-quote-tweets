@@ -5,9 +5,12 @@ import ReturnIcon from '~/icon/bootstrap/arrow-return-left.svg';
 import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
 import { toDatetime } from '~/lib/datetime';
-import { baseURL } from '~/lib/settings';
-import { Tweet as TweetData, TweetID } from '~/lib/tweet/tweet';
-import { State } from '../store';
+import { Tweet as TweetData, TweetID } from '~/lib/tweet/types';
+import {
+  selectBaseURL,
+  selectDatetimeFormat,
+  selectTimezone,
+} from '../store/selector';
 
 export interface TweetProps {
   tweet: TweetData;
@@ -41,9 +44,9 @@ const Header: React.FC<HeaderProps> = ({
   username,
   timestamp,
 }: HeaderProps) => {
-  const baseURL = useSelector(baseURLSelector);
-  const timezone = useSelector(timezoneSelector);
-  const datetimeFormat = useSelector(datetimeFormatSelector);
+  const baseURL = useSelector(selectBaseURL);
+  const timezone = useSelector(selectTimezone);
+  const datetimeFormat = useSelector(selectDatetimeFormat);
   const userURL = `${baseURL}/${username}`;
   const tweetURL = `${userURL}/status/${id}`;
   const date = toDatetime(timestamp, timezone).format(datetimeFormat);
@@ -98,13 +101,3 @@ const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
     </div>
   );
 };
-
-// selectors
-const baseURLSelector = (state: State): string =>
-  baseURL(state.settings.current.hostname);
-
-const timezoneSelector = (state: State): string =>
-  state.settings.current.timezone;
-
-const datetimeFormatSelector = (state: State): string =>
-  state.settings.current.datetimeFormat;

@@ -1,19 +1,29 @@
-import { DeletedTweets } from './deleted-tweets';
-import { Tweet } from './tweet';
+import {
+  DeletedTweet,
+  DeletedTweetID,
+  DeletedTweetIDSort,
+  DeletedTweetSort,
+  SortOrder,
+  Tweet,
+  TweetID,
+  TweetSort,
+} from './types';
 
-export type TweetSortKey = 'created_time' | 'saved_time' | 'username';
-export type DeletedTweetsSortKey = 'deleted_time';
-export type SortOrder = 'asc' | 'desc';
+const tweetIDCompareFunction = (lhs: TweetID, rhs: TweetID) => {
+  return (
+    lhs.length !== rhs.length ? lhs.length - rhs.length
+    : lhs < rhs ? -1
+    : +1
+  );
+};
 
-export interface TweetSort {
-  key: TweetSortKey;
-  order: SortOrder;
-}
-
-export interface DeletedTweetsSort {
-  key: DeletedTweetsSortKey;
-  order: SortOrder;
-}
+export const tweetIDSortFunction = (
+  order: SortOrder,
+): ((lhs: TweetID, rhs: TweetID) => number) => {
+  const sign = order === 'asc' ? +1 : -1;
+  return (lhs: TweetID, rhs: TweetID) =>
+    sign * tweetIDCompareFunction(lhs, rhs);
+};
 
 export const tweetSortFunction = ({
   key,
@@ -46,18 +56,45 @@ export const tweetSortFunction = ({
   }
 };
 
-export const deletedTweetsSortFunction = ({
+export const deletedTweetIDSortFunction = ({
   key,
   order,
-}: DeletedTweetsSort): ((lhs: DeletedTweets, rhs: DeletedTweets) => number) => {
+}: DeletedTweetIDSort): ((
+  lhs: DeletedTweetID,
+  rhs: DeletedTweetID,
+) => number) => {
   const sign = order === 'asc' ? +1 : -1;
   switch (key) {
     case 'deleted_time':
-      return (lhs: DeletedTweets, rhs: DeletedTweets) =>
-        sign * (lhs.deleted_at - rhs.deleted_at);
+      return (lhs: DeletedTweetID, rhs: DeletedTweetID) =>
+        lhs.deleted_at !== rhs.deleted_at ?
+          sign * (lhs.deleted_at - rhs.deleted_at)
+        : tweetIDCompareFunction(lhs.tweet_id, rhs.tweet_id);
+    case 'tweet_id':
+      return (lhs: DeletedTweetID, rhs: DeletedTweetID) =>
+        lhs.tweet_id !== rhs.tweet_id ?
+          sign * tweetIDCompareFunction(lhs.tweet_id, rhs.tweet_id)
+        : lhs.deleted_at - rhs.deleted_at;
     default: {
       const _: never = key;
       return _;
     }
+  }
+};
+
+export const deletedTweetSortFunction = ({
+  key,
+  order,
+}: DeletedTweetSort): ((lhs: DeletedTweet, rhs: DeletedTweet) => number) => {
+  const sign = order === 'asc' ? +1 : -1;
+  switch (key) {
+    case 'deleted_time':
+      return (lhs: DeletedTweet, rhs: DeletedTweet) =>
+        lhs.deleted_at !== rhs.deleted_at ?
+          sign * (lhs.deleted_at - rhs.deleted_at)
+        : tweetIDCompareFunction(lhs.tweet.id, rhs.tweet.id);
+    default:
+      return (lhs: DeletedTweet, rhs: DeletedTweet) =>
+        tweetSortFunction({ key, order })(lhs.tweet, rhs.tweet);
   }
 };

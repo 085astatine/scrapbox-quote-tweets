@@ -7,13 +7,9 @@ const schema11 = {
     type: 'object',
     properties: {
       deleted_at: { type: 'integer' },
-      tweetIDs: {
-        type: 'array',
-        items: { type: 'string', pattern: '^[0-9]+$' },
-        minItems: 1,
-      },
+      tweet_id: { type: 'string', pattern: '^[0-9]+$' },
     },
-    required: ['deleted_at', 'tweetIDs'],
+    required: ['deleted_at', 'tweet_id'],
     additionalProperties: false,
   },
 };
@@ -44,13 +40,13 @@ function validate10(
           }
           errors++;
         }
-        if (data0.tweetIDs === undefined) {
+        if (data0.tweet_id === undefined) {
           const err1 = {
             instancePath: instancePath + '/' + i0,
             schemaPath: '#/items/required',
             keyword: 'required',
-            params: { missingProperty: 'tweetIDs' },
-            message: "must have required property '" + 'tweetIDs' + "'",
+            params: { missingProperty: 'tweet_id' },
+            message: "must have required property '" + 'tweet_id' + "'",
           };
           if (vErrors === null) {
             vErrors = [err1];
@@ -60,7 +56,7 @@ function validate10(
           errors++;
         }
         for (const key0 in data0) {
-          if (!(key0 === 'deleted_at' || key0 === 'tweetIDs')) {
+          if (!(key0 === 'deleted_at' || key0 === 'tweet_id')) {
             const err2 = {
               instancePath: instancePath + '/' + i0,
               schemaPath: '#/items/additionalProperties',
@@ -101,16 +97,16 @@ function validate10(
             errors++;
           }
         }
-        if (data0.tweetIDs !== undefined) {
-          let data2 = data0.tweetIDs;
-          if (Array.isArray(data2)) {
-            if (data2.length < 1) {
+        if (data0.tweet_id !== undefined) {
+          let data2 = data0.tweet_id;
+          if (typeof data2 === 'string') {
+            if (!pattern0.test(data2)) {
               const err4 = {
-                instancePath: instancePath + '/' + i0 + '/tweetIDs',
-                schemaPath: '#/items/properties/tweetIDs/minItems',
-                keyword: 'minItems',
-                params: { limit: 1 },
-                message: 'must NOT have fewer than 1 items',
+                instancePath: instancePath + '/' + i0 + '/tweet_id',
+                schemaPath: '#/items/properties/tweet_id/pattern',
+                keyword: 'pattern',
+                params: { pattern: '^[0-9]+$' },
+                message: 'must match pattern "' + '^[0-9]+$' + '"',
               };
               if (vErrors === null) {
                 vErrors = [err4];
@@ -119,59 +115,24 @@ function validate10(
               }
               errors++;
             }
-            const len1 = data2.length;
-            for (let i1 = 0; i1 < len1; i1++) {
-              let data3 = data2[i1];
-              if (typeof data3 === 'string') {
-                if (!pattern0.test(data3)) {
-                  const err5 = {
-                    instancePath: instancePath + '/' + i0 + '/tweetIDs/' + i1,
-                    schemaPath: '#/items/properties/tweetIDs/items/pattern',
-                    keyword: 'pattern',
-                    params: { pattern: '^[0-9]+$' },
-                    message: 'must match pattern "' + '^[0-9]+$' + '"',
-                  };
-                  if (vErrors === null) {
-                    vErrors = [err5];
-                  } else {
-                    vErrors.push(err5);
-                  }
-                  errors++;
-                }
-              } else {
-                const err6 = {
-                  instancePath: instancePath + '/' + i0 + '/tweetIDs/' + i1,
-                  schemaPath: '#/items/properties/tweetIDs/items/type',
-                  keyword: 'type',
-                  params: { type: 'string' },
-                  message: 'must be string',
-                };
-                if (vErrors === null) {
-                  vErrors = [err6];
-                } else {
-                  vErrors.push(err6);
-                }
-                errors++;
-              }
-            }
           } else {
-            const err7 = {
-              instancePath: instancePath + '/' + i0 + '/tweetIDs',
-              schemaPath: '#/items/properties/tweetIDs/type',
+            const err5 = {
+              instancePath: instancePath + '/' + i0 + '/tweet_id',
+              schemaPath: '#/items/properties/tweet_id/type',
               keyword: 'type',
-              params: { type: 'array' },
-              message: 'must be array',
+              params: { type: 'string' },
+              message: 'must be string',
             };
             if (vErrors === null) {
-              vErrors = [err7];
+              vErrors = [err5];
             } else {
-              vErrors.push(err7);
+              vErrors.push(err5);
             }
             errors++;
           }
         }
       } else {
-        const err8 = {
+        const err6 = {
           instancePath: instancePath + '/' + i0,
           schemaPath: '#/items/type',
           keyword: 'type',
@@ -179,15 +140,15 @@ function validate10(
           message: 'must be object',
         };
         if (vErrors === null) {
-          vErrors = [err8];
+          vErrors = [err6];
         } else {
-          vErrors.push(err8);
+          vErrors.push(err6);
         }
         errors++;
       }
     }
   } else {
-    const err9 = {
+    const err7 = {
       instancePath,
       schemaPath: '#/type',
       keyword: 'type',
@@ -195,9 +156,9 @@ function validate10(
       message: 'must be array',
     };
     if (vErrors === null) {
-      vErrors = [err9];
+      vErrors = [err7];
     } else {
-      vErrors.push(err9);
+      vErrors.push(err7);
     }
     errors++;
   }

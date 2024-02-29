@@ -1,8 +1,16 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { initializeStoreWithStorage, store } from '~/app/store';
+import {
+  storageListener as appStorageListener,
+  initializeStoreWithStorage,
+  store,
+} from '~/app/store';
 import { getElement, mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
+import {
+  addStorageListener,
+  createStorageListener,
+} from '~/lib/storage/listener';
 import { Root } from './component/root';
 import './index.scss';
 
@@ -56,3 +64,7 @@ const createReactRoot = (element: Element): Element | null => {
   root.classList.add('dropdown');
   return root;
 };
+
+// storage listener
+const storageListener = createStorageListener(appStorageListener, logger);
+addStorageListener(storageListener);

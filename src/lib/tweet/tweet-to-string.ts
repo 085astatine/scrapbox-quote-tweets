@@ -1,18 +1,6 @@
 import { defaultTimezone, toDatetime } from '../datetime';
 import { Hostname, baseURL } from '../settings';
 import {
-  Media,
-  MediaPhoto,
-  MediaVideo,
-  Tweet,
-  TweetEntity,
-  TweetEntityCashtag,
-  TweetEntityHashtag,
-  TweetEntityMention,
-  TweetEntityText,
-  TweetEntityURL,
-} from './tweet';
-import {
   EntityCashtagField,
   EntityHashtagField,
   EntityMentionField,
@@ -26,6 +14,18 @@ import {
   TweetTemplate,
   parseTweetTemplate,
 } from './tweet-template';
+import {
+  Media,
+  MediaPhoto,
+  MediaVideo,
+  Tweet,
+  TweetEntity,
+  TweetEntityCashtag,
+  TweetEntityHashtag,
+  TweetEntityMention,
+  TweetEntityText,
+  TweetEntityURL,
+} from './types';
 
 export interface TweetToStringOption {
   hostname?: Hostname;

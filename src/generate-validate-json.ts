@@ -5,7 +5,7 @@ import addFormatsDraft2019 from 'ajv-formats-draft2019';
 import standaloneCode from 'ajv/dist/standalone';
 import * as fs from 'fs';
 import * as path from 'path';
-import { deletedTweetIDsListJSONSchema } from './jsonschema/deleted-tweets';
+import { deletedTweetIDsJSONSchema } from './jsonschema/deleted-tweet-id';
 import { settingsJSONSchema } from './jsonschema/settings';
 import {
   tweetIDsJSONSchema,
@@ -60,28 +60,28 @@ generate(
   tweetJSONSchema,
   'validate-tweet',
   'Tweet',
-  "import { Tweet } from '~/lib/tweet/tweet'",
+  "import { Tweet } from '~/lib/tweet/types'",
 );
 // Tweet[]
 generate(
   tweetsJSONSchema,
   'validate-tweets',
   'Tweet[]',
-  "import { Tweet } from '~/lib/tweet/tweet'",
+  "import { Tweet } from '~/lib/tweet/types'",
 );
 // TweetID[]
 generate(
   tweetIDsJSONSchema,
   'validate-tweet-ids',
   'TweetID[]',
-  "import { TweetID } from '~/lib/tweet/tweet'",
+  "import { TweetID } from '~/lib/tweet/types'",
 );
-// DeletedTweetIDs[]
+// DeletedTweetID[]
 generate(
-  deletedTweetIDsListJSONSchema,
-  'validate-deleted-tweet-ids-list',
-  'DeletedTweetIDs[]',
-  "import { DeletedTweetIDs } from '~/lib/tweet/deleted-tweets'",
+  deletedTweetIDsJSONSchema,
+  'validate-deleted-tweet-ids',
+  'DeletedTweetID[]',
+  "import { DeletedTweetID } from '~/lib/tweet/types'",
 );
 // Settings
 generate(

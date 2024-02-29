@@ -87,3 +87,33 @@ export interface Tweet {
   card?: Card;
   media?: Media[];
 }
+
+export interface DeletedTweetID {
+  deleted_at: number;
+  tweet_id: TweetID;
+}
+
+export interface DeletedTweet {
+  deleted_at: number;
+  tweet: Tweet;
+}
+
+export type TweetSortKey = 'created_time' | 'saved_time' | 'username';
+export type DeletedTweetIDSortKey = 'deleted_time' | 'tweet_id';
+export type DeletedTweetSortKey = 'deleted_time' | TweetSortKey;
+export type SortOrder = 'asc' | 'desc';
+
+export interface TweetSort {
+  key: TweetSortKey;
+  order: SortOrder;
+}
+
+export interface DeletedTweetIDSort {
+  key: DeletedTweetIDSortKey;
+  order: SortOrder;
+}
+
+export interface DeletedTweetSort {
+  key: DeletedTweetSortKey;
+  order: SortOrder;
+}

@@ -4,15 +4,15 @@ import { Provider } from 'react-redux';
 import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
 import {
+  StorageListenerArguments,
   addStorageListener,
   createStorageListener,
 } from '~/lib/storage/listener';
 import { savedTweetIDs } from '~/lib/storage/tweet';
-import { TweetID } from '~/lib/tweet/tweet';
 import { ScrapboxButton } from './component/scrapbox-button';
 import './index.scss';
 import { insertReactRoot } from './lib/insert-react-root';
-import { actions, store } from './store';
+import { UpdateButtonState, actions, store } from './store';
 
 logger.info('content script');
 
@@ -65,27 +65,36 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // storage listener
-const storageListener = createStorageListener({
-  onTweetAdded(tweetIDs: TweetID[]): void {
-    store.dispatch(
-      actions.update(
-        tweetIDs.map((tweetID) => ({
-          tweetID,
-          state: { state: 'success' },
-        })),
-      ),
-    );
-  },
-  onTweetDeleted(tweetIDs: TweetID[]): void {
-    store.dispatch(
-      actions.update(
-        tweetIDs.map((tweetID) => ({
-          tweetID,
-          state: { state: 'none' },
-        })),
-      ),
-    );
+const storageListener = createStorageListener(
+  (args: StorageListenerArguments) => {
+    const buttonStates: UpdateButtonState[] = [];
+    // added tweets
+    if (args.tweet?.added?.length) {
+      buttonStates.push(
+        ...args.tweet.added.map(
+          (tweet): UpdateButtonState => ({
+            tweetID: tweet.id,
+            state: { state: 'success' },
+          }),
+        ),
+      );
+    }
+    // deleted tweets
+    if (args.tweet?.deleted?.length) {
+      buttonStates.push(
+        ...args.tweet.deleted.map(
+          (tweet): UpdateButtonState => ({
+            tweetID: tweet.id,
+            state: { state: 'none' },
+          }),
+        ),
+      );
+    }
+    // update state
+    if (buttonStates.length) {
+      store.dispatch(actions.update(buttonStates));
+    }
   },
   logger,
-});
+);
 addStorageListener(storageListener);

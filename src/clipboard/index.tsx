@@ -1,6 +1,15 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { initializeStoreWithStorage, store } from '~/app/store';
+import {
+  storageListener as appStorageListener,
+  initializeStoreWithStorage,
+  store,
+} from '~/app/store';
+import { logger } from '~/lib/logger';
+import {
+  addStorageListener,
+  createStorageListener,
+} from '~/lib/storage/listener';
 import { Root } from './component/root';
 import './index.scss';
 
@@ -12,3 +21,7 @@ if (root !== null) {
 
 // initialize store with data loaded from storage
 initializeStoreWithStorage();
+
+// storage listener
+const storageListener = createStorageListener(appStorageListener, logger);
+addStorageListener(storageListener);

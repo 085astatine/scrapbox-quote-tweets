@@ -3,15 +3,14 @@ import { isValidTimezone } from '~/lib/datetime';
 import {
   Hostname,
   Settings,
+  TrashboxSort,
   defaultSettings,
   isHostname,
 } from '~/lib/settings';
-import { DeletedTweetsSort, TweetSort } from '~/lib/tweet/sort-tweets';
+import { TweetSort } from '~/lib/tweet/types';
 
 // state
-type EditingSettings = Partial<
-  Omit<Settings, 'tweetSort' | 'deletedTweetsSort'>
->;
+type EditingSettings = Partial<Omit<Settings, 'tweetSort' | 'trashboxSort'>>;
 
 type SettingsErrors = Partial<Record<keyof EditingSettings, string[]>>;
 
@@ -94,11 +93,11 @@ export const settings = createSlice({
     ): void {
       state.current.tweetSort = action.payload;
     },
-    updateDeletedTweetsSort(
+    updateTrashboxSort(
       state: SettingsState,
-      action: PayloadAction<DeletedTweetsSort>,
+      action: PayloadAction<TrashboxSort>,
     ): void {
-      state.current.deletedTweetsSort = action.payload;
+      state.current.trashboxSort = action.payload;
     },
   },
 });

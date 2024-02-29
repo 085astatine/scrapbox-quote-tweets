@@ -3,7 +3,7 @@ import { tweetJSONSchema, tweetsJSONSchema } from '~/jsonschema/tweet';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateTweet from '~/validate-json/validate-tweet';
 import validateTweets from '~/validate-json/validate-tweets';
-import { Tweet, TweetID } from '../tweet/tweet';
+import { Tweet, TweetID } from '../tweet/types';
 import { isTweetIDKey, toTweetID, toTweetIDKey } from './tweet-id-key';
 
 export const saveTweets = async (tweets: Tweet[]): Promise<void> => {
