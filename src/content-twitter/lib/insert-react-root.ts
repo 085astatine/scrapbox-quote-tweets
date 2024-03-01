@@ -92,8 +92,10 @@ const parseTweetIdInTwitterPage = (
   url: URL,
 ): TweetID | null => {
   // get href
-  const href = getNode('.//a[./time and @role="link"]/@href', element)
-    ?.nodeValue;
+  const href = getNode(
+    './/a[./time and @role="link"]/@href',
+    element,
+  )?.nodeValue;
   if (href === undefined || href === null) {
     return null;
   }
