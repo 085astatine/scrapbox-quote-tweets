@@ -13,7 +13,6 @@ const middlewares: Middleware[] = [];
 
 if (process.env.NODE_ENV === 'development') {
   middlewares.push(
-    // @ts-expect-error @types/redux-logger depends on redux 4.x
     createLogger({
       collapsed: true,
       diff: true,

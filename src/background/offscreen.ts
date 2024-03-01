@@ -13,9 +13,8 @@ const setupOffscreenImpl = (logger: Logger = defaultLogger): Offscreen => {
   const url = browser.runtime.getURL('offscreen.html');
 
   const exists = async (): Promise<boolean> => {
-    // @ts-expect-error chrome.runtime.getContexts is available from Chrome 116
     const contexts = await chrome.runtime.getContexts({
-      contextTypes: ['OFFSCREEN_DOCUMENT'],
+      contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
       documentUrls: [url],
     });
     return contexts.length > 0;

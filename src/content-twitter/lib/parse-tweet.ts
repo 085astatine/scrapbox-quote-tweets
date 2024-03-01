@@ -276,8 +276,10 @@ const parseCardCarousel = async (
   // media URLs
   const mediaURLs: string[] = [];
   for (const listItem of getElements('.//ul/li', card)) {
-    const media = getNode('.//img/@src | .//video/@poster', listItem)
-      ?.textContent;
+    const media = getNode(
+      './/img/@src | .//video/@poster',
+      listItem,
+    )?.textContent;
     if (media) {
       mediaURLs.push(media);
     } else {
