@@ -136,10 +136,7 @@ const createRootDiv = (
     return null;
   }
   // check if this tweet is a promotion
-  if (
-    getElement("../../following-sibling::div[1]//*[name()='svg']", group) !==
-    null
-  ) {
+  if (isPromotionTweet(element)) {
     logger.info('this tweet is a promotion', element);
     return null;
   }
@@ -154,4 +151,8 @@ const createRootDiv = (
   root.classList.add('scrapbox-copy-tweets');
   root.setAttribute('tweet-id', tweetID);
   return root;
+};
+
+const isPromotionTweet = (article: Element): boolean => {
+  return getElement('self::article//a/time', article) === null;
 };
