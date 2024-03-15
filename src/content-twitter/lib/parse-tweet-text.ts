@@ -139,7 +139,7 @@ const parseEntityURL = async (
     short_url: shortURL,
     expanded_url: expandedURL,
     decoded_url: decodeURL(expandedURL),
-    ...(title !== undefined ? { title } : {}),
+    ...(title !== undefined && { title }),
   };
 };
 
@@ -159,7 +159,7 @@ const parseEntityHashtag = async (
     type: 'hashtag',
     text,
     tag,
-    ...(hashmoji ? { hashmoji } : {}),
+    ...(hashmoji && { hashmoji }),
   };
 };
 

@@ -158,9 +158,9 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
               style={floatingStyles}>
               <TooltipBody
                 message={tooltipMessage.message}
-                {...(tooltipMessage.type === 'error' ?
-                  { onClose: () => setShowTooltip(false) }
-                : {})}
+                {...(tooltipMessage.type === 'error' && {
+                  onClose: () => setShowTooltip(false),
+                })}
               />
               <FloatingArrow
                 className="arrow"
