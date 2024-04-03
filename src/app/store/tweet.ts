@@ -7,7 +7,7 @@ import {
   Tweet,
   TweetID,
 } from '~/lib/tweet/types';
-import { toArray } from '~/lib/utility';
+import { ArrayOr, toArray } from '~/lib/utility';
 
 export interface TweetState {
   tweets: Tweet[];
@@ -131,13 +131,13 @@ export const tweet = createSlice({
     },
     selectDeletedTweet(
       state: TweetState,
-      action: PayloadAction<Tweet | Tweet[]>,
+      action: PayloadAction<ArrayOr<Tweet>>,
     ): void {
       addTweetToTweets(state.selectedDeletedTweets, action.payload);
     },
     unselectDeletedTweet(
       state: TweetState,
-      action: PayloadAction<Tweet | Tweet[]>,
+      action: PayloadAction<ArrayOr<Tweet>>,
     ): void {
       state.selectedDeletedTweets = removeTweetFromTweets(
         state.selectedDeletedTweets,
@@ -182,7 +182,7 @@ export const tweetStorageListener = (
 };
 
 // utilities
-const addTweetToTweets = (tweets: Tweet[], target: Tweet | Tweet[]): void => {
+const addTweetToTweets = (tweets: Tweet[], target: ArrayOr<Tweet>): void => {
   toArray(target).forEach((target) => {
     // check if tweet already exists
     if (tweets.every((tweet) => tweet.id !== target.id)) {
@@ -193,7 +193,7 @@ const addTweetToTweets = (tweets: Tweet[], target: Tweet | Tweet[]): void => {
 
 const addTweetToDeletedTweets = (
   deletedTweets: DeletedTweet[],
-  target: DeletedTweet | DeletedTweet[],
+  target: ArrayOr<DeletedTweet>,
 ): void => {
   toArray(target).forEach((target) => {
     // check if tweet already exists
@@ -209,7 +209,7 @@ const addTweetToDeletedTweets = (
 
 const removeTweetFromTweets = (
   tweets: Tweet[],
-  target: TweetID | TweetID[],
+  target: ArrayOr<TweetID>,
 ): Tweet[] => {
   const targets = toArray(target);
   // check if targets in tweets
@@ -224,7 +224,7 @@ const removeTweetFromTweets = (
 
 const removeTweetFromDeletedTweets = (
   deletedTweets: DeletedTweet[],
-  target: TweetID | TweetID[],
+  target: ArrayOr<TweetID>,
 ): DeletedTweet[] => {
   const targets = toArray(target);
   // check if targets in tweets
