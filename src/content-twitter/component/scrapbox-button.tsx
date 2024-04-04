@@ -17,11 +17,11 @@ import {
   saveTweet,
   savedTweetIDs,
 } from '~/lib/storage/tweet';
-import { toTweetIDKey } from '~/lib/storage/tweet-id-key';
 import { Tweet, TweetID } from '~/lib/tweet/types';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import { parseTweet } from '../lib/parse-tweet';
 import { State, actions } from '../store';
+import { selectScrapboxButtonState } from '../store/selector';
 
 type TooltipType = 'notification' | 'error';
 
@@ -42,7 +42,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
   const tweetRef = React.useRef(null);
   // redux
   const selector = React.useCallback(
-    (state: State) => state.tweet[toTweetIDKey(tweetID)],
+    (state: State) => selectScrapboxButtonState(state, tweetID),
     [tweetID],
   );
   const buttonState = useSelector(selector);
