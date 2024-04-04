@@ -3,28 +3,14 @@ import { TweetIDKey, toTweetIDKey } from '~/lib/storage/tweet-id-key';
 import { TweetID } from '~/lib/tweet/types';
 import { ArrayOr, toArray } from '~/lib/utility';
 
-export interface ButtonStateNone {
-  state: 'none';
-}
-
-export interface ButtonStateInProgress {
-  state: 'in-progress';
-}
-
-export interface ButtonStateSuccess {
-  state: 'success';
-}
-
-export interface ButtonStateFailure {
-  state: 'failure';
-  message: string;
-}
-
 export type ButtonState =
-  | ButtonStateNone
-  | ButtonStateInProgress
-  | ButtonStateSuccess
-  | ButtonStateFailure;
+  | {
+      state: 'none' | 'in-progress' | 'success';
+    }
+  | {
+      state: 'failure';
+      message: string;
+    };
 
 // state
 export interface TweetState {
