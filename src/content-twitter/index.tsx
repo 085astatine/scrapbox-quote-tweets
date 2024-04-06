@@ -13,7 +13,7 @@ import { ScrapboxButton } from './component/scrapbox-button';
 import './index.scss';
 import { insertReactRoot } from './lib/insert-react-root';
 import { actions, store } from './store';
-import { TweetState } from './store/tweet';
+import { ScrapboxButtonUpdater } from './store/tweet';
 
 logger.info('content script');
 
@@ -58,7 +58,7 @@ window.addEventListener('DOMContentLoaded', () => {
   savedTweetIDs().then((tweetIDs) => {
     logger.debug('Saved Tweet IDs', tweetIDs);
     store.dispatch(
-      actions.tweet.update(
+      actions.tweet.updateButton(
         tweetIDs.map((tweetID) => ({ tweetID, button: { state: 'success' } })),
       ),
     );
@@ -68,32 +68,28 @@ window.addEventListener('DOMContentLoaded', () => {
 // storage listener
 const storageListener = createStorageListener(
   (args: StorageListenerArguments) => {
-    const buttonStates: TweetState[] = [];
+    const buttonUpdaters: ScrapboxButtonUpdater[] = [];
     // added tweets
     if (args.tweet?.added?.length) {
-      buttonStates.push(
-        ...args.tweet.added.map(
-          (tweet): TweetState => ({
-            tweetID: tweet.id,
-            button: { state: 'success' },
-          }),
-        ),
+      buttonUpdaters.push(
+        ...args.tweet.added.map((tweet) => ({
+          tweetID: tweet.id,
+          button: { state: 'success' as const },
+        })),
       );
     }
     // deleted tweets
     if (args.tweet?.deleted?.length) {
-      buttonStates.push(
-        ...args.tweet.deleted.map(
-          (tweet): TweetState => ({
-            tweetID: tweet.id,
-            button: { state: 'none' },
-          }),
-        ),
+      buttonUpdaters.push(
+        ...args.tweet.deleted.map((tweet) => ({
+          tweetID: tweet.id,
+          button: { state: 'none' as const },
+        })),
       );
     }
     // update state
-    if (buttonStates.length) {
-      store.dispatch(actions.tweet.update(buttonStates));
+    if (buttonUpdaters.length) {
+      store.dispatch(actions.tweet.updateButton(buttonUpdaters));
     }
   },
   logger,

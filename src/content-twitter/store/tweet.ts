@@ -18,11 +18,16 @@ export interface TweetState {
 }
 
 // slice
+export type ScrapboxButtonUpdater = Pick<TweetState, 'tweetID' | 'button'>;
+
 export const tweet = createSlice({
   name: 'tweet',
   initialState: [] as TweetState[],
   reducers: {
-    update(states: TweetState[], action: PayloadAction<ArrayOr<TweetState>>) {
+    updateButton(
+      states: TweetState[],
+      action: PayloadAction<ArrayOr<ScrapboxButtonUpdater>>,
+    ) {
       toArray(action.payload).forEach(({ tweetID, button }) => {
         const state = states.find((state) => state.tweetID === tweetID);
         if (state !== undefined) {
