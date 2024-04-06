@@ -4,7 +4,6 @@ import { Provider } from 'react-redux';
 import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
 import {
-  StorageListenerArguments,
   addStorageListener,
   createStorageListener,
 } from '~/lib/storage/listener';
@@ -12,7 +11,7 @@ import { savedTweetIDs } from '~/lib/storage/tweet';
 import { ScrapboxButton } from './component/scrapbox-button';
 import './index.scss';
 import { insertReactRoot } from './lib/insert-react-root';
-import { UpdateButtonState, actions, store } from './store';
+import { actions, storageListener, store } from './store';
 
 logger.info('content script');
 
@@ -28,7 +27,7 @@ const observerCallback = (records: MutationRecord[]): void => {
       insertReactRoot(node, new URL(document.URL), logger).forEach(
         ({ tweetID, reactRoot }) => {
           // update store
-          store.dispatch(actions.touch(tweetID));
+          store.dispatch(actions.tweet.touch(tweetID));
           // render by React
           const root = createRoot(reactRoot);
           root.render(
@@ -57,44 +56,12 @@ window.addEventListener('DOMContentLoaded', () => {
   savedTweetIDs().then((tweetIDs) => {
     logger.debug('Saved Tweet IDs', tweetIDs);
     store.dispatch(
-      actions.update(
-        tweetIDs.map((tweetID) => ({ tweetID, state: { state: 'success' } })),
+      actions.tweet.updateButton(
+        tweetIDs.map((tweetID) => ({ tweetID, button: { state: 'success' } })),
       ),
     );
   });
 });
 
 // storage listener
-const storageListener = createStorageListener(
-  (args: StorageListenerArguments) => {
-    const buttonStates: UpdateButtonState[] = [];
-    // added tweets
-    if (args.tweet?.added?.length) {
-      buttonStates.push(
-        ...args.tweet.added.map(
-          (tweet): UpdateButtonState => ({
-            tweetID: tweet.id,
-            state: { state: 'success' },
-          }),
-        ),
-      );
-    }
-    // deleted tweets
-    if (args.tweet?.deleted?.length) {
-      buttonStates.push(
-        ...args.tweet.deleted.map(
-          (tweet): UpdateButtonState => ({
-            tweetID: tweet.id,
-            state: { state: 'none' },
-          }),
-        ),
-      );
-    }
-    // update state
-    if (buttonStates.length) {
-      store.dispatch(actions.update(buttonStates));
-    }
-  },
-  logger,
-);
-addStorageListener(storageListener);
+addStorageListener(createStorageListener(storageListener, logger));

@@ -28,7 +28,7 @@ const initialSettingsState = (): SettingsState => {
   };
 };
 
-export const settings = createSlice({
+const settings = createSlice({
   name: 'settings',
   initialState: initialSettingsState(),
   reducers: {
@@ -113,6 +113,9 @@ const editSettings = <Key extends keyof EditingSettings>(
     delete state.editing[key];
   }
 };
+
+// reducer
+export const settingsReducer = settings.reducer;
 
 // actions
 export const settingsActions: Readonly<typeof settings.actions> =

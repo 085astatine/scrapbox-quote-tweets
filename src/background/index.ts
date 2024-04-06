@@ -102,7 +102,7 @@ const respondToExpandTCoURLRequest = async (
     ok: true,
     shortURL,
     expandedURL,
-    ...(title !== null ? { title } : {}),
+    ...(title !== null && { title }),
   };
 };
 

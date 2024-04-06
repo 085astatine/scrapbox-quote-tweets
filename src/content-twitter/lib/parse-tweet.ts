@@ -260,7 +260,7 @@ const parseCardSingle = async (
   );
   return {
     type: 'single',
-    ...(link !== null ? { link } : {}),
+    ...(link !== null && { link }),
     media_url: media,
   };
 };
@@ -293,7 +293,7 @@ const parseCardCarousel = async (
   );
   return {
     type: 'carousel',
-    ...(link !== null ? { link } : {}),
+    ...(link !== null && { link }),
     media_urls: mediaURLs,
   };
 };
@@ -330,6 +330,6 @@ const parseCardLink = async (
     url,
     expanded_url: expandedURL,
     decoded_url: decodeURL(expandedURL),
-    ...(title !== undefined ? { title } : []),
+    ...(title !== undefined && { title }),
   };
 };

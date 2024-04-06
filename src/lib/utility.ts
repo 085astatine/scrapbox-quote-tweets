@@ -1,4 +1,6 @@
-export const toArray = <T>(value: T | T[]): T[] => {
+export type ArrayOr<T> = T | T[];
+
+export const toArray = <T>(value: ArrayOr<T>): T[] => {
   return Array.isArray(value) ? value : [value];
 };
 
