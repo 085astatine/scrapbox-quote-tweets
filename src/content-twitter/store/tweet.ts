@@ -22,7 +22,7 @@ export interface TweetState {
 // slice
 export type ScrapboxButtonUpdater = Pick<TweetState, 'tweetID' | 'button'>;
 
-export const tweet = createSlice({
+const tweet = createSlice({
   name: 'tweet',
   initialState: [] as TweetState[],
   reducers: {
@@ -48,7 +48,10 @@ export const tweet = createSlice({
   },
 });
 
-// action
+// reducer
+export const tweetReducer = tweet.reducer;
+
+// actions
 export const tweetActions: Readonly<typeof tweet.actions> = tweet.actions;
 
 // storage listener

@@ -5,8 +5,8 @@ import { defaultSettings } from '~/lib/settings';
 import { StorageListenerArguments } from '~/lib/storage/listener';
 import { loadSettings } from '~/lib/storage/settings';
 import { loadTrashbox, loadTweetsNotInTrashbox } from '~/lib/storage/trashbox';
-import { settings, settingsActions } from './settings';
-import { tweet, tweetActions, tweetStorageListener } from './tweet';
+import { settingsActions, settingsReducer } from './settings';
+import { tweetActions, tweetReducer, tweetStorageListener } from './tweet';
 
 // store
 const middlewares: Middleware[] = [];
@@ -22,8 +22,8 @@ if (process.env.NODE_ENV === 'development') {
 
 export const store = configureStore({
   reducer: {
-    tweet: tweet.reducer,
-    settings: settings.reducer,
+    tweet: tweetReducer,
+    settings: settingsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(...middlewares),

@@ -25,7 +25,7 @@ const initialTweetState = (): TweetState => {
   };
 };
 
-export const tweet = createSlice({
+const tweet = createSlice({
   name: 'tweet',
   initialState: initialTweetState(),
   reducers: {
@@ -154,6 +154,9 @@ export const tweet = createSlice({
     },
   },
 });
+
+// reducer
+export const tweetReducer = tweet.reducer;
 
 // actions
 export const tweetActions: Readonly<typeof tweet.actions> = tweet.actions;

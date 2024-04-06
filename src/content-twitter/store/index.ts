@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
 import { StorageListenerArguments } from '~/lib/storage/listener';
-import { tweet, tweetActions, tweetStorageListener } from './tweet';
+import { tweetActions, tweetReducer, tweetStorageListener } from './tweet';
 
 // store
 const middlewares: Middleware[] = [];
@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === 'development') {
 
 export const store = configureStore({
   reducer: {
-    tweet: tweet.reducer,
+    tweet: tweetReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(...middlewares),
