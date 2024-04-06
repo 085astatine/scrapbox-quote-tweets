@@ -1,4 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { Dispatch } from 'redux';
+import { StorageListenerArguments } from '~/lib/storage/listener';
 import { TweetID } from '~/lib/tweet/types';
 import { ArrayOr, toArray } from '~/lib/utility';
 
@@ -48,3 +50,33 @@ export const tweet = createSlice({
 
 // action
 export const tweetActions: Readonly<typeof tweet.actions> = tweet.actions;
+
+// storage listener
+export const tweetStorageListener = (
+  args: StorageListenerArguments,
+  dispatch: Dispatch,
+): void => {
+  const buttonUpdaters: ScrapboxButtonUpdater[] = [];
+  // tweet: added
+  if (args.tweet?.added?.length) {
+    buttonUpdaters.push(
+      ...args.tweet.added.map((tweet) => ({
+        tweetID: tweet.id,
+        button: { state: 'success' as const },
+      })),
+    );
+  }
+  // tweet: deleted
+  if (args.tweet?.deleted?.length) {
+    buttonUpdaters.push(
+      ...args.tweet.deleted.map((tweet) => ({
+        tweetID: tweet.id,
+        button: { state: 'none' as const },
+      })),
+    );
+  }
+  // update state
+  if (buttonUpdaters.length) {
+    dispatch(tweetActions.updateButton(buttonUpdaters));
+  }
+};

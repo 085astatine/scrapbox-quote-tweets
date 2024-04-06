@@ -1,7 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
-import { tweet, tweetActions } from './tweet';
+import { StorageListenerArguments } from '~/lib/storage/listener';
+import { tweet, tweetActions, tweetStorageListener } from './tweet';
 
 // store
 const middlewares: Middleware[] = [];
@@ -31,3 +32,8 @@ export type State = ReturnType<typeof store.getState>;
 export const actions = {
   tweet: tweetActions,
 } as const;
+
+// storage listener
+export const storageListener = (args: StorageListenerArguments): void => {
+  tweetStorageListener(args, store.dispatch);
+};
