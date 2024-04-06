@@ -13,7 +13,7 @@ import { ScrapboxButton } from './component/scrapbox-button';
 import './index.scss';
 import { insertReactRoot } from './lib/insert-react-root';
 import { actions, store } from './store';
-import { UpdateButtonState } from './store/tweet';
+import { TweetState } from './store/tweet';
 
 logger.info('content script');
 
@@ -59,7 +59,7 @@ window.addEventListener('DOMContentLoaded', () => {
     logger.debug('Saved Tweet IDs', tweetIDs);
     store.dispatch(
       actions.tweet.update(
-        tweetIDs.map((tweetID) => ({ tweetID, state: { state: 'success' } })),
+        tweetIDs.map((tweetID) => ({ tweetID, button: { state: 'success' } })),
       ),
     );
   });
@@ -68,14 +68,14 @@ window.addEventListener('DOMContentLoaded', () => {
 // storage listener
 const storageListener = createStorageListener(
   (args: StorageListenerArguments) => {
-    const buttonStates: UpdateButtonState[] = [];
+    const buttonStates: TweetState[] = [];
     // added tweets
     if (args.tweet?.added?.length) {
       buttonStates.push(
         ...args.tweet.added.map(
-          (tweet): UpdateButtonState => ({
+          (tweet): TweetState => ({
             tweetID: tweet.id,
-            state: { state: 'success' },
+            button: { state: 'success' },
           }),
         ),
       );
@@ -84,9 +84,9 @@ const storageListener = createStorageListener(
     if (args.tweet?.deleted?.length) {
       buttonStates.push(
         ...args.tweet.deleted.map(
-          (tweet): UpdateButtonState => ({
+          (tweet): TweetState => ({
             tweetID: tweet.id,
-            state: { state: 'none' },
+            button: { state: 'none' },
           }),
         ),
       );

@@ -1,9 +1,9 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { TweetIDKey, toTweetIDKey } from '~/lib/storage/tweet-id-key';
 import { TweetID } from '~/lib/tweet/types';
 import { ArrayOr, toArray } from '~/lib/utility';
 
-export type ButtonState =
+// state
+export type ScrapboxButtonState =
   | {
       state: 'none' | 'in-progress' | 'success';
     }
@@ -12,37 +12,34 @@ export type ButtonState =
       message: string;
     };
 
-// state
 export interface TweetState {
-  [key: TweetIDKey]: ButtonState;
+  tweetID: TweetID;
+  button: ScrapboxButtonState;
 }
 
 // slice
 export const tweet = createSlice({
   name: 'tweet',
-  initialState: {} as TweetState,
+  initialState: [] as TweetState[],
   reducers: {
-    update(
-      state: TweetState,
-      action: PayloadAction<ArrayOr<UpdateButtonState>>,
-    ) {
-      toArray(action.payload).forEach(({ tweetID, state: buttonState }) => {
-        state[toTweetIDKey(tweetID)] = buttonState;
+    update(states: TweetState[], action: PayloadAction<ArrayOr<TweetState>>) {
+      toArray(action.payload).forEach(({ tweetID, button }) => {
+        const state = states.find((state) => state.tweetID === tweetID);
+        if (state !== undefined) {
+          state.button = button;
+        } else {
+          states.push({ tweetID, button });
+        }
       });
     },
-    touch(state: TweetState, action: PayloadAction<TweetID>) {
-      const key = toTweetIDKey(action.payload);
-      if (!(key in state)) {
-        state[key] = { state: 'none' };
+    touch(states: TweetState[], action: PayloadAction<TweetID>) {
+      const state = states.find((state) => state.tweetID === action.payload);
+      if (state === undefined) {
+        states.push({ tweetID: action.payload, button: { state: 'none' } });
       }
     },
   },
 });
-
-export interface UpdateButtonState {
-  tweetID: TweetID;
-  state: ButtonState;
-}
 
 // action
 export const tweetActions: Readonly<typeof tweet.actions> = tweet.actions;

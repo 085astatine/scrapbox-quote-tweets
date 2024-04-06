@@ -1,18 +1,17 @@
 import { createSelector, weakMapMemoize } from '@reduxjs/toolkit';
-import { toTweetIDKey } from '~/lib/storage/tweet-id-key';
 import { TweetID } from '~/lib/tweet/types';
 import { State } from '.';
-import { ButtonState, TweetState } from './tweet';
+import { ScrapboxButtonState, TweetState } from './tweet';
 
 export const selectScrapboxButtonState = createSelector(
   [
-    (state: State): TweetState => state.tweet,
+    (state: State): TweetState[] => state.tweet,
     (state: State, tweetID: TweetID): TweetID => tweetID,
   ],
-  (tweetState: TweetState, tweetID: TweetID): ButtonState => {
-    const state = tweetState[toTweetIDKey(tweetID)];
-    if (state !== undefined) {
-      return state;
+  (state: TweetState[], tweetID: TweetID): ScrapboxButtonState => {
+    const tweet = state.find((tweetState) => tweetState.tweetID === tweetID);
+    if (tweet !== undefined) {
+      return tweet.button;
     }
     return { state: 'none' };
   },

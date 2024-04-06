@@ -61,7 +61,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
   const onClickAddTweet = async () => {
     // change to in-progress
     dispatch(
-      actions.tweet.update({ tweetID, state: { state: 'in-progress' } }),
+      actions.tweet.update({ tweetID, button: { state: 'in-progress' } }),
     );
     // add tweet
     const result = await addTweet(tweetID, tweetRef.current, logger);
@@ -71,14 +71,16 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
       dispatch(
         actions.tweet.update({
           tweetID,
-          state: { state: 'failure', message: result.error },
+          button: { state: 'failure', message: result.error },
         }),
       );
       setTooltipMessage({
         type: 'error',
         message: `Failed: ${result.error}`,
         onClosed: () =>
-          dispatch(actions.tweet.update({ tweetID, state: { state: 'none' } })),
+          dispatch(
+            actions.tweet.update({ tweetID, button: { state: 'none' } }),
+          ),
       });
     }
     // show result with tooltip
@@ -88,7 +90,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
   const onClickDeleteTweet = async () => {
     // change to in-progress
     dispatch(
-      actions.tweet.update({ tweetID, state: { state: 'in-progress' } }),
+      actions.tweet.update({ tweetID, button: { state: 'in-progress' } }),
     );
     // delete tweet
     const result = await deleteTweet(tweetID, logger);
@@ -100,7 +102,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
         message: `Failed: ${result.error}`,
         onClosed: () =>
           dispatch(
-            actions.tweet.update({ tweetID, state: { state: 'success' } }),
+            actions.tweet.update({ tweetID, button: { state: 'success' } }),
           ),
       });
     }
