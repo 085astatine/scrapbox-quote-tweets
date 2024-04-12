@@ -1,7 +1,4 @@
 import Ajv, { JSONSchemaType, _ } from 'ajv';
-import addFormats from 'ajv-formats';
-// @ts-expect-error ajv-formats-draft2019 has no .d.ts file
-import addFormatsDraft2019 from 'ajv-formats-draft2019';
 import standaloneCode from 'ajv/dist/standalone';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -12,6 +9,7 @@ import {
   tweetJSONSchema,
   tweetsJSONSchema,
 } from './jsonschema/tweet';
+import formats from './validate-json/formats';
 
 const generate = <T>(
   schema: JSONSchemaType<T>,
@@ -34,8 +32,8 @@ const generate = <T>(
       formats: _`require("./formats")`,
     },
   });
-  addFormats(ajv, ['uri']);
-  addFormatsDraft2019(ajv, { formats: ['iri'] });
+  ajv.addFormat('uri', formats.uri);
+  ajv.addFormat('iri', formats.iri);
   const validate = ajv.compile(schema);
   fs.writeFileSync(
     path.join(directory, `${output}.js`),
