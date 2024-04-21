@@ -4,7 +4,13 @@ import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateTweet from '~/validate-json/validate-tweet';
 import validateTweets from '~/validate-json/validate-tweets';
 import { Tweet, TweetID } from '../tweet/types';
-import { isTweetIDKey, toTweetID, toTweetIDKey } from './tweet-id-key';
+import {
+  TweetIDKey,
+  TweetIDKeyMismatchError,
+  isTweetIDKey,
+  toTweetID,
+  toTweetIDKey,
+} from './tweet-id-key';
 
 export const saveTweets = async (tweets: Tweet[]): Promise<void> => {
   // JSON Schema validation
@@ -47,21 +53,19 @@ export const loadTweets = async (tweetIDs?: TweetID[]): Promise<Tweet[]> => {
   const tweets = await browser.storage.local
     .get(tweetIDs?.map(toTweetIDKey))
     .then((record) =>
-      Object.entries(record).reduce<Tweet[]>((tweets, [key, value]) => {
-        if (isTweetIDKey(key)) {
-          tweets.push(value);
-        }
-        return tweets;
-      }, []),
+      Object.entries(record).reduce<Promise<Tweet[]>>(
+        async (accumulator, [key, value]) => {
+          const tweets = await accumulator;
+          // validation
+          if (isTweetIDKey(key)) {
+            await validateLoadedTweet(key, value);
+            tweets.push(value);
+          }
+          return tweets;
+        },
+        Promise.resolve([]),
+      ),
     );
-  // JSON Schema valication
-  if (!validateTweets(tweets)) {
-    throw new JSONSchemaValidationError(
-      tweetsJSONSchema,
-      tweets,
-      validateTweets.errors ?? [],
-    );
-  }
   return tweets;
 };
 
@@ -74,14 +78,8 @@ export const loadTweet = async (tweetID: TweetID): Promise<Tweet | null> => {
   if (tweet === undefined) {
     return null;
   }
-  // JSON Schema validation
-  if (!validateTweet(tweet)) {
-    throw new JSONSchemaValidationError(
-      tweetJSONSchema,
-      tweet,
-      validateTweet.errors ?? [],
-    );
-  }
+  // validation
+  await validateLoadedTweet(key, tweet);
   return tweet;
 };
 
@@ -95,4 +93,22 @@ export const deleteTweets = async (tweetIDs?: TweetID[]): Promise<void> => {
 export const deleteTweet = async (tweetID: TweetID): Promise<void> => {
   // remove from storage
   await browser.storage.local.remove(toTweetIDKey(tweetID));
+};
+
+const validateLoadedTweet = async (
+  key: TweetIDKey,
+  value: Tweet,
+): Promise<void> => {
+  // validation with JSONSchema
+  if (!validateTweet(value)) {
+    throw new JSONSchemaValidationError(
+      tweetJSONSchema,
+      value,
+      validateTweet.errors ?? [],
+    );
+  }
+  // tweet ID key
+  if (key !== toTweetIDKey(value.id)) {
+    throw new TweetIDKeyMismatchError(key, value);
+  }
 };
