@@ -13,7 +13,6 @@ function validate(address) {
 
 module.exports = (value) => {
   const iri = parse(value);
-  console.log('iri', iri);
   if (iri.scheme === 'mailto' && iri.to.every(validate)) {
     return true;
   }
