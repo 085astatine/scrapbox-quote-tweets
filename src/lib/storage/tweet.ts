@@ -101,6 +101,7 @@ const validateLoadedTweet = async (
 ): Promise<void> => {
   // validation with JSONSchema
   if (!validateTweet(value)) {
+    await browser.storage.local.remove(key);
     throw new JSONSchemaValidationError(
       tweetJSONSchema,
       value,
@@ -109,6 +110,7 @@ const validateLoadedTweet = async (
   }
   // tweet ID key
   if (key !== toTweetIDKey(value.id)) {
+    await browser.storage.local.remove(key);
     throw new TweetIDKeyMismatchError(key, value);
   }
 };
