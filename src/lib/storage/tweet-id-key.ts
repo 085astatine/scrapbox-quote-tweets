@@ -1,4 +1,4 @@
-import { TweetID } from '../tweet/types';
+import { Tweet, TweetID } from '../tweet/types';
 
 export type TweetIDKey = `tweet_${TweetID}`;
 
@@ -14,3 +14,24 @@ export const toTweetID = (key: TweetIDKey): string => {
   // 'tweet_'.length === 6
   return key.substring(6);
 };
+
+export class TweetIDKeyMismatchError extends Error {
+  readonly key: TweetIDKey;
+  readonly value: Tweet;
+
+  constructor(key: TweetIDKey, value: Tweet) {
+    super(
+      [
+        'Tweet IDs of key and value do not match',
+        `  key: ${key}`,
+        `  value.id: ${value.id}`,
+      ].join('\n'),
+    );
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, TweetIDKeyMismatchError);
+    }
+    this.name = 'TweetIDKeyMismatchError';
+    this.key = key;
+    this.value = value;
+  }
+}
