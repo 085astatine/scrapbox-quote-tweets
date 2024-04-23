@@ -62,8 +62,12 @@ export const loadTweets = async (tweetIDs?: TweetID[]): Promise<Tweet[]> => {
           const tweets = await accumulator;
           // validation
           if (isTweetIDKey(key)) {
-            await validateLoadedTweet(key, value);
-            tweets.push(value);
+            try {
+              await validateLoadedTweet(key, value);
+              tweets.push(value);
+            } catch (error: unknown) {
+              logger.debug('validation error', error);
+            }
           }
           return tweets;
         },
