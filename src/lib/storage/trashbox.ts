@@ -4,11 +4,13 @@ import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateDeletedTweetIDs from '~/validate-json/validate-deleted-tweet-ids';
 import { deletedTweetIDSortFunction } from '../tweet/sort-tweets';
 import { DeletedTweet, DeletedTweetID, Tweet, TweetID } from '../tweet/types';
+import { logger } from './logger';
 import { deleteTweets, loadTweets, savedTweetIDs } from './tweet';
 
 const keyTrashbox = 'trashbox';
 
 export const loadTweetsNotInTrashbox = async (): Promise<Tweet[]> => {
+  logger.debug('load tweets that are not in trashbox');
   // IDs of tweet in trashbox
   const tweetIDsInTrashbox = (await loadDeletedTweetIDs()).map(
     (element) => element.tweet_id,
@@ -24,6 +26,7 @@ export const addTweetsToTrashbox = async (
   tweets: Tweet[],
   deletedAt: number,
 ): Promise<void> => {
+  logger.debug('add tweets to trashbox', { tweets, deletedAt });
   const deletedTweetIDs = await loadDeletedTweetIDs();
   deletedTweetIDs.push(
     ...tweets.map((tweet) => ({
@@ -39,6 +42,7 @@ export const addTweetsToTrashbox = async (
 };
 
 export const loadTrashbox = async (): Promise<DeletedTweet[]> => {
+  logger.debug('load tweets that are in trashbox');
   // load IDs of tweet in trashbox
   const deletedTweetIDs = await loadDeletedTweetIDs();
   // load tweets in trashbox
@@ -61,6 +65,7 @@ export const loadTrashbox = async (): Promise<DeletedTweet[]> => {
 export const restoreTweetsFromTrashbox = async (
   tweetIDs: TweetID[],
 ): Promise<void> => {
+  logger.debug('delete tweets from trashbox', tweetIDs);
   // delete from trashbox
   await browser.storage.local.set({
     [keyTrashbox]: (await loadDeletedTweetIDs()).filter(
@@ -79,6 +84,7 @@ export const deleteTweetsFromTrashbox = async (
 };
 
 export const clearTrashbox = async (): Promise<void> => {
+  logger.debug('clear trashbox');
   await browser.storage.local.remove(keyTrashbox);
 };
 

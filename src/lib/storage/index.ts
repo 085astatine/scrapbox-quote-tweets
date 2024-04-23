@@ -1,19 +1,19 @@
 import browser from 'webextension-polyfill';
-import { logger } from '../logger';
+import { logger } from './logger';
 
 export const clearStorage = async (): Promise<void> => {
+  logger.debug('clear');
   await browser.storage.local.clear();
 };
 
 export const dumpStorage = async (): Promise<void> => {
   const data = await browser.storage.local.get();
-  logger.debug('dump storage', data);
+  logger.debug('dump', data);
 };
 
 export const loadTestData = async (url: string): Promise<void> => {
   if (process.env.NODE_ENV !== 'production') {
     // clear storage
-    logger.debug('clear storage');
     await clearStorage();
     // load test data
     logger.debug(`load test data from ${url}`);

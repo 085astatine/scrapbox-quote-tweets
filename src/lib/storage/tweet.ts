@@ -4,6 +4,7 @@ import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateTweet from '~/validate-json/validate-tweet';
 import validateTweets from '~/validate-json/validate-tweets';
 import { Tweet, TweetID } from '../tweet/types';
+import { logger } from './logger';
 import {
   TweetIDKey,
   TweetIDKeyMismatchError,
@@ -13,6 +14,7 @@ import {
 } from './tweet-id-key';
 
 export const saveTweets = async (tweets: Tweet[]): Promise<void> => {
+  logger.debug('save tweets', tweets);
   // JSON Schema validation
   if (!validateTweets(tweets)) {
     throw new JSONSchemaValidationError(
@@ -28,6 +30,7 @@ export const saveTweets = async (tweets: Tweet[]): Promise<void> => {
 };
 
 export const saveTweet = async (tweet: Tweet): Promise<void> => {
+  logger.debug('save tweet', tweet);
   // JSON Schema validation
   if (!validateTweet(tweet)) {
     throw new JSONSchemaValidationError(
@@ -49,6 +52,7 @@ export const savedTweetIDs = async (): Promise<TweetID[]> => {
 };
 
 export const loadTweets = async (tweetIDs?: TweetID[]): Promise<Tweet[]> => {
+  logger.debug('load tweets', tweetIDs);
   // load from storage
   const tweets = await browser.storage.local
     .get(tweetIDs?.map(toTweetIDKey))
@@ -70,6 +74,7 @@ export const loadTweets = async (tweetIDs?: TweetID[]): Promise<Tweet[]> => {
 };
 
 export const loadTweet = async (tweetID: TweetID): Promise<Tweet | null> => {
+  logger.debug('load tweet', tweetID);
   // load from storage
   const key = toTweetIDKey(tweetID);
   const tweet = await browser.storage.local
@@ -84,6 +89,7 @@ export const loadTweet = async (tweetID: TweetID): Promise<Tweet | null> => {
 };
 
 export const deleteTweets = async (tweetIDs?: TweetID[]): Promise<void> => {
+  logger.debug('delete tweets', tweetIDs);
   // remove from storage
   await browser.storage.local.remove(
     (tweetIDs ?? (await savedTweetIDs())).map(toTweetIDKey),
@@ -91,6 +97,7 @@ export const deleteTweets = async (tweetIDs?: TweetID[]): Promise<void> => {
 };
 
 export const deleteTweet = async (tweetID: TweetID): Promise<void> => {
+  logger.debug('delete tweet', tweetID);
   // remove from storage
   await browser.storage.local.remove(toTweetIDKey(tweetID));
 };

@@ -3,10 +3,12 @@ import { settingsJSONSchema } from '~/jsonschema/settings';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateSettings from '~/validate-json/validate-settings';
 import { Settings } from '../settings';
+import { logger } from './logger';
 
 const key = 'settings';
 
 export const saveSettings = async (settings: Settings): Promise<void> => {
+  logger.debug('save settings');
   // JSON Schema validation
   if (!validateSettings(settings)) {
     throw new JSONSchemaValidationError(
@@ -20,6 +22,7 @@ export const saveSettings = async (settings: Settings): Promise<void> => {
 };
 
 export const loadSettings = async (): Promise<Settings | null> => {
+  logger.debug('load settings');
   // load from storage
   const data = await browser.storage.local
     .get(key)
