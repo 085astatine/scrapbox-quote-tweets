@@ -82,7 +82,7 @@ const isInQuotedTweet = (element: Element): boolean => {
 };
 
 const parseTimestamp = (tweet: Element, logger: Logger): number | null => {
-  const datetime = getNode('.//time/@datetime', tweet);
+  const datetime = getNode('.//a/time/@datetime', tweet);
   logger.debug('datetime attribute', datetime);
   if (datetime === null) {
     logger.warn('<time datetime="..."> is not found');
