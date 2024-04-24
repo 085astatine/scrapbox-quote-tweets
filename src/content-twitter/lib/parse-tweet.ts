@@ -76,9 +76,7 @@ export const parseTweet = async (
 };
 
 const isInQuotedTweet = (element: Element): boolean => {
-  return (
-    getElement('ancestor::div[div[1]/span[text()="Quote"]]', element) !== null
-  );
+  return getElement('ancestor::div[@role="link"]', element) !== null;
 };
 
 const parseTimestamp = (tweet: Element, logger: Logger): number | null => {
