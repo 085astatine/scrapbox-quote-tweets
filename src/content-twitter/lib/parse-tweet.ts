@@ -244,7 +244,7 @@ const parseCard = async (
   );
   // insert newline
   const lastText = text[text.length - 1];
-  if (lastText?.type === 'text') {
+  if (lastText?.type === 'text' && !lastText.text.endsWith('\n')) {
     lastText.text += '\n';
   } else {
     text.push({ type: 'text', text: '\n' });
