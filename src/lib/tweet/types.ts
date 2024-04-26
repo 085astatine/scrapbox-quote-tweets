@@ -57,34 +57,12 @@ export interface MediaVideo {
 
 export type Media = MediaPhoto | MediaVideo;
 
-export interface CardLink {
-  url: string;
-  expanded_url: string;
-  decoded_url: string;
-  title?: string;
-}
-
-export interface CardSingle {
-  type: 'single';
-  link?: CardLink;
-  media_url: string;
-}
-
-export interface CardCarousel {
-  type: 'carousel';
-  link?: CardLink;
-  media_urls: string[];
-}
-
-export type Card = CardSingle | CardCarousel;
-
 export interface Tweet {
   id: TweetID;
   created_at: number;
   saved_at: number;
   author: User;
   text: TweetEntity[];
-  card?: Card;
   media?: Media[];
 }
 
