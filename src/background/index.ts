@@ -5,9 +5,9 @@ import {
   ExpandTCoURLResponseMessage,
   ForwardToOffscreenMessage,
   SettingsDownloadStorageMessage,
+  respondToExpandTCoURLRequest,
 } from '~/lib/message';
 import { loadTestData } from '~/lib/storage';
-import { expandTCoURL, getURLTitle } from '~/lib/url';
 import { setupOffscreen } from './offscreen';
 
 logger.info('background script');
@@ -44,7 +44,7 @@ const onMessageListener = async (
     case 'ExpandTCoURL/Request':
       logger.info(`Request to expand URL("${message.shortURL}")`);
       return process.env.TARGET_BROWSER !== 'chrome' ?
-          await respondToExpandTCoURLRequest(message.shortURL)
+          await respondToExpandTCoURLRequest(message.shortURL, logger)
         : await forwardExpandTCoURLRequestToOffscreen(message);
     case 'Settings/DownloadStorage':
       await downloadStorage();
@@ -81,30 +81,6 @@ browser.action.onClicked.addListener(
 
 // offscreen (for chrome)
 const offscreen = setupOffscreen(logger);
-
-// Respond to ExpandTCoURL/Request
-const respondToExpandTCoURLRequest = async (
-  shortURL: string,
-): Promise<ExpandTCoURLResponseMessage> => {
-  // expand https://t.co/...
-  const expandedURL = await expandTCoURL(shortURL, logger);
-  if (expandedURL === null) {
-    return {
-      type: 'ExpandTCoURL/Response',
-      ok: false,
-      shortURL,
-    };
-  }
-  // get title
-  const title = await getURLTitle(expandedURL, logger);
-  return {
-    type: 'ExpandTCoURL/Response',
-    ok: true,
-    shortURL,
-    expandedURL,
-    ...(title !== null && { title }),
-  };
-};
 
 // Forward ExpandTCoURL/Request to offscreen
 const forwardExpandTCoURLRequestToOffscreen = async (

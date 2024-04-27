@@ -4,8 +4,8 @@ import {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
   ForwardToOffscreenMessage,
+  respondToExpandTCoURLRequest,
 } from '~/lib/message';
-import { expandTCoURL, getURLTitle } from '~/lib/url';
 
 // logger
 const logger = createLogger({ prefix: '[offscreen] ' });
@@ -35,32 +35,8 @@ const respondToForwardedMessage = async (
 ): Promise<ResponseMessage | void> => {
   switch (message?.type) {
     case 'ExpandTCoURL/Request':
-      return await respondToExpandTCoURLRequest(message.shortURL);
+      return await respondToExpandTCoURLRequest(message.shortURL, logger);
     default:
       logger.debug('unexpected forwarded message', message);
   }
-};
-
-// respond to ExpandTCoURL/Request
-const respondToExpandTCoURLRequest = async (
-  shortURL: string,
-): Promise<ExpandTCoURLResponseMessage> => {
-  // expand https://t.co/...
-  const expandedURL = await expandTCoURL(shortURL, logger);
-  if (expandedURL === null) {
-    return {
-      type: 'ExpandTCoURL/Response',
-      ok: false,
-      shortURL,
-    };
-  }
-  // get title
-  const title = await getURLTitle(expandedURL, logger);
-  return {
-    type: 'ExpandTCoURL/Response',
-    ok: true,
-    shortURL,
-    expandedURL,
-    ...(title !== null && { title }),
-  };
 };
