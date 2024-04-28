@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { Logger, logger as defaultLogger } from '~/lib/logger';
+import { Logger, logger as defaultLogger } from './logger';
 
 export interface Offscreen {
   exists: () => Promise<boolean>;

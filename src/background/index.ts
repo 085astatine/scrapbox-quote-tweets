@@ -7,8 +7,8 @@ import {
   SettingsDownloadStorageMessage,
   respondToExpandTCoURLRequest,
 } from '~/lib/message';
+import { setupOffscreen } from '~/lib/offscreen';
 import { loadTestData } from '~/lib/storage';
-import { setupOffscreen } from './offscreen';
 
 logger.info('background script');
 
