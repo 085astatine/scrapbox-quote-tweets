@@ -3,8 +3,8 @@ import { logger } from '~/lib/logger';
 import {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
-  ForwardToOffscreenMessage,
   SettingsDownloadStorageMessage,
+  forwardMessageToOffscreen,
   respondToExpandTCoURLRequest,
 } from '~/lib/message';
 import { setupOffscreen } from '~/lib/offscreen';
@@ -45,7 +45,7 @@ const onMessageListener = async (
       logger.info(`Request to expand URL("${message.shortURL}")`);
       return process.env.TARGET_BROWSER !== 'chrome' ?
           await respondToExpandTCoURLRequest(message.shortURL, logger)
-        : await forwardExpandTCoURLRequestToOffscreen(message);
+        : await forwardMessageToOffscreen(offscreen, message, logger);
     case 'Settings/DownloadStorage':
       await downloadStorage();
       break;
@@ -81,23 +81,6 @@ browser.action.onClicked.addListener(
 
 // offscreen (for chrome)
 const offscreen = setupOffscreen(logger);
-
-// Forward ExpandTCoURL/Request to offscreen
-const forwardExpandTCoURLRequestToOffscreen = async (
-  message: ExpandTCoURLRequestMessage,
-): Promise<ExpandTCoURLResponseMessage> => {
-  await offscreen.open();
-  logger.debug('forward to offscreen', message);
-  const request: ForwardToOffscreenMessage<ExpandTCoURLRequestMessage> = {
-    type: 'Forward/ToOffscreen',
-    message,
-  };
-  const response: ExpandTCoURLResponseMessage =
-    await browser.runtime.sendMessage(request);
-  logger.debug('response from offscreen', response);
-  await offscreen.close();
-  return response;
-};
 
 // Download storage (in development)
 const downloadStorage = async (): Promise<void> => {

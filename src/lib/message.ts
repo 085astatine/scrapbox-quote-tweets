@@ -1,4 +1,6 @@
+import browser from 'webextension-polyfill';
 import { Logger } from './logger';
+import { Offscreen } from './offscreen';
 import { expandTCoURL, getURLTitle } from './url';
 
 export interface ExpandTCoURLRequestMessage {
@@ -56,4 +58,22 @@ export const respondToExpandTCoURLRequest = async (
     expandedURL,
     ...(title !== null && { title }),
   };
+};
+
+// Forward message to offscreen
+export const forwardMessageToOffscreen = async (
+  offscreen: Offscreen,
+  message: ExpandTCoURLRequestMessage,
+  logger: Logger,
+): Promise<ExpandTCoURLResponseMessage> => {
+  await offscreen.open();
+  logger.debug('forward to offscreen', message);
+  const request = {
+    type: 'Forward/ToOffscreen',
+    message,
+  };
+  const response = await browser.runtime.sendMessage(request);
+  logger.debug('response from offscreen', response);
+  await offscreen.close();
+  return response;
 };
