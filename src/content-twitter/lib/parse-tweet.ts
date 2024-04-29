@@ -4,6 +4,8 @@ import { Logger, logger as defaultLogger } from '~/lib/logger';
 import {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
+  GetURLTitleRequestMessage,
+  GetURLTitleResponseMessage,
 } from '~/lib/message';
 import {
   Media,
@@ -259,12 +261,29 @@ const toEntityURL = async (
 ): Promise<TweetEntityURL> => {
   // check if the href is https://t.co/...
   if (!isTCoURL(href)) {
+    // request url title
+    const request: GetURLTitleRequestMessage = {
+      type: 'GetURLTitle/Request',
+      url: href,
+    };
+    const title = await browser.runtime
+      .sendMessage(request)
+      .then((response: GetURLTitleResponseMessage) => {
+        logger.debug('Response to request', response);
+        if (response?.type === 'GetURLTitle/Response') {
+          if (response.ok) {
+            return response.title;
+          }
+        }
+        return null;
+      });
     return {
       type: 'url',
       text: '',
       short_url: href,
       expanded_url: href,
       decoded_url: decodeURL(href),
+      ...(title !== null && { title }),
     };
   }
   // request expand https://t.co/...

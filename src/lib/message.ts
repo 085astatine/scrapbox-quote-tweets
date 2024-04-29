@@ -31,6 +31,28 @@ export interface ForwardToOffscreenMessage<Message> {
   message: Message;
 }
 
+export interface GetURLTitleRequestMessage {
+  type: 'GetURLTitle/Request';
+  url: string;
+}
+
+export interface GetURLTitleSuccessMessage {
+  type: 'GetURLTitle/Response';
+  ok: true;
+  url: string;
+  title: string;
+}
+
+export interface GetURLTitleFailureMessage {
+  type: 'GetURLTitle/Response';
+  ok: false;
+  url: string;
+}
+
+export type GetURLTitleResponseMessage =
+  | GetURLTitleSuccessMessage
+  | GetURLTitleFailureMessage;
+
 export interface SettingsDownloadStorageMessage {
   type: 'Settings/DownloadStorage';
 }
@@ -60,12 +82,45 @@ export const respondToExpandTCoURLRequest = async (
   };
 };
 
+// Respond to GetURLTitle/Request
+export const respondToGetURLTitleRequest = async (
+  url: string,
+  logger: Logger,
+): Promise<GetURLTitleResponseMessage> => {
+  const title = await getURLTitle(url, logger);
+  if (title === null) {
+    return {
+      type: 'GetURLTitle/Response',
+      ok: false,
+      url,
+    };
+  }
+  return {
+    type: 'GetURLTitle/Response',
+    ok: true,
+    url,
+    title,
+  };
+};
+
 // Forward message to offscreen
-export const forwardMessageToOffscreen = async (
+export async function forwardMessageToOffscreen(
   offscreen: Offscreen,
   message: ExpandTCoURLRequestMessage,
   logger: Logger,
-): Promise<ExpandTCoURLResponseMessage> => {
+): Promise<ExpandTCoURLResponseMessage>;
+
+export async function forwardMessageToOffscreen(
+  offscreen: Offscreen,
+  message: GetURLTitleRequestMessage,
+  logger: Logger,
+): Promise<GetURLTitleResponseMessage>;
+
+export async function forwardMessageToOffscreen(
+  offscreen: Offscreen,
+  message: ExpandTCoURLRequestMessage | GetURLTitleRequestMessage,
+  logger: Logger,
+): Promise<ExpandTCoURLResponseMessage | GetURLTitleResponseMessage> {
   await offscreen.open();
   logger.debug('forward to offscreen', message);
   const request = {
@@ -76,4 +131,4 @@ export const forwardMessageToOffscreen = async (
   logger.debug('response from offscreen', response);
   await offscreen.close();
   return response;
-};
+}

@@ -3,9 +3,12 @@ import { logger } from '~/lib/logger';
 import {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
+  GetURLTitleRequestMessage,
+  GetURLTitleResponseMessage,
   SettingsDownloadStorageMessage,
   forwardMessageToOffscreen,
   respondToExpandTCoURLRequest,
+  respondToGetURLTitleRequest,
 } from '~/lib/message';
 import { setupOffscreen } from '~/lib/offscreen';
 import { loadTestData } from '~/lib/storage';
@@ -31,9 +34,10 @@ if (process.env.NODE_ENV !== 'production') {
 // onMessage Listener
 type RequestMessage =
   | ExpandTCoURLRequestMessage
+  | GetURLTitleRequestMessage
   | SettingsDownloadStorageMessage;
 
-type ResponseMessage = ExpandTCoURLResponseMessage;
+type ResponseMessage = ExpandTCoURLResponseMessage | GetURLTitleResponseMessage;
 
 const onMessageListener = async (
   message: RequestMessage,
@@ -45,6 +49,11 @@ const onMessageListener = async (
       logger.info(`Request to expand URL("${message.shortURL}")`);
       return process.env.TARGET_BROWSER !== 'chrome' ?
           await respondToExpandTCoURLRequest(message.shortURL, logger)
+        : await forwardMessageToOffscreen(offscreen, message, logger);
+    case 'GetURLTitle/Request':
+      logger.info(`Request to get the title of URL(${message.url})`);
+      return process.env.TARGET_BROWSER !== 'chrome' ?
+          await respondToGetURLTitleRequest(message.url, logger)
         : await forwardMessageToOffscreen(offscreen, message, logger);
     case 'Settings/DownloadStorage':
       await downloadStorage();

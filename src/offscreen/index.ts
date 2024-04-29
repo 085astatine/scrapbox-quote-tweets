@@ -4,16 +4,19 @@ import {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResponseMessage,
   ForwardToOffscreenMessage,
+  GetURLTitleRequestMessage,
+  GetURLTitleResponseMessage,
   respondToExpandTCoURLRequest,
+  respondToGetURLTitleRequest,
 } from '~/lib/message';
 
 // logger
 const logger = createLogger({ prefix: '[offscreen] ' });
 
 // runtime.onMessage
-type ForwardedMessage = ExpandTCoURLRequestMessage;
+type ForwardedMessage = ExpandTCoURLRequestMessage | GetURLTitleRequestMessage;
 type RequestMessage = ForwardToOffscreenMessage<ForwardedMessage>;
-type ResponseMessage = ExpandTCoURLResponseMessage;
+type ResponseMessage = ExpandTCoURLResponseMessage | GetURLTitleResponseMessage;
 
 const listener = async (
   message: RequestMessage,
@@ -36,6 +39,8 @@ const respondToForwardedMessage = async (
   switch (message?.type) {
     case 'ExpandTCoURL/Request':
       return await respondToExpandTCoURLRequest(message.shortURL, logger);
+    case 'GetURLTitle/Request':
+      return await respondToGetURLTitleRequest(message.url, logger);
     default:
       logger.debug('unexpected forwarded message', message);
   }
