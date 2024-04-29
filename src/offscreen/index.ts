@@ -2,18 +2,21 @@ import browser from 'webextension-polyfill';
 import { createLogger } from '~/lib/logger';
 import {
   ExpandTCoURLRequestMessage,
-  ExpandTCoURLResponseMessage,
+  ExpandTCoURLResultMessage,
   ForwardToOffscreenMessage,
+  GetURLTitleRequestMessage,
+  GetURLTitleResultMessage,
+  respondToExpandTCoURLRequest,
+  respondToGetURLTitleRequest,
 } from '~/lib/message';
-import { expandTCoURL, getURLTitle } from '~/lib/url';
 
 // logger
 const logger = createLogger({ prefix: '[offscreen] ' });
 
 // runtime.onMessage
-type ForwardedMessage = ExpandTCoURLRequestMessage;
+type ForwardedMessage = ExpandTCoURLRequestMessage | GetURLTitleRequestMessage;
 type RequestMessage = ForwardToOffscreenMessage<ForwardedMessage>;
-type ResponseMessage = ExpandTCoURLResponseMessage;
+type ResponseMessage = ExpandTCoURLResultMessage | GetURLTitleResultMessage;
 
 const listener = async (
   message: RequestMessage,
@@ -35,32 +38,10 @@ const respondToForwardedMessage = async (
 ): Promise<ResponseMessage | void> => {
   switch (message?.type) {
     case 'ExpandTCoURL/Request':
-      return await respondToExpandTCoURLRequest(message.shortURL);
+      return await respondToExpandTCoURLRequest(message.shortURL, logger);
+    case 'GetURLTitle/Request':
+      return await respondToGetURLTitleRequest(message.url, logger);
     default:
       logger.debug('unexpected forwarded message', message);
   }
-};
-
-// respond to ExpandTCoURL/Request
-const respondToExpandTCoURLRequest = async (
-  shortURL: string,
-): Promise<ExpandTCoURLResponseMessage> => {
-  // expand https://t.co/...
-  const expandedURL = await expandTCoURL(shortURL, logger);
-  if (expandedURL === null) {
-    return {
-      type: 'ExpandTCoURL/Response',
-      ok: false,
-      shortURL,
-    };
-  }
-  // get title
-  const title = await getURLTitle(expandedURL, logger);
-  return {
-    type: 'ExpandTCoURL/Response',
-    ok: true,
-    shortURL,
-    expandedURL,
-    ...(title !== null && { title }),
-  };
 };

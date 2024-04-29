@@ -14,7 +14,6 @@ const schema11 = {
         saved_at: { type: 'integer' },
         author: { $ref: '#/definitions/user' },
         text: { type: 'array', items: { $ref: '#/definitions/entity' } },
-        card: { $ref: '#/definitions/card' },
         media: { type: 'array', items: { $ref: '#/definitions/media' } },
       },
       required: ['id', 'created_at', 'saved_at', 'author', 'text'],
@@ -120,46 +119,6 @@ const schema11 = {
       required: ['type', 'thumbnail'],
       additionalProperties: false,
     },
-    card: {
-      type: 'object',
-      oneOf: [
-        { $ref: '#/definitions/card:single' },
-        { $ref: '#/definitions/card:carousel' },
-      ],
-      required: ['type'],
-      discriminator: { propertyName: 'type' },
-    },
-    'card:link': {
-      type: 'object',
-      properties: {
-        url: { $ref: '#/definitions/uri' },
-        expanded_url: { $ref: '#/definitions/uri' },
-        decoded_url: { $ref: '#/definitions/iri' },
-        title: { type: 'string' },
-      },
-      required: ['url', 'expanded_url', 'decoded_url'],
-      additionalProperties: false,
-    },
-    'card:single': {
-      type: 'object',
-      properties: {
-        type: { const: 'single' },
-        link: { $ref: '#/definitions/card:link' },
-        media_url: { $ref: '#/definitions/uri' },
-      },
-      required: ['type', 'media_url'],
-      additionalProperties: false,
-    },
-    'card:carousel': {
-      type: 'object',
-      properties: {
-        type: { const: 'carousel' },
-        link: { $ref: '#/definitions/card:link' },
-        media_urls: { type: 'array', items: { $ref: '#/definitions/uri' } },
-      },
-      required: ['type', 'media_urls'],
-      additionalProperties: false,
-    },
   },
 };
 const schema12 = {
@@ -170,7 +129,6 @@ const schema12 = {
     saved_at: { type: 'integer' },
     author: { $ref: '#/definitions/user' },
     text: { type: 'array', items: { $ref: '#/definitions/entity' } },
-    card: { $ref: '#/definitions/card' },
     media: { type: 'array', items: { $ref: '#/definitions/media' } },
   },
   required: ['id', 'created_at', 'saved_at', 'author', 'text'],
@@ -1340,672 +1298,19 @@ function validate14(
 const schema27 = {
   type: 'object',
   oneOf: [
-    { $ref: '#/definitions/card:single' },
-    { $ref: '#/definitions/card:carousel' },
-  ],
-  required: ['type'],
-  discriminator: { propertyName: 'type' },
-};
-const schema28 = {
-  type: 'object',
-  properties: {
-    type: { const: 'single' },
-    link: { $ref: '#/definitions/card:link' },
-    media_url: { $ref: '#/definitions/uri' },
-  },
-  required: ['type', 'media_url'],
-  additionalProperties: false,
-};
-const schema29 = {
-  type: 'object',
-  properties: {
-    url: { $ref: '#/definitions/uri' },
-    expanded_url: { $ref: '#/definitions/uri' },
-    decoded_url: { $ref: '#/definitions/iri' },
-    title: { type: 'string' },
-  },
-  required: ['url', 'expanded_url', 'decoded_url'],
-  additionalProperties: false,
-};
-function validate24(
-  data,
-  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
-) {
-  let vErrors = null;
-  let errors = 0;
-  if (data && typeof data == 'object' && !Array.isArray(data)) {
-    if (data.url === undefined) {
-      const err0 = {
-        instancePath,
-        schemaPath: '#/required',
-        keyword: 'required',
-        params: { missingProperty: 'url' },
-        message: "must have required property '" + 'url' + "'",
-      };
-      if (vErrors === null) {
-        vErrors = [err0];
-      } else {
-        vErrors.push(err0);
-      }
-      errors++;
-    }
-    if (data.expanded_url === undefined) {
-      const err1 = {
-        instancePath,
-        schemaPath: '#/required',
-        keyword: 'required',
-        params: { missingProperty: 'expanded_url' },
-        message: "must have required property '" + 'expanded_url' + "'",
-      };
-      if (vErrors === null) {
-        vErrors = [err1];
-      } else {
-        vErrors.push(err1);
-      }
-      errors++;
-    }
-    if (data.decoded_url === undefined) {
-      const err2 = {
-        instancePath,
-        schemaPath: '#/required',
-        keyword: 'required',
-        params: { missingProperty: 'decoded_url' },
-        message: "must have required property '" + 'decoded_url' + "'",
-      };
-      if (vErrors === null) {
-        vErrors = [err2];
-      } else {
-        vErrors.push(err2);
-      }
-      errors++;
-    }
-    for (const key0 in data) {
-      if (
-        !(
-          key0 === 'url' ||
-          key0 === 'expanded_url' ||
-          key0 === 'decoded_url' ||
-          key0 === 'title'
-        )
-      ) {
-        const err3 = {
-          instancePath,
-          schemaPath: '#/additionalProperties',
-          keyword: 'additionalProperties',
-          params: { additionalProperty: key0 },
-          message: 'must NOT have additional properties',
-        };
-        if (vErrors === null) {
-          vErrors = [err3];
-        } else {
-          vErrors.push(err3);
-        }
-        errors++;
-      }
-    }
-    if (data.url !== undefined) {
-      let data0 = data.url;
-      if (typeof data0 === 'string') {
-        if (!formats0(data0)) {
-          const err4 = {
-            instancePath: instancePath + '/url',
-            schemaPath: '#/definitions/uri/format',
-            keyword: 'format',
-            params: { format: 'uri' },
-            message: 'must match format "' + 'uri' + '"',
-          };
-          if (vErrors === null) {
-            vErrors = [err4];
-          } else {
-            vErrors.push(err4);
-          }
-          errors++;
-        }
-      } else {
-        const err5 = {
-          instancePath: instancePath + '/url',
-          schemaPath: '#/definitions/uri/type',
-          keyword: 'type',
-          params: { type: 'string' },
-          message: 'must be string',
-        };
-        if (vErrors === null) {
-          vErrors = [err5];
-        } else {
-          vErrors.push(err5);
-        }
-        errors++;
-      }
-    }
-    if (data.expanded_url !== undefined) {
-      let data1 = data.expanded_url;
-      if (typeof data1 === 'string') {
-        if (!formats0(data1)) {
-          const err6 = {
-            instancePath: instancePath + '/expanded_url',
-            schemaPath: '#/definitions/uri/format',
-            keyword: 'format',
-            params: { format: 'uri' },
-            message: 'must match format "' + 'uri' + '"',
-          };
-          if (vErrors === null) {
-            vErrors = [err6];
-          } else {
-            vErrors.push(err6);
-          }
-          errors++;
-        }
-      } else {
-        const err7 = {
-          instancePath: instancePath + '/expanded_url',
-          schemaPath: '#/definitions/uri/type',
-          keyword: 'type',
-          params: { type: 'string' },
-          message: 'must be string',
-        };
-        if (vErrors === null) {
-          vErrors = [err7];
-        } else {
-          vErrors.push(err7);
-        }
-        errors++;
-      }
-    }
-    if (data.decoded_url !== undefined) {
-      let data2 = data.decoded_url;
-      if (typeof data2 === 'string') {
-        if (!formats4(data2)) {
-          const err8 = {
-            instancePath: instancePath + '/decoded_url',
-            schemaPath: '#/definitions/iri/format',
-            keyword: 'format',
-            params: { format: 'iri' },
-            message: 'must match format "' + 'iri' + '"',
-          };
-          if (vErrors === null) {
-            vErrors = [err8];
-          } else {
-            vErrors.push(err8);
-          }
-          errors++;
-        }
-      } else {
-        const err9 = {
-          instancePath: instancePath + '/decoded_url',
-          schemaPath: '#/definitions/iri/type',
-          keyword: 'type',
-          params: { type: 'string' },
-          message: 'must be string',
-        };
-        if (vErrors === null) {
-          vErrors = [err9];
-        } else {
-          vErrors.push(err9);
-        }
-        errors++;
-      }
-    }
-    if (data.title !== undefined) {
-      if (typeof data.title !== 'string') {
-        const err10 = {
-          instancePath: instancePath + '/title',
-          schemaPath: '#/properties/title/type',
-          keyword: 'type',
-          params: { type: 'string' },
-          message: 'must be string',
-        };
-        if (vErrors === null) {
-          vErrors = [err10];
-        } else {
-          vErrors.push(err10);
-        }
-        errors++;
-      }
-    }
-  } else {
-    const err11 = {
-      instancePath,
-      schemaPath: '#/type',
-      keyword: 'type',
-      params: { type: 'object' },
-      message: 'must be object',
-    };
-    if (vErrors === null) {
-      vErrors = [err11];
-    } else {
-      vErrors.push(err11);
-    }
-    errors++;
-  }
-  validate24.errors = vErrors;
-  return errors === 0;
-}
-function validate23(
-  data,
-  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
-) {
-  let vErrors = null;
-  let errors = 0;
-  if (data && typeof data == 'object' && !Array.isArray(data)) {
-    if (data.type === undefined) {
-      const err0 = {
-        instancePath,
-        schemaPath: '#/required',
-        keyword: 'required',
-        params: { missingProperty: 'type' },
-        message: "must have required property '" + 'type' + "'",
-      };
-      if (vErrors === null) {
-        vErrors = [err0];
-      } else {
-        vErrors.push(err0);
-      }
-      errors++;
-    }
-    if (data.media_url === undefined) {
-      const err1 = {
-        instancePath,
-        schemaPath: '#/required',
-        keyword: 'required',
-        params: { missingProperty: 'media_url' },
-        message: "must have required property '" + 'media_url' + "'",
-      };
-      if (vErrors === null) {
-        vErrors = [err1];
-      } else {
-        vErrors.push(err1);
-      }
-      errors++;
-    }
-    for (const key0 in data) {
-      if (!(key0 === 'type' || key0 === 'link' || key0 === 'media_url')) {
-        const err2 = {
-          instancePath,
-          schemaPath: '#/additionalProperties',
-          keyword: 'additionalProperties',
-          params: { additionalProperty: key0 },
-          message: 'must NOT have additional properties',
-        };
-        if (vErrors === null) {
-          vErrors = [err2];
-        } else {
-          vErrors.push(err2);
-        }
-        errors++;
-      }
-    }
-    if (data.type !== undefined) {
-      if ('single' !== data.type) {
-        const err3 = {
-          instancePath: instancePath + '/type',
-          schemaPath: '#/properties/type/const',
-          keyword: 'const',
-          params: { allowedValue: 'single' },
-          message: 'must be equal to constant',
-        };
-        if (vErrors === null) {
-          vErrors = [err3];
-        } else {
-          vErrors.push(err3);
-        }
-        errors++;
-      }
-    }
-    if (data.link !== undefined) {
-      if (
-        !validate24(data.link, {
-          instancePath: instancePath + '/link',
-          parentData: data,
-          parentDataProperty: 'link',
-          rootData,
-        })
-      ) {
-        vErrors =
-          vErrors === null ?
-            validate24.errors
-          : vErrors.concat(validate24.errors);
-        errors = vErrors.length;
-      }
-    }
-    if (data.media_url !== undefined) {
-      let data2 = data.media_url;
-      if (typeof data2 === 'string') {
-        if (!formats0(data2)) {
-          const err4 = {
-            instancePath: instancePath + '/media_url',
-            schemaPath: '#/definitions/uri/format',
-            keyword: 'format',
-            params: { format: 'uri' },
-            message: 'must match format "' + 'uri' + '"',
-          };
-          if (vErrors === null) {
-            vErrors = [err4];
-          } else {
-            vErrors.push(err4);
-          }
-          errors++;
-        }
-      } else {
-        const err5 = {
-          instancePath: instancePath + '/media_url',
-          schemaPath: '#/definitions/uri/type',
-          keyword: 'type',
-          params: { type: 'string' },
-          message: 'must be string',
-        };
-        if (vErrors === null) {
-          vErrors = [err5];
-        } else {
-          vErrors.push(err5);
-        }
-        errors++;
-      }
-    }
-  } else {
-    const err6 = {
-      instancePath,
-      schemaPath: '#/type',
-      keyword: 'type',
-      params: { type: 'object' },
-      message: 'must be object',
-    };
-    if (vErrors === null) {
-      vErrors = [err6];
-    } else {
-      vErrors.push(err6);
-    }
-    errors++;
-  }
-  validate23.errors = vErrors;
-  return errors === 0;
-}
-const schema34 = {
-  type: 'object',
-  properties: {
-    type: { const: 'carousel' },
-    link: { $ref: '#/definitions/card:link' },
-    media_urls: { type: 'array', items: { $ref: '#/definitions/uri' } },
-  },
-  required: ['type', 'media_urls'],
-  additionalProperties: false,
-};
-function validate26(
-  data,
-  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
-) {
-  let vErrors = null;
-  let errors = 0;
-  if (data && typeof data == 'object' && !Array.isArray(data)) {
-    if (data.type === undefined) {
-      const err0 = {
-        instancePath,
-        schemaPath: '#/required',
-        keyword: 'required',
-        params: { missingProperty: 'type' },
-        message: "must have required property '" + 'type' + "'",
-      };
-      if (vErrors === null) {
-        vErrors = [err0];
-      } else {
-        vErrors.push(err0);
-      }
-      errors++;
-    }
-    if (data.media_urls === undefined) {
-      const err1 = {
-        instancePath,
-        schemaPath: '#/required',
-        keyword: 'required',
-        params: { missingProperty: 'media_urls' },
-        message: "must have required property '" + 'media_urls' + "'",
-      };
-      if (vErrors === null) {
-        vErrors = [err1];
-      } else {
-        vErrors.push(err1);
-      }
-      errors++;
-    }
-    for (const key0 in data) {
-      if (!(key0 === 'type' || key0 === 'link' || key0 === 'media_urls')) {
-        const err2 = {
-          instancePath,
-          schemaPath: '#/additionalProperties',
-          keyword: 'additionalProperties',
-          params: { additionalProperty: key0 },
-          message: 'must NOT have additional properties',
-        };
-        if (vErrors === null) {
-          vErrors = [err2];
-        } else {
-          vErrors.push(err2);
-        }
-        errors++;
-      }
-    }
-    if (data.type !== undefined) {
-      if ('carousel' !== data.type) {
-        const err3 = {
-          instancePath: instancePath + '/type',
-          schemaPath: '#/properties/type/const',
-          keyword: 'const',
-          params: { allowedValue: 'carousel' },
-          message: 'must be equal to constant',
-        };
-        if (vErrors === null) {
-          vErrors = [err3];
-        } else {
-          vErrors.push(err3);
-        }
-        errors++;
-      }
-    }
-    if (data.link !== undefined) {
-      if (
-        !validate24(data.link, {
-          instancePath: instancePath + '/link',
-          parentData: data,
-          parentDataProperty: 'link',
-          rootData,
-        })
-      ) {
-        vErrors =
-          vErrors === null ?
-            validate24.errors
-          : vErrors.concat(validate24.errors);
-        errors = vErrors.length;
-      }
-    }
-    if (data.media_urls !== undefined) {
-      let data2 = data.media_urls;
-      if (Array.isArray(data2)) {
-        const len0 = data2.length;
-        for (let i0 = 0; i0 < len0; i0++) {
-          let data3 = data2[i0];
-          if (typeof data3 === 'string') {
-            if (!formats0(data3)) {
-              const err4 = {
-                instancePath: instancePath + '/media_urls/' + i0,
-                schemaPath: '#/definitions/uri/format',
-                keyword: 'format',
-                params: { format: 'uri' },
-                message: 'must match format "' + 'uri' + '"',
-              };
-              if (vErrors === null) {
-                vErrors = [err4];
-              } else {
-                vErrors.push(err4);
-              }
-              errors++;
-            }
-          } else {
-            const err5 = {
-              instancePath: instancePath + '/media_urls/' + i0,
-              schemaPath: '#/definitions/uri/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-            };
-            if (vErrors === null) {
-              vErrors = [err5];
-            } else {
-              vErrors.push(err5);
-            }
-            errors++;
-          }
-        }
-      } else {
-        const err6 = {
-          instancePath: instancePath + '/media_urls',
-          schemaPath: '#/properties/media_urls/type',
-          keyword: 'type',
-          params: { type: 'array' },
-          message: 'must be array',
-        };
-        if (vErrors === null) {
-          vErrors = [err6];
-        } else {
-          vErrors.push(err6);
-        }
-        errors++;
-      }
-    }
-  } else {
-    const err7 = {
-      instancePath,
-      schemaPath: '#/type',
-      keyword: 'type',
-      params: { type: 'object' },
-      message: 'must be object',
-    };
-    if (vErrors === null) {
-      vErrors = [err7];
-    } else {
-      vErrors.push(err7);
-    }
-    errors++;
-  }
-  validate26.errors = vErrors;
-  return errors === 0;
-}
-function validate22(
-  data,
-  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
-) {
-  let vErrors = null;
-  let errors = 0;
-  if (data && typeof data == 'object' && !Array.isArray(data)) {
-    if (data.type === undefined) {
-      const err0 = {
-        instancePath,
-        schemaPath: '#/required',
-        keyword: 'required',
-        params: { missingProperty: 'type' },
-        message: "must have required property '" + 'type' + "'",
-      };
-      if (vErrors === null) {
-        vErrors = [err0];
-      } else {
-        vErrors.push(err0);
-      }
-      errors++;
-    }
-    const tag0 = data.type;
-    if (typeof tag0 == 'string') {
-      if (tag0 === 'single') {
-        if (
-          !validate23(data, {
-            instancePath,
-            parentData,
-            parentDataProperty,
-            rootData,
-          })
-        ) {
-          vErrors =
-            vErrors === null ?
-              validate23.errors
-            : vErrors.concat(validate23.errors);
-          errors = vErrors.length;
-        }
-      } else if (tag0 === 'carousel') {
-        if (
-          !validate26(data, {
-            instancePath,
-            parentData,
-            parentDataProperty,
-            rootData,
-          })
-        ) {
-          vErrors =
-            vErrors === null ?
-              validate26.errors
-            : vErrors.concat(validate26.errors);
-          errors = vErrors.length;
-        }
-      } else {
-        const err1 = {
-          instancePath,
-          schemaPath: '#/discriminator',
-          keyword: 'discriminator',
-          params: { error: 'mapping', tag: 'type', tagValue: tag0 },
-          message: 'value of tag "type" must be in oneOf',
-        };
-        if (vErrors === null) {
-          vErrors = [err1];
-        } else {
-          vErrors.push(err1);
-        }
-        errors++;
-      }
-    } else {
-      const err2 = {
-        instancePath,
-        schemaPath: '#/discriminator',
-        keyword: 'discriminator',
-        params: { error: 'tag', tag: 'type', tagValue: tag0 },
-        message: 'tag "type" must be string',
-      };
-      if (vErrors === null) {
-        vErrors = [err2];
-      } else {
-        vErrors.push(err2);
-      }
-      errors++;
-    }
-  } else {
-    const err3 = {
-      instancePath,
-      schemaPath: '#/type',
-      keyword: 'type',
-      params: { type: 'object' },
-      message: 'must be object',
-    };
-    if (vErrors === null) {
-      vErrors = [err3];
-    } else {
-      vErrors.push(err3);
-    }
-    errors++;
-  }
-  validate22.errors = vErrors;
-  return errors === 0;
-}
-const schema36 = {
-  type: 'object',
-  oneOf: [
     { $ref: '#/definitions/media:photo' },
     { $ref: '#/definitions/media:video' },
   ],
   required: ['type'],
   discriminator: { propertyName: 'type' },
 };
-const schema37 = {
+const schema28 = {
   type: 'object',
   properties: { type: { const: 'photo' }, url: { $ref: '#/definitions/uri' } },
   required: ['type', 'url'],
   additionalProperties: false,
 };
-function validate32(
+function validate23(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -2125,10 +1430,10 @@ function validate32(
     }
     errors++;
   }
-  validate32.errors = vErrors;
+  validate23.errors = vErrors;
   return errors === 0;
 }
-const schema39 = {
+const schema30 = {
   type: 'object',
   properties: {
     type: { const: 'video' },
@@ -2137,7 +1442,7 @@ const schema39 = {
   required: ['type', 'thumbnail'],
   additionalProperties: false,
 };
-function validate33(
+function validate24(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -2257,10 +1562,10 @@ function validate33(
     }
     errors++;
   }
-  validate33.errors = vErrors;
+  validate24.errors = vErrors;
   return errors === 0;
 }
-function validate31(
+function validate22(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -2286,7 +1591,7 @@ function validate31(
     if (typeof tag0 == 'string') {
       if (tag0 === 'photo') {
         if (
-          !validate32(data, {
+          !validate23(data, {
             instancePath,
             parentData,
             parentDataProperty,
@@ -2295,13 +1600,13 @@ function validate31(
         ) {
           vErrors =
             vErrors === null ?
-              validate32.errors
-            : vErrors.concat(validate32.errors);
+              validate23.errors
+            : vErrors.concat(validate23.errors);
           errors = vErrors.length;
         }
       } else if (tag0 === 'video') {
         if (
-          !validate33(data, {
+          !validate24(data, {
             instancePath,
             parentData,
             parentDataProperty,
@@ -2310,8 +1615,8 @@ function validate31(
         ) {
           vErrors =
             vErrors === null ?
-              validate33.errors
-            : vErrors.concat(validate33.errors);
+              validate24.errors
+            : vErrors.concat(validate24.errors);
           errors = vErrors.length;
         }
       } else {
@@ -2359,7 +1664,7 @@ function validate31(
     }
     errors++;
   }
-  validate31.errors = vErrors;
+  validate22.errors = vErrors;
   return errors === 0;
 }
 function validate11(
@@ -2452,7 +1757,6 @@ function validate11(
           key0 === 'saved_at' ||
           key0 === 'author' ||
           key0 === 'text' ||
-          key0 === 'card' ||
           key0 === 'media'
         )
       ) {
@@ -2607,39 +1911,23 @@ function validate11(
         errors++;
       }
     }
-    if (data.card !== undefined) {
-      if (
-        !validate22(data.card, {
-          instancePath: instancePath + '/card',
-          parentData: data,
-          parentDataProperty: 'card',
-          rootData,
-        })
-      ) {
-        vErrors =
-          vErrors === null ?
-            validate22.errors
-          : vErrors.concat(validate22.errors);
-        errors = vErrors.length;
-      }
-    }
     if (data.media !== undefined) {
-      let data7 = data.media;
-      if (Array.isArray(data7)) {
-        const len1 = data7.length;
+      let data6 = data.media;
+      if (Array.isArray(data6)) {
+        const len1 = data6.length;
         for (let i1 = 0; i1 < len1; i1++) {
           if (
-            !validate31(data7[i1], {
+            !validate22(data6[i1], {
               instancePath: instancePath + '/media/' + i1,
-              parentData: data7,
+              parentData: data6,
               parentDataProperty: i1,
               rootData,
             })
           ) {
             vErrors =
               vErrors === null ?
-                validate31.errors
-              : vErrors.concat(validate31.errors);
+                validate22.errors
+              : vErrors.concat(validate22.errors);
             errors = vErrors.length;
           }
         }

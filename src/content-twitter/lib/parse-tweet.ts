@@ -1,23 +1,23 @@
 import browser from 'webextension-polyfill';
-import { getElement, getElements, getNode } from '~/lib/dom';
+import { getElement, getElements, getNode, getNodes } from '~/lib/dom';
 import { Logger, logger as defaultLogger } from '~/lib/logger';
 import {
   ExpandTCoURLRequestMessage,
-  ExpandTCoURLResponseMessage,
+  ExpandTCoURLResultMessage,
+  GetURLTitleRequestMessage,
+  GetURLTitleResultMessage,
 } from '~/lib/message';
 import {
-  Card,
-  CardCarousel,
-  CardLink,
-  CardSingle,
   Media,
   MediaPhoto,
   MediaVideo,
   Tweet,
+  TweetEntity,
+  TweetEntityURL,
   TweetID,
   User,
 } from '~/lib/tweet/types';
-import { decodeURL, formatTCoURL, formatTwimgURL } from '~/lib/url';
+import { decodeURL, formatTwimgURL, isTCoURL } from '~/lib/url';
 import { ParseTweetError } from './error';
 import { parseTweetText } from './parse-tweet-text';
 
@@ -52,6 +52,7 @@ export const parseTweet = async (
   }
   // Tweet.text
   const text = await parseTweetText(tweet, logger);
+  await parseCard(tweet, text, logger);
   logger.debug('Tweet.text', text);
   const result: Tweet = {
     id,
@@ -60,12 +61,6 @@ export const parseTweet = async (
     author,
     text,
   };
-  // card
-  const card = await parseCard(id, tweet, logger);
-  logger.debug('Tweet.card', card);
-  if (card !== null) {
-    result.card = card;
-  }
   // media
   const media = parseMedia(tweet, logger);
   logger.debug('Tweet.media', media);
@@ -218,103 +213,90 @@ const parseMediaVideo = (
 };
 
 const parseCard = async (
-  id: TweetID,
   tweet: Element,
+  text: TweetEntity[],
   logger: Logger,
-): Promise<Card | null> => {
-  const card = getElement('.//div[@data-testid="card.wrapper"]', tweet);
-  if (card === null) {
-    return null;
+): Promise<void> => {
+  const root = getElement('.//div[div[@data-testid="card.wrapper"]]', tweet);
+  logger.debug('card root', root);
+  if (root === null) {
+    return;
   }
-  const type: Card['type'] =
-    getElements('.//ul/li', card).length > 0 ? 'carousel' : 'single';
-  switch (type) {
-    case 'single':
-      return await parseCardSingle(card, logger);
-    case 'carousel':
-      return await parseCardCarousel(id, card, logger);
-    default: {
-      const _: never = type;
-      return _;
+  // URLs in tweet text
+  const textURLs = text.reduce<string[]>((urls, entity) => {
+    if (entity.type === 'url') {
+      urls.push(entity.short_url, entity.expanded_url);
     }
-  }
-};
-
-const parseCardSingle = async (
-  card: Element,
-  logger: Logger,
-): Promise<CardSingle | null> => {
-  if (getElement('self::div[@data-testid="card.wrapper"]', card) === null) {
-    return null;
-  }
-  const media = getNode('.//img/@src | .//video/@poster', card)?.textContent;
-  if (!media) {
-    logger.warn('<img src="..."> or <video poster="..."> is not found in card');
-    return null;
-  }
-  const link = await parseCardLink(
-    getNode('.//a/@href', card)?.textContent,
-    logger,
-  );
-  return {
-    type: 'single',
-    ...(link !== null && { link }),
-    media_url: media,
-  };
-};
-
-const parseCardCarousel = async (
-  id: TweetID,
-  card: Element,
-  logger: Logger,
-): Promise<CardCarousel | null> => {
-  if (getElement('self::div[@data-testid="card.wrapper"]', card) === null) {
-    return null;
-  }
-  // media URLs
-  const mediaURLs: string[] = [];
-  for (const listItem of getElements('.//ul/li', card)) {
-    const media = getNode(
-      './/img/@src | .//video/@poster',
-      listItem,
-    )?.textContent;
-    if (media) {
-      mediaURLs.push(media);
-    } else {
-      throw new ParseTweetError(id, 'Some media in carousel ad is not loading');
+    return urls;
+  }, []);
+  // hrefs in card
+  const hrefs = getNodes('.//a/@href', root).reduce<string[]>((hrefs, node) => {
+    const href = node.textContent;
+    if (href && !hrefs.includes(href) && !textURLs.includes(href)) {
+      hrefs.push(href);
     }
+    return hrefs;
+  }, []);
+  if (!hrefs.length) {
+    return;
   }
-  // link
-  const link = await parseCardLink(
-    getNode('.//a/@href', card)?.textContent,
-    logger,
+  // href to tweetEntityURL
+  const urls = await Promise.all(
+    hrefs.map(async (href) => await toEntityURL(href, logger)),
   );
-  return {
-    type: 'carousel',
-    ...(link !== null && { link }),
-    media_urls: mediaURLs,
-  };
+  // insert newline
+  const lastText = text[text.length - 1];
+  if (lastText?.type === 'text' && !lastText.text.endsWith('\n')) {
+    lastText.text += '\n';
+  } else {
+    text.push({ type: 'text', text: '\n' });
+  }
+  // append to text
+  text.push(...urls);
 };
 
-const parseCardLink = async (
-  href: string | undefined | null,
+const toEntityURL = async (
+  href: string,
   logger: Logger,
-): Promise<CardLink | null> => {
-  if (!href) {
-    return null;
+): Promise<TweetEntityURL> => {
+  // check if the href is https://t.co/...
+  if (!isTCoURL(href)) {
+    // request url title
+    const request: GetURLTitleRequestMessage = {
+      type: 'GetURLTitle/Request',
+      url: href,
+    };
+    const title = await browser.runtime
+      .sendMessage(request)
+      .then((response: GetURLTitleResultMessage) => {
+        logger.debug('Response to request', response);
+        if (response?.type === 'GetURLTitle/Result') {
+          if (response.ok) {
+            return response.title;
+          }
+        }
+        return null;
+      });
+    return {
+      type: 'url',
+      text: '',
+      short_url: href,
+      expanded_url: href,
+      decoded_url: decodeURL(href),
+      ...(title !== null && { title }),
+    };
   }
-  const url = formatTCoURL(href);
   // request expand https://t.co/...
   const request: ExpandTCoURLRequestMessage = {
     type: 'ExpandTCoURL/Request',
-    shortURL: url,
+    shortURL: href,
   };
   logger.debug('Request to expand t.co URL', request);
   const { expandedURL, title } = await browser.runtime
     .sendMessage(request)
-    .then((response: ExpandTCoURLResponseMessage) => {
+    .then((response: ExpandTCoURLResultMessage) => {
       logger.debug('Response to request', response);
-      if (response?.type === 'ExpandTCoURL/Response') {
+      if (response?.type === 'ExpandTCoURL/Result') {
         if (response?.ok) {
           const { expandedURL, title } = response;
           return { expandedURL, title };
@@ -322,10 +304,12 @@ const parseCardLink = async (
       } else {
         logger.warn('Unexpected response message', response);
       }
-      return { expandedURL: url };
+      return { expandedURL: href };
     });
   return {
-    url,
+    type: 'url',
+    text: '',
+    short_url: href,
     expanded_url: expandedURL,
     decoded_url: decodeURL(expandedURL),
     ...(title !== undefined && { title }),

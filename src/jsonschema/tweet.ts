@@ -24,7 +24,6 @@ const definitions: SchemaObject = {
         type: 'array',
         items: { $ref: '#/definitions/entity' },
       },
-      card: { $ref: '#/definitions/card' },
       media: {
         type: 'array',
         items: { $ref: '#/definitions/media' },
@@ -152,53 +151,6 @@ const definitions: SchemaObject = {
       thumbnail: { $ref: '#/definitions/uri' },
     },
     required: ['type', 'thumbnail'],
-    additionalProperties: false,
-  },
-  // Card
-  card: {
-    type: 'object',
-    oneOf: [
-      { $ref: '#/definitions/card:single' },
-      { $ref: '#/definitions/card:carousel' },
-    ],
-    required: ['type'],
-    discriminator: { propertyName: 'type' },
-  },
-  // CardLink
-  'card:link': {
-    type: 'object',
-    properties: {
-      url: { $ref: '#/definitions/uri' },
-      expanded_url: { $ref: '#/definitions/uri' },
-      decoded_url: { $ref: '#/definitions/iri' },
-      title: { type: 'string' },
-    },
-    required: ['url', 'expanded_url', 'decoded_url'],
-    additionalProperties: false,
-  },
-  // CardSingle
-  'card:single': {
-    type: 'object',
-    properties: {
-      type: { const: 'single' },
-      link: { $ref: '#/definitions/card:link' },
-      media_url: { $ref: '#/definitions/uri' },
-    },
-    required: ['type', 'media_url'],
-    additionalProperties: false,
-  },
-  // CardCarousel
-  'card:carousel': {
-    type: 'object',
-    properties: {
-      type: { const: 'carousel' },
-      link: { $ref: '#/definitions/card:link' },
-      media_urls: {
-        type: 'array',
-        items: { $ref: '#/definitions/uri' },
-      },
-    },
-    required: ['type', 'media_urls'],
     additionalProperties: false,
   },
 };
