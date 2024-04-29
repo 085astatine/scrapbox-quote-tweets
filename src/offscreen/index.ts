@@ -2,10 +2,10 @@ import browser from 'webextension-polyfill';
 import { createLogger } from '~/lib/logger';
 import {
   ExpandTCoURLRequestMessage,
-  ExpandTCoURLResponseMessage,
+  ExpandTCoURLResultMessage,
   ForwardToOffscreenMessage,
   GetURLTitleRequestMessage,
-  GetURLTitleResponseMessage,
+  GetURLTitleResultMessage,
   respondToExpandTCoURLRequest,
   respondToGetURLTitleRequest,
 } from '~/lib/message';
@@ -16,7 +16,7 @@ const logger = createLogger({ prefix: '[offscreen] ' });
 // runtime.onMessage
 type ForwardedMessage = ExpandTCoURLRequestMessage | GetURLTitleRequestMessage;
 type RequestMessage = ForwardToOffscreenMessage<ForwardedMessage>;
-type ResponseMessage = ExpandTCoURLResponseMessage | GetURLTitleResponseMessage;
+type ResponseMessage = ExpandTCoURLResultMessage | GetURLTitleResultMessage;
 
 const listener = async (
   message: RequestMessage,

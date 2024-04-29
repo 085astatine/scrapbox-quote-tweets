@@ -3,9 +3,9 @@ import { getElement, getElements, getNode, getNodes } from '~/lib/dom';
 import { Logger, logger as defaultLogger } from '~/lib/logger';
 import {
   ExpandTCoURLRequestMessage,
-  ExpandTCoURLResponseMessage,
+  ExpandTCoURLResultMessage,
   GetURLTitleRequestMessage,
-  GetURLTitleResponseMessage,
+  GetURLTitleResultMessage,
 } from '~/lib/message';
 import {
   Media,
@@ -268,9 +268,9 @@ const toEntityURL = async (
     };
     const title = await browser.runtime
       .sendMessage(request)
-      .then((response: GetURLTitleResponseMessage) => {
+      .then((response: GetURLTitleResultMessage) => {
         logger.debug('Response to request', response);
-        if (response?.type === 'GetURLTitle/Response') {
+        if (response?.type === 'GetURLTitle/Result') {
           if (response.ok) {
             return response.title;
           }
@@ -294,9 +294,9 @@ const toEntityURL = async (
   logger.debug('Request to expand t.co URL', request);
   const { expandedURL, title } = await browser.runtime
     .sendMessage(request)
-    .then((response: ExpandTCoURLResponseMessage) => {
+    .then((response: ExpandTCoURLResultMessage) => {
       logger.debug('Response to request', response);
-      if (response?.type === 'ExpandTCoURL/Response') {
+      if (response?.type === 'ExpandTCoURL/Result') {
         if (response?.ok) {
           const { expandedURL, title } = response;
           return { expandedURL, title };

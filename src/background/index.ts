@@ -2,9 +2,9 @@ import browser from 'webextension-polyfill';
 import { logger } from '~/lib/logger';
 import {
   ExpandTCoURLRequestMessage,
-  ExpandTCoURLResponseMessage,
+  ExpandTCoURLResultMessage,
   GetURLTitleRequestMessage,
-  GetURLTitleResponseMessage,
+  GetURLTitleResultMessage,
   SettingsDownloadStorageMessage,
   forwardMessageToOffscreen,
   respondToExpandTCoURLRequest,
@@ -37,7 +37,7 @@ type RequestMessage =
   | GetURLTitleRequestMessage
   | SettingsDownloadStorageMessage;
 
-type ResponseMessage = ExpandTCoURLResponseMessage | GetURLTitleResponseMessage;
+type ResponseMessage = ExpandTCoURLResultMessage | GetURLTitleResultMessage;
 
 const onMessageListener = async (
   message: RequestMessage,

@@ -9,7 +9,7 @@ export interface ExpandTCoURLRequestMessage {
 }
 
 export interface ExpandTCoURLSuccessMessage {
-  type: 'ExpandTCoURL/Response';
+  type: 'ExpandTCoURL/Result';
   ok: true;
   shortURL: string;
   expandedURL: string;
@@ -17,12 +17,12 @@ export interface ExpandTCoURLSuccessMessage {
 }
 
 export interface ExpandTCoURLFailureMessage {
-  type: 'ExpandTCoURL/Response';
+  type: 'ExpandTCoURL/Result';
   ok: false;
   shortURL: string;
 }
 
-export type ExpandTCoURLResponseMessage =
+export type ExpandTCoURLResultMessage =
   | ExpandTCoURLSuccessMessage
   | ExpandTCoURLFailureMessage;
 
@@ -37,19 +37,19 @@ export interface GetURLTitleRequestMessage {
 }
 
 export interface GetURLTitleSuccessMessage {
-  type: 'GetURLTitle/Response';
+  type: 'GetURLTitle/Result';
   ok: true;
   url: string;
   title: string;
 }
 
 export interface GetURLTitleFailureMessage {
-  type: 'GetURLTitle/Response';
+  type: 'GetURLTitle/Result';
   ok: false;
   url: string;
 }
 
-export type GetURLTitleResponseMessage =
+export type GetURLTitleResultMessage =
   | GetURLTitleSuccessMessage
   | GetURLTitleFailureMessage;
 
@@ -61,12 +61,12 @@ export interface SettingsDownloadStorageMessage {
 export const respondToExpandTCoURLRequest = async (
   shortURL: string,
   logger: Logger,
-): Promise<ExpandTCoURLResponseMessage> => {
+): Promise<ExpandTCoURLResultMessage> => {
   // expand https://t.co/...
   const expandedURL = await expandTCoURL(shortURL, logger);
   if (expandedURL === null) {
     return {
-      type: 'ExpandTCoURL/Response',
+      type: 'ExpandTCoURL/Result',
       ok: false,
       shortURL,
     };
@@ -74,7 +74,7 @@ export const respondToExpandTCoURLRequest = async (
   // get title
   const title = await getURLTitle(expandedURL, logger);
   return {
-    type: 'ExpandTCoURL/Response',
+    type: 'ExpandTCoURL/Result',
     ok: true,
     shortURL,
     expandedURL,
@@ -86,17 +86,17 @@ export const respondToExpandTCoURLRequest = async (
 export const respondToGetURLTitleRequest = async (
   url: string,
   logger: Logger,
-): Promise<GetURLTitleResponseMessage> => {
+): Promise<GetURLTitleResultMessage> => {
   const title = await getURLTitle(url, logger);
   if (title === null) {
     return {
-      type: 'GetURLTitle/Response',
+      type: 'GetURLTitle/Result',
       ok: false,
       url,
     };
   }
   return {
-    type: 'GetURLTitle/Response',
+    type: 'GetURLTitle/Result',
     ok: true,
     url,
     title,
@@ -108,19 +108,19 @@ export async function forwardMessageToOffscreen(
   offscreen: Offscreen,
   message: ExpandTCoURLRequestMessage,
   logger: Logger,
-): Promise<ExpandTCoURLResponseMessage>;
+): Promise<ExpandTCoURLResultMessage>;
 
 export async function forwardMessageToOffscreen(
   offscreen: Offscreen,
   message: GetURLTitleRequestMessage,
   logger: Logger,
-): Promise<GetURLTitleResponseMessage>;
+): Promise<GetURLTitleResultMessage>;
 
 export async function forwardMessageToOffscreen(
   offscreen: Offscreen,
   message: ExpandTCoURLRequestMessage | GetURLTitleRequestMessage,
   logger: Logger,
-): Promise<ExpandTCoURLResponseMessage | GetURLTitleResponseMessage> {
+): Promise<ExpandTCoURLResultMessage | GetURLTitleResultMessage> {
   await offscreen.open();
   logger.debug('forward to offscreen', message);
   const request = {

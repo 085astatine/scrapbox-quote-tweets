@@ -3,7 +3,7 @@ import { getElement, getNode, isHTMLElement } from '~/lib/dom';
 import { Logger, logger as defaultLogger } from '~/lib/logger';
 import {
   ExpandTCoURLRequestMessage,
-  ExpandTCoURLResponseMessage,
+  ExpandTCoURLResultMessage,
 } from '~/lib/message';
 import {
   TweetEntity,
@@ -121,9 +121,9 @@ const parseEntityURL = async (
   logger.debug('Request to expand t.co URL', request);
   const { expandedURL, title } = await browser.runtime
     .sendMessage(request)
-    .then((response: ExpandTCoURLResponseMessage) => {
+    .then((response: ExpandTCoURLResultMessage) => {
       logger.debug('Response to request', response);
-      if (response?.type === 'ExpandTCoURL/Response') {
+      if (response?.type === 'ExpandTCoURL/Result') {
         if (response?.ok) {
           const { expandedURL, title } = response;
           return { expandedURL, title };
