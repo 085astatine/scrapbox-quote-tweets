@@ -43,6 +43,7 @@ module.exports = [
       ...reactHooks.configs.recommended.rules,
       ...reactRedux.configs.recommended.rules,
       ...prettier.rules,
+      'no-redeclare': 'off',
       'require-jsdoc': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
@@ -71,6 +72,7 @@ module.exports = [
       ...js.configs.recommended.rules,
       ...typescript.configs.recommended.rules,
       ...prettier.rules,
+      'no-redeclare': 'off',
       'require-jsdoc': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
