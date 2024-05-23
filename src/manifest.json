@@ -48,7 +48,7 @@
       "css": ["content-twitter.css"]
     },
     {
-      "matches": ["https://scrapbox.io/*"],
+      "matches": ["https://scrapbox.io/*", "https://cosen.se/*"],
       "run_at": "document_start",
       "js": ["content-scrapbox.js"],
       "css": ["content-scrapbox.css"]
