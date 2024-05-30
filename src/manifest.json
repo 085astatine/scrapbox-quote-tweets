@@ -26,7 +26,11 @@
     "tabs"
   ],
   "__prod__host_permissions": ["https://*/*"],
-  "__dev__host_permissions": ["https://twitter.com/*", "https://*/*"],
+  "__dev__host_permissions": [
+    "https://twitter.com/*",
+    "https://x.com/*",
+    "https://*/*"
+  ],
 
   "__chrome__background": {
     "service_worker": "background.js",
@@ -38,13 +42,13 @@
 
   "content_scripts": [
     {
-      "matches": ["https://twitter.com/*"],
+      "matches": ["https://twitter.com/*", "https://x.com/*"],
       "run_at": "document_start",
       "js": ["content-twitter.js"],
       "css": ["content-twitter.css"]
     },
     {
-      "matches": ["https://scrapbox.io/*"],
+      "matches": ["https://scrapbox.io/*", "https://cosen.se/*"],
       "run_at": "document_start",
       "js": ["content-scrapbox.js"],
       "css": ["content-scrapbox.css"]

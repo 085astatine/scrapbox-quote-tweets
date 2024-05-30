@@ -24,9 +24,9 @@ if (process.env.NODE_ENV !== 'production') {
     browser.cookies.set({
       name: 'auth_token',
       value: process.env.TWITTER_AUTH_TOKEN_COOKIE,
-      domain: '.twitter.com',
+      domain: '.x.com',
       path: '/',
-      url: 'https://twitter.com',
+      url: 'https://x.com',
     });
   }
 }
