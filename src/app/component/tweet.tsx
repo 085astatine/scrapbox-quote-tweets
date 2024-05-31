@@ -81,7 +81,7 @@ const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
             {line}
             {ellipsis ?
               <ReturnIcon
-                className="return"
+                className="return-icon"
                 width={undefined}
                 height={undefined}
               />
