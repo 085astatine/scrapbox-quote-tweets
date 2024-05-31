@@ -203,7 +203,7 @@ const parseMediaVideo = (
   element: Element,
   logger: Logger,
 ): MediaVideo | null => {
-  const poster = getElement('.//video/@poster', element);
+  const poster = getNode('.//video/@poster', element);
   logger.debug('MediaVideo <video poster="...">', poster);
   if (poster === null) {
     logger.warn('<video poster="..."> is not found in MediaVideo');
