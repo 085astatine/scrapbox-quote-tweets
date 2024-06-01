@@ -71,6 +71,11 @@ export const selectTweets = createSelector(
   },
 );
 
+export const selectTweetsSize = createSelector(
+  [(state: State): Tweet[] => state.tweet.tweets],
+  (tweets: Tweet[]): number => tweets.length,
+);
+
 export const selectIsSelectedTweet = createSelector(
   [
     (state: State): Tweet[] => state.tweet.selectedTweets,
