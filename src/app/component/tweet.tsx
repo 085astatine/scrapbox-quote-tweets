@@ -4,8 +4,10 @@ import { useSelector } from 'react-redux';
 import ReturnIcon from '~/icon/bootstrap/arrow-return-left.svg';
 import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
+import FilmIcon from '~/icon/bootstrap/film.svg';
+import ImageIcon from '~/icon/bootstrap/image.svg';
 import { toDatetime } from '~/lib/datetime';
-import { Tweet as TweetData, TweetID } from '~/lib/tweet/types';
+import { Media, Tweet as TweetData, TweetID } from '~/lib/tweet/types';
 import {
   selectBaseURL,
   selectDatetimeFormat,
@@ -26,7 +28,7 @@ export const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
         username={tweet.author.username}
         timestamp={tweet.created_at}
       />
-      <Body text={text} />
+      <Body text={text} media={tweet.media} />
     </div>
   );
 };
@@ -67,9 +69,10 @@ const Header: React.FC<HeaderProps> = ({
 
 interface BodyProps {
   text: string;
+  media: Media[] | undefined;
 }
 
-const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
+const Body: React.FC<BodyProps> = ({ text, media }: BodyProps) => {
   const [ellipsis, setEllipsis] = React.useState(true);
   const texts = text.split('\n');
   const Icon = ellipsis ? ChevronDownIcon : ChevronUpIcon;
@@ -90,6 +93,9 @@ const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
             : <br />}
           </React.Fragment>
         ))}
+        {!ellipsis && media && <br />}
+        {media &&
+          media.map((media, index) => <MediaIcon key={index} media={media} />)}
       </div>
       <div className="expand-button">
         <button
@@ -100,4 +106,37 @@ const Body: React.FC<BodyProps> = ({ text }: BodyProps) => {
       </div>
     </div>
   );
+};
+
+interface MediaIconProps {
+  media: Media;
+}
+
+const MediaIcon: React.FC<MediaIconProps> = ({ media }) => {
+  switch (media.type) {
+    case 'photo':
+      return (
+        <a href={media.url} target="_blink" rel="noreferer">
+          <ImageIcon
+            className="media-icon"
+            width={undefined}
+            height={undefined}
+          />
+        </a>
+      );
+    case 'video':
+      return (
+        <a href={media.thumbnail} target="_blink" rel="noreferer">
+          <FilmIcon
+            className="media-icon"
+            width={undefined}
+            height={undefined}
+          />
+        </a>
+      );
+    default: {
+      const _: never = media;
+      return _;
+    }
+  }
 };
