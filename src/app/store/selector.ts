@@ -139,6 +139,11 @@ export const selectDeletedTimes = createSelector(
   },
 );
 
+export const selectTrashboxSize = createSelector(
+  [(state: State): DeletedTweet[] => state.tweet.trashbox],
+  (trashbox: DeletedTweet[]): number => trashbox.length,
+);
+
 export const selectDeletedTweets = createSelector(
   [
     (state: State): DeletedTweet[] => state.tweet.trashbox,
