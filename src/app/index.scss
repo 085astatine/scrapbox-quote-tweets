@@ -305,11 +305,20 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
         white-space: nowrap;
       }
 
-      .return {
+      .return-icon {
         width: 1rem;
         height: 1rem;
+        margin: 0.25rem;
         fill: var(--#{$bs-prefix}gray-500);
         stroke: var(--#{$bs-prefix}gray-500);
+      }
+
+      .media-icon {
+        width: 1rem;
+        height: 1rem;
+        margin: 0.25rem;
+        fill: var(--#{$bs-prefix}link-color);
+        stroke: var(--#{$bs-prefix}link-color);
       }
     }
 
