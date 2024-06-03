@@ -22,6 +22,7 @@ import {
   selectIsDeletedTweetSelected,
   selectSelectedDeletedTweets,
   selectTimezone,
+  selectTrashboxSize,
   selectTrashboxSort,
 } from '../store/selector';
 import { Checkbox } from './checkbox';
@@ -147,6 +148,7 @@ const Toolbar: React.FC = () => {
 
 const SelectAll: React.FC = () => {
   const id = 'select-all-trashbox';
+  const size = useSelector(selectTrashboxSize);
   const state = useSelector(selectAllTrashboxSelectButtonState);
   const dispatch = useDispatch();
   // select
@@ -168,7 +170,7 @@ const SelectAll: React.FC = () => {
       <label
         className={classNames('tool-label', { disabled: state === 'disabled' })}
         htmlFor={id}>
-        All Tweets
+        All Tweets ({size})
       </label>
     </div>
   );

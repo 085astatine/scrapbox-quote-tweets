@@ -17,6 +17,7 @@ import {
   selectTweetSort,
   selectTweetToStringOption,
   selectTweets,
+  selectTweetsSize,
 } from '../store/selector';
 import { Checkbox } from './checkbox';
 import { Tweet as TweetInfo } from './tweet';
@@ -74,6 +75,7 @@ const Toolbar: React.FC = () => {
 
 const SelectAll: React.FC = () => {
   const id = 'select-all-tweets';
+  const size = useSelector(selectTweetsSize);
   const state = useSelector(selectAllTweetsSelectButtonState);
   const dispatch = useDispatch();
   // select
@@ -95,7 +97,7 @@ const SelectAll: React.FC = () => {
       <label
         className={classNames('tool-label', { disabled: state === 'disabled' })}
         htmlFor={id}>
-        All Tweets
+        All Tweets ({size})
       </label>
     </div>
   );

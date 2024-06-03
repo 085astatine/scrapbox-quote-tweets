@@ -71,6 +71,11 @@ export const selectTweets = createSelector(
   },
 );
 
+export const selectTweetsSize = createSelector(
+  [(state: State): Tweet[] => state.tweet.tweets],
+  (tweets: Tweet[]): number => tweets.length,
+);
+
 export const selectIsSelectedTweet = createSelector(
   [
     (state: State): Tweet[] => state.tweet.selectedTweets,
@@ -132,6 +137,11 @@ export const selectDeletedTimes = createSelector(
         }, []),
     );
   },
+);
+
+export const selectTrashboxSize = createSelector(
+  [(state: State): DeletedTweet[] => state.tweet.trashbox],
+  (trashbox: DeletedTweet[]): number => trashbox.length,
 );
 
 export const selectDeletedTweets = createSelector(
