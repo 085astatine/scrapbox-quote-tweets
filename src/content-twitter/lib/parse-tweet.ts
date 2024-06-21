@@ -20,6 +20,7 @@ import {
 import { decodeURL, formatTwimgURL, isTCoURL } from '~/lib/url';
 import { ParseTweetError } from './error';
 import { parseTweetText } from './parse-tweet-text';
+import { isInQuotedTweet } from './tweet';
 
 export const parseTweet = async (
   id: TweetID,
@@ -68,10 +69,6 @@ export const parseTweet = async (
     result.media = media;
   }
   return result;
-};
-
-const isInQuotedTweet = (element: Element): boolean => {
-  return getElement('ancestor::div[@role="link"]', element) !== null;
 };
 
 const parseTimestamp = (tweet: Element, logger: Logger): number | null => {

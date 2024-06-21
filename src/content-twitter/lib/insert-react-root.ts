@@ -1,6 +1,7 @@
 import { getElement, getElements, getNode } from '~/lib/dom';
 import { Logger, logger as defaultLogger } from '~/lib/logger';
 import { TweetID } from '~/lib/tweet/types';
+import { isPromotionTweet } from './tweet';
 
 export interface InsertReactRootResult {
   tweetID: TweetID;
@@ -151,8 +152,4 @@ const createRootDiv = (
   root.classList.add('scrapbox-copy-tweets');
   root.setAttribute('tweet-id', tweetID);
   return root;
-};
-
-const isPromotionTweet = (article: Element): boolean => {
-  return getElement('self::article//a/time', article) === null;
 };
