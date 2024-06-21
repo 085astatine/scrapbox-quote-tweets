@@ -23,7 +23,7 @@ export const parseTweetText = async (
   const element = getElement('.//div[@data-testid="tweetText"]', tweet);
   logger.debug('Text <div data-testid="tweetText">', element);
   if (element === null) {
-    logger.warn('<div data-testid="tweetText"> is not found');
+    logger.debug('<div data-testid="tweetText"> is not in tweet');
     return [];
   }
   if (isInQuotedTweet(element)) {
