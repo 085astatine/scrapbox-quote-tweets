@@ -14,6 +14,7 @@ import {
   TweetEntityURL,
 } from '~/lib/tweet/types';
 import { decodeURL, formatTCoURL } from '~/lib/url';
+import { isInQuotedTweet } from './tweet';
 
 export const parseTweetText = async (
   tweet: Element,
@@ -23,6 +24,10 @@ export const parseTweetText = async (
   logger.debug('Text <div data-testid="tweetText">', element);
   if (element === null) {
     logger.warn('<div data-testid="tweetText"> is not found');
+    return [];
+  }
+  if (isInQuotedTweet(element)) {
+    logger.debug('<div data-testid="tweetText"> is in quoted tweet');
     return [];
   }
   const result: TweetEntity[] = [];
