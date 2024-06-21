@@ -1,7 +1,9 @@
 build/
 test_data.json
-web-ext-config.js
 web-ext-artifacts/
+web-ext-config.cjs
+web-ext-config.js
+web-ext-config.mjs
 
 # Node.gitignore
 # Logs

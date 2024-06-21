@@ -136,7 +136,9 @@ module.exports = (env, argv) => {
         ]
       : []),
       new MiniCssExtractPlugin(),
-      new NodePolyfillPlugin(),
+      new NodePolyfillPlugin({
+        additionalAliases: ['process'],
+      }),
       new WextManifestPlugin(),
       ...(mode === 'development' ?
         [
