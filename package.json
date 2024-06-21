@@ -20,7 +20,7 @@
     "build:production": "run-p *:build:production",
     "build:artifact": "run-p *:build:artifact",
     "test": "jest",
-    "clean": "rimraf build",
+    "clean": "rimraf build/ web-ext-artifacts/",
     "eslint": "eslint src/ test/",
     "prettier:check": "prettier --check src/ test/",
     "prettier:write": "prettier --write src/ test/",
