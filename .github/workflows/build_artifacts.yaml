@@ -31,7 +31,7 @@ jobs:
 
       # Artifacts
       - name: Build Artifacts
-        run: npm run artifact
+        run: npm run build:artifact
 
       # Upload Artifacts
       - name: Upload Artifacts
