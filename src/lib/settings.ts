@@ -1,4 +1,4 @@
-import { defaultTimezone } from './datetime';
+import { defaultTimezone, isValidTimezone } from './datetime';
 import { SortOrder, TweetSort } from './tweet/types';
 
 export const hostnames = ['x.com', 'twitter.com'] as const;
@@ -40,4 +40,41 @@ export const baseURL = (hostname: string): string => {
 
 export const isHostname = (value: string): value is Hostname => {
   return (hostnames as ReadonlyArray<string>).includes(value);
+};
+
+interface ValidateSettingsResultSuccess {
+  ok: true;
+}
+
+interface ValidateSettingsResultFailure {
+  ok: false;
+  error: string[];
+}
+
+export type ValidateSettingsResult =
+  | ValidateSettingsResultSuccess
+  | ValidateSettingsResultFailure;
+
+export const validateHostname = (value: string): ValidateSettingsResult => {
+  if (!isHostname(value)) {
+    return {
+      ok: false,
+      error: [`${value} is not valid hostname`],
+    };
+  }
+  return { ok: true };
+};
+
+export const validateTimezone = (value: string): ValidateSettingsResult => {
+  if (!isValidTimezone(value)) {
+    return {
+      ok: false,
+      error: [
+        `"${value}" is not valid timezone.`,
+        'Please enter the time zone in the IANA database.',
+        'Examples: "UTC", "Asia/Tokyo", "America/New_York"',
+      ],
+    };
+  }
+  return { ok: true };
 };

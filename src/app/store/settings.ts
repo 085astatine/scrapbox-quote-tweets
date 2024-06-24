@@ -1,11 +1,11 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { isValidTimezone } from '~/lib/datetime';
 import {
   Hostname,
   Settings,
   TrashboxSort,
   defaultSettings,
-  isHostname,
+  validateHostname,
+  validateTimezone,
 } from '~/lib/settings';
 import { TweetSort } from '~/lib/tweet/types';
 
@@ -42,20 +42,16 @@ const settings = createSlice({
       state.errors = {};
       // hostname (base URL)
       if ('hostname' in state.editing) {
-        const hostname = state.editing.hostname;
-        if (!isHostname(hostname)) {
-          state.errors.hostname = [`"${hostname}" is not valid hostname.`];
+        const result = validateHostname(state.editing.hostname);
+        if (!result.ok) {
+          state.errors.hostname = result.error;
         }
       }
       // timezone
       if ('timezone' in state.editing) {
-        const timezone = state.editing.timezone;
-        if (!isValidTimezone(timezone)) {
-          state.errors.timezone = [
-            `"${timezone}" is not valid timezone.`,
-            'Please enter the time zone in the IANA database.',
-            'Examples: "UTC", "Asia/Tokyo", "America/New_York"',
-          ];
+        const result = validateTimezone(state.editing.timezone);
+        if (!result.ok) {
+          state.errors.timezone = result.error;
         }
       }
       // datetimeFormat: no validation
