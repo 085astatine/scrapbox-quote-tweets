@@ -102,7 +102,7 @@ const BaseURL: React.FC = () => {
                   name={name}
                   checked={hostname === value}
                   onChange={() =>
-                    dispatch(actions.settings.updateHostname(hostname))
+                    dispatch(actions.settings.editHostname(hostname))
                   }
                 />
                 <label
@@ -130,7 +130,7 @@ const Timezone: React.FC = () => {
   const value = editingValue ?? currentValue;
   const isUpdated = editingValue !== undefined;
   const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    dispatch(actions.settings.updateTimezone(event.target.value));
+    dispatch(actions.settings.editTimezone(event.target.value));
   };
   return (
     <SettingsItem
@@ -170,7 +170,7 @@ const DatetimeFormat: React.FC = () => {
   const value = editingValue ?? currentValue;
   const isUpdated = editingValue !== undefined;
   const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    dispatch(actions.settings.updateDatetimeFormat(event.target.value));
+    dispatch(actions.settings.editDatetimeFormat(event.target.value));
   };
   return (
     <SettingsItem
@@ -283,14 +283,14 @@ const Commands: React.FC = () => {
           <div className="settings-commands fade-in">
             <button
               className="button"
-              onClick={() => dispatch(actions.settings.reset())}>
+              onClick={() => dispatch(actions.settings.resetEdits())}>
               Reset editing
             </button>
             <button
               className="button"
               onClick={() => {
                 // update store
-                dispatch(actions.settings.update());
+                dispatch(actions.settings.applyEdits());
                 // save to storage
                 saveSettings(store.getState().settings.current);
               }}>

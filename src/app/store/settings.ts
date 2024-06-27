@@ -37,7 +37,7 @@ const settings = createSlice({
       state.editing = {};
       state.errors = {};
     },
-    update(state: SettingsState): void {
+    applyEdits(state: SettingsState): void {
       // reset errors
       state.errors = {};
       // hostname (base URL)
@@ -64,20 +64,17 @@ const settings = createSlice({
         state.editing = {};
       }
     },
-    reset(state: SettingsState): void {
+    resetEdits(state: SettingsState): void {
       state.editing = {};
       state.errors = {};
     },
-    updateHostname(
-      state: SettingsState,
-      action: PayloadAction<Hostname>,
-    ): void {
+    editHostname(state: SettingsState, action: PayloadAction<Hostname>): void {
       editSettings(state, 'hostname', action.payload);
     },
-    updateTimezone(state: SettingsState, action: PayloadAction<string>): void {
+    editTimezone(state: SettingsState, action: PayloadAction<string>): void {
       editSettings(state, 'timezone', action.payload);
     },
-    updateDatetimeFormat(
+    editDatetimeFormat(
       state: SettingsState,
       action: PayloadAction<string>,
     ): void {
