@@ -40,21 +40,10 @@ const settings = createSlice({
     applyEdits(state: SettingsState): void {
       // reset errors
       state.errors = {};
-      // hostname (base URL)
-      if ('hostname' in state.editing) {
-        const result = validateHostname(state.editing.hostname);
-        if (!result.ok) {
-          state.errors.hostname = result.error;
-        }
-      }
-      // timezone
-      if ('timezone' in state.editing) {
-        const result = validateTimezone(state.editing.timezone);
-        if (!result.ok) {
-          state.errors.timezone = result.error;
-        }
-      }
-      // datetimeFormat: no validation
+      // validate editing value
+      editingSettingsKeys.forEach((key) => {
+        validateEditingValue(state, key);
+      });
       // update if theare is no error
       if (Object.keys(state.errors).length === 0) {
         state.current = {
@@ -95,6 +84,26 @@ const settings = createSlice({
   },
 });
 
+// reducer
+export const settingsReducer = settings.reducer;
+
+// actions
+export const settingsActions: Readonly<typeof settings.actions> =
+  settings.actions;
+
+// utilities
+const editingSettingsKeys: ReadonlyArray<keyof EditingSettings> = [
+  'hostname',
+  'timezone',
+  'datetimeFormat',
+] as const;
+
+const validateFunctions = {
+  hostname: validateHostname,
+  timezone: validateTimezone,
+  datetimeFormat: () => ({ ok: true as const }),
+} as const;
+
 const editSettings = <Key extends keyof EditingSettings>(
   state: SettingsState,
   key: Key,
@@ -107,9 +116,14 @@ const editSettings = <Key extends keyof EditingSettings>(
   }
 };
 
-// reducer
-export const settingsReducer = settings.reducer;
-
-// actions
-export const settingsActions: Readonly<typeof settings.actions> =
-  settings.actions;
+const validateEditingValue = <Key extends keyof EditingSettings>(
+  state: SettingsState,
+  key: Key,
+): void => {
+  if (state.editing[key] !== undefined) {
+    const result = validateFunctions[key](state.editing[key]);
+    if (!result.ok) {
+      state.errors[key] = result.error;
+    }
+  }
+};
