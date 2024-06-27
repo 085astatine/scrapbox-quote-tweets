@@ -1,6 +1,9 @@
+import equal from 'fast-deep-equal';
 import browser from 'webextension-polyfill';
 import { Logger } from '../logger';
+import { Settings } from '../settings';
 import { DeletedTweetID, Tweet, TweetID } from '../tweet/types';
+import { isSettingsKey, toSettingsKey } from './settings';
 import { isTweetIDKey, toTweetID } from './tweet-id-key';
 
 type OnChangedListener = (
@@ -34,6 +37,7 @@ export interface TrashboxChanges {
 export interface StorageListenerArguments {
   tweet?: TweetChanges;
   trashbox?: TrashboxChanges;
+  settings?: Partial<Settings>;
 }
 
 export const createStorageListener = (
@@ -46,6 +50,8 @@ export const createStorageListener = (
     const addedTweets: Tweet[] = [];
     const deletedTweets: Tweet[] = [];
     const updatedTweets: UpdatedTweet[] = [];
+    // settings changes
+    const settings: Partial<Settings> = {};
     for (const [key, value] of Object.entries(changes)) {
       // tweet
       if (isTweetIDKey(key)) {
@@ -60,6 +66,15 @@ export const createStorageListener = (
             before: value.oldValue,
             after: value.newValue,
           });
+        }
+      }
+      // settings
+      if (isSettingsKey(key)) {
+        if (
+          !equal(value.oldValue, value.newValue) &&
+          value.newValue !== undefined
+        ) {
+          settings[toSettingsKey(key)] = value.newValue;
         }
       }
     }
@@ -77,6 +92,7 @@ export const createStorageListener = (
     const listenerArgs: StorageListenerArguments = {
       ...(Object.keys(tweet).length > 0 && { tweet }),
       ...(Object.keys(trashbox).length > 0 && { trashbox }),
+      ...(Object.keys(settings).length > 0 && { settings }),
     };
     logger?.debug('listener arguments', listenerArgs);
     // execute listener

@@ -57,3 +57,24 @@ export const loadSettings = async (): Promise<Settings | null> => {
   }
   return data;
 };
+
+const settingsKeys: ReadonlyArray<keyof Settings> = [
+  'hostname',
+  'timezone',
+  'datetimeFormat',
+  'tweetSort',
+  'trashboxSort',
+];
+
+export const isSettingsKey = (key: string): key is keyof SettingsRecord => {
+  // 'settings_'.length === 9
+  return (
+    key.startsWith('settings_') &&
+    (settingsKeys as ReadonlyArray<string>).includes(key.substring(9))
+  );
+};
+
+export const toSettingsKey = (key: keyof SettingsRecord): keyof Settings => {
+  // 'settings_'.length === 9
+  return key.substring(9) as keyof Settings;
+};
