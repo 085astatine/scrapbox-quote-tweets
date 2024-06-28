@@ -81,6 +81,18 @@ const settings = createSlice({
     ): void {
       state.current.trashboxSort = action.payload;
     },
+    updateByInterrupt(
+      state: SettingsState,
+      action: PayloadAction<Partial<Settings>>,
+    ): void {
+      state.current = {
+        ...state.current,
+        ...action.payload,
+      };
+      editingSettingsKeys.forEach((key) => {
+        resetEditingValueByInterrupt(state, key);
+      });
+    },
   },
 });
 
@@ -125,5 +137,15 @@ const validateEditingValue = <Key extends keyof EditingSettings>(
     if (!result.ok) {
       state.errors[key] = result.error;
     }
+  }
+};
+
+const resetEditingValueByInterrupt = <Key extends keyof EditingSettings>(
+  state: SettingsState,
+  key: Key,
+): void => {
+  if (state.current[key] === state.editing[key]) {
+    delete state.editing[key];
+    delete state.errors[key];
   }
 };
