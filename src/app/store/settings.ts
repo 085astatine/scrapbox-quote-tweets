@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { Dispatch } from 'redux';
 import {
   Hostname,
   Settings,
@@ -7,6 +8,7 @@ import {
   validateHostname,
   validateTimezone,
 } from '~/lib/settings';
+import { StorageListenerArguments } from '~/lib/storage/listener';
 import { TweetSort } from '~/lib/tweet/types';
 
 // state
@@ -102,6 +104,17 @@ export const settingsReducer = settings.reducer;
 // actions
 export const settingsActions: Readonly<typeof settings.actions> =
   settings.actions;
+
+// storage listener
+export const settingsStorageListener = (
+  args: StorageListenerArguments,
+  dispatch: Dispatch,
+): void => {
+  // settings:*
+  if (args.settings !== undefined && Object.keys(settings).length > 0) {
+    dispatch(settingsActions.updateByInterrupt(args.settings));
+  }
+};
 
 // utilities
 const editingSettingsKeys: ReadonlyArray<keyof EditingSettings> = [
