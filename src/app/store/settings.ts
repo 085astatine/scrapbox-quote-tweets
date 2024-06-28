@@ -5,8 +5,7 @@ import {
   Settings,
   TrashboxSort,
   defaultSettings,
-  validateHostname,
-  validateTimezone,
+  validateFunctions,
 } from '~/lib/settings';
 import { StorageListenerArguments } from '~/lib/storage/listener';
 import { TweetSort } from '~/lib/tweet/types';
@@ -123,12 +122,6 @@ const editingSettingsKeys: ReadonlyArray<keyof EditingSettings> = [
   'datetimeFormat',
 ] as const;
 
-const validateFunctions = {
-  hostname: validateHostname,
-  timezone: validateTimezone,
-  datetimeFormat: () => ({ ok: true as const }),
-} as const;
-
 const editSettings = <Key extends keyof EditingSettings>(
   state: SettingsState,
   key: Key,
@@ -146,9 +139,12 @@ const validateEditingValue = <Key extends keyof EditingSettings>(
   key: Key,
 ): void => {
   if (state.editing[key] !== undefined) {
-    const result = validateFunctions[key](state.editing[key]);
-    if (!result.ok) {
-      state.errors[key] = result.error;
+    const validate = validateFunctions[key];
+    if (validate !== undefined) {
+      const result = validate(state.editing[key]);
+      if (!result.ok) {
+        state.errors[key] = result.error;
+      }
     }
   }
 };

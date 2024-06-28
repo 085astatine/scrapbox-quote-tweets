@@ -34,6 +34,7 @@ export const defaultSettings = (): Settings => {
   };
 };
 
+// hostname
 export const baseURL = (hostname: string): string => {
   return `https://${hostname}`;
 };
@@ -42,20 +43,23 @@ export const isHostname = (value: string): value is Hostname => {
   return (hostnames as ReadonlyArray<string>).includes(value);
 };
 
-interface ValidateSettingsResultSuccess {
+// validate functions
+interface ValidationSuccess {
   ok: true;
 }
 
-interface ValidateSettingsResultFailure {
+interface SettingsValueValidationFailure {
   ok: false;
   error: string[];
 }
 
-export type ValidateSettingsResult =
-  | ValidateSettingsResultSuccess
-  | ValidateSettingsResultFailure;
+export type ValidateSettingsValueResult =
+  | ValidationSuccess
+  | SettingsValueValidationFailure;
 
-export const validateHostname = (value: string): ValidateSettingsResult => {
+export const validateHostname = (
+  value: string,
+): ValidateSettingsValueResult => {
   if (!isHostname(value)) {
     return {
       ok: false,
@@ -65,7 +69,9 @@ export const validateHostname = (value: string): ValidateSettingsResult => {
   return { ok: true };
 };
 
-export const validateTimezone = (value: string): ValidateSettingsResult => {
+export const validateTimezone = (
+  value: string,
+): ValidateSettingsValueResult => {
   if (!isValidTimezone(value)) {
     return {
       ok: false,
@@ -78,3 +84,14 @@ export const validateTimezone = (value: string): ValidateSettingsResult => {
   }
   return { ok: true };
 };
+
+type ValidateFunctions = {
+  [key in keyof Settings]?: (
+    value: Settings[key],
+  ) => ValidateSettingsValueResult;
+};
+
+export const validateFunctions: ValidateFunctions = {
+  hostname: validateHostname,
+  timezone: validateTimezone,
+} as const;
