@@ -7,7 +7,7 @@ import DownloadIcon from '~/icon/bootstrap/download.svg';
 import { Collapse } from '~/lib/component/transition';
 import { isValidTimezone, toDatetime } from '~/lib/datetime';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
-import { baseURL, hostnames } from '~/lib/settings';
+import { baseURL, hostnames, validateSettings } from '~/lib/settings';
 import { saveSettings } from '~/lib/storage/settings';
 import { State, actions } from '../store';
 import {
@@ -292,7 +292,13 @@ const Commands: React.FC = () => {
                 // update store
                 dispatch(actions.settings.applyEdits());
                 // save to storage
-                saveSettings(store.getState().settings.current);
+                const settings = {
+                  ...store.getState().settings.current,
+                  ...store.getState().settings.editing,
+                };
+                if (validateSettings(settings).ok) {
+                  saveSettings(settings);
+                }
               }}>
               Save settings
             </button>
