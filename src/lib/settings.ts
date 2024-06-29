@@ -53,9 +53,20 @@ interface SettingsValueValidationFailure {
   error: string[];
 }
 
+interface SettingsValidationFailure {
+  ok: false;
+  errors: {
+    [key in keyof Settings]?: string[];
+  };
+}
+
 export type ValidateSettingsValueResult =
   | ValidationSuccess
   | SettingsValueValidationFailure;
+
+export type ValidateSettingsResult =
+  | ValidationSuccess
+  | SettingsValidationFailure;
 
 export const validateHostname = (
   value: string,
@@ -87,7 +98,7 @@ export const validateTimezone = (
 
 type ValidateFunctions = {
   [key in keyof Settings]?: (
-    value: Settings[key],
+    value: Settings[key] extends string ? string : Settings[key],
   ) => ValidateSettingsValueResult;
 };
 
@@ -95,3 +106,23 @@ export const validateFunctions: ValidateFunctions = {
   hostname: validateHostname,
   timezone: validateTimezone,
 } as const;
+
+export const validateSettings = (
+  settings: Settings,
+): ValidateSettingsResult => {
+  const keys = ['hostname', 'timezone'] as const;
+  const errors: SettingsValidationFailure['errors'] = {};
+  keys.forEach((key) => {
+    const validate = validateFunctions[key];
+    if (validate !== undefined) {
+      const result = validate(settings[key]);
+      if (!result.ok) {
+        errors[key] = result.error;
+      }
+    }
+  });
+  if (Object.keys(errors).length > 0) {
+    return { ok: false, errors };
+  }
+  return { ok: true };
+};
