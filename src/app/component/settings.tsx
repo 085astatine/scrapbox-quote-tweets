@@ -4,6 +4,7 @@ import { shallowEqual, useDispatch, useSelector, useStore } from 'react-redux';
 import browser from 'webextension-polyfill';
 import ArrowRightIcon from '~/icon/bootstrap/arrow-right.svg';
 import DownloadIcon from '~/icon/bootstrap/download.svg';
+import CloseIcon from '~/icon/bootstrap/x.svg';
 import { Collapse } from '~/lib/component/transition';
 import { isValidTimezone, toDatetime } from '~/lib/datetime';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
@@ -19,6 +20,7 @@ import {
   selectHostname,
   selectHostnameErrors,
   selectIsSettingsEdited,
+  selectSettingsUpdateTrigger,
   selectTimezone,
   selectTimezoneErrors,
 } from '../store/selector';
@@ -28,6 +30,7 @@ export const Settings: React.FC = () => {
     <>
       <div className="settings fade-in">
         <h1>Settings</h1>
+        <UpdateNotification />
         <BaseURL />
         <Timezone />
         <DatetimeFormat />
@@ -301,6 +304,37 @@ const Commands: React.FC = () => {
                 }
               }}>
               Save settings
+            </button>
+          </div>
+        </div>
+      }
+    />
+  );
+};
+
+const UpdateNotification: React.FC = () => {
+  const ref = React.useRef(null);
+  const trigger = useSelector(selectSettingsUpdateTrigger);
+  const dispatch = useDispatch();
+  return (
+    <Collapse
+      nodeRef={ref}
+      in={trigger === 'interrupt'}
+      duration={300}
+      mountOnEnter
+      unmountOnExit
+      target={
+        <div ref={ref}>
+          <div className="settings-update-notification">
+            Settings have been updated from other tabs
+            <button
+              className="close"
+              onClick={() => dispatch(actions.settings.resetUpdateTrigger())}>
+              <CloseIcon
+                className="close-icon"
+                height={undefined}
+                width={undefined}
+              />
             </button>
           </div>
         </div>
