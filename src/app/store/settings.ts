@@ -95,12 +95,13 @@ const settings = createSlice({
       state: SettingsState,
       action: PayloadAction<Partial<Settings>>,
     ): void {
+      const previousState = { ...state.current };
       state.current = {
         ...state.current,
         ...action.payload,
       };
       editingSettingsKeys.forEach((key) => {
-        resetEditingValueByInterrupt(state, key);
+        resetEditingValueByInterrupt(state, key, previousState);
       });
       switch (state.updateTrigger) {
         case 'none':
@@ -171,9 +172,12 @@ const validateEditingValue = <Key extends keyof EditingSettings>(
 const resetEditingValueByInterrupt = <Key extends keyof EditingSettings>(
   state: SettingsState,
   key: Key,
+  previousState: Settings,
 ): void => {
   if (state.current[key] === state.editing[key]) {
     delete state.editing[key];
     delete state.errors[key];
+  } else if (state.current[key] !== previousState[key]) {
+    state.editing[key] = previousState[key];
   }
 };
