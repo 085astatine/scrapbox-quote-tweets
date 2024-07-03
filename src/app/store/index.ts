@@ -5,7 +5,11 @@ import { defaultSettings } from '~/lib/settings';
 import { StorageListenerArguments } from '~/lib/storage/listener';
 import { loadSettings } from '~/lib/storage/settings';
 import { loadTrashbox, loadTweetsNotInTrashbox } from '~/lib/storage/trashbox';
-import { settingsActions, settingsReducer } from './settings';
+import {
+  settingsActions,
+  settingsReducer,
+  settingsStorageListener,
+} from './settings';
 import { tweetActions, tweetReducer, tweetStorageListener } from './tweet';
 
 // store
@@ -40,6 +44,7 @@ export const actions = {
 
 export const storageListener = (args: StorageListenerArguments): void => {
   tweetStorageListener(args, store.dispatch);
+  settingsStorageListener(args, store.dispatch);
 };
 
 // Initialize store with data loaded from storage

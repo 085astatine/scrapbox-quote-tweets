@@ -10,6 +10,7 @@ import {
   TweetSort,
 } from '~/lib/tweet/types';
 import { State } from '.';
+import { UpdateTrigger } from './settings';
 
 // currnet settings
 export const selectHostname = (state: State): Hostname => {
@@ -61,6 +62,11 @@ export const selectTimezoneErrors = (state: State): string[] => {
 
 export const selectDatetimeFormatErrors = (state: State): string[] => {
   return fallbackToEmptyArray(state.settings.errors.datetimeFormat ?? []);
+};
+
+// settings update trigger
+export const selectSettingsUpdateTrigger = (state: State): UpdateTrigger => {
+  return state.settings.updateTrigger;
 };
 
 // tweets

@@ -516,6 +516,42 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   }
 }
 
+.settings-update-notification {
+  display: block;
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 2);
+  color: var(--#{$bs-prefix}white);
+  text-align: center;
+  background-color: var(--#{$bs-prefix}primary);
+  border-radius: var(--#{$bs-prefix}border-radius);
+
+  .close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    float: right;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    color: inherit;
+    appearance: none;
+    background-color: inherit;
+    border: none;
+    border-radius: 50%;
+
+    &:is(:hover, :focus) {
+      background-color: var(--#{$bs-prefix}secondary);
+    }
+
+    &:focus-visible {
+      outline: $focus-visible-outline;
+    }
+  }
+
+  .close-icon {
+    width: 1.5em;
+    height: 1.5em;
+  }
+}
+
 .settings-datetime-format-sample {
   display: flex;
   flex-wrap: wrap;
