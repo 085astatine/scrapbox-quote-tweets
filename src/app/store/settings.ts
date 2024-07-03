@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import equal from 'fast-deep-equal';
 import { Dispatch } from 'redux';
 import {
   Hostname,
@@ -147,7 +148,7 @@ const editSettings = <Key extends keyof EditingSettings>(
   key: Key,
   value: EditingSettings[Key],
 ): void => {
-  if (state.current[key] !== value) {
+  if (!equal(state.current[key], value)) {
     state.editing[key] = value;
   } else if (key in state.editing) {
     delete state.editing[key];
@@ -174,10 +175,10 @@ const resetEditingValueByInterrupt = <Key extends keyof EditingSettings>(
   key: Key,
   previousState: Settings,
 ): void => {
-  if (state.current[key] === state.editing[key]) {
+  if (equal(state.current[key], state.editing[key])) {
     delete state.editing[key];
     delete state.errors[key];
-  } else if (state.current[key] !== previousState[key]) {
+  } else if (!equal(state.current[key], previousState[key])) {
     state.editing[key] = previousState[key];
   }
 };
