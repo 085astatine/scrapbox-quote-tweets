@@ -15,10 +15,13 @@ type EditingSettings = Partial<Omit<Settings, 'tweetSort' | 'trashboxSort'>>;
 
 type SettingsErrors = Partial<Record<keyof EditingSettings, string[]>>;
 
+export type UpdateTrigger = 'none' | 'self' | 'interrupt';
+
 export interface SettingsState {
   current: Settings;
   editing: EditingSettings;
   errors: SettingsErrors;
+  updateTrigger: UpdateTrigger;
 }
 
 const initialSettingsState = (): SettingsState => {
@@ -26,6 +29,7 @@ const initialSettingsState = (): SettingsState => {
     current: defaultSettings(),
     editing: {},
     errors: {},
+    updateTrigger: 'none',
   };
 };
 
@@ -37,6 +41,7 @@ const settings = createSlice({
       state.current = { ...action.payload };
       state.editing = {};
       state.errors = {};
+      state.updateTrigger = 'none';
     },
     applyEdits(state: SettingsState): void {
       // reset errors
@@ -52,11 +57,15 @@ const settings = createSlice({
           ...state.editing,
         };
         state.editing = {};
+        state.updateTrigger = 'self';
       }
     },
     resetEdits(state: SettingsState): void {
       state.editing = {};
       state.errors = {};
+    },
+    resetUpdateTrigger(state: SettingsState): void {
+      state.updateTrigger = 'none';
     },
     editHostname(state: SettingsState, action: PayloadAction<Hostname>): void {
       editSettings(state, 'hostname', action.payload);
@@ -93,6 +102,16 @@ const settings = createSlice({
       editingSettingsKeys.forEach((key) => {
         resetEditingValueByInterrupt(state, key);
       });
+      switch (state.updateTrigger) {
+        case 'none':
+          if (Object.keys(state.editing).length > 0) {
+            state.updateTrigger = 'interrupt';
+          }
+          break;
+        case 'self':
+          state.updateTrigger = 'none';
+          break;
+      }
     },
   },
 });
