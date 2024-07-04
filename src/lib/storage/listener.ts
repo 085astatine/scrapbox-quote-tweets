@@ -3,7 +3,8 @@ import browser from 'webextension-polyfill';
 import { Logger } from '../logger';
 import { Settings } from '../settings';
 import { DeletedTweetID, Tweet, TweetID } from '../tweet/types';
-import { isSettingsKey, toSettingsKey } from './settings';
+import { SettingsRecord, isSettingsKey } from './settings';
+import { recordTo } from './to-record';
 import { isTweetIDKey, toTweetID } from './tweet-id-key';
 
 type OnChangedListener = (
@@ -51,7 +52,7 @@ export const createStorageListener = (
     const deletedTweets: Tweet[] = [];
     const updatedTweets: UpdatedTweet[] = [];
     // settings changes
-    const settings: Partial<Settings> = {};
+    const settingsRecord: Partial<SettingsRecord> = {};
     for (const [key, value] of Object.entries(changes)) {
       // tweet
       if (isTweetIDKey(key)) {
@@ -74,7 +75,7 @@ export const createStorageListener = (
           !equal(value.oldValue, value.newValue) &&
           value.newValue !== undefined
         ) {
-          settings[toSettingsKey(key)] = value.newValue;
+          settingsRecord[key] = value.newValue;
         }
       }
     }
@@ -88,6 +89,8 @@ export const createStorageListener = (
       changes['trashbox']?.oldValue,
       changes['trashbox']?.newValue,
     );
+    // settings change
+    const settings = recordTo(settingsRecord, 'settings') as Partial<Settings>;
     // listener arguments
     const listenerArgs: StorageListenerArguments = {
       ...(Object.keys(tweet).length > 0 && { tweet }),
