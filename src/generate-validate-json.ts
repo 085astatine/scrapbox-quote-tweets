@@ -9,6 +9,7 @@ import {
   tweetJSONSchema,
   tweetsJSONSchema,
 } from './jsonschema/tweet';
+import { tweetTemplateJSONSchema } from './jsonschema/tweet-template';
 import formats from './validate-json/formats';
 
 const generate = <T>(
@@ -87,4 +88,11 @@ generate(
   'validate-settings',
   'Settings',
   "import { Settings } from '~/lib/settings'",
+);
+// TweetTemplate
+generate(
+  tweetTemplateJSONSchema,
+  'validate-tweet-template',
+  'TweetTemplate',
+  "import { TweetTemplate } from '~/lib/tweet/tweet-template'",
 );
