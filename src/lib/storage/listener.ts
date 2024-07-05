@@ -2,10 +2,16 @@ import equal from 'fast-deep-equal';
 import browser from 'webextension-polyfill';
 import { Logger } from '../logger';
 import { Settings } from '../settings';
+import { TweetTemplate } from '../tweet/tweet-template';
 import { DeletedTweetID, Tweet, TweetID } from '../tweet/types';
+import { RecursivePartial } from '../utility';
 import { SettingsRecord, isSettingsRecordKey } from './settings';
 import { recordTo } from './to-record';
 import { isTweetIDKey, toTweetID } from './tweet-id-key';
+import {
+  TweetTemplateRecord,
+  isTweetTemplateRecordKey,
+} from './tweet-template';
 
 type OnChangedListener = (
   changes: browser.Storage.StorageAreaOnChangedChangesType,
@@ -39,6 +45,7 @@ export interface StorageListenerArguments {
   tweet?: TweetChanges;
   trashbox?: TrashboxChanges;
   settings?: Partial<Settings>;
+  template?: RecursivePartial<TweetTemplate>;
 }
 
 export const createStorageListener = (
@@ -51,8 +58,9 @@ export const createStorageListener = (
     const addedTweets: Tweet[] = [];
     const deletedTweets: Tweet[] = [];
     const updatedTweets: UpdatedTweet[] = [];
-    // settings changes
+    // settings & tweet-tepmpate changes
     const settingsRecord: Partial<SettingsRecord> = {};
+    const templateRecord: Partial<TweetTemplateRecord> = {};
     for (const [key, value] of Object.entries(changes)) {
       // tweet
       if (isTweetIDKey(key)) {
@@ -69,13 +77,19 @@ export const createStorageListener = (
           });
         }
       }
-      // settings
-      if (isSettingsRecordKey(key)) {
-        if (
-          !equal(value.oldValue, value.newValue) &&
-          value.newValue !== undefined
-        ) {
+      // settings & tweet-template
+      if (
+        !equal(value.oldValue, value.newValue) &&
+        value.newValue !== undefined
+      ) {
+        // settings
+        if (isSettingsRecordKey(key)) {
           settingsRecord[key] = value.newValue;
+        }
+        // tweet-template
+        if (isTweetTemplateRecordKey(key)) {
+          // @ts-expect-error false positive TS2322: Type 'any' is not assignable to type 'never'
+          templateRecord[key] = value.newValue;
         }
       }
     }
@@ -91,11 +105,17 @@ export const createStorageListener = (
     );
     // settings change
     const settings = recordTo(settingsRecord, 'settings') as Partial<Settings>;
+    // tweet template change
+    const template = recordTo(
+      templateRecord,
+      'tweetTemplate',
+    ) as RecursivePartial<TweetTemplate>;
     // listener arguments
     const listenerArgs: StorageListenerArguments = {
       ...(Object.keys(tweet).length > 0 && { tweet }),
       ...(Object.keys(trashbox).length > 0 && { trashbox }),
       ...(Object.keys(settings).length > 0 && { settings }),
+      ...(Object.keys(template).length > 0 && { template }),
     };
     logger?.debug('listener arguments', listenerArgs);
     // execute listener
