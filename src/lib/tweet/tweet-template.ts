@@ -3,17 +3,13 @@ import difflib from 'difflib';
 export interface TweetTemplate {
   tweet: string;
   footer: string;
-  entity: {
-    text: string;
-    url: string;
-    hashtag: string;
-    cashtag: string;
-    mention: string;
-  };
-  media: {
-    photo: string;
-    video: string;
-  };
+  entityText: string;
+  entityUrl: string;
+  entityHashtag: string;
+  entityCashtag: string;
+  entityMention: string;
+  mediaPhoto: string;
+  mediaVideo: string;
   quote: boolean;
 }
 
@@ -21,17 +17,13 @@ export const defaultTweetTemplate = (): TweetTemplate => {
   return {
     tweet: '[${tweet.url} ${user.name}(@${user.username})]: ${tweet.text}',
     footer: '${tweet.datetime}',
-    entity: {
-      text: '${text}',
-      url: '[${decoded_url} ${title}]',
-      hashtag: '${text}',
-      cashtag: '${text}',
-      mention: '[${user_url} ${text}]',
-    },
-    media: {
-      photo: '[${url}]',
-      video: '[${thumbnail}]',
-    },
+    entityText: '${text}',
+    entityUrl: '[${decoded_url} ${title}]',
+    entityHashtag: '${text}',
+    entityCashtag: '${text}',
+    entityMention: '[${user_url} ${text}]',
+    mediaPhoto: '[${url}]',
+    mediaVideo: '[${thumbnail}]',
     quote: true,
   };
 };
@@ -122,15 +114,15 @@ export const parseTweetTemplate = (
     tweet: parser.tweet(template.tweet),
     footer: parser.tweet(template.footer),
     entity: {
-      text: parser.entity.text(template.entity.text),
-      url: parser.entity.url(template.entity.url),
-      hashtag: parser.entity.hashtag(template.entity.hashtag),
-      cashtag: parser.entity.cashtag(template.entity.cashtag),
-      mention: parser.entity.mention(template.entity.mention),
+      text: parser.entity.text(template.entityText),
+      url: parser.entity.url(template.entityUrl),
+      hashtag: parser.entity.hashtag(template.entityHashtag),
+      cashtag: parser.entity.cashtag(template.entityCashtag),
+      mention: parser.entity.mention(template.entityMention),
     },
     media: {
-      photo: parser.media.photo(template.media.photo),
-      video: parser.media.video(template.media.video),
+      photo: parser.media.photo(template.mediaPhoto),
+      video: parser.media.video(template.mediaVideo),
     },
     quote: template.quote,
   };

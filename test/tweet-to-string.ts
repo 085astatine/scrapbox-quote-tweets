@@ -19,17 +19,13 @@ describe('tweet-to-string/tweet', () => {
   const baseTemplate = {
     tweet: '',
     footer: '',
-    entity: {
-      text: '${text}',
-      url: '[${decoded_url} ${title}]',
-      hashtag: '#${tag}',
-      cashtag: '$${tag}',
-      mention: '@${username}',
-    },
-    media: {
-      photo: '[${url}]',
-      video: '[${thumbnail}]',
-    },
+    entityText: '${text}',
+    entityUrl: '[${decoded_url} ${title}]',
+    entityHashtag: '#${tag}',
+    entityCashtag: '$${tag}',
+    entityMention: '@${username}',
+    mediaPhoto: '[${url}]',
+    mediaVideo: '[${thumbnail}]',
     quote: false,
   };
   test('tweet.id', () => {
@@ -207,27 +203,22 @@ describe('tweet-to-string/entity', () => {
   const baseTemplate = {
     tweet: '${tweet.text}',
     footer: '',
-    entity: {
-      text: '${text}',
-      url: '[${decoded_url} ${title}]',
-      hashtag: '#${tag}',
-      cashtag: '$${tag}',
-      mention: '@${username}',
-    },
-    media: {
-      photo: '[${url}]',
-      video: '[${thumbnail}]',
-    },
+    entityText: '${text}',
+    entityUrl: '[${decoded_url} ${title}]',
+    entityHashtag: '#${tag}',
+    entityCashtag: '$${tag}',
+    entityMention: '@${username}',
+    mediaPhoto: '[${url}]',
+    mediaVideo: '[${thumbnail}]',
     quote: false,
   };
   test('text', () => {
     const text = {
       text: [{ type: 'text' as const, text: 'This is the test text.' }],
     };
-    const template = { ...baseTemplate };
-    template.entity = {
-      ...baseTemplate.entity,
-      text: 'text: "${text}"\n',
+    const template = {
+      ...baseTemplate,
+      entityText: 'text: "${text}"\n',
     };
     expect(tweetToString({ ...tweet, ...text }, template)).toBe(
       'text: "This is the test text."\n',
@@ -246,10 +237,9 @@ describe('tweet-to-string/entity', () => {
         },
       ],
     };
-    const template = { ...baseTemplate };
-    template.entity = {
-      ...template.entity,
-      url: [
+    const template = {
+      ...baseTemplate,
+      entityUrl: [
         'text: "${text}"\n',
         'short_url: "${short_url}"\n',
         'expanded_url: "${expanded_url}"\n',
@@ -277,10 +267,9 @@ describe('tweet-to-string/entity', () => {
         },
       ],
     };
-    const template = { ...baseTemplate };
-    template.entity = {
-      ...template.entity,
-      hashtag: ['text: "${text}"\n', 'tag: "${tag}"\n'].join(''),
+    const template = {
+      ...baseTemplate,
+      entityHashtag: ['text: "${text}"\n', 'tag: "${tag}"\n'].join(''),
     };
     expect(tweetToString({ ...tweet, ...text }, template)).toBe(
       ['text: "#Twitter"\n', 'tag: "Twitter"\n'].join(''),
@@ -296,10 +285,9 @@ describe('tweet-to-string/entity', () => {
         },
       ],
     };
-    const template = { ...baseTemplate };
-    template.entity = {
-      ...template.entity,
-      cashtag: ['text: "${text}"\n', 'tag: "${tag}"\n'].join(''),
+    const template = {
+      ...baseTemplate,
+      entityCashtag: ['text: "${text}"\n', 'tag: "${tag}"\n'].join(''),
     };
     expect(tweetToString({ ...tweet, ...text }, template)).toBe(
       ['text: "$TWTR"\n', 'tag: "TWTR"\n'].join(''),
@@ -315,10 +303,9 @@ describe('tweet-to-string/entity', () => {
         },
       ],
     };
-    const template = { ...baseTemplate };
-    template.entity = {
-      ...template.entity,
-      mention: [
+    const template = {
+      ...baseTemplate,
+      entityMention: [
         'text: "${text}"\n',
         'username: "${username}"\n',
         'url: "${user_url}"\n',
