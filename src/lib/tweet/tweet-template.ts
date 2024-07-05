@@ -109,13 +109,13 @@ export const parseTweetTemplate = (
   return {
     tweet: parser.tweet(template.tweet),
     footer: parser.tweet(template.footer),
-    entityText: parser.entity.text(template.entityText),
-    entityUrl: parser.entity.url(template.entityUrl),
-    entityHashtag: parser.entity.hashtag(template.entityHashtag),
-    entityCashtag: parser.entity.cashtag(template.entityCashtag),
-    entityMention: parser.entity.mention(template.entityMention),
-    mediaPhoto: parser.media.photo(template.mediaPhoto),
-    mediaVideo: parser.media.video(template.mediaVideo),
+    entityText: parser.entityText(template.entityText),
+    entityUrl: parser.entityUrl(template.entityUrl),
+    entityHashtag: parser.entityHashtag(template.entityHashtag),
+    entityCashtag: parser.entityCashtag(template.entityCashtag),
+    entityMention: parser.entityMention(template.entityMention),
+    mediaPhoto: parser.mediaPhoto(template.mediaPhoto),
+    mediaVideo: parser.mediaVideo(template.mediaVideo),
     quote: template.quote,
   };
 };
@@ -186,15 +186,11 @@ const fieldParser = <Field extends string>(
 
 export const tweetTemplateParser = {
   tweet: fieldParser(tweetFields),
-  entity: {
-    text: fieldParser(entityTextFields),
-    url: fieldParser(entityURLFields),
-    hashtag: fieldParser(entityHashtagFields),
-    cashtag: fieldParser(entityCashtagFields),
-    mention: fieldParser(entityMentionFields),
-  },
-  media: {
-    photo: fieldParser(mediaPhotoFields),
-    video: fieldParser(mediaVideoFields),
-  },
+  entityText: fieldParser(entityTextFields),
+  entityUrl: fieldParser(entityURLFields),
+  entityHashtag: fieldParser(entityHashtagFields),
+  entityCashtag: fieldParser(entityCashtagFields),
+  entityMention: fieldParser(entityMentionFields),
+  mediaPhoto: fieldParser(mediaPhotoFields),
+  mediaVideo: fieldParser(mediaVideoFields),
 } as const;
