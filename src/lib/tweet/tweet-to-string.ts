@@ -142,23 +142,23 @@ const tweetEntityToString = (
 ): string => {
   switch (entity.type) {
     case 'text':
-      return template.entity.text
+      return template.entityText
         .map((element) => substituteEntityTextTemplate(element, entity))
         .join('');
     case 'url':
-      return template.entity.url
+      return template.entityUrl
         .map((element) => substituteEntityURLTemplate(element, entity))
         .join('');
     case 'hashtag':
-      return template.entity.hashtag
+      return template.entityHashtag
         .map((element) => substituteEntityHashtagTemplate(element, entity))
         .join('');
     case 'cashtag':
-      return template.entity.cashtag
+      return template.entityCashtag
         .map((element) => substituteEntityCashtagTemplate(element, entity))
         .join('');
     case 'mention':
-      return template.entity.mention
+      return template.entityMention
         .map((element) =>
           substituteEntityMentionTemplate(element, entity, option),
         )
@@ -289,11 +289,11 @@ const mediaListToString = (
 const mediaToString = (media: Media, template: ParsedTweetTemplate): string => {
   switch (media.type) {
     case 'photo':
-      return template.media.photo
+      return template.mediaPhoto
         .map((element) => substituteMediaPhotoTemplate(element, media))
         .join('');
     case 'video':
-      return template.media.video
+      return template.mediaVideo
         .map((element) => substituteMediaVideoTemplate(element, media))
         .join('');
   }

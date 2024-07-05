@@ -91,17 +91,13 @@ export type MediaVideoField = (typeof mediaVideoFields)[number];
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
   footer: readonly TemplateElement<TweetField>[];
-  entity: {
-    text: readonly TemplateElement<EntityTextField>[];
-    url: readonly TemplateElement<EntityURLField>[];
-    hashtag: readonly TemplateElement<EntityHashtagField>[];
-    cashtag: readonly TemplateElement<EntityCashtagField>[];
-    mention: readonly TemplateElement<EntityMentionField>[];
-  };
-  media: {
-    photo: readonly TemplateElement<MediaPhotoField>[];
-    video: readonly TemplateElement<MediaVideoField>[];
-  };
+  entityText: readonly TemplateElement<EntityTextField>[];
+  entityUrl: readonly TemplateElement<EntityURLField>[];
+  entityHashtag: readonly TemplateElement<EntityHashtagField>[];
+  entityCashtag: readonly TemplateElement<EntityCashtagField>[];
+  entityMention: readonly TemplateElement<EntityMentionField>[];
+  mediaPhoto: readonly TemplateElement<MediaPhotoField>[];
+  mediaVideo: readonly TemplateElement<MediaVideoField>[];
   quote: boolean;
 }
 
@@ -113,17 +109,13 @@ export const parseTweetTemplate = (
   return {
     tweet: parser.tweet(template.tweet),
     footer: parser.tweet(template.footer),
-    entity: {
-      text: parser.entity.text(template.entityText),
-      url: parser.entity.url(template.entityUrl),
-      hashtag: parser.entity.hashtag(template.entityHashtag),
-      cashtag: parser.entity.cashtag(template.entityCashtag),
-      mention: parser.entity.mention(template.entityMention),
-    },
-    media: {
-      photo: parser.media.photo(template.mediaPhoto),
-      video: parser.media.video(template.mediaVideo),
-    },
+    entityText: parser.entity.text(template.entityText),
+    entityUrl: parser.entity.url(template.entityUrl),
+    entityHashtag: parser.entity.hashtag(template.entityHashtag),
+    entityCashtag: parser.entity.cashtag(template.entityCashtag),
+    entityMention: parser.entity.mention(template.entityMention),
+    mediaPhoto: parser.media.photo(template.mediaPhoto),
+    mediaVideo: parser.media.video(template.mediaVideo),
     quote: template.quote,
   };
 };
