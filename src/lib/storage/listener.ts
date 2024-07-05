@@ -3,7 +3,7 @@ import browser from 'webextension-polyfill';
 import { Logger } from '../logger';
 import { Settings } from '../settings';
 import { DeletedTweetID, Tweet, TweetID } from '../tweet/types';
-import { SettingsRecord, isSettingsKey } from './settings';
+import { SettingsRecord, isSettingsRecordKey } from './settings';
 import { recordTo } from './to-record';
 import { isTweetIDKey, toTweetID } from './tweet-id-key';
 
@@ -70,7 +70,7 @@ export const createStorageListener = (
         }
       }
       // settings
-      if (isSettingsKey(key)) {
+      if (isSettingsRecordKey(key)) {
         if (
           !equal(value.oldValue, value.newValue) &&
           value.newValue !== undefined

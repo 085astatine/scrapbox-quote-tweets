@@ -46,23 +46,16 @@ export type SettingsRecord = {
 };
 
 // key
-const settingsKeys: ReadonlyArray<keyof Settings> = [
-  'hostname',
-  'timezone',
-  'datetimeFormat',
-  'tweetSort',
-  'trashboxSort',
-];
+const settingsRecordKeys: ReadonlyArray<keyof SettingsRecord> = [
+  'settings_hostname',
+  'settings_timezone',
+  'settings_datetimeFormat',
+  'settings_tweetSort',
+  'settings_trashboxSort',
+] as const;
 
-export const isSettingsKey = (key: string): key is keyof SettingsRecord => {
-  // 'settings_'.length === 9
-  return (
-    key.startsWith('settings_') &&
-    (settingsKeys as ReadonlyArray<string>).includes(key.substring(9))
-  );
-};
-
-export const toSettingsKey = (key: keyof SettingsRecord): keyof Settings => {
-  // 'settings_'.length === 9
-  return key.substring(9) as keyof Settings;
+export const isSettingsRecordKey = (
+  key: string,
+): key is keyof SettingsRecord => {
+  return (settingsRecordKeys as ReadonlyArray<string>).includes(key);
 };
