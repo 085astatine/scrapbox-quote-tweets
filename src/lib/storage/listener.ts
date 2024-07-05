@@ -4,7 +4,6 @@ import { Logger } from '../logger';
 import { Settings } from '../settings';
 import { TweetTemplate } from '../tweet/tweet-template';
 import { DeletedTweetID, Tweet, TweetID } from '../tweet/types';
-import { RecursivePartial } from '../utility';
 import { SettingsRecord, isSettingsRecordKey } from './settings';
 import { recordTo } from './to-record';
 import { isTweetIDKey, toTweetID } from './tweet-id-key';
@@ -45,7 +44,7 @@ export interface StorageListenerArguments {
   tweet?: TweetChanges;
   trashbox?: TrashboxChanges;
   settings?: Partial<Settings>;
-  template?: RecursivePartial<TweetTemplate>;
+  template?: Partial<TweetTemplate>;
 }
 
 export const createStorageListener = (
@@ -106,7 +105,7 @@ export const createStorageListener = (
     const template = recordTo(
       templateRecord,
       'tweetTemplate',
-    ) as RecursivePartial<TweetTemplate>;
+    ) as Partial<TweetTemplate>;
     // listener arguments
     const listenerArgs: StorageListenerArguments = {
       ...(Object.keys(tweet).length > 0 && { tweet }),
