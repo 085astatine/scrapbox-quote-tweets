@@ -61,35 +61,32 @@ export const createStorageListener = (
     // settings & tweet-tepmpate changes
     const settingsRecord: Partial<SettingsRecord> = {};
     const templateRecord: Partial<TweetTemplateRecord> = {};
-    for (const [key, value] of Object.entries(changes)) {
+    for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
       // tweet
       if (isTweetIDKey(key)) {
         const tweetID = toTweetID(key);
-        if (value.oldValue === undefined) {
-          addedTweets.push(value.newValue);
-        } else if (value.newValue === undefined) {
-          deletedTweets.push(value.oldValue);
+        if (oldValue === undefined) {
+          addedTweets.push(newValue);
+        } else if (newValue === undefined) {
+          deletedTweets.push(oldValue);
         } else {
           updatedTweets.push({
             id: tweetID,
-            before: value.oldValue,
-            after: value.newValue,
+            before: oldValue,
+            after: newValue,
           });
         }
       }
       // settings & tweet-template
-      if (
-        !equal(value.oldValue, value.newValue) &&
-        value.newValue !== undefined
-      ) {
+      if (!equal(oldValue, newValue) && newValue !== undefined) {
         // settings
         if (isSettingsRecordKey(key)) {
-          settingsRecord[key] = value.newValue;
+          settingsRecord[key] = newValue;
         }
         // tweet-template
         if (isTweetTemplateRecordKey(key)) {
           // @ts-expect-error false positive TS2322: Type 'any' is not assignable to type 'never'
-          templateRecord[key] = value.newValue;
+          templateRecord[key] = newValue;
         }
       }
     }
