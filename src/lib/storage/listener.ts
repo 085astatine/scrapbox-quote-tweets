@@ -2,9 +2,16 @@ import equal from 'fast-deep-equal';
 import browser from 'webextension-polyfill';
 import { Logger } from '../logger';
 import { Settings } from '../settings';
+import { TweetTemplate } from '../tweet/tweet-template';
 import { DeletedTweetID, Tweet, TweetID } from '../tweet/types';
-import { isSettingsKey, toSettingsKey } from './settings';
+import { RecursivePartial } from '../utility';
+import { SettingsRecord, isSettingsRecordKey } from './settings';
+import { recordTo } from './to-record';
 import { isTweetIDKey, toTweetID } from './tweet-id-key';
+import {
+  TweetTemplateRecord,
+  isTweetTemplateRecordKey,
+} from './tweet-template';
 
 type OnChangedListener = (
   changes: browser.Storage.StorageAreaOnChangedChangesType,
@@ -38,6 +45,7 @@ export interface StorageListenerArguments {
   tweet?: TweetChanges;
   trashbox?: TrashboxChanges;
   settings?: Partial<Settings>;
+  template?: RecursivePartial<TweetTemplate>;
 }
 
 export const createStorageListener = (
@@ -50,31 +58,35 @@ export const createStorageListener = (
     const addedTweets: Tweet[] = [];
     const deletedTweets: Tweet[] = [];
     const updatedTweets: UpdatedTweet[] = [];
-    // settings changes
-    const settings: Partial<Settings> = {};
-    for (const [key, value] of Object.entries(changes)) {
+    // settings & tweet-tepmpate changes
+    const settingsRecord: Partial<SettingsRecord> = {};
+    const templateRecord: Partial<TweetTemplateRecord> = {};
+    for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
       // tweet
       if (isTweetIDKey(key)) {
         const tweetID = toTweetID(key);
-        if (value.oldValue === undefined) {
-          addedTweets.push(value.newValue);
-        } else if (value.newValue === undefined) {
-          deletedTweets.push(value.oldValue);
+        if (oldValue === undefined) {
+          addedTweets.push(newValue);
+        } else if (newValue === undefined) {
+          deletedTweets.push(oldValue);
         } else {
           updatedTweets.push({
             id: tweetID,
-            before: value.oldValue,
-            after: value.newValue,
+            before: oldValue,
+            after: newValue,
           });
         }
       }
-      // settings
-      if (isSettingsKey(key)) {
-        if (
-          !equal(value.oldValue, value.newValue) &&
-          value.newValue !== undefined
-        ) {
-          settings[toSettingsKey(key)] = value.newValue;
+      // settings & tweet-template
+      if (!equal(oldValue, newValue) && newValue !== undefined) {
+        // settings
+        if (isSettingsRecordKey(key)) {
+          settingsRecord[key] = newValue;
+        }
+        // tweet-template
+        if (isTweetTemplateRecordKey(key)) {
+          // @ts-expect-error false positive TS2322: Type 'any' is not assignable to type 'never'
+          templateRecord[key] = newValue;
         }
       }
     }
@@ -88,11 +100,19 @@ export const createStorageListener = (
       changes['trashbox']?.oldValue,
       changes['trashbox']?.newValue,
     );
+    // settings change
+    const settings = recordTo(settingsRecord, 'settings') as Partial<Settings>;
+    // tweet template change
+    const template = recordTo(
+      templateRecord,
+      'tweetTemplate',
+    ) as RecursivePartial<TweetTemplate>;
     // listener arguments
     const listenerArgs: StorageListenerArguments = {
       ...(Object.keys(tweet).length > 0 && { tweet }),
       ...(Object.keys(trashbox).length > 0 && { trashbox }),
       ...(Object.keys(settings).length > 0 && { settings }),
+      ...(Object.keys(template).length > 0 && { template }),
     };
     logger?.debug('listener arguments', listenerArgs);
     // execute listener

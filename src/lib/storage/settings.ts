@@ -4,28 +4,9 @@ import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateSettings from '~/validate-json/validate-settings';
 import { Settings, defaultSettings } from '../settings';
 import { logger } from './logger';
+import { recordTo, toRecord } from './to-record';
 
-type SettingsRecord = {
-  [key in keyof Settings as `settings_${key}`]: Settings[key];
-};
-
-const toRecord = (settings: Settings): SettingsRecord => {
-  return Object.entries(settings).reduce((record, [key, value]) => {
-    // @ts-expect-error Add prefix to settings keys
-    record[`settings_${key}`] = value;
-    return record;
-  }, {}) as SettingsRecord;
-};
-
-const toSettings = (record: SettingsRecord): Settings => {
-  // 'settings_'.length === 9
-  return Object.entries(record).reduce((settings, [key, value]) => {
-    // @ts-expect-error Remove prefix from record keys
-    settings[key.substring(9)] = value;
-    return settings;
-  }, {}) as Settings;
-};
-
+// load & save
 export const saveSettings = async (settings: Settings): Promise<void> => {
   logger.debug('save settings');
   // JSON Schema validation
@@ -37,16 +18,15 @@ export const saveSettings = async (settings: Settings): Promise<void> => {
     );
   }
   // set to storage
-  await browser.storage.local.set(toRecord(settings));
+  await browser.storage.local.set(toRecord(settings, prefix) as SettingsRecord);
 };
 
-export const loadSettings = async (): Promise<Settings | null> => {
+export const loadSettings = async (): Promise<Settings> => {
   logger.debug('load settings');
   // load from storage
-  const record = (await browser.storage.local.get(
-    toRecord(defaultSettings()),
-  )) as SettingsRecord;
-  const data = toSettings(record);
+  const request = toRecord(defaultSettings(), prefix) as SettingsRecord;
+  const record = await browser.storage.local.get(request);
+  const data = recordTo(record, prefix);
   // JSON Schema validation
   if (!validateSettings(data)) {
     throw new JSONSchemaValidationError(
@@ -58,23 +38,24 @@ export const loadSettings = async (): Promise<Settings | null> => {
   return data;
 };
 
-const settingsKeys: ReadonlyArray<keyof Settings> = [
-  'hostname',
-  'timezone',
-  'datetimeFormat',
-  'tweetSort',
-  'trashboxSort',
-];
+// record
+const prefix = 'settings' as const;
 
-export const isSettingsKey = (key: string): key is keyof SettingsRecord => {
-  // 'settings_'.length === 9
-  return (
-    key.startsWith('settings_') &&
-    (settingsKeys as ReadonlyArray<string>).includes(key.substring(9))
-  );
+export type SettingsRecord = {
+  [key in keyof Settings as `settings_${key}`]: Settings[key];
 };
 
-export const toSettingsKey = (key: keyof SettingsRecord): keyof Settings => {
-  // 'settings_'.length === 9
-  return key.substring(9) as keyof Settings;
+// key
+const settingsRecordKeys: ReadonlyArray<keyof SettingsRecord> = [
+  'settings_hostname',
+  'settings_timezone',
+  'settings_datetimeFormat',
+  'settings_tweetSort',
+  'settings_trashboxSort',
+] as const;
+
+export const isSettingsRecordKey = (
+  key: string,
+): key is keyof SettingsRecord => {
+  return (settingsRecordKeys as ReadonlyArray<string>).includes(key);
 };
