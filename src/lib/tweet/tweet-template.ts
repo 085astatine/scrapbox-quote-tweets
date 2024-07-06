@@ -3,17 +3,13 @@ import difflib from 'difflib';
 export interface TweetTemplate {
   tweet: string;
   footer: string;
-  entity: {
-    text: string;
-    url: string;
-    hashtag: string;
-    cashtag: string;
-    mention: string;
-  };
-  media: {
-    photo: string;
-    video: string;
-  };
+  entityText: string;
+  entityUrl: string;
+  entityHashtag: string;
+  entityCashtag: string;
+  entityMention: string;
+  mediaPhoto: string;
+  mediaVideo: string;
   quote: boolean;
 }
 
@@ -21,17 +17,13 @@ export const defaultTweetTemplate = (): TweetTemplate => {
   return {
     tweet: '[${tweet.url} ${user.name}(@${user.username})]: ${tweet.text}',
     footer: '${tweet.datetime}',
-    entity: {
-      text: '${text}',
-      url: '[${decoded_url} ${title}]',
-      hashtag: '${text}',
-      cashtag: '${text}',
-      mention: '[${user_url} ${text}]',
-    },
-    media: {
-      photo: '[${url}]',
-      video: '[${thumbnail}]',
-    },
+    entityText: '${text}',
+    entityUrl: '[${decoded_url} ${title}]',
+    entityHashtag: '${text}',
+    entityCashtag: '${text}',
+    entityMention: '[${user_url} ${text}]',
+    mediaPhoto: '[${url}]',
+    mediaVideo: '[${thumbnail}]',
     quote: true,
   };
 };
@@ -99,17 +91,13 @@ export type MediaVideoField = (typeof mediaVideoFields)[number];
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
   footer: readonly TemplateElement<TweetField>[];
-  entity: {
-    text: readonly TemplateElement<EntityTextField>[];
-    url: readonly TemplateElement<EntityURLField>[];
-    hashtag: readonly TemplateElement<EntityHashtagField>[];
-    cashtag: readonly TemplateElement<EntityCashtagField>[];
-    mention: readonly TemplateElement<EntityMentionField>[];
-  };
-  media: {
-    photo: readonly TemplateElement<MediaPhotoField>[];
-    video: readonly TemplateElement<MediaVideoField>[];
-  };
+  entityText: readonly TemplateElement<EntityTextField>[];
+  entityUrl: readonly TemplateElement<EntityURLField>[];
+  entityHashtag: readonly TemplateElement<EntityHashtagField>[];
+  entityCashtag: readonly TemplateElement<EntityCashtagField>[];
+  entityMention: readonly TemplateElement<EntityMentionField>[];
+  mediaPhoto: readonly TemplateElement<MediaPhotoField>[];
+  mediaVideo: readonly TemplateElement<MediaVideoField>[];
   quote: boolean;
 }
 
@@ -121,17 +109,13 @@ export const parseTweetTemplate = (
   return {
     tweet: parser.tweet(template.tweet),
     footer: parser.tweet(template.footer),
-    entity: {
-      text: parser.entity.text(template.entity.text),
-      url: parser.entity.url(template.entity.url),
-      hashtag: parser.entity.hashtag(template.entity.hashtag),
-      cashtag: parser.entity.cashtag(template.entity.cashtag),
-      mention: parser.entity.mention(template.entity.mention),
-    },
-    media: {
-      photo: parser.media.photo(template.media.photo),
-      video: parser.media.video(template.media.video),
-    },
+    entityText: parser.entityText(template.entityText),
+    entityUrl: parser.entityUrl(template.entityUrl),
+    entityHashtag: parser.entityHashtag(template.entityHashtag),
+    entityCashtag: parser.entityCashtag(template.entityCashtag),
+    entityMention: parser.entityMention(template.entityMention),
+    mediaPhoto: parser.mediaPhoto(template.mediaPhoto),
+    mediaVideo: parser.mediaVideo(template.mediaVideo),
     quote: template.quote,
   };
 };
@@ -202,15 +186,11 @@ const fieldParser = <Field extends string>(
 
 export const tweetTemplateParser = {
   tweet: fieldParser(tweetFields),
-  entity: {
-    text: fieldParser(entityTextFields),
-    url: fieldParser(entityURLFields),
-    hashtag: fieldParser(entityHashtagFields),
-    cashtag: fieldParser(entityCashtagFields),
-    mention: fieldParser(entityMentionFields),
-  },
-  media: {
-    photo: fieldParser(mediaPhotoFields),
-    video: fieldParser(mediaVideoFields),
-  },
+  entityText: fieldParser(entityTextFields),
+  entityUrl: fieldParser(entityURLFields),
+  entityHashtag: fieldParser(entityHashtagFields),
+  entityCashtag: fieldParser(entityCashtagFields),
+  entityMention: fieldParser(entityMentionFields),
+  mediaPhoto: fieldParser(mediaPhotoFields),
+  mediaVideo: fieldParser(mediaVideoFields),
 } as const;

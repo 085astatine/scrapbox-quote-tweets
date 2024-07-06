@@ -53,26 +53,20 @@ export const loadTweetTemplate = async (): Promise<TweetTemplate> => {
 const prefix = 'tweetTemplate' as const;
 
 export type TweetTemplateRecord = {
-  tweetTemplate_tweet: string;
-  tweetTemplate_footer: string;
-  tweetTemplate_quote: boolean;
-} & {
-  [key in keyof TweetTemplate['entity'] as `tweetTemplate_entity_${key}`]: string;
-} & {
-  [key in keyof TweetTemplate['media'] as `tweetTemplate_media_${key}`]: string;
+  [Key in keyof TweetTemplate as `tweetTemplate_${Key}`]: TweetTemplate[Key];
 };
 
 // key
 const tweetTemplateRecordKeys: ReadonlyArray<keyof TweetTemplateRecord> = [
   'tweetTemplate_tweet',
   'tweetTemplate_footer',
-  'tweetTemplate_entity_text',
-  'tweetTemplate_entity_url',
-  'tweetTemplate_entity_hashtag',
-  'tweetTemplate_entity_cashtag',
-  'tweetTemplate_entity_mention',
-  'tweetTemplate_media_photo',
-  'tweetTemplate_media_video',
+  'tweetTemplate_entityText',
+  'tweetTemplate_entityUrl',
+  'tweetTemplate_entityHashtag',
+  'tweetTemplate_entityCashtag',
+  'tweetTemplate_entityMention',
+  'tweetTemplate_mediaPhoto',
+  'tweetTemplate_mediaVideo',
   'tweetTemplate_quote',
 ] as const;
 
