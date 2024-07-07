@@ -1,5 +1,6 @@
 import { createSelector, weakMapMemoize } from '@reduxjs/toolkit';
-import { Hostname, TrashboxSort, baseURL } from '~/lib/settings';
+import { Hostname, baseURL } from '~/lib/settings';
+import { TrashboxSort, deletedTimes } from '~/lib/trashbox';
 import { tweetSortFunction } from '~/lib/tweet/sort-tweets';
 import { TweetToStringOption } from '~/lib/tweet/tweet-to-string';
 import {
@@ -129,19 +130,7 @@ export const selectDeletedTimes = createSelector(
     (state: State): SortOrder => state.settings.current.trashboxSort.order,
   ],
   (trashbox: DeletedTweet[], order: SortOrder) => {
-    return fallbackToEmptyArray(
-      trashbox
-        .map((deletedTweet) => deletedTweet.deleted_at)
-        .sort(
-          order === 'asc' ? (lhs, rhs) => lhs - rhs : (lhs, rhs) => rhs - lhs,
-        )
-        .reduce<number[]>((times, time) => {
-          if (times[times.length - 1] !== time) {
-            times.push(time);
-          }
-          return times;
-        }, []),
-    );
+    return fallbackToEmptyArray(deletedTimes(trashbox, order));
   },
 );
 

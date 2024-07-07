@@ -4,11 +4,11 @@ import { Dispatch } from 'redux';
 import {
   Hostname,
   Settings,
-  TrashboxSort,
   defaultSettings,
   validateFunctions,
 } from '~/lib/settings';
 import { StorageListenerArguments } from '~/lib/storage/listener';
+import { TrashboxSort } from '~/lib/trashbox';
 import { TweetSort } from '~/lib/tweet/types';
 
 // state

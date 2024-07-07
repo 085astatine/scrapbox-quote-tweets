@@ -1,14 +1,10 @@
 import { defaultTimezone, isValidTimezone } from './datetime';
-import { SortOrder, TweetSort } from './tweet/types';
+import { TrashboxSort } from './trashbox';
+import { TweetSort } from './tweet/types';
 
 export const hostnames = ['x.com', 'twitter.com'] as const;
 
 export type Hostname = (typeof hostnames)[number];
-
-export interface TrashboxSort {
-  key: 'deleted_time';
-  order: SortOrder;
-}
 
 export interface Settings {
   hostname: Hostname;

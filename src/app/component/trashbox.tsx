@@ -5,11 +5,11 @@ import DeleteIcon from '~/icon/google-fonts/delete-forever.svg';
 import RestoreIcon from '~/icon/google-fonts/restore-from-trash.svg';
 import { Collapse } from '~/lib/component/transition';
 import { toDatetime } from '~/lib/datetime';
-import { TrashboxSort } from '~/lib/settings';
 import {
   deleteTweetsFromTrashbox,
   restoreTweetsFromTrashbox,
 } from '~/lib/storage/trashbox';
+import { TrashboxSort } from '~/lib/trashbox';
 import { Tweet as TweetData } from '~/lib/tweet/types';
 import { trimGoogleFontsIcon } from '~/lib/utility';
 import { State, actions } from '../store';
