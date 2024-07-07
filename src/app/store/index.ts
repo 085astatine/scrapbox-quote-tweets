@@ -1,7 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
-import { defaultSettings } from '~/lib/settings';
 import { StorageListenerArguments } from '~/lib/storage/listener';
 import { loadSettings } from '~/lib/storage/settings';
 import { loadTrashbox, loadTweetsNotInTrashbox } from '~/lib/storage/trashbox';
@@ -50,11 +49,11 @@ export const storageListener = (args: StorageListenerArguments): void => {
 
 // Initialize store with data loaded from storage
 export const initializeStoreWithStorage = async (): Promise<void> => {
+  // initialize tweet
   const tweets = await loadTweetsNotInTrashbox();
   const trashbox = await loadTrashbox();
   const tweetSort = await loadTweetSort();
   const trashboxSort = await loadTrashboxSort();
-  const settings = (await loadSettings()) ?? defaultSettings();
   store.dispatch(
     actions.tweet.initialize({
       tweets,
@@ -63,5 +62,7 @@ export const initializeStoreWithStorage = async (): Promise<void> => {
       ...(trashboxSort !== null && { trashboxSort }),
     }),
   );
+  // initialize settings
+  const settings = await loadSettings();
   store.dispatch(actions.settings.initialize(settings));
 };
