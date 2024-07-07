@@ -1,11 +1,13 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
 import { StorageListenerArguments } from '~/lib/storage/listener';
+import { TrashboxSort } from '~/lib/trashbox';
 import {
   DeletedTweet,
   DeletedTweetID,
   Tweet,
   TweetID,
+  TweetSort,
 } from '~/lib/tweet/types';
 import { ArrayOr, toArray } from '~/lib/utility';
 
@@ -14,6 +16,8 @@ export interface TweetState {
   trashbox: DeletedTweet[];
   selectedTweets: Tweet[];
   selectedDeletedTweets: Tweet[];
+  tweetSort: TweetSort;
+  trashboxSort: TrashboxSort;
 }
 
 const initialTweetState = (): TweetState => {
@@ -22,21 +26,35 @@ const initialTweetState = (): TweetState => {
     trashbox: [],
     selectedTweets: [],
     selectedDeletedTweets: [],
+    tweetSort: {
+      key: 'created_time',
+      order: 'desc',
+    },
+    trashboxSort: {
+      key: 'deleted_time',
+      order: 'desc',
+    },
   };
 };
+
+type Initializer = Pick<TweetState, 'tweets' | 'trashbox'> &
+  Partial<Pick<TweetState, 'tweetSort' | 'trashboxSort'>>;
 
 const tweet = createSlice({
   name: 'tweet',
   initialState: initialTweetState(),
   reducers: {
-    initialize(
-      state: TweetState,
-      action: PayloadAction<{ tweets: Tweet[]; trashbox: DeletedTweet[] }>,
-    ): void {
+    initialize(state: TweetState, action: PayloadAction<Initializer>): void {
       state.tweets = [...action.payload.tweets];
       state.trashbox = [...action.payload.trashbox];
       state.selectedTweets = [];
       state.selectedDeletedTweets = [];
+      if (action.payload.tweetSort !== undefined) {
+        state.tweetSort = action.payload.tweetSort;
+      }
+      if (action.payload.trashboxSort !== undefined) {
+        state.trashboxSort = action.payload.trashboxSort;
+      }
     },
     addTweet(state: TweetState, action: PayloadAction<Tweet[]>): void {
       addTweetToTweets(state.tweets, action.payload);
@@ -151,6 +169,15 @@ const tweet = createSlice({
     },
     unselectAllDeletedTweets(state: TweetState) {
       state.selectedDeletedTweets = [];
+    },
+    updateTweetSort(state: TweetState, action: PayloadAction<TweetSort>): void {
+      state.tweetSort = action.payload;
+    },
+    updateTrashboxSort(
+      state: TweetState,
+      action: PayloadAction<TrashboxSort>,
+    ): void {
+      state.trashboxSort = action.payload;
     },
   },
 });
