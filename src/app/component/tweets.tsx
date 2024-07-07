@@ -5,6 +5,7 @@ import ClipboardIcon from '~/icon/bootstrap/clipboard.svg';
 import TrashboxIcon from '~/icon/google-fonts/delete.svg';
 import { Collapse } from '~/lib/component/transition';
 import { addTweetsToTrashbox } from '~/lib/storage/trashbox';
+import { saveTweetSort } from '~/lib/storage/tweet-sort';
 import { defaultTweetTemplate } from '~/lib/tweet/tweet-template';
 import { tweetToString } from '~/lib/tweet/tweet-to-string';
 import { SortOrder, Tweet as TweetData, TweetSortKey } from '~/lib/tweet/types';
@@ -120,6 +121,8 @@ const SelectSort: React.FC = () => {
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const [key, order] = options[event.target.selectedIndex];
     dispatch(actions.settings.updateTweetSort({ key, order }));
+    // save to storage
+    saveTweetSort({ key, order });
   };
   return (
     <div className="tool">

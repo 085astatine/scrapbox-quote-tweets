@@ -9,6 +9,7 @@ import {
   deleteTweetsFromTrashbox,
   restoreTweetsFromTrashbox,
 } from '~/lib/storage/trashbox';
+import { saveTrashboxSort } from '~/lib/storage/tweet-sort';
 import { TrashboxSort } from '~/lib/trashbox';
 import { Tweet as TweetData } from '~/lib/tweet/types';
 import { trimGoogleFontsIcon } from '~/lib/utility';
@@ -191,6 +192,8 @@ const SelectSort: React.FC = () => {
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const [key, order] = options[event.target.selectedIndex];
     dispatch(actions.settings.updateTrashboxSort({ key, order }));
+    // save to storage
+    saveTrashboxSort({ key, order });
   };
   return (
     <div className="tool">
