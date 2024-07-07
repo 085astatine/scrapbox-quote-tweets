@@ -2,33 +2,16 @@
 module.exports = validate10;
 module.exports.default = validate10;
 const schema11 = {
-  $ref: '#/definitions/settings',
-  definitions: {
-    hostname: { enum: ['twitter.com', 'x.com'] },
-    settings: {
-      type: 'object',
-      properties: {
-        hostname: { $ref: '#/definitions/hostname' },
-        timezone: { type: 'string' },
-        datetimeFormat: { type: 'string' },
-      },
-      required: ['hostname', 'timezone', 'datetimeFormat'],
-      additionalProperties: false,
-    },
-  },
-};
-const schema12 = {
   type: 'object',
   properties: {
-    hostname: { $ref: '#/definitions/hostname' },
+    hostname: { type: 'string', enum: ['twitter.com', 'x.com'] },
     timezone: { type: 'string' },
     datetimeFormat: { type: 'string' },
   },
   required: ['hostname', 'timezone', 'datetimeFormat'],
   additionalProperties: false,
 };
-const schema13 = { enum: ['twitter.com', 'x.com'] };
-function validate11(
+function validate10(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -105,13 +88,13 @@ function validate11(
     }
     if (data.hostname !== undefined) {
       let data0 = data.hostname;
-      if (!(data0 === 'twitter.com' || data0 === 'x.com')) {
+      if (typeof data0 !== 'string') {
         const err4 = {
           instancePath: instancePath + '/hostname',
-          schemaPath: '#/definitions/hostname/enum',
-          keyword: 'enum',
-          params: { allowedValues: schema13.enum },
-          message: 'must be equal to one of the allowed values',
+          schemaPath: '#/properties/hostname/type',
+          keyword: 'type',
+          params: { type: 'string' },
+          message: 'must be string',
         };
         if (vErrors === null) {
           vErrors = [err4];
@@ -120,15 +103,13 @@ function validate11(
         }
         errors++;
       }
-    }
-    if (data.timezone !== undefined) {
-      if (typeof data.timezone !== 'string') {
+      if (!(data0 === 'twitter.com' || data0 === 'x.com')) {
         const err5 = {
-          instancePath: instancePath + '/timezone',
-          schemaPath: '#/properties/timezone/type',
-          keyword: 'type',
-          params: { type: 'string' },
-          message: 'must be string',
+          instancePath: instancePath + '/hostname',
+          schemaPath: '#/properties/hostname/enum',
+          keyword: 'enum',
+          params: { allowedValues: schema11.properties.hostname.enum },
+          message: 'must be equal to one of the allowed values',
         };
         if (vErrors === null) {
           vErrors = [err5];
@@ -138,11 +119,11 @@ function validate11(
         errors++;
       }
     }
-    if (data.datetimeFormat !== undefined) {
-      if (typeof data.datetimeFormat !== 'string') {
+    if (data.timezone !== undefined) {
+      if (typeof data.timezone !== 'string') {
         const err6 = {
-          instancePath: instancePath + '/datetimeFormat',
-          schemaPath: '#/properties/datetimeFormat/type',
+          instancePath: instancePath + '/timezone',
+          schemaPath: '#/properties/timezone/type',
           keyword: 'type',
           params: { type: 'string' },
           message: 'must be string',
@@ -155,8 +136,25 @@ function validate11(
         errors++;
       }
     }
+    if (data.datetimeFormat !== undefined) {
+      if (typeof data.datetimeFormat !== 'string') {
+        const err7 = {
+          instancePath: instancePath + '/datetimeFormat',
+          schemaPath: '#/properties/datetimeFormat/type',
+          keyword: 'type',
+          params: { type: 'string' },
+          message: 'must be string',
+        };
+        if (vErrors === null) {
+          vErrors = [err7];
+        } else {
+          vErrors.push(err7);
+        }
+        errors++;
+      }
+    }
   } else {
-    const err7 = {
+    const err8 = {
       instancePath,
       schemaPath: '#/type',
       keyword: 'type',
@@ -164,32 +162,11 @@ function validate11(
       message: 'must be object',
     };
     if (vErrors === null) {
-      vErrors = [err7];
+      vErrors = [err8];
     } else {
-      vErrors.push(err7);
+      vErrors.push(err8);
     }
     errors++;
-  }
-  validate11.errors = vErrors;
-  return errors === 0;
-}
-function validate10(
-  data,
-  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
-) {
-  let vErrors = null;
-  let errors = 0;
-  if (
-    !validate11(data, {
-      instancePath,
-      parentData,
-      parentDataProperty,
-      rootData,
-    })
-  ) {
-    vErrors =
-      vErrors === null ? validate11.errors : vErrors.concat(validate11.errors);
-    errors = vErrors.length;
   }
   validate10.errors = vErrors;
   return errors === 0;
