@@ -1,6 +1,4 @@
 import { defaultTimezone, isValidTimezone } from './datetime';
-import { TrashboxSort } from './trashbox';
-import { TweetSort } from './tweet/types';
 
 export const hostnames = ['x.com', 'twitter.com'] as const;
 
@@ -10,8 +8,6 @@ export interface Settings {
   hostname: Hostname;
   timezone: string;
   datetimeFormat: string;
-  tweetSort: TweetSort;
-  trashboxSort: TrashboxSort;
 }
 
 export const defaultSettings = (): Settings => {
@@ -19,14 +15,6 @@ export const defaultSettings = (): Settings => {
     hostname: 'x.com',
     timezone: defaultTimezone(),
     datetimeFormat: 'YYYY/MM/DD HH:mm:ss',
-    tweetSort: {
-      key: 'created_time',
-      order: 'desc',
-    },
-    trashboxSort: {
-      key: 'deleted_time',
-      order: 'desc',
-    },
   };
 };
 

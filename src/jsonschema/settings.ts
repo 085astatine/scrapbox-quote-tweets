@@ -6,38 +6,6 @@ const definitions: SchemaObject = {
   hostname: {
     enum: ['twitter.com', 'x.com'],
   },
-  // TweetSortKey
-  tweetSortKey: {
-    enum: ['created_time', 'saved_time', 'username'],
-  },
-  // TrashboxSortKey
-  trashboxSortKey: {
-    enum: ['deleted_time'],
-  },
-  // SortOrder
-  sortOrder: {
-    enum: ['asc', 'desc'],
-  },
-  // TweetSort
-  tweetSort: {
-    type: 'object',
-    properties: {
-      key: { $ref: '#/definitions/tweetSortKey' },
-      order: { $ref: '#/definitions/sortOrder' },
-    },
-    required: ['key', 'order'],
-    additionalProperties: false,
-  },
-  // TrashboxSort
-  trashboxSort: {
-    type: 'object',
-    properties: {
-      key: { $ref: '#/definitions/trashboxSortKey' },
-      order: { $ref: '#/definitions/sortOrder' },
-    },
-    required: ['key', 'order'],
-    additionalProperties: false,
-  },
   // Settings
   settings: {
     type: 'object',
@@ -45,16 +13,8 @@ const definitions: SchemaObject = {
       hostname: { $ref: '#/definitions/hostname' },
       timezone: { type: 'string' },
       datetimeFormat: { type: 'string' },
-      tweetSort: { $ref: '#/definitions/tweetSort' },
-      trashboxSort: { $ref: '#/definitions/trashboxSort' },
     },
-    required: [
-      'hostname',
-      'timezone',
-      'datetimeFormat',
-      'tweetSort',
-      'trashboxSort',
-    ],
+    required: ['hostname', 'timezone', 'datetimeFormat'],
     additionalProperties: false,
   },
 };

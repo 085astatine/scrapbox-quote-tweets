@@ -50,8 +50,6 @@ const settingsRecordKeys: ReadonlyArray<keyof SettingsRecord> = [
   'settings_hostname',
   'settings_timezone',
   'settings_datetimeFormat',
-  'settings_tweetSort',
-  'settings_trashboxSort',
 ] as const;
 
 export const isSettingsRecordKey = (
