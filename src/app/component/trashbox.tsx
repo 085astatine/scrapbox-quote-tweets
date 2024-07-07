@@ -191,7 +191,7 @@ const SelectSort: React.FC = () => {
   // event
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const [key, order] = options[event.target.selectedIndex];
-    dispatch(actions.settings.updateTrashboxSort({ key, order }));
+    dispatch(actions.tweet.updateTrashboxSort({ key, order }));
     // save to storage
     saveTrashboxSort({ key, order });
   };

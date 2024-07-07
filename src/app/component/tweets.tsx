@@ -120,7 +120,7 @@ const SelectSort: React.FC = () => {
   // event
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const [key, order] = options[event.target.selectedIndex];
-    dispatch(actions.settings.updateTweetSort({ key, order }));
+    dispatch(actions.tweet.updateTweetSort({ key, order }));
     // save to storage
     saveTweetSort({ key, order });
   };

@@ -8,8 +8,6 @@ import {
   validateFunctions,
 } from '~/lib/settings';
 import { StorageListenerArguments } from '~/lib/storage/listener';
-import { TrashboxSort } from '~/lib/trashbox';
-import { TweetSort } from '~/lib/tweet/types';
 
 // state
 type EditingSettings = Partial<Omit<Settings, 'tweetSort' | 'trashboxSort'>>;
@@ -79,18 +77,6 @@ const settings = createSlice({
       action: PayloadAction<string>,
     ): void {
       editSettings(state, 'datetimeFormat', action.payload);
-    },
-    updateTweetSort(
-      state: SettingsState,
-      action: PayloadAction<TweetSort>,
-    ): void {
-      state.current.tweetSort = action.payload;
-    },
-    updateTrashboxSort(
-      state: SettingsState,
-      action: PayloadAction<TrashboxSort>,
-    ): void {
-      state.current.trashboxSort = action.payload;
     },
     updateByInterrupt(
       state: SettingsState,

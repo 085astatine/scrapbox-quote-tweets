@@ -26,14 +26,6 @@ export const selectDatetimeFormat = (state: State): string => {
   return state.settings.current.datetimeFormat;
 };
 
-export const selectTweetSort = (state: State): TweetSort => {
-  return state.settings.current.tweetSort;
-};
-
-export const selectTrashboxSort = (state: State): TrashboxSort => {
-  return state.settings.current.trashboxSort;
-};
-
 // editing settings
 export const selectIsSettingsEdited = (state: State): boolean => {
   return Object.keys(state.settings.editing).length > 0;
@@ -71,6 +63,10 @@ export const selectSettingsUpdateTrigger = (state: State): UpdateTrigger => {
 };
 
 // tweets
+export const selectTweetSort = (state: State): TweetSort => {
+  return state.tweet.tweetSort;
+};
+
 export const selectTweets = createSelector(
   [(state: State): Tweet[] => state.tweet.tweets, selectTweetSort],
   (tweets: Tweet[], sort: TweetSort): Tweet[] => {
@@ -124,10 +120,14 @@ export const selectAllTweetsSelectButtonState = createSelector(
 );
 
 // trashbox
+export const selectTrashboxSort = (state: State): TrashboxSort => {
+  return state.tweet.trashboxSort;
+};
+
 export const selectDeletedTimes = createSelector(
   [
     (state: State): DeletedTweet[] => state.tweet.trashbox,
-    (state: State): SortOrder => state.settings.current.trashboxSort.order,
+    (state: State): SortOrder => state.tweet.trashboxSort.order,
   ],
   (trashbox: DeletedTweet[], order: SortOrder) => {
     return fallbackToEmptyArray(deletedTimes(trashbox, order));
