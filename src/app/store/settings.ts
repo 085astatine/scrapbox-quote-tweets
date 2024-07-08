@@ -4,17 +4,14 @@ import { Dispatch } from 'redux';
 import {
   Hostname,
   Settings,
-  TrashboxSort,
   defaultSettings,
   validateFunctions,
 } from '~/lib/settings';
 import { StorageListenerArguments } from '~/lib/storage/listener';
-import { TweetSort } from '~/lib/tweet/types';
 
 // state
-type EditingSettings = Partial<Omit<Settings, 'tweetSort' | 'trashboxSort'>>;
-
-type SettingsErrors = Partial<Record<keyof EditingSettings, string[]>>;
+type EditingSettings = Partial<Settings>;
+type SettingsErrors = Partial<Record<keyof Settings, string[]>>;
 
 export type UpdateTrigger = 'none' | 'self' | 'interrupt';
 
@@ -80,18 +77,6 @@ const settings = createSlice({
     ): void {
       editSettings(state, 'datetimeFormat', action.payload);
     },
-    updateTweetSort(
-      state: SettingsState,
-      action: PayloadAction<TweetSort>,
-    ): void {
-      state.current.tweetSort = action.payload;
-    },
-    updateTrashboxSort(
-      state: SettingsState,
-      action: PayloadAction<TrashboxSort>,
-    ): void {
-      state.current.trashboxSort = action.payload;
-    },
     updateByInterrupt(
       state: SettingsState,
       action: PayloadAction<Partial<Settings>>,
@@ -137,16 +122,16 @@ export const settingsStorageListener = (
 };
 
 // utilities
-const editingSettingsKeys: ReadonlyArray<keyof EditingSettings> = [
+const editingSettingsKeys: ReadonlyArray<keyof Settings> = [
   'hostname',
   'timezone',
   'datetimeFormat',
 ] as const;
 
-const editSettings = <Key extends keyof EditingSettings>(
+const editSettings = <Key extends keyof Settings>(
   state: SettingsState,
   key: Key,
-  value: EditingSettings[Key],
+  value: Settings[Key],
 ): void => {
   if (!equal(state.current[key], value)) {
     state.editing[key] = value;
@@ -155,7 +140,7 @@ const editSettings = <Key extends keyof EditingSettings>(
   }
 };
 
-const validateEditingValue = <Key extends keyof EditingSettings>(
+const validateEditingValue = <Key extends keyof Settings>(
   state: SettingsState,
   key: Key,
 ): void => {
@@ -170,7 +155,7 @@ const validateEditingValue = <Key extends keyof EditingSettings>(
   }
 };
 
-const resetEditingValueByInterrupt = <Key extends keyof EditingSettings>(
+const resetEditingValueByInterrupt = <Key extends keyof Settings>(
   state: SettingsState,
   key: Key,
   previousState: Settings,

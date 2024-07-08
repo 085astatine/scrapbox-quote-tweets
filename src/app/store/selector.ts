@@ -1,5 +1,6 @@
 import { createSelector, weakMapMemoize } from '@reduxjs/toolkit';
-import { Hostname, TrashboxSort, baseURL } from '~/lib/settings';
+import { Hostname, baseURL } from '~/lib/settings';
+import { TrashboxSort, deletedTimes } from '~/lib/trashbox';
 import { tweetSortFunction } from '~/lib/tweet/sort-tweets';
 import { TweetToStringOption } from '~/lib/tweet/tweet-to-string';
 import {
@@ -23,14 +24,6 @@ export const selectTimezone = (state: State): string => {
 
 export const selectDatetimeFormat = (state: State): string => {
   return state.settings.current.datetimeFormat;
-};
-
-export const selectTweetSort = (state: State): TweetSort => {
-  return state.settings.current.tweetSort;
-};
-
-export const selectTrashboxSort = (state: State): TrashboxSort => {
-  return state.settings.current.trashboxSort;
 };
 
 // editing settings
@@ -70,6 +63,10 @@ export const selectSettingsUpdateTrigger = (state: State): UpdateTrigger => {
 };
 
 // tweets
+export const selectTweetSort = (state: State): TweetSort => {
+  return state.tweet.tweetSort;
+};
+
 export const selectTweets = createSelector(
   [(state: State): Tweet[] => state.tweet.tweets, selectTweetSort],
   (tweets: Tweet[], sort: TweetSort): Tweet[] => {
@@ -123,25 +120,17 @@ export const selectAllTweetsSelectButtonState = createSelector(
 );
 
 // trashbox
+export const selectTrashboxSort = (state: State): TrashboxSort => {
+  return state.tweet.trashboxSort;
+};
+
 export const selectDeletedTimes = createSelector(
   [
     (state: State): DeletedTweet[] => state.tweet.trashbox,
-    (state: State): SortOrder => state.settings.current.trashboxSort.order,
+    (state: State): SortOrder => state.tweet.trashboxSort.order,
   ],
   (trashbox: DeletedTweet[], order: SortOrder) => {
-    return fallbackToEmptyArray(
-      trashbox
-        .map((deletedTweet) => deletedTweet.deleted_at)
-        .sort(
-          order === 'asc' ? (lhs, rhs) => lhs - rhs : (lhs, rhs) => rhs - lhs,
-        )
-        .reduce<number[]>((times, time) => {
-          if (times[times.length - 1] !== time) {
-            times.push(time);
-          }
-          return times;
-        }, []),
-    );
+    return fallbackToEmptyArray(deletedTimes(trashbox, order));
   },
 );
 

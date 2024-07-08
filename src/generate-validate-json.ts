@@ -9,6 +9,10 @@ import {
   tweetJSONSchema,
   tweetsJSONSchema,
 } from './jsonschema/tweet';
+import {
+  trashboxSortJSONSchema,
+  tweetSortJSONSchema,
+} from './jsonschema/tweet-sort';
 import { tweetTemplateJSONSchema } from './jsonschema/tweet-template';
 import formats from './validate-json/formats';
 
@@ -95,4 +99,18 @@ generate(
   'validate-tweet-template',
   'TweetTemplate',
   "import { TweetTemplate } from '~/lib/tweet/tweet-template'",
+);
+// TweetSort
+generate(
+  tweetSortJSONSchema,
+  'validate-tweet-sort',
+  'TweetSort',
+  "import { TweetSort } from '~/lib/tweet/types'",
+);
+// TrashboxSort
+generate(
+  trashboxSortJSONSchema,
+  'validate-trashbox-sort',
+  'TrashboxSort',
+  "import { TrashboxSort } from '~/lib/trashbox'",
 );
