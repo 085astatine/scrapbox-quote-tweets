@@ -1,7 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
-import { StorageListenerArguments } from '~/lib/storage/listener';
+import type browser from 'webextension-polyfill';
+import { logger } from '~/lib/logger';
+import { onChangedTweet } from '~/lib/storage/tweet';
 import { tweetActions, tweetReducer, tweetStorageListener } from './tweet';
 
 // store
@@ -34,6 +36,14 @@ export const actions = {
 } as const;
 
 // storage listener
-export const storageListener = (args: StorageListenerArguments): void => {
+export const storageListener = (
+  changes: browser.Storage.StorageAreaOnChangedChangesType,
+): void => {
+  logger.debug('storage changes', changes);
+  const args = {
+    ...onChangedTweet(changes),
+  };
+  logger.debug('listener arguments', args);
+  // tweet
   tweetStorageListener(args, store.dispatch);
 };
