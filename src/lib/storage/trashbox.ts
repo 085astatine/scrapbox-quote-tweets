@@ -1,3 +1,4 @@
+import equal from 'fast-deep-equal';
 import browser from 'webextension-polyfill';
 import { deletedTweetIDsJSONSchema } from '~/jsonschema/deleted-tweet-id';
 import { JSONSchemaValidationError } from '~/validate-json/error';
@@ -9,6 +10,7 @@ import { deleteTweets, loadTweets, savedTweetIDs } from './tweet';
 
 const keyTrashbox = 'trashbox';
 
+// load & save
 export const loadTweetsNotInTrashbox = async (): Promise<Tweet[]> => {
   logger.debug('load tweets that are not in trashbox');
   // IDs of tweet in trashbox
@@ -103,4 +105,81 @@ const loadDeletedTweetIDs = async (): Promise<DeletedTweetID[]> => {
     );
   }
   return deletedTweetIDs;
+};
+
+// storage listener
+type UpdatedDeletedTweetID = {
+  id: TweetID;
+  before: DeletedTweetID;
+  after: DeletedTweetID;
+};
+
+export type OnChangedTrashbox = {
+  trashbox?: {
+    added?: DeletedTweetID[];
+    deleted?: DeletedTweetID[];
+    updated?: UpdatedDeletedTweetID[];
+  };
+};
+
+export const onChangedTrashbox = (
+  changes: browser.Storage.StorageAreaOnChangedChangesType,
+): OnChangedTrashbox => {
+  const trashbox = parseChanges(
+    changes[keyTrashbox]?.oldValue,
+    changes[keyTrashbox]?.newValue,
+  );
+  return {
+    ...(Object.keys(trashbox).length > 0 && { trashbox }),
+  };
+};
+
+const parseChanges = (
+  oldValue: DeletedTweetID[] | undefined,
+  newValue: DeletedTweetID[] | undefined,
+): NonNullable<OnChangedTrashbox['trashbox']> => {
+  if (oldValue === undefined || oldValue.length === 0) {
+    if (newValue === undefined || newValue.length === 0) {
+      return {};
+    } else {
+      return { added: newValue };
+    }
+  } else if (newValue === undefined || newValue.length === 0) {
+    return { deleted: oldValue };
+  }
+  // join on TweetID
+  const changes: Map<
+    TweetID,
+    { before?: DeletedTweetID; after?: DeletedTweetID }
+  > = new Map(oldValue.map((before) => [before.tweet_id, { before }]));
+  newValue.forEach((after) => {
+    const change = changes.get(after.tweet_id);
+    if (change !== undefined) {
+      change.after = after;
+    } else {
+      changes.set(after.tweet_id, { after });
+    }
+  });
+  // categorize added/deleted/updated
+  const added: DeletedTweetID[] = [];
+  const deleted: DeletedTweetID[] = [];
+  const updated: UpdatedDeletedTweetID[] = [];
+  changes.forEach(({ before, after }, id) => {
+    if (before === undefined) {
+      if (after !== undefined) {
+        added.push(after);
+      }
+    } else {
+      if (after === undefined) {
+        deleted.push(before);
+      } else if (!equal(before, after)) {
+        updated.push({ id, before, after });
+      }
+    }
+  });
+  return {
+    ...(added.length > 0 && { added }),
+    ...(deleted.length > 0 && { deleted }),
+    ...(updated.length > 0 && { updated }),
+  };
 };

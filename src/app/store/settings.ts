@@ -7,7 +7,7 @@ import {
   defaultSettings,
   validateFunctions,
 } from '~/lib/settings';
-import { StorageListenerArguments } from '~/lib/storage/listener';
+import type { OnChangedSettings } from '~/lib/storage/settings';
 
 // state
 type EditingSettings = Partial<Settings>;
@@ -112,7 +112,7 @@ export const settingsActions: Readonly<typeof settings.actions> =
 
 // storage listener
 export const settingsStorageListener = (
-  args: StorageListenerArguments,
+  args: OnChangedSettings,
   dispatch: Dispatch,
 ): void => {
   // settings:*

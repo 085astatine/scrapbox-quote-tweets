@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
-import { StorageListenerArguments } from '~/lib/storage/listener';
+import type { OnChangedTrashbox } from '~/lib/storage/trashbox';
+import type { OnChangedTweet } from '~/lib/storage/tweet';
 import { TrashboxSort } from '~/lib/trashbox';
 import {
   DeletedTweet,
@@ -190,7 +191,7 @@ export const tweetActions: Readonly<typeof tweet.actions> = tweet.actions;
 
 // storage listener
 export const tweetStorageListener = (
-  args: StorageListenerArguments,
+  args: OnChangedTweet & OnChangedTrashbox,
   dispatch: Dispatch,
 ): void => {
   // tweet: added

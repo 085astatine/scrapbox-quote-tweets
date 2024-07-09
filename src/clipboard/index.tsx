@@ -1,15 +1,11 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import browser from 'webextension-polyfill';
 import {
-  storageListener as appStorageListener,
   initializeStoreWithStorage,
+  storageListener,
   store,
 } from '~/app/store';
-import { logger } from '~/lib/logger';
-import {
-  addStorageListener,
-  createStorageListener,
-} from '~/lib/storage/listener';
 import { Root } from './component/root';
 import './index.scss';
 
@@ -23,5 +19,4 @@ if (root !== null) {
 initializeStoreWithStorage();
 
 // storage listener
-const storageListener = createStorageListener(appStorageListener, logger);
-addStorageListener(storageListener);
+browser.storage.local.onChanged.addListener(storageListener);

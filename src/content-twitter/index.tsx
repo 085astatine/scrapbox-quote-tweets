@@ -1,12 +1,9 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
+import browser from 'webextension-polyfill';
 import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
-import {
-  addStorageListener,
-  createStorageListener,
-} from '~/lib/storage/listener';
 import { savedTweetIDs } from '~/lib/storage/tweet';
 import { ScrapboxButton } from './component/scrapbox-button';
 import './index.scss';
@@ -64,4 +61,4 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // storage listener
-addStorageListener(createStorageListener(storageListener, logger));
+browser.storage.local.onChanged.addListener(storageListener);

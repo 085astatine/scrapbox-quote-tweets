@@ -1,3 +1,4 @@
+import equal from 'fast-deep-equal';
 import browser from 'webextension-polyfill';
 import { settingsJSONSchema } from '~/jsonschema/settings';
 import { JSONSchemaValidationError } from '~/validate-json/error';
@@ -41,8 +42,8 @@ export const loadSettings = async (): Promise<Settings> => {
 // record
 const prefix = 'settings' as const;
 
-export type SettingsRecord = {
-  [key in keyof Settings as `settings_${key}`]: Settings[key];
+type SettingsRecord = {
+  [Key in keyof Settings as `settings_${Key}`]: Settings[Key];
 };
 
 // key
@@ -56,4 +57,31 @@ export const isSettingsRecordKey = (
   key: string,
 ): key is keyof SettingsRecord => {
   return (settingsRecordKeys as ReadonlyArray<string>).includes(key);
+};
+
+// storage listener
+export type OnChangedSettings = {
+  settings?: Partial<Settings>;
+};
+
+export const onChangedSettings = (
+  changes: browser.Storage.StorageAreaOnChangedChangesType,
+): OnChangedSettings => {
+  const record = Object.entries(changes).reduce<Partial<SettingsRecord>>(
+    (record, [key, { oldValue, newValue }]) => {
+      if (
+        isSettingsRecordKey(key) &&
+        !equal(oldValue, newValue) &&
+        newValue !== undefined
+      ) {
+        record[key] = newValue;
+      }
+      return record;
+    },
+    {},
+  );
+  const settings = recordTo(record, prefix) as Partial<Settings>;
+  return {
+    ...(Object.keys(settings).length > 0 && { settings }),
+  };
 };

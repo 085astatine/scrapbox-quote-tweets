@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
-import { StorageListenerArguments } from '~/lib/storage/listener';
+import type { OnChangedTweet } from '~/lib/storage/tweet';
 import { TweetID } from '~/lib/tweet/types';
 import { ArrayOr, toArray } from '~/lib/utility';
 
@@ -56,7 +56,7 @@ export const tweetActions: Readonly<typeof tweet.actions> = tweet.actions;
 
 // storage listener
 export const tweetStorageListener = (
-  args: StorageListenerArguments,
+  args: OnChangedTweet,
   dispatch: Dispatch,
 ): void => {
   const buttonUpdaters: ScrapboxButtonUpdater[] = [];

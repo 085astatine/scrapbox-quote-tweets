@@ -1,3 +1,4 @@
+import equal from 'fast-deep-equal';
 import browser from 'webextension-polyfill';
 import {
   trashboxSortJSONSchema,
@@ -82,4 +83,33 @@ export const loadTrashboxSort = async (): Promise<TrashboxSort | null> => {
     );
   }
   return value;
+};
+
+// storage listener
+export type OnChangedTweetSort = {
+  tweetSort?: TweetSort;
+  trashboxSort?: TrashboxSort;
+};
+
+export const onChangedTweetSort = (
+  changes: browser.Storage.StorageAreaOnChangedChangesType,
+): OnChangedTweetSort => {
+  const result: OnChangedTweetSort = {};
+  // tweetSort
+  const tweetSortChange = changes[keyTweetSort];
+  if (
+    tweetSortChange?.newValue !== undefined &&
+    !equal(tweetSortChange.oldValue, tweetSortChange.newValue)
+  ) {
+    result[keyTweetSort] = tweetSortChange.newValue;
+  }
+  // trashboxSort
+  const trashboxSortChange = changes[keyTrashboxSort];
+  if (
+    trashboxSortChange?.newValue !== undefined &&
+    !equal(trashboxSortChange.oldValue, trashboxSortChange.newValue)
+  ) {
+    result[keyTrashboxSort] = trashboxSortChange.newValue;
+  }
+  return result;
 };
