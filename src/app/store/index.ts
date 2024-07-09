@@ -1,9 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
-import { StorageListenerArguments } from '~/lib/storage/listener';
-import { loadSettings } from '~/lib/storage/settings';
-import { loadTrashbox, loadTweetsNotInTrashbox } from '~/lib/storage/trashbox';
+import type browser from 'webextension-polyfill';
+import { logger } from '~/lib/logger';
+import { loadSettings, onChangedSettings } from '~/lib/storage/settings';
+import {
+  loadTrashbox,
+  loadTweetsNotInTrashbox,
+  onChangedTrashbox,
+} from '~/lib/storage/trashbox';
+import { onChangedTweet } from '~/lib/storage/tweet';
 import { loadTrashboxSort, loadTweetSort } from '~/lib/storage/tweet-sort';
 import {
   settingsActions,
@@ -42,8 +48,19 @@ export const actions = {
   settings: settingsActions,
 } as const;
 
-export const storageListener = (args: StorageListenerArguments): void => {
+export const storageListener = (
+  changes: browser.Storage.StorageAreaOnChangedChangesType,
+): void => {
+  logger.debug('storage changes', changes);
+  const args = {
+    ...onChangedTweet(changes),
+    ...onChangedTrashbox(changes),
+    ...onChangedSettings(changes),
+  };
+  logger.debug('listener arguments', args);
+  // tweet
   tweetStorageListener(args, store.dispatch);
+  // settings
   settingsStorageListener(args, store.dispatch);
 };
 
