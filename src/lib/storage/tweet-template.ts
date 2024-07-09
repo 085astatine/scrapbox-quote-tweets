@@ -1,3 +1,4 @@
+import equal from 'fast-deep-equal';
 import browser from 'webextension-polyfill';
 import { tweetTemplateJSONSchema } from '~/jsonschema/tweet-template';
 import {
@@ -74,4 +75,31 @@ export const isTweetTemplateRecordKey = (
   key: string,
 ): key is keyof TweetTemplateRecord => {
   return (tweetTemplateRecordKeys as ReadonlyArray<string>).includes(key);
+};
+
+// storage listener
+export type OnChangedTweetTemplate = {
+  tweetTemplate?: Partial<TweetTemplate>;
+};
+
+export const onChangedTweetTemplate = (
+  changes: browser.Storage.StorageAreaOnChangedChangesType,
+): OnChangedTweetTemplate => {
+  const record = Object.entries(changes).reduce<Partial<TweetTemplateRecord>>(
+    (record, [key, { oldValue, newValue }]) => {
+      if (
+        isTweetTemplateRecordKey(key) &&
+        !equal(oldValue, newValue) &&
+        newValue !== undefined
+      ) {
+        Object.assign(record, { [key]: newValue });
+      }
+      return record;
+    },
+    {},
+  );
+  const tweetTemplate = recordTo(record, prefix) as Partial<TweetTemplate>;
+  return {
+    ...(Object.keys(tweetTemplate).length > 0 && { tweetTemplate }),
+  };
 };
