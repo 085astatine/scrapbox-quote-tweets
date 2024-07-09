@@ -13,6 +13,7 @@ import {
   toTweetIDKey,
 } from './tweet-id-key';
 
+// save
 export const saveTweets = async (tweets: Tweet[]): Promise<void> => {
   logger.debug('save tweets', tweets);
   // JSON Schema validation
@@ -51,6 +52,7 @@ export const savedTweetIDs = async (): Promise<TweetID[]> => {
     );
 };
 
+// load
 export const loadTweets = async (tweetIDs?: TweetID[]): Promise<Tweet[]> => {
   logger.debug('load tweets', tweetIDs);
   // load from storage
@@ -124,4 +126,50 @@ const validateLoadedTweet = async (
     await browser.storage.local.remove(key);
     throw new TweetIDKeyMismatchError(key, value);
   }
+};
+
+// storage listener
+type UpdatedTweet = {
+  id: TweetID;
+  before: Tweet;
+  after: Tweet;
+};
+
+export type OnChangedTweet = {
+  tweet?: {
+    added?: Tweet[];
+    deleted?: Tweet[];
+    updated?: UpdatedTweet[];
+  };
+};
+
+export const onChangedTweet = (
+  changes: browser.Storage.StorageAreaOnChangedChangesType,
+): OnChangedTweet => {
+  const added: Tweet[] = [];
+  const deleted: Tweet[] = [];
+  const updated: UpdatedTweet[] = [];
+  Object.entries(changes).forEach(([key, { oldValue, newValue }]) => {
+    if (isTweetIDKey(key)) {
+      if (oldValue === undefined) {
+        added.push(newValue);
+      } else if (newValue === undefined) {
+        deleted.push(oldValue);
+      } else {
+        updated.push({
+          id: toTweetID(key),
+          before: oldValue,
+          after: newValue,
+        });
+      }
+    }
+  });
+  const tweet = {
+    ...(added.length > 0 && { added }),
+    ...(deleted.length > 0 && { deleted }),
+    ...(updated.length > 0 && { updated }),
+  };
+  return {
+    ...(Object.keys(tweet).length > 0 && { tweet }),
+  };
 };
