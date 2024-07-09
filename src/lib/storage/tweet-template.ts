@@ -53,7 +53,7 @@ export const loadTweetTemplate = async (): Promise<TweetTemplate> => {
 // record
 const prefix = 'tweetTemplate' as const;
 
-export type TweetTemplateRecord = {
+type TweetTemplateRecord = {
   [Key in keyof TweetTemplate as `tweetTemplate_${Key}`]: TweetTemplate[Key];
 };
 

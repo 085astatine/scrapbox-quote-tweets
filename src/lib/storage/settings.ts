@@ -42,8 +42,8 @@ export const loadSettings = async (): Promise<Settings> => {
 // record
 const prefix = 'settings' as const;
 
-export type SettingsRecord = {
-  [key in keyof Settings as `settings_${key}`]: Settings[key];
+type SettingsRecord = {
+  [Key in keyof Settings as `settings_${Key}`]: Settings[Key];
 };
 
 // key
