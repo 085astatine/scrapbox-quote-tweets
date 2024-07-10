@@ -8,16 +8,25 @@ import {
   validateSettingsFunctions,
 } from '~/lib/settings';
 import type { OnChangedSettings } from '~/lib/storage/settings';
+import {
+  type TweetTemplate,
+  defaultTweetTemplate,
+} from '~/lib/tweet/tweet-template';
 
 // state
 type EditingSettings = Partial<Settings>;
-type SettingsErrors = Partial<Record<keyof Settings, string[]>>;
+type EditingTweetTemplate = Partial<TweetTemplate>;
+type SettingsErrors = Partial<
+  Record<keyof Settings | keyof TweetTemplate, string[]>
+>;
 
 export type UpdateTrigger = 'none' | 'self' | 'interrupt';
 
 export interface SettingsState {
   currentSettings: Settings;
   editingSettings: EditingSettings;
+  currentTemplate: TweetTemplate;
+  editingTemplate: EditingTweetTemplate;
   errors: SettingsErrors;
   updateTrigger: UpdateTrigger;
 }
@@ -26,6 +35,8 @@ const initialSettingsState = (): SettingsState => {
   return {
     currentSettings: defaultSettings(),
     editingSettings: {},
+    currentTemplate: defaultTweetTemplate(),
+    editingTemplate: {},
     errors: {},
     updateTrigger: 'none',
   };
@@ -35,9 +46,14 @@ const settings = createSlice({
   name: 'settings',
   initialState: initialSettingsState(),
   reducers: {
-    initialize(state: SettingsState, action: PayloadAction<Settings>): void {
-      state.currentSettings = { ...action.payload };
+    initialize(
+      state: SettingsState,
+      action: PayloadAction<{ settings: Settings; template: TweetTemplate }>,
+    ): void {
+      state.currentSettings = { ...action.payload.settings };
       state.editingSettings = {};
+      state.currentTemplate = { ...action.payload.template };
+      state.editingTemplate = {};
       state.errors = {};
       state.updateTrigger = 'none';
     },
@@ -60,6 +76,7 @@ const settings = createSlice({
     },
     resetEdits(state: SettingsState): void {
       state.editingSettings = {};
+      state.editingTemplate = {};
       state.errors = {};
     },
     resetUpdateTrigger(state: SettingsState): void {

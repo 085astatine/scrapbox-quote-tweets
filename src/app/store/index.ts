@@ -11,6 +11,7 @@ import {
 } from '~/lib/storage/trashbox';
 import { onChangedTweet } from '~/lib/storage/tweet';
 import { loadTrashboxSort, loadTweetSort } from '~/lib/storage/tweet-sort';
+import { loadTweetTemplate } from '~/lib/storage/tweet-template';
 import {
   settingsActions,
   settingsReducer,
@@ -81,5 +82,11 @@ export const initializeStoreWithStorage = async (): Promise<void> => {
   );
   // initialize settings
   const settings = await loadSettings();
-  store.dispatch(actions.settings.initialize(settings));
+  const template = await loadTweetTemplate();
+  store.dispatch(
+    actions.settings.initialize({
+      settings,
+      template,
+    }),
+  );
 };
