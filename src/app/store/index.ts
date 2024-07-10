@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { Middleware } from 'redux';
+import type { Middleware } from 'redux';
 import { createLogger } from 'redux-logger';
 import type browser from 'webextension-polyfill';
 import { logger } from '~/lib/logger';

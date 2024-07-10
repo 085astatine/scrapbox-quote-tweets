@@ -1,6 +1,6 @@
 import React from 'react';
 import { App } from '~/app';
-import { Store } from '~/app/store';
+import type { Store } from '~/app/store';
 
 export interface RootProps {
   store: Store;

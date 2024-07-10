@@ -10,7 +10,7 @@ import { isValidTimezone, toDatetime } from '~/lib/datetime';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
 import { baseURL, hostnames, validateSettings } from '~/lib/settings';
 import { saveSettings } from '~/lib/storage/settings';
-import { State, actions } from '../store';
+import { type State, actions } from '../store';
 import {
   selectDatetimeFormat,
   selectDatetimeFormatErrors,

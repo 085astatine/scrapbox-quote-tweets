@@ -10,10 +10,10 @@ import {
   restoreTweetsFromTrashbox,
 } from '~/lib/storage/trashbox';
 import { saveTrashboxSort } from '~/lib/storage/tweet-sort';
-import { TrashboxSort } from '~/lib/trashbox';
-import { Tweet as TweetData } from '~/lib/tweet/types';
+import type { TrashboxSort } from '~/lib/trashbox';
+import type { Tweet as TweetData } from '~/lib/tweet/types';
 import { trimGoogleFontsIcon } from '~/lib/utility';
-import { State, actions } from '../store';
+import { type State, actions } from '../store';
 import {
   selectAllTrashboxSelectButtonState,
   selectDatetimeFormat,

@@ -1,6 +1,6 @@
-import { JSONSchemaType } from 'ajv';
-import { TrashboxSort } from '~/lib/trashbox';
-import { TweetSort } from '~/lib/tweet/types';
+import type { JSONSchemaType } from 'ajv';
+import type { TrashboxSort } from '~/lib/trashbox';
+import type { TweetSort } from '~/lib/tweet/types';
 
 export const tweetSortJSONSchema: Readonly<JSONSchemaType<TweetSort>> = {
   type: 'object',

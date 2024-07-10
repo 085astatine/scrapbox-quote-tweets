@@ -11,13 +11,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import CloseIcon from '~/icon/bootstrap/x.svg';
 import ScrapboxIcon from '~/icon/scrapbox.svg';
 import { Fade } from '~/lib/component/transition';
-import { Logger, createLogger } from '~/lib/logger';
+import { type Logger, createLogger } from '~/lib/logger';
 import {
   deleteTweet as deleteTweetFromStorage,
   saveTweet,
   savedTweetIDs,
 } from '~/lib/storage/tweet';
-import { Tweet, TweetID } from '~/lib/tweet/types';
+import type { Tweet, TweetID } from '~/lib/tweet/types';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import { parseTweet } from '../lib/parse-tweet';
 import { State, actions } from '../store';

@@ -1,4 +1,4 @@
-import Ajv, { JSONSchemaType, _ } from 'ajv';
+import Ajv, { type JSONSchemaType, _ } from 'ajv';
 import standaloneCode from 'ajv/dist/standalone';
 import * as fs from 'fs';
 import * as path from 'path';

@@ -3,10 +3,10 @@ import { tweetJSONSchema, tweetsJSONSchema } from '~/jsonschema/tweet';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateTweet from '~/validate-json/validate-tweet';
 import validateTweets from '~/validate-json/validate-tweets';
-import { Tweet, TweetID } from '../tweet/types';
+import type { Tweet, TweetID } from '../tweet/types';
 import { logger } from './logger';
 import {
-  TweetIDKey,
+  type TweetIDKey,
   TweetIDKeyMismatchError,
   isTweetIDKey,
   toTweetID,

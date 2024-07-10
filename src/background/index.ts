@@ -1,11 +1,11 @@
 import browser from 'webextension-polyfill';
 import { logger } from '~/lib/logger';
 import {
-  ExpandTCoURLRequestMessage,
-  ExpandTCoURLResultMessage,
-  GetURLTitleRequestMessage,
-  GetURLTitleResultMessage,
-  SettingsDownloadStorageMessage,
+  type ExpandTCoURLRequestMessage,
+  type ExpandTCoURLResultMessage,
+  type GetURLTitleRequestMessage,
+  type GetURLTitleResultMessage,
+  type SettingsDownloadStorageMessage,
   forwardMessageToOffscreen,
   respondToExpandTCoURLRequest,
   respondToGetURLTitleRequest,

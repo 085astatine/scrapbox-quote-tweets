@@ -1,5 +1,5 @@
-import { JSONSchemaType } from 'ajv';
-import { Settings } from '~/lib/settings';
+import type { JSONSchemaType } from 'ajv';
+import type { Settings } from '~/lib/settings';
 
 export const settingsJSONSchema: Readonly<JSONSchemaType<Settings>> = {
   type: 'object',

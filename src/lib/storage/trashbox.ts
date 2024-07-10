@@ -4,7 +4,12 @@ import { deletedTweetIDsJSONSchema } from '~/jsonschema/deleted-tweet-id';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateDeletedTweetIDs from '~/validate-json/validate-deleted-tweet-ids';
 import { deletedTweetIDSortFunction } from '../tweet/sort-tweets';
-import { DeletedTweet, DeletedTweetID, Tweet, TweetID } from '../tweet/types';
+import type {
+  DeletedTweet,
+  DeletedTweetID,
+  Tweet,
+  TweetID,
+} from '../tweet/types';
 import { logger } from './logger';
 import { deleteTweets, loadTweets, savedTweetIDs } from './tweet';
 

@@ -1,16 +1,16 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { Dispatch } from 'redux';
+import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
+import type { Dispatch } from 'redux';
 import type { OnChangedTrashbox } from '~/lib/storage/trashbox';
 import type { OnChangedTweet } from '~/lib/storage/tweet';
-import { TrashboxSort } from '~/lib/trashbox';
-import {
+import type { TrashboxSort } from '~/lib/trashbox';
+import type {
   DeletedTweet,
   DeletedTweetID,
   Tweet,
   TweetID,
   TweetSort,
 } from '~/lib/tweet/types';
-import { ArrayOr, toArray } from '~/lib/utility';
+import { type ArrayOr, toArray } from '~/lib/utility';
 
 export interface TweetState {
   tweets: Tweet[];

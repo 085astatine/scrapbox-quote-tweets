@@ -4,8 +4,8 @@ import {
   trashboxSortJSONSchema,
   tweetSortJSONSchema,
 } from '~/jsonschema/tweet-sort';
-import { TrashboxSort } from '~/lib/trashbox';
-import { TweetSort } from '~/lib/tweet/types';
+import type { TrashboxSort } from '~/lib/trashbox';
+import type { TweetSort } from '~/lib/tweet/types';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateTrashboxSort from '~/validate-json/validate-trashbox-sort';
 import validateTweetSort from '~/validate-json/validate-tweet-sort';

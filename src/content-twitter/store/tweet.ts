@@ -1,8 +1,8 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { Dispatch } from 'redux';
+import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
+import type { Dispatch } from 'redux';
 import type { OnChangedTweet } from '~/lib/storage/tweet';
-import { TweetID } from '~/lib/tweet/types';
-import { ArrayOr, toArray } from '~/lib/utility';
+import type { TweetID } from '~/lib/tweet/types';
+import { type ArrayOr, toArray } from '~/lib/utility';
 
 // state
 export type ScrapboxButtonState =

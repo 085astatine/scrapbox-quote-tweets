@@ -7,7 +7,7 @@ import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
 import FilmIcon from '~/icon/bootstrap/film.svg';
 import ImageIcon from '~/icon/bootstrap/image.svg';
 import { toDatetime } from '~/lib/datetime';
-import { Media, Tweet as TweetData, TweetID } from '~/lib/tweet/types';
+import type { Media, Tweet as TweetData, TweetID } from '~/lib/tweet/types';
 import {
   selectBaseURL,
   selectDatetimeFormat,

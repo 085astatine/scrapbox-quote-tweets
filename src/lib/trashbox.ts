@@ -1,4 +1,4 @@
-import { DeletedTweet, DeletedTweetID, SortOrder } from './tweet/types';
+import type { DeletedTweet, DeletedTweetID, SortOrder } from './tweet/types';
 
 export interface TrashboxSort {
   key: 'deleted_time';
