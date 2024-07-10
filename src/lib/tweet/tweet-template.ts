@@ -108,7 +108,7 @@ export const parseTweetTemplate = (
   const parser = tweetTemplateParser;
   return {
     tweet: parser.tweet(template.tweet),
-    footer: parser.tweet(template.footer),
+    footer: parser.footer(template.footer),
     entityText: parser.entityText(template.entityText),
     entityUrl: parser.entityUrl(template.entityUrl),
     entityHashtag: parser.entityHashtag(template.entityHashtag),
@@ -184,7 +184,7 @@ const fieldParser = <Field extends string>(
   return (template: string) => parsePlaceholders(template, fields);
 };
 
-type ParserKey = Exclude<keyof TweetTemplate, 'footer' | 'quote'>;
+type ParserKey = Exclude<keyof TweetTemplate, 'quote'>;
 
 type TweetTemplateParser = {
   [Key in ParserKey]: (template: string) => ParsedTweetTemplate[Key];
@@ -192,6 +192,7 @@ type TweetTemplateParser = {
 
 export const tweetTemplateParser: TweetTemplateParser = {
   tweet: fieldParser(tweetFields),
+  footer: fieldParser(tweetFields),
   entityText: fieldParser(entityTextFields),
   entityUrl: fieldParser(entityURLFields),
   entityHashtag: fieldParser(entityHashtagFields),
