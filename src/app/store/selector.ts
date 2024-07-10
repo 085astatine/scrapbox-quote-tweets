@@ -13,55 +13,6 @@ import type {
 import type { State } from '.';
 import type { UpdateTrigger } from './settings';
 
-// currnet settings
-export const selectHostname = (state: State): Hostname => {
-  return state.settings.current.hostname;
-};
-
-export const selectTimezone = (state: State): string => {
-  return state.settings.current.timezone;
-};
-
-export const selectDatetimeFormat = (state: State): string => {
-  return state.settings.current.datetimeFormat;
-};
-
-// editing settings
-export const selectIsSettingsEdited = (state: State): boolean => {
-  return Object.keys(state.settings.editing).length > 0;
-};
-
-export const selectEditingHostname = (state: State): Hostname | undefined => {
-  return state.settings.editing.hostname;
-};
-
-export const selectEditingTimezone = (state: State): string | undefined => {
-  return state.settings.editing.timezone;
-};
-
-export const selectEditingDatetimeFormat = (
-  state: State,
-): string | undefined => {
-  return state.settings.editing.datetimeFormat;
-};
-
-// settings errors
-export const selectHostnameErrors = (state: State): string[] => {
-  return fallbackToEmptyArray(state.settings.errors.hostname ?? []);
-};
-export const selectTimezoneErrors = (state: State): string[] => {
-  return fallbackToEmptyArray(state.settings.errors.timezone ?? []);
-};
-
-export const selectDatetimeFormatErrors = (state: State): string[] => {
-  return fallbackToEmptyArray(state.settings.errors.datetimeFormat ?? []);
-};
-
-// settings update trigger
-export const selectSettingsUpdateTrigger = (state: State): UpdateTrigger => {
-  return state.settings.updateTrigger;
-};
-
 // tweets
 export const selectTweetSort = (state: State): TweetSort => {
   return state.tweet.tweetSort;
@@ -210,7 +161,57 @@ export const selectAllTrashboxSelectButtonState = createSelector(
   },
 );
 
-// settings
+// settings: current
+export const selectHostname = (state: State): Hostname => {
+  return state.settings.current.hostname;
+};
+
+export const selectTimezone = (state: State): string => {
+  return state.settings.current.timezone;
+};
+
+export const selectDatetimeFormat = (state: State): string => {
+  return state.settings.current.datetimeFormat;
+};
+
+// settings: editings
+export const selectEditingHostname = (state: State): Hostname | undefined => {
+  return state.settings.editing.hostname;
+};
+
+export const selectEditingTimezone = (state: State): string | undefined => {
+  return state.settings.editing.timezone;
+};
+
+export const selectEditingDatetimeFormat = (
+  state: State,
+): string | undefined => {
+  return state.settings.editing.datetimeFormat;
+};
+
+// settings: error
+export const selectHostnameErrors = (state: State): string[] => {
+  return fallbackToEmptyArray(state.settings.errors.hostname ?? []);
+};
+
+export const selectTimezoneErrors = (state: State): string[] => {
+  return fallbackToEmptyArray(state.settings.errors.timezone ?? []);
+};
+
+export const selectDatetimeFormatErrors = (state: State): string[] => {
+  return fallbackToEmptyArray(state.settings.errors.datetimeFormat ?? []);
+};
+
+// settings update trigger
+export const selectSettingsUpdateTrigger = (state: State): UpdateTrigger => {
+  return state.settings.updateTrigger;
+};
+
+// depend on settings
+export const selectIsSettingsEdited = (state: State): boolean => {
+  return Object.keys(state.settings.editing).length > 0;
+};
+
 export const selectBaseURL = createSelector(
   [selectHostname],
   (hostname: Hostname): string => {
