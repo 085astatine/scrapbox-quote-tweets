@@ -184,7 +184,13 @@ const fieldParser = <Field extends string>(
   return (template: string) => parsePlaceholders(template, fields);
 };
 
-export const tweetTemplateParser = {
+type ParserKey = Exclude<keyof TweetTemplate, 'footer' | 'quote'>;
+
+type TweetTemplateParser = {
+  [Key in ParserKey]: (template: string) => ParsedTweetTemplate[Key];
+};
+
+export const tweetTemplateParser: TweetTemplateParser = {
   tweet: fieldParser(tweetFields),
   entityText: fieldParser(entityTextFields),
   entityUrl: fieldParser(entityURLFields),
