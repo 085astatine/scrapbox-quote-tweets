@@ -296,8 +296,8 @@ const Commands: React.FC = () => {
                 dispatch(actions.settings.applyEdits());
                 // save to storage
                 const settings = {
-                  ...store.getState().settings.current,
-                  ...store.getState().settings.editing,
+                  ...store.getState().settings.currentSettings,
+                  ...store.getState().settings.editingSettings,
                 };
                 if (validateSettings(settings).ok) {
                   saveSettings(settings);

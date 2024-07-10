@@ -5,7 +5,7 @@ import {
   type Hostname,
   type Settings,
   defaultSettings,
-  validateFunctions,
+  validateSettingsFunctions,
 } from '~/lib/settings';
 import type { OnChangedSettings } from '~/lib/storage/settings';
 
@@ -16,16 +16,16 @@ type SettingsErrors = Partial<Record<keyof Settings, string[]>>;
 export type UpdateTrigger = 'none' | 'self' | 'interrupt';
 
 export interface SettingsState {
-  current: Settings;
-  editing: EditingSettings;
+  currentSettings: Settings;
+  editingSettings: EditingSettings;
   errors: SettingsErrors;
   updateTrigger: UpdateTrigger;
 }
 
 const initialSettingsState = (): SettingsState => {
   return {
-    current: defaultSettings(),
-    editing: {},
+    currentSettings: defaultSettings(),
+    editingSettings: {},
     errors: {},
     updateTrigger: 'none',
   };
@@ -36,8 +36,8 @@ const settings = createSlice({
   initialState: initialSettingsState(),
   reducers: {
     initialize(state: SettingsState, action: PayloadAction<Settings>): void {
-      state.current = { ...action.payload };
-      state.editing = {};
+      state.currentSettings = { ...action.payload };
+      state.editingSettings = {};
       state.errors = {};
       state.updateTrigger = 'none';
     },
@@ -50,16 +50,16 @@ const settings = createSlice({
       });
       // update if theare is no error
       if (Object.keys(state.errors).length === 0) {
-        state.current = {
-          ...state.current,
-          ...state.editing,
+        state.currentSettings = {
+          ...state.currentSettings,
+          ...state.editingSettings,
         };
-        state.editing = {};
+        state.editingSettings = {};
         state.updateTrigger = 'self';
       }
     },
     resetEdits(state: SettingsState): void {
-      state.editing = {};
+      state.editingSettings = {};
       state.errors = {};
     },
     resetUpdateTrigger(state: SettingsState): void {
@@ -81,17 +81,17 @@ const settings = createSlice({
       state: SettingsState,
       action: PayloadAction<Partial<Settings>>,
     ): void {
-      const previousState = { ...state.current };
-      state.current = {
-        ...state.current,
+      const previousSettings = { ...state.currentSettings };
+      state.currentSettings = {
+        ...state.currentSettings,
         ...action.payload,
       };
       editingSettingsKeys.forEach((key) => {
-        resetEditingValueByInterrupt(state, key, previousState);
+        resetEditingValueByInterrupt(state, key, previousSettings);
       });
       switch (state.updateTrigger) {
         case 'none':
-          if (Object.keys(state.editing).length > 0) {
+          if (Object.keys(state.editingSettings).length > 0) {
             state.updateTrigger = 'interrupt';
           }
           break;
@@ -133,10 +133,10 @@ const editSettings = <Key extends keyof Settings>(
   key: Key,
   value: Settings[Key],
 ): void => {
-  if (!equal(state.current[key], value)) {
-    state.editing[key] = value;
-  } else if (key in state.editing) {
-    delete state.editing[key];
+  if (!equal(state.currentSettings[key], value)) {
+    state.editingSettings[key] = value;
+  } else if (key in state.editingSettings) {
+    delete state.editingSettings[key];
   }
 };
 
@@ -144,10 +144,10 @@ const validateEditingValue = <Key extends keyof Settings>(
   state: SettingsState,
   key: Key,
 ): void => {
-  if (state.editing[key] !== undefined) {
-    const validate = validateFunctions[key];
+  if (state.editingSettings[key] !== undefined) {
+    const validate = validateSettingsFunctions[key];
     if (validate !== undefined) {
-      const result = validate(state.editing[key]);
+      const result = validate(state.editingSettings[key]);
       if (!result.ok) {
         state.errors[key] = result.error;
       }
@@ -158,12 +158,12 @@ const validateEditingValue = <Key extends keyof Settings>(
 const resetEditingValueByInterrupt = <Key extends keyof Settings>(
   state: SettingsState,
   key: Key,
-  previousState: Settings,
+  previousSettings: Settings,
 ): void => {
-  if (equal(state.current[key], state.editing[key])) {
-    delete state.editing[key];
+  if (equal(state.currentSettings[key], state.editingSettings[key])) {
+    delete state.editingSettings[key];
     delete state.errors[key];
-  } else if (!equal(state.current[key], previousState[key])) {
-    state.editing[key] = previousState[key];
+  } else if (!equal(state.currentSettings[key], previousSettings[key])) {
+    state.editingSettings[key] = previousSettings[key];
   }
 };

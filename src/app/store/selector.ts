@@ -163,30 +163,30 @@ export const selectAllTrashboxSelectButtonState = createSelector(
 
 // settings: current
 export const selectHostname = (state: State): Hostname => {
-  return state.settings.current.hostname;
+  return state.settings.currentSettings.hostname;
 };
 
 export const selectTimezone = (state: State): string => {
-  return state.settings.current.timezone;
+  return state.settings.currentSettings.timezone;
 };
 
 export const selectDatetimeFormat = (state: State): string => {
-  return state.settings.current.datetimeFormat;
+  return state.settings.currentSettings.datetimeFormat;
 };
 
 // settings: editings
 export const selectEditingHostname = (state: State): Hostname | undefined => {
-  return state.settings.editing.hostname;
+  return state.settings.editingSettings.hostname;
 };
 
 export const selectEditingTimezone = (state: State): string | undefined => {
-  return state.settings.editing.timezone;
+  return state.settings.editingSettings.timezone;
 };
 
 export const selectEditingDatetimeFormat = (
   state: State,
 ): string | undefined => {
-  return state.settings.editing.datetimeFormat;
+  return state.settings.editingSettings.datetimeFormat;
 };
 
 // settings: error
@@ -209,7 +209,7 @@ export const selectSettingsUpdateTrigger = (state: State): UpdateTrigger => {
 
 // depend on settings
 export const selectIsSettingsEdited = (state: State): boolean => {
-  return Object.keys(state.settings.editing).length > 0;
+  return Object.keys(state.settings.editingSettings).length > 0;
 };
 
 export const selectBaseURL = createSelector(

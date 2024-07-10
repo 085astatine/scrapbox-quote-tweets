@@ -86,7 +86,7 @@ type ValidateFunctions = {
   ) => ValidateSettingsValueResult;
 };
 
-export const validateFunctions: ValidateFunctions = {
+export const validateSettingsFunctions: ValidateFunctions = {
   hostname: validateHostname,
   timezone: validateTimezone,
 } as const;
@@ -97,7 +97,7 @@ export const validateSettings = (
   const keys = ['hostname', 'timezone'] as const;
   const errors: SettingsValidationFailure['errors'] = {};
   keys.forEach((key) => {
-    const validate = validateFunctions[key];
+    const validate = validateSettingsFunctions[key];
     if (validate !== undefined) {
       const result = validate(settings[key]);
       if (!result.ok) {
