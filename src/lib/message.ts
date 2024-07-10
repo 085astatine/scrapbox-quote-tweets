@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
-import { Logger } from './logger';
-import { Offscreen } from './offscreen';
+import type { Logger } from './logger';
+import type { Offscreen } from './offscreen';
 import { expandTCoURL, getURLTitle } from './url';
 
 export interface ExpandTCoURLRequestMessage {

@@ -8,9 +8,13 @@ import { addTweetsToTrashbox } from '~/lib/storage/trashbox';
 import { saveTweetSort } from '~/lib/storage/tweet-sort';
 import { defaultTweetTemplate } from '~/lib/tweet/tweet-template';
 import { tweetToString } from '~/lib/tweet/tweet-to-string';
-import { SortOrder, Tweet as TweetData, TweetSortKey } from '~/lib/tweet/types';
+import type {
+  SortOrder,
+  Tweet as TweetData,
+  TweetSortKey,
+} from '~/lib/tweet/types';
 import { trimGoogleFontsIcon } from '~/lib/utility';
-import { State, actions } from '../store';
+import { type State, actions } from '../store';
 import {
   selectAllTweetsSelectButtonState,
   selectIsSelectedTweet,

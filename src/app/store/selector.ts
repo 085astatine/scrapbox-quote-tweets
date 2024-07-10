@@ -1,17 +1,17 @@
 import { createSelector, weakMapMemoize } from '@reduxjs/toolkit';
-import { Hostname, baseURL } from '~/lib/settings';
-import { TrashboxSort, deletedTimes } from '~/lib/trashbox';
+import { type Hostname, baseURL } from '~/lib/settings';
+import { type TrashboxSort, deletedTimes } from '~/lib/trashbox';
 import { tweetSortFunction } from '~/lib/tweet/sort-tweets';
-import { TweetToStringOption } from '~/lib/tweet/tweet-to-string';
-import {
+import type { TweetToStringOption } from '~/lib/tweet/tweet-to-string';
+import type {
   DeletedTweet,
   SortOrder,
   Tweet,
   TweetID,
   TweetSort,
 } from '~/lib/tweet/types';
-import { State } from '.';
-import { UpdateTrigger } from './settings';
+import type { State } from '.';
+import type { UpdateTrigger } from './settings';
 
 // currnet settings
 export const selectHostname = (state: State): Hostname => {

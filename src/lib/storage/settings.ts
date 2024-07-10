@@ -3,7 +3,7 @@ import browser from 'webextension-polyfill';
 import { settingsJSONSchema } from '~/jsonschema/settings';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import validateSettings from '~/validate-json/validate-settings';
-import { Settings, defaultSettings } from '../settings';
+import { type Settings, defaultSettings } from '../settings';
 import { logger } from './logger';
 import { recordTo, toRecord } from './to-record';
 

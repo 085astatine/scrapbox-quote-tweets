@@ -1,9 +1,9 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 import equal from 'fast-deep-equal';
-import { Dispatch } from 'redux';
+import type { Dispatch } from 'redux';
 import {
-  Hostname,
-  Settings,
+  type Hostname,
+  type Settings,
   defaultSettings,
   validateFunctions,
 } from '~/lib/settings';

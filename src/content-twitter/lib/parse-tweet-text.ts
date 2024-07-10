@@ -1,11 +1,11 @@
 import browser from 'webextension-polyfill';
 import { getElement, getNode, isHTMLElement } from '~/lib/dom';
-import { Logger, logger as defaultLogger } from '~/lib/logger';
-import {
+import { type Logger, logger as defaultLogger } from '~/lib/logger';
+import type {
   ExpandTCoURLRequestMessage,
   ExpandTCoURLResultMessage,
 } from '~/lib/message';
-import {
+import type {
   TweetEntity,
   TweetEntityCashtag,
   TweetEntityHashtag,

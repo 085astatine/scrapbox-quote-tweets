@@ -2,7 +2,7 @@ import equal from 'fast-deep-equal';
 import browser from 'webextension-polyfill';
 import { tweetTemplateJSONSchema } from '~/jsonschema/tweet-template';
 import {
-  TweetTemplate,
+  type TweetTemplate,
   defaultTweetTemplate,
 } from '~/lib/tweet/tweet-template';
 import { JSONSchemaValidationError } from '~/validate-json/error';

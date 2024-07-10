@@ -1,20 +1,20 @@
 import { defaultTimezone, toDatetime } from '../datetime';
-import { Hostname, baseURL } from '../settings';
+import { type Hostname, baseURL } from '../settings';
 import {
-  EntityCashtagField,
-  EntityHashtagField,
-  EntityMentionField,
-  EntityTextField,
-  EntityURLField,
-  MediaPhotoField,
-  MediaVideoField,
-  ParsedTweetTemplate,
-  TemplateElement,
-  TweetField,
-  TweetTemplate,
+  type EntityCashtagField,
+  type EntityHashtagField,
+  type EntityMentionField,
+  type EntityTextField,
+  type EntityURLField,
+  type MediaPhotoField,
+  type MediaVideoField,
+  type ParsedTweetTemplate,
+  type TemplateElement,
+  type TweetField,
+  type TweetTemplate,
   parseTweetTemplate,
 } from './tweet-template';
-import {
+import type {
   Media,
   MediaPhoto,
   MediaVideo,

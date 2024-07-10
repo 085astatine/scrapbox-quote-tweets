@@ -1,5 +1,5 @@
-import { JSONSchemaType } from 'ajv';
-import { TweetTemplate } from '~/lib/tweet/tweet-template';
+import type { JSONSchemaType } from 'ajv';
+import type { TweetTemplate } from '~/lib/tweet/tweet-template';
 
 export const tweetTemplateJSONSchema: Readonly<JSONSchemaType<TweetTemplate>> =
   {

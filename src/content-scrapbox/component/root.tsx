@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactModal from 'react-modal';
 import { App } from '~/app';
-import { Store } from '~/app/store';
+import type { Store } from '~/app/store';
 import TwitterIcon from '~/icon/twitter.svg';
 
 export interface RootProps {

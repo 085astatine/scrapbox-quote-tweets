@@ -1,7 +1,7 @@
 import { createSelector, weakMapMemoize } from '@reduxjs/toolkit';
-import { TweetID } from '~/lib/tweet/types';
-import { State } from '.';
-import { ScrapboxButtonState, TweetState } from './tweet';
+import type { TweetID } from '~/lib/tweet/types';
+import type { State } from '.';
+import type { ScrapboxButtonState, TweetState } from './tweet';
 
 export const selectScrapboxButtonState = createSelector(
   [

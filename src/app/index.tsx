@@ -8,7 +8,7 @@ import { trimGoogleFontsIcon } from '~/lib/utility';
 import { Settings } from './component/settings';
 import { Trashbox } from './component/trashbox';
 import { Tweets } from './component/tweets';
-import { Store } from './store';
+import type { Store } from './store';
 
 export interface AppProps {
   store: Store;

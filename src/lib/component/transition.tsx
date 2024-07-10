@@ -1,6 +1,6 @@
 import React from 'react';
 import Transition, {
-  TransitionStatus,
+  type TransitionStatus,
 } from 'react-transition-group/Transition';
 
 type TransitionTarget =

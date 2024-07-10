@@ -1,5 +1,5 @@
 import punycode from 'punycode';
-import { Logger, logger as defaultLogger } from '~/lib/logger';
+import { type Logger, logger as defaultLogger } from '~/lib/logger';
 
 export const isTCoURL = (url: string): boolean => {
   try {
