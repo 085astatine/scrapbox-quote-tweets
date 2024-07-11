@@ -100,6 +100,12 @@ const settings = createSlice({
     ): void {
       editSettings(state, 'datetimeFormat', action.payload);
     },
+    editTemplate: <Key extends keyof TweetTemplate>(
+      state: SettingsState,
+      action: PayloadAction<{ type: Key; value: TweetTemplate[Key] }>,
+    ): void => {
+      editTemplate(state, action.payload.type, action.payload.value);
+    },
     updateByInterrupt(
       state: SettingsState,
       action: PayloadAction<Partial<Settings>>,
@@ -173,6 +179,18 @@ const editSettings = <Key extends keyof Settings>(
     state.editingSettings[key] = value;
   } else if (key in state.editingSettings) {
     delete state.editingSettings[key];
+  }
+};
+
+const editTemplate = <Key extends keyof TweetTemplate>(
+  state: SettingsState,
+  key: Key,
+  value: TweetTemplate[Key],
+): void => {
+  if (!equal(state.currentTemplate[key], value)) {
+    state.editingTemplate[key] = value;
+  } else if (key in state.editingTemplate) {
+    delete state.editingTemplate[key];
   }
 };
 
