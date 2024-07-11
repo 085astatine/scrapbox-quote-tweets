@@ -11,6 +11,7 @@ import type { OnChangedSettings } from '~/lib/storage/settings';
 import {
   type TweetTemplate,
   defaultTweetTemplate,
+  validateTweetTemplate,
 } from '~/lib/tweet/tweet-template';
 
 // state
@@ -61,8 +62,13 @@ const settings = createSlice({
       // reset errors
       state.errors = {};
       // validate editing value
-      editingSettingsKeys.forEach((key) => {
-        validateEditingValue(state, key);
+      settingsKeys.forEach((key) => {
+        validateEditingSettings(state, key);
+      });
+      templateKeys.forEach((key) => {
+        if (key !== 'quote') {
+          validateEditingTemplate(state, key);
+        }
       });
       // update if theare is no error
       if (Object.keys(state.errors).length === 0) {
@@ -103,7 +109,7 @@ const settings = createSlice({
         ...state.currentSettings,
         ...action.payload,
       };
-      editingSettingsKeys.forEach((key) => {
+      settingsKeys.forEach((key) => {
         resetEditingValueByInterrupt(state, key, previousSettings);
       });
       switch (state.updateTrigger) {
@@ -139,10 +145,23 @@ export const settingsStorageListener = (
 };
 
 // utilities
-const editingSettingsKeys: ReadonlyArray<keyof Settings> = [
+const settingsKeys: ReadonlyArray<keyof Settings> = [
   'hostname',
   'timezone',
   'datetimeFormat',
+] as const;
+
+const templateKeys: ReadonlyArray<keyof TweetTemplate> = [
+  'tweet',
+  'footer',
+  'entityText',
+  'entityUrl',
+  'entityHashtag',
+  'entityCashtag',
+  'entityMention',
+  'mediaPhoto',
+  'mediaVideo',
+  'quote',
 ] as const;
 
 const editSettings = <Key extends keyof Settings>(
@@ -157,7 +176,7 @@ const editSettings = <Key extends keyof Settings>(
   }
 };
 
-const validateEditingValue = <Key extends keyof Settings>(
+const validateEditingSettings = <Key extends keyof Settings>(
   state: SettingsState,
   key: Key,
 ): void => {
@@ -168,6 +187,20 @@ const validateEditingValue = <Key extends keyof Settings>(
       if (!result.ok) {
         state.errors[key] = result.error;
       }
+    }
+  }
+};
+
+const validateEditingTemplate = <
+  Key extends Exclude<keyof TweetTemplate, 'quote'>,
+>(
+  state: SettingsState,
+  key: Key,
+): void => {
+  if (state.editingTemplate[key] !== undefined) {
+    const result = validateTweetTemplate(key, state.editingTemplate[key]);
+    if (!result.ok) {
+      state.errors[key] = result.error;
     }
   }
 };
