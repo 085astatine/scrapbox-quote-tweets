@@ -190,6 +190,18 @@ type TweetTemplateParser = {
   [Key in ParserKey]: (template: string) => ParsedTweetTemplate[Key];
 };
 
+const parserKeys: ReadonlyArray<ParserKey> = [
+  'tweet',
+  'footer',
+  'entityText',
+  'entityUrl',
+  'entityHashtag',
+  'entityCashtag',
+  'entityMention',
+  'mediaPhoto',
+  'mediaVideo',
+] as const;
+
 export const tweetTemplateParser: TweetTemplateParser = {
   tweet: fieldParser(tweetFields),
   footer: fieldParser(tweetFields),
@@ -201,3 +213,57 @@ export const tweetTemplateParser: TweetTemplateParser = {
   mediaPhoto: fieldParser(mediaPhotoFields),
   mediaVideo: fieldParser(mediaVideoFields),
 } as const;
+
+// validation
+type ValidationSuccess = {
+  ok: true;
+};
+
+type TweetTemplateValidationFailure = {
+  ok: false;
+  error: string[];
+};
+
+type TweetTemplatesValidationFailure = {
+  ok: false;
+  errors: {
+    [Key in ParserKey]?: string[];
+  };
+};
+
+type ValidateTweetTemplateResult =
+  | ValidationSuccess
+  | TweetTemplateValidationFailure;
+type ValidateTweetTemplatesResult =
+  | ValidationSuccess
+  | TweetTemplatesValidationFailure;
+
+export const validateTweetTemplate = <Key extends ParserKey>(
+  key: Key,
+  template: string,
+): ValidateTweetTemplateResult => {
+  try {
+    tweetTemplateParser[key](template);
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.toString() : 'Unexpected Error';
+    return { ok: false, error: message.split(/\n/) };
+  }
+  return { ok: true };
+};
+
+export const validateTweetTemplates = (
+  template: TweetTemplate,
+): ValidateTweetTemplatesResult => {
+  const errors: TweetTemplatesValidationFailure['errors'] = {};
+  parserKeys.forEach((key) => {
+    const result = validateTweetTemplate(key, template[key]);
+    if (!result.ok) {
+      errors[key] = result.error;
+    }
+  });
+  if (Object.keys(errors).length > 0) {
+    return { ok: false, errors };
+  }
+  return { ok: true };
+};
