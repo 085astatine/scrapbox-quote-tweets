@@ -2,6 +2,7 @@ import { createSelector, weakMapMemoize } from '@reduxjs/toolkit';
 import { type Hostname, baseURL } from '~/lib/settings';
 import { type TrashboxSort, deletedTimes } from '~/lib/trashbox';
 import { tweetSortFunction } from '~/lib/tweet/sort-tweets';
+import type { TweetTemplate } from '~/lib/tweet/tweet-template';
 import type { TweetToStringOption } from '~/lib/tweet/tweet-to-string';
 import type {
   DeletedTweet,
@@ -202,6 +203,30 @@ export const selectDatetimeFormatErrors = (state: State): string[] => {
   return fallbackToEmptyArray(state.settings.errors.datetimeFormat ?? []);
 };
 
+// tweet-template: currnt
+export const selectTemplate = <Key extends keyof TweetTemplate>(
+  state: State,
+  key: Key,
+): TweetTemplate[Key] => {
+  return state.settings.currentTemplate[key];
+};
+
+// tweet-template: editing
+export const selectEditingTemplate = <Key extends keyof TweetTemplate>(
+  state: State,
+  key: Key,
+): TweetTemplate[Key] | undefined => {
+  return state.settings.editingTemplate[key];
+};
+
+// tweet-template: error
+export const selectTemplateError = <Key extends keyof TweetTemplate>(
+  state: State,
+  key: Key,
+): string[] => {
+  return fallbackToEmptyArray(state.settings.errors[key] ?? []);
+};
+
 // settings update trigger
 export const selectSettingsUpdateTrigger = (state: State): UpdateTrigger => {
   return state.settings.updateTrigger;
@@ -209,7 +234,10 @@ export const selectSettingsUpdateTrigger = (state: State): UpdateTrigger => {
 
 // depend on settings
 export const selectIsSettingsEdited = (state: State): boolean => {
-  return Object.keys(state.settings.editingSettings).length > 0;
+  return (
+    Object.keys(state.settings.editingSettings).length > 0 ||
+    Object.keys(state.settings.editingTemplate).length > 0
+  );
 };
 
 export const selectBaseURL = createSelector(
