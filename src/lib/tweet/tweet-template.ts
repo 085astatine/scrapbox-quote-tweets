@@ -1,17 +1,30 @@
 import difflib from 'difflib';
 
-export interface TweetTemplate {
-  tweet: string;
-  footer: string;
-  entityText: string;
-  entityUrl: string;
-  entityHashtag: string;
-  entityCashtag: string;
-  entityMention: string;
-  mediaPhoto: string;
-  mediaVideo: string;
+// tweet-template
+export const textTemplateKeys = [
+  'tweet',
+  'footer',
+  'entityText',
+  'entityUrl',
+  'entityHashtag',
+  'entityCashtag',
+  'entityMention',
+  'mediaPhoto',
+  'mediaVideo',
+] as const;
+
+export type TextTemplateKey = (typeof textTemplateKeys)[number];
+
+export type TweetTemplate = {
+  [Key in TextTemplateKey]: string;
+} & {
   quote: boolean;
-}
+};
+
+export const tweetTemplateKeys: ReadonlyArray<keyof TweetTemplate> = [
+  ...textTemplateKeys,
+  'quote',
+] as const;
 
 export const defaultTweetTemplate = (): TweetTemplate => {
   return {
@@ -42,6 +55,7 @@ export type TemplateElement<Field extends string> =
   | TemplateElementText
   | TemplateElementPlaceholder<Field>;
 
+// fields
 const tweetFields = [
   'tweet.url',
   'tweet.id',
@@ -184,23 +198,9 @@ const fieldParser = <Field extends string>(
   return (template: string) => parsePlaceholders(template, fields);
 };
 
-type ParserKey = Exclude<keyof TweetTemplate, 'quote'>;
-
 type TweetTemplateParser = {
-  [Key in ParserKey]: (template: string) => ParsedTweetTemplate[Key];
+  [Key in TextTemplateKey]: (template: string) => ParsedTweetTemplate[Key];
 };
-
-const parserKeys: ReadonlyArray<ParserKey> = [
-  'tweet',
-  'footer',
-  'entityText',
-  'entityUrl',
-  'entityHashtag',
-  'entityCashtag',
-  'entityMention',
-  'mediaPhoto',
-  'mediaVideo',
-] as const;
 
 export const tweetTemplateParser: TweetTemplateParser = {
   tweet: fieldParser(tweetFields),
@@ -227,7 +227,7 @@ type TweetTemplateValidationFailure = {
 type TweetTemplatesValidationFailure = {
   ok: false;
   errors: {
-    [Key in ParserKey]?: string[];
+    [Key in TextTemplateKey]?: string[];
   };
 };
 
@@ -238,7 +238,7 @@ type ValidateTweetTemplatesResult =
   | ValidationSuccess
   | TweetTemplatesValidationFailure;
 
-export const validateTweetTemplate = <Key extends ParserKey>(
+export const validateTweetTemplate = <Key extends TextTemplateKey>(
   key: Key,
   template: string,
 ): ValidateTweetTemplateResult => {
@@ -256,7 +256,7 @@ export const validateTweetTemplates = (
   template: TweetTemplate,
 ): ValidateTweetTemplatesResult => {
   const errors: TweetTemplatesValidationFailure['errors'] = {};
-  parserKeys.forEach((key) => {
+  textTemplateKeys.forEach((key) => {
     const result = validateTweetTemplate(key, template[key]);
     if (!result.ok) {
       errors[key] = result.error;

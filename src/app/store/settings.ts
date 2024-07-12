@@ -11,6 +11,7 @@ import type { OnChangedSettings } from '~/lib/storage/settings';
 import {
   type TweetTemplate,
   defaultTweetTemplate,
+  tweetTemplateKeys,
   validateTweetTemplate,
 } from '~/lib/tweet/tweet-template';
 
@@ -65,7 +66,7 @@ const settings = createSlice({
       settingsKeys.forEach((key) => {
         validateEditingSettings(state, key);
       });
-      templateKeys.forEach((key) => {
+      tweetTemplateKeys.forEach((key) => {
         if (key !== 'quote') {
           validateEditingTemplate(state, key);
         }
@@ -155,19 +156,6 @@ const settingsKeys: ReadonlyArray<keyof Settings> = [
   'hostname',
   'timezone',
   'datetimeFormat',
-] as const;
-
-const templateKeys: ReadonlyArray<keyof TweetTemplate> = [
-  'tweet',
-  'footer',
-  'entityText',
-  'entityUrl',
-  'entityHashtag',
-  'entityCashtag',
-  'entityMention',
-  'mediaPhoto',
-  'mediaVideo',
-  'quote',
 ] as const;
 
 const editSettings = <Key extends keyof Settings>(
