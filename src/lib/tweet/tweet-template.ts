@@ -102,6 +102,18 @@ export type MediaPhotoField = (typeof mediaPhotoFields)[number];
 
 export type MediaVideoField = (typeof mediaVideoFields)[number];
 
+export const textTemplateFields = {
+  tweet: tweetFields,
+  footer: tweetFields,
+  entityText: entityTextFields,
+  entityUrl: entityURLFields,
+  entityHashtag: entityHashtagFields,
+  entityCashtag: entityCashtagFields,
+  entityMention: entityMentionFields,
+  mediaPhoto: mediaPhotoFields,
+  mediaVideo: mediaVideoFields,
+} as const;
+
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
   footer: readonly TemplateElement<TweetField>[];
