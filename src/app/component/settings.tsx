@@ -56,15 +56,14 @@ const SettingsItem: React.FC<SettingsItemProps> = ({
   errors,
   description,
 }) => {
+  const telomereStatus =
+    errors?.length ? 'invalid'
+    : isUpdated ? 'updated'
+    : undefined;
   return (
     <div className="settings-item">
       <div className="settings-item-input">
-        <div
-          className={classNames('settings-telomere', {
-            updated: isUpdated && !errors?.length,
-            invalid: errors?.length,
-          })}
-        />
+        <Telomere status={telomereStatus} />
         <div className="settings-label">{label}</div>
         <div className="settings-form">{form}</div>
       </div>
@@ -339,6 +338,22 @@ const UpdateNotification: React.FC = () => {
           </div>
         </div>
       }
+    />
+  );
+};
+
+// utilities
+type TelomereProps = {
+  status?: 'updated' | 'invalid' | undefined;
+};
+
+const Telomere: React.FC<TelomereProps> = ({ status }) => {
+  return (
+    <div
+      className={classNames('settings-telomere', {
+        updated: status === 'updated',
+        invalid: status === 'invalid',
+      })}
     />
   );
 };
