@@ -255,7 +255,9 @@ const DownloadStorage: React.FC = () => {
     <SettingsItem
       label="Download Storage"
       form={
-        <button className="button download-button" onClick={onClick}>
+        <button
+          className="button button-primary download-button"
+          onClick={onClick}>
           <DownloadIcon
             className="download-icon"
             width={undefined}
@@ -284,12 +286,12 @@ const Commands: React.FC = () => {
         <div ref={ref}>
           <div className="settings-commands fade-in">
             <button
-              className="button"
+              className="button button-primary"
               onClick={() => dispatch(actions.settings.resetEdits())}>
               Reset editing
             </button>
             <button
-              className="button"
+              className="button button-primary"
               onClick={() => {
                 // update store
                 dispatch(actions.settings.applyEdits());
