@@ -316,14 +316,14 @@ const Commands: React.FC = () => {
       unmountOnExit
       target={
         <div ref={ref}>
-          <div className="settings-commands fade-in">
+          <div className="commands fade-in">
             <button
-              className="button button-primary command-button"
+              className="command button button-primary"
               onClick={() => dispatch(actions.settings.resetEdits())}>
               Reset editing
             </button>
             <button
-              className="button button-primary command-button"
+              className="command button button-primary"
               onClick={() => {
                 // update store
                 dispatch(actions.settings.applyEdits());

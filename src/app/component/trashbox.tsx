@@ -238,7 +238,7 @@ const Commands: React.FC = () => {
       target={
         <div ref={ref}>
           <div className="commands fade-in">
-            <button className="command" onClick={restoreTweets}>
+            <button className="command button" onClick={restoreTweets}>
               <RestoreIcon
                 className="icon"
                 viewBox={trimGoogleFontsIcon(200)}
@@ -247,7 +247,7 @@ const Commands: React.FC = () => {
                 fill="currentColor"
               />
             </button>
-            <button className="command" onClick={deleteTweets}>
+            <button className="command button" onClick={deleteTweets}>
               <DeleteIcon
                 className="icon"
                 viewBox={trimGoogleFontsIcon(200)}

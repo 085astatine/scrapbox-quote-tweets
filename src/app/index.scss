@@ -33,12 +33,23 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 
 .button {
   padding: 0.375rem 0.75rem;
+  color: var(--#{bs-prefix}black);
+  background-color: var(--#{$bs-prefix}body-bg);
+  border-color: var(--#{$bs-prefix}border-color);
   border-style: solid;
   border-width: var(--#{$bs-prefix}border-width);
   border-radius: var(--#{$bs-prefix}border-radius);
   transition-timing-function: ease-in-out;
   transition-duration: 0.15s;
   transition-property: box-shadow, outline;
+
+  &:is(:focus, :hover) {
+    box-shadow: 0 0 0 var(--#{$bs-prefix}focus-ring-width)
+      rgba(
+        var(--#{$bs-prefix}primary-rgb),
+        var(--#{$bs-prefix}focus-ring-opacity)
+      );
+  }
 
   &:focus-visible {
     outline: $focus-visible-outline;
@@ -161,37 +172,20 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 
 .commands {
   display: flex;
-  flex-shrink: 0;
+  flex-wrap: wrap;
   gap: map.get($bs-spacers, 1);
-  margin: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
+  border-color: var(--#{$bs-prefix}border-color);
+  border-style: var(--#{$bs-prefix}border-style);
+  border-width: var(--#{$bs-prefix}border-width);
+  border-radius: var(--#{$bs-prefix}border-radius);
 
-  .command {
-    display: flex;
+  > .command {
     flex-grow: 1;
-    padding: 0.375rem 0.75rem;
-    appearance: none;
-    background-color: var(--#{$bs-prefix}body-bg);
-    border-color: var(--#{$bs-prefix}border-color);
-    border-style: var(--#{$bs-prefix}border-style);
-    border-width: var(--#{$bs-prefix}border-width);
-    border-radius: var(--#{$bs-prefix}border-radius);
 
     .icon {
       width: 2em;
       height: 2em;
-      margin: auto;
-    }
-
-    &:is(:focus, :hover) {
-      box-shadow: 0 0 0 var(--#{$bs-prefix}focus-ring-width)
-        rgba(
-          var(--#{$bs-prefix}primary-rgb),
-          var(--#{$bs-prefix}focus-ring-opacity)
-        );
-    }
-
-    &:focus-visible {
-      outline: $focus-visible-outline;
     }
   }
 }
@@ -583,22 +577,6 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
     &.open {
       transform: none;
     }
-  }
-}
-
-.settings-commands {
-  display: flex;
-  flex-wrap: wrap;
-  row-gap: map.get($bs-spacers, 1);
-  column-gap: map.get($bs-spacers, 3);
-  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 2);
-  border-color: var(--#{$bs-prefix}border-color);
-  border-style: var(--#{$bs-prefix}border-style);
-  border-width: var(--#{$bs-prefix}border-width);
-  border-radius: var(--#{$bs-prefix}border-radius);
-
-  .command-button {
-    flex-grow: 1;
   }
 }
 
