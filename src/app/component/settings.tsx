@@ -58,44 +58,6 @@ export const Settings: React.FC = () => {
   );
 };
 
-interface SettingsItemProps {
-  label: string;
-  form: React.ReactElement;
-  isUpdated?: boolean;
-  errors?: readonly string[];
-  description?: React.ReactElement;
-}
-
-const SettingsItem: React.FC<SettingsItemProps> = ({
-  label,
-  form,
-  isUpdated,
-  errors,
-  description,
-}) => {
-  const telomereStatus =
-    errors?.length ? 'invalid'
-    : isUpdated ? 'updated'
-    : undefined;
-  return (
-    <div className="settings-item">
-      <div className="settings-item-input">
-        <Telomere status={telomereStatus} />
-        <div className="settings-label">{label}</div>
-        <div className="settings-form">{form}</div>
-      </div>
-      {description !== undefined && description}
-      {errors !== undefined && errors.length > 0 && (
-        <div className="settings-item-errors">
-          {errors.map((error, index) => (
-            <div key={index}>{error}</div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
 const BaseURL: React.FC = () => {
   const currentValue = useSelector(selectHostname);
   const editingValue = useSelector(selectEditingHostname);
@@ -389,6 +351,44 @@ const Telomere: React.FC<TelomereProps> = ({ status }) => {
         invalid: status === 'invalid',
       })}
     />
+  );
+};
+
+type SettingsItemProps = {
+  label: string;
+  form: React.ReactElement;
+  isUpdated?: boolean;
+  errors?: readonly string[];
+  description?: React.ReactElement;
+};
+
+const SettingsItem: React.FC<SettingsItemProps> = ({
+  label,
+  form,
+  isUpdated,
+  errors,
+  description,
+}) => {
+  const telomereStatus =
+    errors?.length ? 'invalid'
+    : isUpdated ? 'updated'
+    : undefined;
+  return (
+    <div className="settings-item">
+      <div className="settings-item-input">
+        <Telomere status={telomereStatus} />
+        <div className="settings-label">{label}</div>
+        <div className="settings-form">{form}</div>
+      </div>
+      {description !== undefined && description}
+      {errors !== undefined && errors.length > 0 && (
+        <div className="settings-item-errors">
+          {errors.map((error, index) => (
+            <div key={index}>{error}</div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
