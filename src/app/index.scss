@@ -36,9 +36,9 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   border-style: solid;
   border-width: var(--#{$bs-prefix}border-width);
   border-radius: var(--#{$bs-prefix}border-radius);
-  transition:
-    box-shadow 0.15s ease-in-out,
-    outline 0.15s ease-in-out;
+  transition-timing-function: ease-in-out;
+  transition-duration: 0.15s;
+  transition-property: box-shadow, outline;
 
   &:focus-visible {
     outline: $focus-visible-outline;
@@ -70,6 +70,39 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
         var(--#{$bs-prefix}secondary-rgb),
         var(--#{$bs-prefix}focus-ring-opacity)
       );
+  }
+}
+
+.button-outline-secondary {
+  color: var(--#{$bs-prefix}secondary);
+  background-color: var(--#{$bs-prefix}white);
+  border-color: var(--#{$bs-prefix}secondary);
+  transition-property: background-color, box-shadow, color, outline;
+
+  &:is(:focus, :hover) {
+    color: var(--#{$bs-prefix}white);
+    background-color: var(--#{$bs-prefix}secondary);
+    box-shadow: 0 0 0 var(--#{$bs-prefix}focus-ring-width)
+      rgba(
+        var(--#{$bs-prefix}secondary-rgb),
+        var(--#{$bs-prefix}focus-ring-opacity)
+      );
+  }
+}
+
+.button-group-vertical {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--#{$bs-prefix}border-width);
+
+  > .button:not(:first-child) {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  > .button:not(:last-child) {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
   }
 }
 
@@ -115,6 +148,15 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   &:focus-visible {
     outline: $focus-visible-outline;
   }
+}
+
+.floating-menu {
+  z-index: 100;
+  background-color: var(--#{$bs-prefix}body-bg);
+  border-color: var(--#{$bs-prefix}border-color);
+  border-style: var(--#{$bs-prefix}border-style);
+  border-width: var(--#{$bs-prefix}border-width);
+  border-radius: var(--#{$bs-prefix}border-radius);
 }
 
 .commands {
@@ -517,6 +559,33 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   font-weight: normal;
 }
 
+.text-template-input {
+  margin: map.get($bs-spacers, 1) 0 0 map.get($bs-spacers, 3);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.placeholders-button {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  line-height: 1rem;
+
+  .expand-icon {
+    width: 1rem;
+    height: 1rem;
+    margin-left: map.get($bs-spacers, 1);
+    border-radius: 50%;
+    transition: transform 0.15s ease-in-out;
+    transform: rotate(-90deg);
+
+    &.open {
+      transform: none;
+    }
+  }
+}
+
 .settings-commands {
   display: flex;
   flex-wrap: wrap;
@@ -528,7 +597,7 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   border-width: var(--#{$bs-prefix}border-width);
   border-radius: var(--#{$bs-prefix}border-radius);
 
-  .button {
+  .command-button {
     flex-grow: 1;
   }
 }
