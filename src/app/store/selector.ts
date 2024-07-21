@@ -192,15 +192,17 @@ export const selectEditingDatetimeFormat = (
 
 // settings: error
 export const selectHostnameErrors = (state: State): string[] => {
-  return fallbackToEmptyArray(state.settings.errors.hostname ?? []);
+  return fallbackToEmptyArray(state.settings.settingsErrors.hostname ?? []);
 };
 
 export const selectTimezoneErrors = (state: State): string[] => {
-  return fallbackToEmptyArray(state.settings.errors.timezone ?? []);
+  return fallbackToEmptyArray(state.settings.settingsErrors.timezone ?? []);
 };
 
 export const selectDatetimeFormatErrors = (state: State): string[] => {
-  return fallbackToEmptyArray(state.settings.errors.datetimeFormat ?? []);
+  return fallbackToEmptyArray(
+    state.settings.settingsErrors.datetimeFormat ?? [],
+  );
 };
 
 // tweet-template: currnt
@@ -224,7 +226,7 @@ export const selectTemplateError = <Key extends keyof TweetTemplate>(
   state: State,
   key: Key,
 ): string[] => {
-  return fallbackToEmptyArray(state.settings.errors[key] ?? []);
+  return fallbackToEmptyArray(state.settings.templateErrors[key] ?? []);
 };
 
 // settings update trigger

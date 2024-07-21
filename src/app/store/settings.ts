@@ -18,18 +18,18 @@ import {
 // state
 type EditingSettings = Partial<Settings>;
 type EditingTweetTemplate = Partial<TweetTemplate>;
-type SettingsErrors = Partial<
-  Record<keyof Settings | keyof TweetTemplate, string[]>
->;
+type SettingsErrors = Partial<Record<keyof Settings, string[]>>;
+type TemplateErrors = Partial<Record<keyof TweetTemplate, string[]>>;
 
 export type UpdateTrigger = 'none' | 'self' | 'interrupt';
 
 export interface SettingsState {
   currentSettings: Settings;
   editingSettings: EditingSettings;
+  settingsErrors: SettingsErrors;
   currentTemplate: TweetTemplate;
   editingTemplate: EditingTweetTemplate;
-  errors: SettingsErrors;
+  templateErrors: TemplateErrors;
   updateTrigger: UpdateTrigger;
 }
 
@@ -37,9 +37,10 @@ const initialSettingsState = (): SettingsState => {
   return {
     currentSettings: defaultSettings(),
     editingSettings: {},
+    settingsErrors: {},
     currentTemplate: defaultTweetTemplate(),
     editingTemplate: {},
-    errors: {},
+    templateErrors: {},
     updateTrigger: 'none',
   };
 };
@@ -54,14 +55,16 @@ const settings = createSlice({
     ): void {
       state.currentSettings = { ...action.payload.settings };
       state.editingSettings = {};
+      state.settingsErrors = {};
       state.currentTemplate = { ...action.payload.template };
       state.editingTemplate = {};
-      state.errors = {};
+      state.templateErrors = {};
       state.updateTrigger = 'none';
     },
     applyEdits(state: SettingsState): void {
       // reset errors
-      state.errors = {};
+      state.settingsErrors = {};
+      state.templateErrors = {};
       // validate editing value
       settingsKeys.forEach((key) => {
         validateEditingSettings(state, key);
@@ -72,7 +75,10 @@ const settings = createSlice({
         }
       });
       // update if theare is no error
-      if (Object.keys(state.errors).length === 0) {
+      if (
+        Object.keys(state.settingsErrors).length === 0 &&
+        Object.keys(state.templateErrors).length === 0
+      ) {
         state.currentSettings = {
           ...state.currentSettings,
           ...state.editingSettings,
@@ -83,8 +89,9 @@ const settings = createSlice({
     },
     resetEdits(state: SettingsState): void {
       state.editingSettings = {};
+      state.settingsErrors = {};
       state.editingTemplate = {};
-      state.errors = {};
+      state.templateErrors = {};
     },
     resetUpdateTrigger(state: SettingsState): void {
       state.updateTrigger = 'none';
@@ -191,7 +198,7 @@ const validateEditingSettings = <Key extends keyof Settings>(
     if (validate !== undefined) {
       const result = validate(state.editingSettings[key]);
       if (!result.ok) {
-        state.errors[key] = result.error;
+        state.settingsErrors[key] = result.error;
       }
     }
   }
@@ -206,7 +213,7 @@ const validateEditingTemplate = <
   if (state.editingTemplate[key] !== undefined) {
     const result = validateTweetTemplate(key, state.editingTemplate[key]);
     if (!result.ok) {
-      state.errors[key] = result.error;
+      state.templateErrors[key] = result.error;
     }
   }
 };
@@ -218,7 +225,7 @@ const resetEditingValueByInterrupt = <Key extends keyof Settings>(
 ): void => {
   if (equal(state.currentSettings[key], state.editingSettings[key])) {
     delete state.editingSettings[key];
-    delete state.errors[key];
+    delete state.settingsErrors[key];
   } else if (!equal(state.currentSettings[key], previousSettings[key])) {
     state.editingSettings[key] = previousSettings[key];
   }
