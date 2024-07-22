@@ -566,17 +566,10 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   margin-left: auto;
   line-height: 1rem;
 
-  .expand-icon {
+  .placeholders-button-icon {
     width: 1rem;
     height: 1rem;
     margin-left: map.get($bs-spacers, 1);
-    border-radius: 50%;
-    transition: transform 0.15s ease-in-out;
-    transform: rotate(-90deg);
-
-    &.open {
-      transform: none;
-    }
   }
 }
 

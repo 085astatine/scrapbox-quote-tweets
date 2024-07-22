@@ -11,7 +11,7 @@ import React from 'react';
 import { shallowEqual, useDispatch, useSelector, useStore } from 'react-redux';
 import browser from 'webextension-polyfill';
 import ArrowRightIcon from '~/icon/bootstrap/arrow-right.svg';
-import ChevronIcon from '~/icon/bootstrap/chevron-down.svg';
+import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import DownloadIcon from '~/icon/bootstrap/download.svg';
 import CloseIcon from '~/icon/bootstrap/x.svg';
 import { Collapse } from '~/lib/component/transition';
@@ -477,8 +477,8 @@ const Placeholders: React.FC<PlaceholdersProps> = ({ fields, onSelect }) => {
         ref={refs.setReference}
         {...getReferenceProps()}>
         placeholders
-        <ChevronIcon
-          className={classNames('expand-icon', { open: isOpen })}
+        <ChevronDownIcon
+          className="placeholders-button-icon"
           width={undefined}
           height={undefined}
         />
