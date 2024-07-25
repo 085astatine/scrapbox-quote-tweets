@@ -25,6 +25,7 @@ import {
 } from '~/lib/tweet/tweet-template';
 import { type State, actions } from '../store';
 import {
+  type EditStatus,
   selectDatetimeFormat,
   selectDatetimeFormatErrors,
   selectEditingDatetimeFormat,
@@ -339,8 +340,19 @@ const UpdateNotification: React.FC = () => {
 };
 
 // utilities
+const editStatus = (
+  isUpdated?: boolean,
+  error?: readonly string[],
+): EditStatus => {
+  return (
+    error?.length ? 'invalid'
+    : isUpdated ? 'updated'
+    : 'none'
+  );
+};
+
 type TelomereProps = {
-  status?: 'updated' | 'invalid' | undefined;
+  status?: EditStatus;
 };
 
 const Telomere: React.FC<TelomereProps> = ({ status }) => {
@@ -369,14 +381,10 @@ const SettingsItem: React.FC<SettingsItemProps> = ({
   errors,
   description,
 }) => {
-  const telomereStatus =
-    errors?.length ? 'invalid'
-    : isUpdated ? 'updated'
-    : undefined;
   return (
     <div className="settings-item">
       <div className="settings-item-input">
-        <Telomere status={telomereStatus} />
+        <Telomere status={editStatus(isUpdated, errors)} />
         <div className="settings-label">{label}</div>
         <div className="settings-form">{form}</div>
       </div>
@@ -428,14 +436,10 @@ const TextTemplate: React.FC<TextTemplateProps> = ({ type, name }) => {
       actions.settings.editTemplate({ type, value: `${value}$\{${field}}` }),
     );
   };
-  const telomereStatus =
-    error?.length ? 'invalid'
-    : isUpdated ? 'updated'
-    : undefined;
   return (
     <div className="settings-item">
       <div className="settings-item-input">
-        <Telomere status={telomereStatus} />
+        <Telomere status={editStatus(isUpdated, error)} />
         <div className="settings-label">{name}</div>
         <Placeholders fields={fields} onSelect={addPlaceholder} />
       </div>

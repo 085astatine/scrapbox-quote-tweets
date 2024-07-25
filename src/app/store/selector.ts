@@ -14,6 +14,9 @@ import type {
 import type { State } from '.';
 import type { UpdateTrigger } from './settings';
 
+// types
+export type EditStatus = 'none' | 'updated' | 'invalid';
+
 // tweets
 export const selectTweetSort = (state: State): TweetSort => {
   return state.tweet.tweetSort;
