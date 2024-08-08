@@ -498,6 +498,24 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   overflow-y: scroll;
 }
 
+.settings-editor-headerline {
+  display: flex;
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 3);
+}
+
+.settings-editor-header-1 {
+  display: flex;
+  align-items: center;
+  font-size: 2.5rem;
+  line-height: 1.2;
+
+  .expand-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-left: 1rem;
+  }
+}
+
 .settings-item {
   display: flex;
   flex-direction: column;
@@ -528,6 +546,7 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   display: flex;
   align-self: center;
   margin-right: map.get($bs-spacers, 3);
+  margin-left: map.get($bs-spacers, 3);
   font-weight: bold;
 }
 

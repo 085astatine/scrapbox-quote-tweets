@@ -12,6 +12,7 @@ import { shallowEqual, useDispatch, useSelector, useStore } from 'react-redux';
 import browser from 'webextension-polyfill';
 import ArrowRightIcon from '~/icon/bootstrap/arrow-right.svg';
 import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
+import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
 import DownloadIcon from '~/icon/bootstrap/download.svg';
 import CloseIcon from '~/icon/bootstrap/x.svg';
 import { Collapse } from '~/lib/component/transition';
@@ -35,6 +36,7 @@ import {
   selectHostname,
   selectHostnameErrors,
   selectIsSettingsEdited,
+  selectSettingsEditStatus,
   selectSettingsUpdateTrigger,
   selectTemplate,
   selectTemplateError,
@@ -46,15 +48,47 @@ export const Settings: React.FC = () => {
   return (
     <>
       <div className="settings fade-in">
-        <h1>Settings</h1>
         <UpdateNotification />
-        <BaseURL />
-        <Timezone />
-        <DatetimeFormat />
+        <SettingsEditor />
         <Template />
         {process.env.NODE_ENV === 'development' && <DevTools />}
       </div>
       <Commands />
+    </>
+  );
+};
+
+const SettingsEditor: React.FC = () => {
+  const ref = React.useRef(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const editStatus = useSelector(selectSettingsEditStatus);
+
+  const Icon = isOpen ? ChevronUpIcon : ChevronDownIcon;
+  return (
+    <>
+      <div className="settings-editor-headerline">
+        <Telomere status={editStatus} />
+        <button
+          className="button settings-editor-header-1"
+          onClick={() => setIsOpen((open) => !open)}>
+          Settings
+          <Icon className="expand-icon" width={undefined} height={undefined} />
+        </button>
+      </div>
+      <Collapse
+        nodeRef={ref}
+        in={isOpen}
+        duration={300}
+        mountOnEnter
+        unmountOnExit
+        target={
+          <div ref={ref}>
+            <BaseURL />
+            <Timezone />
+            <DatetimeFormat />
+          </div>
+        }
+      />
     </>
   );
 };

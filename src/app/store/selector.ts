@@ -237,6 +237,23 @@ export const selectSettingsUpdateTrigger = (state: State): UpdateTrigger => {
   return state.settings.updateTrigger;
 };
 
+// settings editor
+export const selectSettingsEditStatus = createSelector(
+  [
+    (state: State): boolean =>
+      Object.keys(state.settings.editingSettings).length > 0,
+    (state: State): boolean =>
+      Object.keys(state.settings.settingsErrors).length > 0,
+  ],
+  (isUpdated: boolean, hasError: boolean): EditStatus => {
+    return (
+      hasError ? 'invalid'
+      : isUpdated ? 'updated'
+      : 'none'
+    );
+  },
+);
+
 // depend on settings
 export const selectIsSettingsEdited = (state: State): boolean => {
   return (
