@@ -482,6 +482,7 @@ const TextTemplate: React.FC<TextTemplateProps> = ({ type, name }) => {
         value={value}
         onChange={onChange}
         wrap="off"
+        rows={value.split('\n').length}
       />
     </div>
   );
