@@ -39,10 +39,14 @@ import {
   selectSettingsEditStatus,
   selectSettingsUpdateTrigger,
   selectTemplate,
+  selectTemplateEditStatus,
+  selectTemplateEntitiesEditStatus,
   selectTemplateError,
+  selectTemplateMediaEditStatus,
   selectTimezone,
   selectTimezoneErrors,
 } from '../store/selector';
+import { Checkbox } from './checkbox';
 
 export const Settings: React.FC = () => {
   return (
@@ -50,7 +54,7 @@ export const Settings: React.FC = () => {
       <div className="settings fade-in">
         <UpdateNotification />
         <SettingsEditor />
-        <Template />
+        <TemplateEditor />
         {process.env.NODE_ENV === 'development' && <DevTools />}
       </div>
       <Commands />
@@ -249,18 +253,166 @@ const DatetimeFormatSample: React.FC = () => {
   );
 };
 
-const Template: React.FC = () => {
+const TemplateEditor: React.FC = () => {
+  const ref = React.useRef(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const editStatus = useSelector(selectTemplateEditStatus);
+
   const textTemplates: TextTemplateProps[] = [
     { type: 'tweet', name: 'Tweet Body' },
     { type: 'footer', name: 'Tweet Footer' },
   ] as const;
+  const Icon = isOpen ? ChevronUpIcon : ChevronDownIcon;
   return (
     <>
-      <h2>Template</h2>
-      {textTemplates.map(({ type, name }) => (
-        <TextTemplate key={type} type={type} name={name} />
-      ))}
+      <div className="settings-editor-headerline">
+        <Telomere status={editStatus} />
+        <button
+          className="button settings-editor-header-1"
+          onClick={() => setIsOpen((open) => !open)}>
+          Template
+          <Icon className="expand-icon" width={undefined} height={undefined} />
+        </button>
+      </div>
+      <Collapse
+        nodeRef={ref}
+        in={isOpen}
+        duration={300}
+        mountOnEnter
+        unmountOnExit
+        target={
+          <div ref={ref}>
+            {textTemplates.map(({ type, name }) => (
+              <TextTemplate key={type} type={type} name={name} />
+            ))}
+            <TemplateEntityEditor />
+            <TemplateMediaEditor />
+            <TemplateQuote />
+          </div>
+        }
+      />
     </>
+  );
+};
+
+const TemplateEntityEditor: React.FC = () => {
+  const ref = React.useRef(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const editStatus = useSelector(selectTemplateEntitiesEditStatus);
+
+  const textTemplates: TextTemplateProps[] = [
+    { type: 'entityText', name: 'Entity: Text' },
+    { type: 'entityUrl', name: 'Entity: URL' },
+    { type: 'entityHashtag', name: 'Entity: Hashtag' },
+    { type: 'entityCashtag', name: 'Entity: Cashtag' },
+    { type: 'entityMention', name: 'Entity: Mention' },
+  ] as const;
+  const Icon = isOpen ? ChevronUpIcon : ChevronDownIcon;
+  return (
+    <>
+      <div className="settings-editor-headerline">
+        <Telomere status={editStatus} />
+        <button
+          className="button settings-editor-header-3"
+          onClick={() => setIsOpen((open) => !open)}>
+          Entity
+          <Icon className="expand-icon" width={undefined} height={undefined} />
+        </button>
+      </div>
+      <Collapse
+        nodeRef={ref}
+        in={isOpen}
+        duration={300}
+        mountOnEnter
+        unmountOnExit
+        target={
+          <div ref={ref}>
+            {textTemplates.map(({ type, name }) => (
+              <TextTemplate key={type} type={type} name={name} />
+            ))}
+          </div>
+        }
+      />
+    </>
+  );
+};
+
+const TemplateMediaEditor: React.FC = () => {
+  const ref = React.useRef(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const editStatus = useSelector(selectTemplateMediaEditStatus);
+
+  const textTemplates: TextTemplateProps[] = [
+    { type: 'mediaPhoto', name: 'Media: Photo' },
+    { type: 'mediaVideo', name: 'Media: Video' },
+  ] as const;
+  const Icon = isOpen ? ChevronUpIcon : ChevronDownIcon;
+  return (
+    <>
+      <div className="settings-editor-headerline">
+        <Telomere status={editStatus} />
+        <button
+          className="button settings-editor-header-3"
+          onClick={() => setIsOpen((open) => !open)}>
+          Media
+          <Icon className="expand-icon" width={undefined} height={undefined} />
+        </button>
+      </div>
+      <Collapse
+        nodeRef={ref}
+        in={isOpen}
+        duration={300}
+        mountOnEnter
+        unmountOnExit
+        target={
+          <div ref={ref}>
+            {textTemplates.map(({ type, name }) => (
+              <TextTemplate key={type} type={type} name={name} />
+            ))}
+          </div>
+        }
+      />
+    </>
+  );
+};
+
+const TemplateQuote: React.FC = () => {
+  const selectCurrent = React.useCallback(
+    (state: State) => selectTemplate(state, 'quote'),
+    [],
+  );
+  const selectEditing = React.useCallback(
+    (state: State) => selectEditingTemplate(state, 'quote'),
+    [],
+  );
+  const selectError = React.useCallback(
+    (state: State) => selectTemplateError(state, 'quote'),
+    [],
+  );
+  const current = useSelector(selectCurrent);
+  const editing = useSelector(selectEditing);
+  const error = useSelector(selectError, shallowEqual);
+  const dispatch = useDispatch();
+
+  const value = editing ?? current;
+  const isUpdated = editing !== undefined;
+  const onClick = (): void => {
+    dispatch(actions.settings.editTemplate({ type: 'quote', value: !value }));
+  };
+  return (
+    <SettingsItem
+      label="Quote"
+      form={
+        <Checkbox checked={value} id="tweet-template-quote" onClick={onClick} />
+      }
+      isUpdated={isUpdated}
+      errors={error}
+      description={
+        <div className="settings-item-description">
+          Add a <code>&gt;</code> to the beginning of each line.
+        </div>
+      }
+    />
   );
 };
 

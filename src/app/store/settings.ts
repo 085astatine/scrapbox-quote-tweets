@@ -16,10 +16,10 @@ import {
 } from '~/lib/tweet/tweet-template';
 
 // state
-type EditingSettings = Partial<Settings>;
-type EditingTweetTemplate = Partial<TweetTemplate>;
-type SettingsErrors = Partial<Record<keyof Settings, string[]>>;
-type TemplateErrors = Partial<Record<keyof TweetTemplate, string[]>>;
+export type EditingSettings = Partial<Settings>;
+export type EditingTweetTemplate = Partial<TweetTemplate>;
+export type SettingsErrors = Partial<Record<keyof Settings, string[]>>;
+export type TemplateErrors = Partial<Record<keyof TweetTemplate, string[]>>;
 
 export type UpdateTrigger = 'none' | 'self' | 'interrupt';
 

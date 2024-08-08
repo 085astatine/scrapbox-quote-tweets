@@ -11,6 +11,11 @@ $bs-spacers: (
   4: $bs-spacer * 1.5,
   5: $bs-spacer * 3,
 );
+$header-font-sizes: (
+  1: 2.5rem,
+  2: 2rem,
+  3: 1.75rem,
+);
 $bs-body-bg: var(--#{$bs-prefix}body-bg);
 $tab-border-color: var(--#{$bs-prefix}border-color);
 $tab-border-hover-color: var(--#{$bs-prefix}secondary-bg);
@@ -503,16 +508,18 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   padding: map.get($bs-spacers, 1) map.get($bs-spacers, 3);
 }
 
-.settings-editor-header-1 {
-  display: flex;
-  align-items: center;
-  font-size: 2.5rem;
-  line-height: 1.2;
+@each $header, $font-size in $header-font-sizes {
+  .settings-editor-header-#{$header} {
+    display: flex;
+    align-items: center;
+    font-size: $font-size;
+    line-height: 1.2;
 
-  .expand-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    margin-left: 1rem;
+    .expand-icon {
+      width: $font-size;
+      height: $font-size;
+      margin-left: 1rem;
+    }
   }
 }
 

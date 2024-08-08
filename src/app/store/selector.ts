@@ -2,7 +2,10 @@ import { createSelector, weakMapMemoize } from '@reduxjs/toolkit';
 import { type Hostname, baseURL } from '~/lib/settings';
 import { type TrashboxSort, deletedTimes } from '~/lib/trashbox';
 import { tweetSortFunction } from '~/lib/tweet/sort-tweets';
-import type { TweetTemplate } from '~/lib/tweet/tweet-template';
+import type {
+  TextTemplateKey,
+  TweetTemplate,
+} from '~/lib/tweet/tweet-template';
 import type { TweetToStringOption } from '~/lib/tweet/tweet-to-string';
 import type {
   DeletedTweet,
@@ -12,7 +15,11 @@ import type {
   TweetSort,
 } from '~/lib/tweet/types';
 import type { State } from '.';
-import type { UpdateTrigger } from './settings';
+import type {
+  EditingTweetTemplate,
+  TemplateErrors,
+  UpdateTrigger,
+} from './settings';
 
 // types
 export type EditStatus = 'none' | 'updated' | 'invalid';
@@ -246,6 +253,66 @@ export const selectSettingsEditStatus = createSelector(
       Object.keys(state.settings.settingsErrors).length > 0,
   ],
   (isUpdated: boolean, hasError: boolean): EditStatus => {
+    return (
+      hasError ? 'invalid'
+      : isUpdated ? 'updated'
+      : 'none'
+    );
+  },
+);
+
+// template edtor
+export const selectTemplateEditStatus = createSelector(
+  [
+    (state: State): boolean =>
+      Object.keys(state.settings.editingTemplate).length > 0,
+    (state: State): boolean =>
+      Object.keys(state.settings.templateErrors).length > 0,
+  ],
+  (isUpdated: boolean, hasError: boolean): EditStatus => {
+    return (
+      hasError ? 'invalid'
+      : isUpdated ? 'updated'
+      : 'none'
+    );
+  },
+);
+
+const templateEntityKeys: ReadonlyArray<TextTemplateKey> = [
+  'entityText',
+  'entityUrl',
+  'entityHashtag',
+  'entityCashtag',
+  'entityMention',
+] as const;
+export const selectTemplateEntitiesEditStatus = createSelector(
+  [
+    (state: State): EditingTweetTemplate => state.settings.editingTemplate,
+    (state: State): TemplateErrors => state.settings.templateErrors,
+  ],
+  (editing: EditingTweetTemplate, errors: TemplateErrors): EditStatus => {
+    const isUpdated = !templateEntityKeys.every((key) => !(key in editing));
+    const hasError = !templateEntityKeys.every((key) => !(key in errors));
+    return (
+      hasError ? 'invalid'
+      : isUpdated ? 'updated'
+      : 'none'
+    );
+  },
+);
+
+const templateMediaKeys: ReadonlyArray<TextTemplateKey> = [
+  'mediaPhoto',
+  'mediaVideo',
+] as const;
+export const selectTemplateMediaEditStatus = createSelector(
+  [
+    (state: State): EditingTweetTemplate => state.settings.editingTemplate,
+    (state: State): TemplateErrors => state.settings.templateErrors,
+  ],
+  (editing: EditingTweetTemplate, errors: TemplateErrors): EditStatus => {
+    const isUpdated = !templateMediaKeys.every((key) => !(key in editing));
+    const hasError = !templateMediaKeys.every((key) => !(key in errors));
     return (
       hasError ? 'invalid'
       : isUpdated ? 'updated'
