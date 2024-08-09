@@ -18,7 +18,7 @@ import CloseIcon from '~/icon/bootstrap/x.svg';
 import { Collapse } from '~/lib/component/transition';
 import { isValidTimezone, toDatetime } from '~/lib/datetime';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
-import { baseURL, hostnames, validateSettings } from '~/lib/settings';
+import { baseURL, hostnames } from '~/lib/settings';
 import { saveSettings } from '~/lib/storage/settings';
 import {
   type TextTemplateKey,
@@ -477,12 +477,9 @@ const Commands: React.FC = () => {
                 // update store
                 dispatch(actions.settings.applyEdits());
                 // save to storage
-                const settings = {
-                  ...store.getState().settings.currentSettings,
-                  ...store.getState().settings.editingSettings,
-                };
-                if (validateSettings(settings).ok) {
-                  saveSettings(settings);
+                const state = store.getState().settings;
+                if (Object.keys(state.settingsErrors).length === 0) {
+                  saveSettings(state.currentSettings);
                 }
               }}>
               Save settings
