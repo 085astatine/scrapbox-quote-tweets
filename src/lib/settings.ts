@@ -10,6 +10,12 @@ export interface Settings {
   datetimeFormat: string;
 }
 
+export const settingsKeys: ReadonlyArray<keyof Settings> = [
+  'hostname',
+  'timezone',
+  'datetimeFormat',
+] as const;
+
 export const defaultSettings = (): Settings => {
   return {
     hostname: 'x.com',

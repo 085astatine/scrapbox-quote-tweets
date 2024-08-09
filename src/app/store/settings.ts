@@ -5,6 +5,7 @@ import {
   type Hostname,
   type Settings,
   defaultSettings,
+  settingsKeys,
   validateSettingsFunctions,
 } from '~/lib/settings';
 import type { OnChangedSettings } from '~/lib/storage/settings';
@@ -159,12 +160,6 @@ export const settingsStorageListener = (
 };
 
 // utilities
-const settingsKeys: ReadonlyArray<keyof Settings> = [
-  'hostname',
-  'timezone',
-  'datetimeFormat',
-] as const;
-
 const editSettings = <Key extends keyof Settings>(
   state: SettingsState,
   key: Key,
