@@ -155,7 +155,7 @@ export class UnexpectedPlaceholderError extends Error {
     const maybe = difflib.getCloseMatches(field, fields as string[]);
     let message = `"${field}" is not assignable to a placeholder.`;
     if (maybe.length > 0) {
-      message += ` Did you mean ${maybe
+      message += `\nDid you mean ${maybe
         .map((field) => `"${field}"`)
         .join(' / ')}?`;
     }
