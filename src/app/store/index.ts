@@ -11,6 +11,7 @@ import {
 } from '~/lib/storage/trashbox';
 import { onChangedTweet } from '~/lib/storage/tweet';
 import { loadTrashboxSort, loadTweetSort } from '~/lib/storage/tweet-sort';
+import { onChangedTweetTemplate } from '~/lib/storage/tweet-template';
 import { loadTweetTemplate } from '~/lib/storage/tweet-template';
 import {
   settingsActions,
@@ -57,6 +58,7 @@ export const storageListener = (
     ...onChangedTweet(changes),
     ...onChangedTrashbox(changes),
     ...onChangedSettings(changes),
+    ...onChangedTweetTemplate(changes),
   };
   logger.debug('listener arguments', args);
   // tweet

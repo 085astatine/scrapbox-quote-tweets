@@ -9,6 +9,7 @@ import {
   validateSettingsFunctions,
 } from '~/lib/settings';
 import type { OnChangedSettings } from '~/lib/storage/settings';
+import type { OnChangedTweetTemplate } from '~/lib/storage/tweet-template';
 import {
   type TweetTemplate,
   defaultTweetTemplate,
@@ -122,16 +123,33 @@ const settings = createSlice({
     },
     updateByInterrupt(
       state: SettingsState,
-      action: PayloadAction<Partial<Settings>>,
+      action: PayloadAction<{
+        settings?: EditingSettings;
+        template?: EditingTweetTemplate;
+      }>,
     ): void {
-      const previousSettings = { ...state.currentSettings };
-      state.currentSettings = {
-        ...state.currentSettings,
-        ...action.payload,
-      };
-      settingsKeys.forEach((key) => {
-        resetEditingValueByInterrupt(state, key, previousSettings);
-      });
+      // update settings
+      if (action.payload.settings !== undefined) {
+        const previous = { ...state.currentSettings };
+        state.currentTemplate = {
+          ...state.currentTemplate,
+          ...action.payload.template,
+        };
+        settingsKeys.forEach((key) => {
+          resetEditingSettingsByInterrupt(state, key, previous);
+        });
+      }
+      // update template
+      if (action.payload.template !== undefined) {
+        const previous = { ...state.currentTemplate };
+        state.currentTemplate = {
+          ...state.currentTemplate,
+          ...action.payload.template,
+        };
+        tweetTemplateKeys.forEach((key) => {
+          resetEditingTemplateByInterrupt(state, key, previous);
+        });
+      }
       switch (state.updateTrigger) {
         case 'none':
           if (Object.keys(state.editingSettings).length > 0) {
@@ -155,12 +173,18 @@ export const settingsActions: Readonly<typeof settings.actions> =
 
 // storage listener
 export const settingsStorageListener = (
-  args: OnChangedSettings,
+  args: OnChangedSettings & OnChangedTweetTemplate,
   dispatch: Dispatch,
 ): void => {
-  // settings:*
-  if (args.settings !== undefined && Object.keys(settings).length > 0) {
-    dispatch(settingsActions.updateByInterrupt(args.settings));
+  // settings & tweetTemplate
+  const settings: EditingSettings = args.settings || {};
+  const template: EditingTweetTemplate = args.tweetTemplate || {};
+  const update = {
+    ...(Object.keys(settings).length > 0 && { settings }),
+    ...(Object.keys(template).length > 0 && { template }),
+  };
+  if (Object.keys(update).length > 0) {
+    dispatch(settingsActions.updateByInterrupt(update));
   }
 };
 
@@ -218,15 +242,28 @@ const validateEditingTemplate = <
   }
 };
 
-const resetEditingValueByInterrupt = <Key extends keyof Settings>(
+const resetEditingSettingsByInterrupt = <Key extends keyof Settings>(
   state: SettingsState,
   key: Key,
-  previousSettings: Settings,
+  previous: Settings,
 ): void => {
   if (equal(state.currentSettings[key], state.editingSettings[key])) {
     delete state.editingSettings[key];
     delete state.settingsErrors[key];
-  } else if (!equal(state.currentSettings[key], previousSettings[key])) {
-    state.editingSettings[key] = previousSettings[key];
+  } else if (!equal(state.currentSettings[key], previous[key])) {
+    state.editingSettings[key] = previous[key];
+  }
+};
+
+const resetEditingTemplateByInterrupt = <Key extends keyof TweetTemplate>(
+  state: SettingsState,
+  key: Key,
+  previous: TweetTemplate,
+): void => {
+  if (equal(state.currentTemplate[key], state.editingTemplate[key])) {
+    delete state.editingTemplate[key];
+    delete state.templateErrors[key];
+  } else if (!equal(state.currentTemplate[key], previous[key])) {
+    state.editingTemplate[key] = previous[key];
   }
 };
