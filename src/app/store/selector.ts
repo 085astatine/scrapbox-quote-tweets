@@ -2,6 +2,10 @@ import { createSelector, weakMapMemoize } from '@reduxjs/toolkit';
 import { type Hostname, baseURL } from '~/lib/settings';
 import { type TrashboxSort, deletedTimes } from '~/lib/trashbox';
 import { tweetSortFunction } from '~/lib/tweet/sort-tweets';
+import type {
+  TextTemplateKey,
+  TweetTemplate,
+} from '~/lib/tweet/tweet-template';
 import type { TweetToStringOption } from '~/lib/tweet/tweet-to-string';
 import type {
   DeletedTweet,
@@ -11,56 +15,14 @@ import type {
   TweetSort,
 } from '~/lib/tweet/types';
 import type { State } from '.';
-import type { UpdateTrigger } from './settings';
+import type {
+  EditingTweetTemplate,
+  TemplateErrors,
+  UpdateTrigger,
+} from './settings';
 
-// currnet settings
-export const selectHostname = (state: State): Hostname => {
-  return state.settings.current.hostname;
-};
-
-export const selectTimezone = (state: State): string => {
-  return state.settings.current.timezone;
-};
-
-export const selectDatetimeFormat = (state: State): string => {
-  return state.settings.current.datetimeFormat;
-};
-
-// editing settings
-export const selectIsSettingsEdited = (state: State): boolean => {
-  return Object.keys(state.settings.editing).length > 0;
-};
-
-export const selectEditingHostname = (state: State): Hostname | undefined => {
-  return state.settings.editing.hostname;
-};
-
-export const selectEditingTimezone = (state: State): string | undefined => {
-  return state.settings.editing.timezone;
-};
-
-export const selectEditingDatetimeFormat = (
-  state: State,
-): string | undefined => {
-  return state.settings.editing.datetimeFormat;
-};
-
-// settings errors
-export const selectHostnameErrors = (state: State): string[] => {
-  return fallbackToEmptyArray(state.settings.errors.hostname ?? []);
-};
-export const selectTimezoneErrors = (state: State): string[] => {
-  return fallbackToEmptyArray(state.settings.errors.timezone ?? []);
-};
-
-export const selectDatetimeFormatErrors = (state: State): string[] => {
-  return fallbackToEmptyArray(state.settings.errors.datetimeFormat ?? []);
-};
-
-// settings update trigger
-export const selectSettingsUpdateTrigger = (state: State): UpdateTrigger => {
-  return state.settings.updateTrigger;
-};
+// types
+export type EditStatus = 'none' | 'updated' | 'invalid';
 
 // tweets
 export const selectTweetSort = (state: State): TweetSort => {
@@ -210,7 +172,163 @@ export const selectAllTrashboxSelectButtonState = createSelector(
   },
 );
 
-// settings
+// settings: current
+export const selectHostname = (state: State): Hostname => {
+  return state.settings.currentSettings.hostname;
+};
+
+export const selectTimezone = (state: State): string => {
+  return state.settings.currentSettings.timezone;
+};
+
+export const selectDatetimeFormat = (state: State): string => {
+  return state.settings.currentSettings.datetimeFormat;
+};
+
+// settings: editings
+export const selectEditingHostname = (state: State): Hostname | undefined => {
+  return state.settings.editingSettings.hostname;
+};
+
+export const selectEditingTimezone = (state: State): string | undefined => {
+  return state.settings.editingSettings.timezone;
+};
+
+export const selectEditingDatetimeFormat = (
+  state: State,
+): string | undefined => {
+  return state.settings.editingSettings.datetimeFormat;
+};
+
+// settings: error
+export const selectHostnameErrors = (state: State): string[] => {
+  return fallbackToEmptyArray(state.settings.settingsErrors.hostname ?? []);
+};
+
+export const selectTimezoneErrors = (state: State): string[] => {
+  return fallbackToEmptyArray(state.settings.settingsErrors.timezone ?? []);
+};
+
+export const selectDatetimeFormatErrors = (state: State): string[] => {
+  return fallbackToEmptyArray(
+    state.settings.settingsErrors.datetimeFormat ?? [],
+  );
+};
+
+// tweet-template: currnt
+export const selectTemplate = <Key extends keyof TweetTemplate>(
+  state: State,
+  key: Key,
+): TweetTemplate[Key] => {
+  return state.settings.currentTemplate[key];
+};
+
+// tweet-template: editing
+export const selectEditingTemplate = <Key extends keyof TweetTemplate>(
+  state: State,
+  key: Key,
+): TweetTemplate[Key] | undefined => {
+  return state.settings.editingTemplate[key];
+};
+
+// tweet-template: error
+export const selectTemplateError = <Key extends keyof TweetTemplate>(
+  state: State,
+  key: Key,
+): string[] => {
+  return fallbackToEmptyArray(state.settings.templateErrors[key] ?? []);
+};
+
+// settings update trigger
+export const selectSettingsUpdateTrigger = (state: State): UpdateTrigger => {
+  return state.settings.updateTrigger;
+};
+
+// settings editor
+export const selectSettingsEditStatus = createSelector(
+  [
+    (state: State): boolean =>
+      Object.keys(state.settings.editingSettings).length > 0,
+    (state: State): boolean =>
+      Object.keys(state.settings.settingsErrors).length > 0,
+  ],
+  (isUpdated: boolean, hasError: boolean): EditStatus => {
+    return (
+      hasError ? 'invalid'
+      : isUpdated ? 'updated'
+      : 'none'
+    );
+  },
+);
+
+// template edtor
+export const selectTemplateEditStatus = createSelector(
+  [
+    (state: State): boolean =>
+      Object.keys(state.settings.editingTemplate).length > 0,
+    (state: State): boolean =>
+      Object.keys(state.settings.templateErrors).length > 0,
+  ],
+  (isUpdated: boolean, hasError: boolean): EditStatus => {
+    return (
+      hasError ? 'invalid'
+      : isUpdated ? 'updated'
+      : 'none'
+    );
+  },
+);
+
+const templateEntityKeys: ReadonlyArray<TextTemplateKey> = [
+  'entityText',
+  'entityUrl',
+  'entityHashtag',
+  'entityCashtag',
+  'entityMention',
+] as const;
+export const selectTemplateEntitiesEditStatus = createSelector(
+  [
+    (state: State): EditingTweetTemplate => state.settings.editingTemplate,
+    (state: State): TemplateErrors => state.settings.templateErrors,
+  ],
+  (editing: EditingTweetTemplate, errors: TemplateErrors): EditStatus => {
+    const isUpdated = !templateEntityKeys.every((key) => !(key in editing));
+    const hasError = !templateEntityKeys.every((key) => !(key in errors));
+    return (
+      hasError ? 'invalid'
+      : isUpdated ? 'updated'
+      : 'none'
+    );
+  },
+);
+
+const templateMediaKeys: ReadonlyArray<TextTemplateKey> = [
+  'mediaPhoto',
+  'mediaVideo',
+] as const;
+export const selectTemplateMediaEditStatus = createSelector(
+  [
+    (state: State): EditingTweetTemplate => state.settings.editingTemplate,
+    (state: State): TemplateErrors => state.settings.templateErrors,
+  ],
+  (editing: EditingTweetTemplate, errors: TemplateErrors): EditStatus => {
+    const isUpdated = !templateMediaKeys.every((key) => !(key in editing));
+    const hasError = !templateMediaKeys.every((key) => !(key in errors));
+    return (
+      hasError ? 'invalid'
+      : isUpdated ? 'updated'
+      : 'none'
+    );
+  },
+);
+
+// depend on settings
+export const selectIsSettingsEdited = (state: State): boolean => {
+  return (
+    Object.keys(state.settings.editingSettings).length > 0 ||
+    Object.keys(state.settings.editingTemplate).length > 0
+  );
+};
+
 export const selectBaseURL = createSelector(
   [selectHostname],
   (hostname: Hostname): string => {

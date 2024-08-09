@@ -11,6 +11,11 @@ $bs-spacers: (
   4: $bs-spacer * 1.5,
   5: $bs-spacer * 3,
 );
+$header-font-sizes: (
+  1: 2.5rem,
+  2: 2rem,
+  3: 1.75rem,
+);
 $bs-body-bg: var(--#{$bs-prefix}body-bg);
 $tab-border-color: var(--#{$bs-prefix}border-color);
 $tab-border-hover-color: var(--#{$bs-prefix}secondary-bg);
@@ -33,15 +38,15 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 
 .button {
   padding: 0.375rem 0.75rem;
-  color: #fff;
-  background-color: var(--#{$bs-prefix}primary);
-  border-color: var(--#{$bs-prefix}primary);
+  color: var(--#{bs-prefix}black);
+  background-color: var(--#{$bs-prefix}body-bg);
+  border-color: var(--#{$bs-prefix}border-color);
   border-style: solid;
   border-width: var(--#{$bs-prefix}border-width);
   border-radius: var(--#{$bs-prefix}border-radius);
-  transition:
-    box-shadow 0.15s ease-in-out,
-    outline 0.15s ease-in-out;
+  transition-timing-function: ease-in-out;
+  transition-duration: 0.15s;
+  transition-property: box-shadow, outline;
 
   &:is(:focus, :hover) {
     box-shadow: 0 0 0 var(--#{$bs-prefix}focus-ring-width)
@@ -53,6 +58,67 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 
   &:focus-visible {
     outline: $focus-visible-outline;
+  }
+}
+
+.button-primary {
+  color: #fff;
+  background-color: var(--#{$bs-prefix}primary);
+  border-color: var(--#{$bs-prefix}primary);
+
+  &:is(:focus, :hover) {
+    box-shadow: 0 0 0 var(--#{$bs-prefix}focus-ring-width)
+      rgba(
+        var(--#{$bs-prefix}primary-rgb),
+        var(--#{$bs-prefix}focus-ring-opacity)
+      );
+  }
+}
+
+.button-secondary {
+  color: #fff;
+  background-color: var(--#{$bs-prefix}secondary);
+  border-color: var(--#{$bs-prefix}secondary);
+
+  &:is(:focus, :hover) {
+    box-shadow: 0 0 0 var(--#{$bs-prefix}focus-ring-width)
+      rgba(
+        var(--#{$bs-prefix}secondary-rgb),
+        var(--#{$bs-prefix}focus-ring-opacity)
+      );
+  }
+}
+
+.button-outline-secondary {
+  color: var(--#{$bs-prefix}secondary);
+  background-color: var(--#{$bs-prefix}white);
+  border-color: var(--#{$bs-prefix}secondary);
+  transition-property: background-color, box-shadow, color, outline;
+
+  &:is(:focus, :hover) {
+    color: var(--#{$bs-prefix}white);
+    background-color: var(--#{$bs-prefix}secondary);
+    box-shadow: 0 0 0 var(--#{$bs-prefix}focus-ring-width)
+      rgba(
+        var(--#{$bs-prefix}secondary-rgb),
+        var(--#{$bs-prefix}focus-ring-opacity)
+      );
+  }
+}
+
+.button-group-vertical {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--#{$bs-prefix}border-width);
+
+  > .button:not(:first-child) {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  > .button:not(:last-child) {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
   }
 }
 
@@ -100,39 +166,31 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   }
 }
 
+.floating-menu {
+  z-index: 100;
+  background-color: var(--#{$bs-prefix}body-bg);
+  border-color: var(--#{$bs-prefix}border-color);
+  border-style: var(--#{$bs-prefix}border-style);
+  border-width: var(--#{$bs-prefix}border-width);
+  border-radius: var(--#{$bs-prefix}border-radius);
+}
+
 .commands {
   display: flex;
-  flex-shrink: 0;
+  flex-wrap: wrap;
   gap: map.get($bs-spacers, 1);
-  margin: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
+  border-color: var(--#{$bs-prefix}border-color);
+  border-style: var(--#{$bs-prefix}border-style);
+  border-width: var(--#{$bs-prefix}border-width);
+  border-radius: var(--#{$bs-prefix}border-radius);
 
-  .command {
-    display: flex;
+  > .command {
     flex-grow: 1;
-    padding: 0.375rem 0.75rem;
-    appearance: none;
-    background-color: var(--#{$bs-prefix}body-bg);
-    border-color: var(--#{$bs-prefix}border-color);
-    border-style: var(--#{$bs-prefix}border-style);
-    border-width: var(--#{$bs-prefix}border-width);
-    border-radius: var(--#{$bs-prefix}border-radius);
 
     .icon {
       width: 2em;
       height: 2em;
-      margin: auto;
-    }
-
-    &:is(:focus, :hover) {
-      box-shadow: 0 0 0 var(--#{$bs-prefix}focus-ring-width)
-        rgba(
-          var(--#{$bs-prefix}primary-rgb),
-          var(--#{$bs-prefix}focus-ring-opacity)
-        );
-    }
-
-    &:focus-visible {
-      outline: $focus-visible-outline;
     }
   }
 }
@@ -445,6 +503,26 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   overflow-y: scroll;
 }
 
+.settings-editor-headerline {
+  display: flex;
+  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 3);
+}
+
+@each $header, $font-size in $header-font-sizes {
+  .settings-editor-header-#{$header} {
+    display: flex;
+    align-items: center;
+    font-size: $font-size;
+    line-height: 1.2;
+
+    .expand-icon {
+      width: $font-size;
+      height: $font-size;
+      margin-left: 1rem;
+    }
+  }
+}
+
 .settings-item {
   display: flex;
   flex-direction: column;
@@ -475,6 +553,7 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   display: flex;
   align-self: center;
   margin-right: map.get($bs-spacers, 3);
+  margin-left: map.get($bs-spacers, 3);
   font-weight: bold;
 }
 
@@ -500,19 +579,23 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   font-weight: normal;
 }
 
-.settings-commands {
-  display: flex;
-  flex-wrap: wrap;
-  row-gap: map.get($bs-spacers, 1);
-  column-gap: map.get($bs-spacers, 3);
-  padding: map.get($bs-spacers, 1) map.get($bs-spacers, 2);
-  border-color: var(--#{$bs-prefix}border-color);
-  border-style: var(--#{$bs-prefix}border-style);
-  border-width: var(--#{$bs-prefix}border-width);
-  border-radius: var(--#{$bs-prefix}border-radius);
+.text-template-input {
+  margin: map.get($bs-spacers, 1) 0 0 map.get($bs-spacers, 3);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
 
-  .button {
-    flex-grow: 1;
+.placeholders-button {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  line-height: 1rem;
+
+  .placeholders-button-icon {
+    width: 1rem;
+    height: 1rem;
+    margin-left: map.get($bs-spacers, 1);
   }
 }
 

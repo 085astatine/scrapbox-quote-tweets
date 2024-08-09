@@ -182,14 +182,14 @@ const Commands: React.FC = () => {
       target={
         <div ref={ref}>
           <div className="commands fade-in">
-            <button className="command" onClick={copyToClipboard}>
+            <button className="command button" onClick={copyToClipboard}>
               <ClipboardIcon
                 className="icon"
                 width={undefined}
                 height={undefined}
               />
             </button>
-            <button className="command" onClick={moveToTrashbox}>
+            <button className="command button" onClick={moveToTrashbox}>
               <TrashboxIcon
                 className="icon"
                 viewBox={trimGoogleFontsIcon(200)}

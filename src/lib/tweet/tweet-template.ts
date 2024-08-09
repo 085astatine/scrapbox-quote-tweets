@@ -1,17 +1,30 @@
 import difflib from 'difflib';
 
-export interface TweetTemplate {
-  tweet: string;
-  footer: string;
-  entityText: string;
-  entityUrl: string;
-  entityHashtag: string;
-  entityCashtag: string;
-  entityMention: string;
-  mediaPhoto: string;
-  mediaVideo: string;
+// tweet-template
+export const textTemplateKeys = [
+  'tweet',
+  'footer',
+  'entityText',
+  'entityUrl',
+  'entityHashtag',
+  'entityCashtag',
+  'entityMention',
+  'mediaPhoto',
+  'mediaVideo',
+] as const;
+
+export type TextTemplateKey = (typeof textTemplateKeys)[number];
+
+export type TweetTemplate = {
+  [Key in TextTemplateKey]: string;
+} & {
   quote: boolean;
-}
+};
+
+export const tweetTemplateKeys: ReadonlyArray<keyof TweetTemplate> = [
+  ...textTemplateKeys,
+  'quote',
+] as const;
 
 export const defaultTweetTemplate = (): TweetTemplate => {
   return {
@@ -42,6 +55,7 @@ export type TemplateElement<Field extends string> =
   | TemplateElementText
   | TemplateElementPlaceholder<Field>;
 
+// fields
 const tweetFields = [
   'tweet.url',
   'tweet.id',
@@ -88,6 +102,18 @@ export type MediaPhotoField = (typeof mediaPhotoFields)[number];
 
 export type MediaVideoField = (typeof mediaVideoFields)[number];
 
+export const textTemplateFields = {
+  tweet: tweetFields,
+  footer: tweetFields,
+  entityText: entityTextFields,
+  entityUrl: entityURLFields,
+  entityHashtag: entityHashtagFields,
+  entityCashtag: entityCashtagFields,
+  entityMention: entityMentionFields,
+  mediaPhoto: mediaPhotoFields,
+  mediaVideo: mediaVideoFields,
+} as const;
+
 export interface ParsedTweetTemplate {
   tweet: readonly TemplateElement<TweetField>[];
   footer: readonly TemplateElement<TweetField>[];
@@ -108,7 +134,7 @@ export const parseTweetTemplate = (
   const parser = tweetTemplateParser;
   return {
     tweet: parser.tweet(template.tweet),
-    footer: parser.tweet(template.footer),
+    footer: parser.footer(template.footer),
     entityText: parser.entityText(template.entityText),
     entityUrl: parser.entityUrl(template.entityUrl),
     entityHashtag: parser.entityHashtag(template.entityHashtag),
@@ -129,7 +155,7 @@ export class UnexpectedPlaceholderError extends Error {
     const maybe = difflib.getCloseMatches(field, fields as string[]);
     let message = `"${field}" is not assignable to a placeholder.`;
     if (maybe.length > 0) {
-      message += ` Did you mean ${maybe
+      message += `\nDid you mean ${maybe
         .map((field) => `"${field}"`)
         .join(' / ')}?`;
     }
@@ -184,8 +210,13 @@ const fieldParser = <Field extends string>(
   return (template: string) => parsePlaceholders(template, fields);
 };
 
-export const tweetTemplateParser = {
+type TweetTemplateParser = {
+  [Key in TextTemplateKey]: (template: string) => ParsedTweetTemplate[Key];
+};
+
+export const tweetTemplateParser: TweetTemplateParser = {
   tweet: fieldParser(tweetFields),
+  footer: fieldParser(tweetFields),
   entityText: fieldParser(entityTextFields),
   entityUrl: fieldParser(entityURLFields),
   entityHashtag: fieldParser(entityHashtagFields),
@@ -194,3 +225,57 @@ export const tweetTemplateParser = {
   mediaPhoto: fieldParser(mediaPhotoFields),
   mediaVideo: fieldParser(mediaVideoFields),
 } as const;
+
+// validation
+type ValidationSuccess = {
+  ok: true;
+};
+
+type TweetTemplateValidationFailure = {
+  ok: false;
+  error: string[];
+};
+
+type TweetTemplatesValidationFailure = {
+  ok: false;
+  errors: {
+    [Key in TextTemplateKey]?: string[];
+  };
+};
+
+type ValidateTweetTemplateResult =
+  | ValidationSuccess
+  | TweetTemplateValidationFailure;
+type ValidateTweetTemplatesResult =
+  | ValidationSuccess
+  | TweetTemplatesValidationFailure;
+
+export const validateTweetTemplate = <Key extends TextTemplateKey>(
+  key: Key,
+  template: string,
+): ValidateTweetTemplateResult => {
+  try {
+    tweetTemplateParser[key](template);
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.toString() : 'Unexpected Error';
+    return { ok: false, error: message.split(/\n/) };
+  }
+  return { ok: true };
+};
+
+export const validateTweetTemplates = (
+  template: TweetTemplate,
+): ValidateTweetTemplatesResult => {
+  const errors: TweetTemplatesValidationFailure['errors'] = {};
+  textTemplateKeys.forEach((key) => {
+    const result = validateTweetTemplate(key, template[key]);
+    if (!result.ok) {
+      errors[key] = result.error;
+    }
+  });
+  if (Object.keys(errors).length > 0) {
+    return { ok: false, errors };
+  }
+  return { ok: true };
+};

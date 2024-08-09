@@ -1,39 +1,61 @@
+import {
+  shift,
+  useClick,
+  useDismiss,
+  useFloating,
+  useInteractions,
+  useRole,
+} from '@floating-ui/react';
 import classNames from 'classnames';
 import React from 'react';
 import { shallowEqual, useDispatch, useSelector, useStore } from 'react-redux';
 import browser from 'webextension-polyfill';
 import ArrowRightIcon from '~/icon/bootstrap/arrow-right.svg';
+import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
+import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
 import DownloadIcon from '~/icon/bootstrap/download.svg';
 import CloseIcon from '~/icon/bootstrap/x.svg';
 import { Collapse } from '~/lib/component/transition';
 import { isValidTimezone, toDatetime } from '~/lib/datetime';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
-import { baseURL, hostnames, validateSettings } from '~/lib/settings';
+import { baseURL, hostnames } from '~/lib/settings';
 import { saveSettings } from '~/lib/storage/settings';
+import { saveTweetTemplate } from '~/lib/storage/tweet-template';
+import {
+  type TextTemplateKey,
+  textTemplateFields,
+} from '~/lib/tweet/tweet-template';
 import { type State, actions } from '../store';
 import {
+  type EditStatus,
   selectDatetimeFormat,
   selectDatetimeFormatErrors,
   selectEditingDatetimeFormat,
   selectEditingHostname,
+  selectEditingTemplate,
   selectEditingTimezone,
   selectHostname,
   selectHostnameErrors,
   selectIsSettingsEdited,
+  selectSettingsEditStatus,
   selectSettingsUpdateTrigger,
+  selectTemplate,
+  selectTemplateEditStatus,
+  selectTemplateEntitiesEditStatus,
+  selectTemplateError,
+  selectTemplateMediaEditStatus,
   selectTimezone,
   selectTimezoneErrors,
 } from '../store/selector';
+import { Checkbox } from './checkbox';
 
 export const Settings: React.FC = () => {
   return (
     <>
       <div className="settings fade-in">
-        <h1>Settings</h1>
         <UpdateNotification />
-        <BaseURL />
-        <Timezone />
-        <DatetimeFormat />
+        <SettingsEditor />
+        <TemplateEditor />
         {process.env.NODE_ENV === 'development' && <DevTools />}
       </div>
       <Commands />
@@ -41,42 +63,38 @@ export const Settings: React.FC = () => {
   );
 };
 
-interface SettingsItemProps {
-  label: string;
-  form: React.ReactElement;
-  isUpdated?: boolean;
-  errors?: readonly string[];
-  description?: React.ReactElement;
-}
+const SettingsEditor: React.FC = () => {
+  const ref = React.useRef(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const editStatus = useSelector(selectSettingsEditStatus);
 
-const SettingsItem: React.FC<SettingsItemProps> = ({
-  label,
-  form,
-  isUpdated,
-  errors,
-  description,
-}) => {
+  const Icon = isOpen ? ChevronUpIcon : ChevronDownIcon;
   return (
-    <div className="settings-item">
-      <div className="settings-item-input">
-        <div
-          className={classNames('settings-telomere', {
-            updated: isUpdated && !errors?.length,
-            invalid: errors?.length,
-          })}
-        />
-        <div className="settings-label">{label}</div>
-        <div className="settings-form">{form}</div>
+    <>
+      <div className="settings-editor-headerline">
+        <Telomere status={editStatus} />
+        <button
+          className="button settings-editor-header-1"
+          onClick={() => setIsOpen((open) => !open)}>
+          Settings
+          <Icon className="expand-icon" width={undefined} height={undefined} />
+        </button>
       </div>
-      {description !== undefined && description}
-      {errors !== undefined && errors.length > 0 && (
-        <div className="settings-item-errors">
-          {errors.map((error, index) => (
-            <div key={index}>{error}</div>
-          ))}
-        </div>
-      )}
-    </div>
+      <Collapse
+        nodeRef={ref}
+        in={isOpen}
+        duration={300}
+        mountOnEnter
+        unmountOnExit
+        target={
+          <div ref={ref}>
+            <BaseURL />
+            <Timezone />
+            <DatetimeFormat />
+          </div>
+        }
+      />
+    </>
   );
 };
 
@@ -236,6 +254,169 @@ const DatetimeFormatSample: React.FC = () => {
   );
 };
 
+const TemplateEditor: React.FC = () => {
+  const ref = React.useRef(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const editStatus = useSelector(selectTemplateEditStatus);
+
+  const textTemplates: TextTemplateProps[] = [
+    { type: 'tweet', name: 'Tweet Body' },
+    { type: 'footer', name: 'Tweet Footer' },
+  ] as const;
+  const Icon = isOpen ? ChevronUpIcon : ChevronDownIcon;
+  return (
+    <>
+      <div className="settings-editor-headerline">
+        <Telomere status={editStatus} />
+        <button
+          className="button settings-editor-header-1"
+          onClick={() => setIsOpen((open) => !open)}>
+          Template
+          <Icon className="expand-icon" width={undefined} height={undefined} />
+        </button>
+      </div>
+      <Collapse
+        nodeRef={ref}
+        in={isOpen}
+        duration={300}
+        mountOnEnter
+        unmountOnExit
+        target={
+          <div ref={ref}>
+            {textTemplates.map(({ type, name }) => (
+              <TextTemplate key={type} type={type} name={name} />
+            ))}
+            <TemplateEntityEditor />
+            <TemplateMediaEditor />
+            <TemplateQuote />
+          </div>
+        }
+      />
+    </>
+  );
+};
+
+const TemplateEntityEditor: React.FC = () => {
+  const ref = React.useRef(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const editStatus = useSelector(selectTemplateEntitiesEditStatus);
+
+  const textTemplates: TextTemplateProps[] = [
+    { type: 'entityText', name: 'Entity: Text' },
+    { type: 'entityUrl', name: 'Entity: URL' },
+    { type: 'entityHashtag', name: 'Entity: Hashtag' },
+    { type: 'entityCashtag', name: 'Entity: Cashtag' },
+    { type: 'entityMention', name: 'Entity: Mention' },
+  ] as const;
+  const Icon = isOpen ? ChevronUpIcon : ChevronDownIcon;
+  return (
+    <>
+      <div className="settings-editor-headerline">
+        <Telomere status={editStatus} />
+        <button
+          className="button settings-editor-header-3"
+          onClick={() => setIsOpen((open) => !open)}>
+          Entity
+          <Icon className="expand-icon" width={undefined} height={undefined} />
+        </button>
+      </div>
+      <Collapse
+        nodeRef={ref}
+        in={isOpen}
+        duration={300}
+        mountOnEnter
+        unmountOnExit
+        target={
+          <div ref={ref}>
+            {textTemplates.map(({ type, name }) => (
+              <TextTemplate key={type} type={type} name={name} />
+            ))}
+          </div>
+        }
+      />
+    </>
+  );
+};
+
+const TemplateMediaEditor: React.FC = () => {
+  const ref = React.useRef(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const editStatus = useSelector(selectTemplateMediaEditStatus);
+
+  const textTemplates: TextTemplateProps[] = [
+    { type: 'mediaPhoto', name: 'Media: Photo' },
+    { type: 'mediaVideo', name: 'Media: Video' },
+  ] as const;
+  const Icon = isOpen ? ChevronUpIcon : ChevronDownIcon;
+  return (
+    <>
+      <div className="settings-editor-headerline">
+        <Telomere status={editStatus} />
+        <button
+          className="button settings-editor-header-3"
+          onClick={() => setIsOpen((open) => !open)}>
+          Media
+          <Icon className="expand-icon" width={undefined} height={undefined} />
+        </button>
+      </div>
+      <Collapse
+        nodeRef={ref}
+        in={isOpen}
+        duration={300}
+        mountOnEnter
+        unmountOnExit
+        target={
+          <div ref={ref}>
+            {textTemplates.map(({ type, name }) => (
+              <TextTemplate key={type} type={type} name={name} />
+            ))}
+          </div>
+        }
+      />
+    </>
+  );
+};
+
+const TemplateQuote: React.FC = () => {
+  const selectCurrent = React.useCallback(
+    (state: State) => selectTemplate(state, 'quote'),
+    [],
+  );
+  const selectEditing = React.useCallback(
+    (state: State) => selectEditingTemplate(state, 'quote'),
+    [],
+  );
+  const selectError = React.useCallback(
+    (state: State) => selectTemplateError(state, 'quote'),
+    [],
+  );
+  const current = useSelector(selectCurrent);
+  const editing = useSelector(selectEditing);
+  const error = useSelector(selectError, shallowEqual);
+  const dispatch = useDispatch();
+
+  const value = editing ?? current;
+  const isUpdated = editing !== undefined;
+  const onClick = (): void => {
+    dispatch(actions.settings.editTemplate({ type: 'quote', value: !value }));
+  };
+  return (
+    <SettingsItem
+      label="Quote"
+      form={
+        <Checkbox checked={value} id="tweet-template-quote" onClick={onClick} />
+      }
+      isUpdated={isUpdated}
+      errors={error}
+      description={
+        <div className="settings-item-description">
+          Add a <code>&gt;</code> to the beginning of each line.
+        </div>
+      }
+    />
+  );
+};
+
 const DevTools: React.FC = () => {
   return (
     <>
@@ -256,7 +437,9 @@ const DownloadStorage: React.FC = () => {
     <SettingsItem
       label="Download Storage"
       form={
-        <button className="button download-button" onClick={onClick}>
+        <button
+          className="button button-primary download-button"
+          onClick={onClick}>
           <DownloadIcon
             className="download-icon"
             width={undefined}
@@ -283,24 +466,25 @@ const Commands: React.FC = () => {
       unmountOnExit
       target={
         <div ref={ref}>
-          <div className="settings-commands fade-in">
+          <div className="commands fade-in">
             <button
-              className="button"
+              className="command button button-primary"
               onClick={() => dispatch(actions.settings.resetEdits())}>
               Reset editing
             </button>
             <button
-              className="button"
+              className="command button button-primary"
               onClick={() => {
                 // update store
                 dispatch(actions.settings.applyEdits());
                 // save to storage
-                const settings = {
-                  ...store.getState().settings.current,
-                  ...store.getState().settings.editing,
-                };
-                if (validateSettings(settings).ok) {
-                  saveSettings(settings);
+                const state = store.getState().settings;
+                if (
+                  Object.keys(state.settingsErrors).length === 0 &&
+                  Object.keys(state.templateErrors).length === 0
+                ) {
+                  saveSettings(state.currentSettings);
+                  saveTweetTemplate(state.currentTemplate);
                 }
               }}>
               Save settings
@@ -340,5 +524,184 @@ const UpdateNotification: React.FC = () => {
         </div>
       }
     />
+  );
+};
+
+// utilities
+const editStatus = (
+  isUpdated?: boolean,
+  error?: readonly string[],
+): EditStatus => {
+  return (
+    error?.length ? 'invalid'
+    : isUpdated ? 'updated'
+    : 'none'
+  );
+};
+
+type TelomereProps = {
+  status?: EditStatus;
+};
+
+const Telomere: React.FC<TelomereProps> = ({ status }) => {
+  return (
+    <div
+      className={classNames('settings-telomere', {
+        updated: status === 'updated',
+        invalid: status === 'invalid',
+      })}
+    />
+  );
+};
+
+type SettingsItemProps = {
+  label: string;
+  form: React.ReactElement;
+  isUpdated?: boolean;
+  errors?: readonly string[];
+  description?: React.ReactElement;
+};
+
+const SettingsItem: React.FC<SettingsItemProps> = ({
+  label,
+  form,
+  isUpdated,
+  errors,
+  description,
+}) => {
+  return (
+    <div className="settings-item">
+      <div className="settings-item-input">
+        <Telomere status={editStatus(isUpdated, errors)} />
+        <div className="settings-label">{label}</div>
+        <div className="settings-form">{form}</div>
+      </div>
+      {description !== undefined && description}
+      {errors !== undefined && errors.length > 0 && (
+        <div className="settings-item-errors">
+          {errors.map((error, index) => (
+            <div key={index}>{error}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+type TextTemplateProps = {
+  type: TextTemplateKey;
+  name: string;
+};
+
+const TextTemplate: React.FC<TextTemplateProps> = ({ type, name }) => {
+  const selectCurrent = React.useCallback(
+    (state: State) => selectTemplate(state, type),
+    [type],
+  );
+  const selectEditing = React.useCallback(
+    (state: State) => selectEditingTemplate(state, type),
+    [type],
+  );
+  const selectError = React.useCallback(
+    (state: State) => selectTemplateError(state, type),
+    [type],
+  );
+  const current = useSelector(selectCurrent);
+  const editing = useSelector(selectEditing);
+  const error = useSelector(selectError, shallowEqual);
+  const dispatch = useDispatch();
+
+  const value = editing ?? current;
+  const isUpdated = editing !== undefined;
+  const fields = textTemplateFields[type];
+  const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    dispatch(
+      actions.settings.editTemplate({ type, value: event.target.value }),
+    );
+  };
+  const addPlaceholder = (field: string) => {
+    dispatch(
+      actions.settings.editTemplate({ type, value: `${value}$\{${field}}` }),
+    );
+  };
+  return (
+    <div className="settings-item">
+      <div className="settings-item-input">
+        <Telomere status={editStatus(isUpdated, error)} />
+        <div className="settings-label">{name}</div>
+        <Placeholders fields={fields} onSelect={addPlaceholder} />
+      </div>
+      <textarea
+        className="text-template-input"
+        value={value}
+        onChange={onChange}
+        wrap="off"
+        rows={value.split('\n').length}
+      />
+      {error !== undefined && error.length > 0 && (
+        <div className="settings-item-errors">
+          {error.map((text, index) => (
+            <div key={index}>{text}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+type PlaceholdersProps = {
+  fields: readonly string[];
+  onSelect: (field: string) => void;
+};
+
+const Placeholders: React.FC<PlaceholdersProps> = ({ fields, onSelect }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  // floating-ui
+  const { refs, floatingStyles, context } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
+    middleware: [shift()],
+  });
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+  const role = useRole(context, { role: 'menu' });
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    click,
+    dismiss,
+    role,
+  ]);
+  return (
+    <>
+      <button
+        className="button button-secondary placeholders-button"
+        ref={refs.setReference}
+        {...getReferenceProps()}>
+        placeholders
+        <ChevronDownIcon
+          className="placeholders-button-icon"
+          width={undefined}
+          height={undefined}
+        />
+      </button>
+      {isOpen && (
+        <div
+          className="floating-menu button-group-vertical"
+          ref={refs.setFloating}
+          style={floatingStyles}
+          {...getFloatingProps()}>
+          {fields.map((field) => (
+            <button
+              className="button button-outline-secondary"
+              key={field}
+              onClick={() => {
+                onSelect(field);
+                setIsOpen(false);
+              }}>
+              {field}
+            </button>
+          ))}
+        </div>
+      )}
+    </>
   );
 };
