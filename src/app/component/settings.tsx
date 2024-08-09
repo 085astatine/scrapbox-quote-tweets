@@ -636,6 +636,13 @@ const TextTemplate: React.FC<TextTemplateProps> = ({ type, name }) => {
         wrap="off"
         rows={value.split('\n').length}
       />
+      {error !== undefined && error.length > 0 && (
+        <div className="settings-item-errors">
+          {error.map((text, index) => (
+            <div key={index}>{text}</div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
