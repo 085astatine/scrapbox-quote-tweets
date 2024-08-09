@@ -85,6 +85,11 @@ const settings = createSlice({
           ...state.editingSettings,
         };
         state.editingSettings = {};
+        state.currentTemplate = {
+          ...state.currentTemplate,
+          ...state.editingTemplate,
+        };
+        state.editingTemplate = {};
         state.updateTrigger = 'self';
       }
     },

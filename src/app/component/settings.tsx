@@ -20,6 +20,7 @@ import { isValidTimezone, toDatetime } from '~/lib/datetime';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
 import { baseURL, hostnames } from '~/lib/settings';
 import { saveSettings } from '~/lib/storage/settings';
+import { saveTweetTemplate } from '~/lib/storage/tweet-template';
 import {
   type TextTemplateKey,
   textTemplateFields,
@@ -478,8 +479,12 @@ const Commands: React.FC = () => {
                 dispatch(actions.settings.applyEdits());
                 // save to storage
                 const state = store.getState().settings;
-                if (Object.keys(state.settingsErrors).length === 0) {
+                if (
+                  Object.keys(state.settingsErrors).length === 0 &&
+                  Object.keys(state.templateErrors).length === 0
+                ) {
                   saveSettings(state.currentSettings);
+                  saveTweetTemplate(state.currentTemplate);
                 }
               }}>
               Save settings
