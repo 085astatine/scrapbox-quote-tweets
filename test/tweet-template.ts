@@ -29,6 +29,12 @@ describe('tweet-template/tweet', () => {
     ];
     expect(tweetTemplateParser.tweet(template)).toStrictEqual(expected);
   });
+  test('empty_placeholder', () => {
+    const template = '${}';
+    expect(() => tweetTemplateParser.tweet(template)).toThrow(
+      UnexpectedPlaceholderError,
+    );
+  });
   test('unexpected_field', () => {
     const template = '[${tweet.url} @${user.usrname}]';
     try {
