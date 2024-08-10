@@ -176,7 +176,7 @@ const parsePlaceholders = <Field extends string>(
   const elements: TemplateElement<Field>[] = [];
   let tail = template;
   while (tail.length > 0) {
-    const match = tail.match(/(?<!\\)\$\{(?<field>.+?)\}/);
+    const match = tail.match(/(?<!\\)\$\{(?<field>.*?)\}/);
     if (match !== null) {
       if (match.index !== 0) {
         elements.push({ type: 'text', text: tail.slice(0, match.index) });
