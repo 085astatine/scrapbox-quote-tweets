@@ -1,8 +1,12 @@
 import { defaultTimezone, isValidTimezone } from './datetime';
 
 export const hostnames = ['x.com', 'twitter.com'] as const;
+export const scrapboxIcons = ['scrapbox', 'cosense'] as const;
+export const twitterIcons = ['twitter', 'x'] as const;
 
 export type Hostname = (typeof hostnames)[number];
+export type ScrapboxIcon = (typeof scrapboxIcons)[number];
+export type TwitterIcon = (typeof twitterIcons)[number];
 
 export interface Settings {
   hostname: Hostname;
