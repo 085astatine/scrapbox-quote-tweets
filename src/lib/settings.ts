@@ -12,12 +12,16 @@ export interface Settings {
   hostname: Hostname;
   timezone: string;
   datetimeFormat: string;
+  scrapboxIcon: ScrapboxIcon;
+  twitterIcon: TwitterIcon;
 }
 
 export const settingsKeys: ReadonlyArray<keyof Settings> = [
   'hostname',
   'timezone',
   'datetimeFormat',
+  'scrapboxIcon',
+  'twitterIcon',
 ] as const;
 
 export const defaultSettings = (): Settings => {
@@ -25,6 +29,8 @@ export const defaultSettings = (): Settings => {
     hostname: 'x.com',
     timezone: defaultTimezone(),
     datetimeFormat: 'YYYY/MM/DD HH:mm:ss',
+    scrapboxIcon: 'scrapbox',
+    twitterIcon: 'twitter',
   };
 };
 

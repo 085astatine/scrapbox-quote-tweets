@@ -51,6 +51,8 @@ const settingsRecordKeys: ReadonlyArray<keyof SettingsRecord> = [
   'settings_hostname',
   'settings_timezone',
   'settings_datetimeFormat',
+  'settings_scrapboxIcon',
+  'settings_twitterIcon',
 ] as const;
 
 export const isSettingsRecordKey = (
@@ -74,7 +76,7 @@ export const onChangedSettings = (
         !equal(oldValue, newValue) &&
         newValue !== undefined
       ) {
-        record[key] = newValue;
+        Object.assign(record, { [key]: newValue });
       }
       return record;
     },
