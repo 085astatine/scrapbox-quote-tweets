@@ -28,24 +28,18 @@ import {
 import { type State, actions } from '../store';
 import {
   type EditStatus,
-  selectDatetimeFormat,
-  selectDatetimeFormatErrors,
-  selectEditingDatetimeFormat,
-  selectEditingHostname,
+  selectEditingSettings,
   selectEditingTemplate,
-  selectEditingTimezone,
-  selectHostname,
-  selectHostnameErrors,
   selectIsSettingsEdited,
+  selectSettings,
   selectSettingsEditStatus,
+  selectSettingsError,
   selectSettingsUpdateTrigger,
   selectTemplate,
   selectTemplateEditStatus,
   selectTemplateEntitiesEditStatus,
   selectTemplateError,
   selectTemplateMediaEditStatus,
-  selectTimezone,
-  selectTimezoneErrors,
 } from '../store/selector';
 import { Checkbox } from './checkbox';
 
@@ -99,9 +93,9 @@ const SettingsEditor: React.FC = () => {
 };
 
 const BaseURL: React.FC = () => {
-  const currentValue = useSelector(selectHostname);
-  const editingValue = useSelector(selectEditingHostname);
-  const errors = useSelector(selectHostnameErrors, shallowEqual);
+  const currentValue = useSelector(selectSettings.hostname);
+  const editingValue = useSelector(selectEditingSettings.hostname);
+  const errors = useSelector(selectSettingsError.hostname, shallowEqual);
   const dispatch = useDispatch();
 
   const name = 'settings-hostname';
@@ -143,9 +137,9 @@ const BaseURL: React.FC = () => {
 };
 
 const Timezone: React.FC = () => {
-  const currentValue = useSelector(selectTimezone);
-  const editingValue = useSelector(selectEditingTimezone);
-  const errors = useSelector(selectTimezoneErrors, shallowEqual);
+  const currentValue = useSelector(selectSettings.timezone);
+  const editingValue = useSelector(selectEditingSettings.timezone);
+  const errors = useSelector(selectSettingsError.timezone, shallowEqual);
   const dispatch = useDispatch();
 
   const value = editingValue ?? currentValue;
@@ -183,9 +177,9 @@ const Timezone: React.FC = () => {
 };
 
 const DatetimeFormat: React.FC = () => {
-  const currentValue = useSelector(selectDatetimeFormat);
-  const editingValue = useSelector(selectEditingDatetimeFormat);
-  const errors = useSelector(selectDatetimeFormatErrors, shallowEqual);
+  const currentValue = useSelector(selectSettings.datetimeFormat);
+  const editingValue = useSelector(selectEditingSettings.datetimeFormat);
+  const errors = useSelector(selectSettingsError.datetimeFormat, shallowEqual);
   const dispatch = useDispatch();
 
   const value = editingValue ?? currentValue;
@@ -226,10 +220,10 @@ const DatetimeFormat: React.FC = () => {
 };
 
 const DatetimeFormatSample: React.FC = () => {
-  const currentTimezone = useSelector(selectTimezone);
-  const editingTimezone = useSelector(selectEditingTimezone);
-  const currentFormat = useSelector(selectDatetimeFormat);
-  const editingFormat = useSelector(selectEditingDatetimeFormat);
+  const currentTimezone = useSelector(selectSettings.timezone);
+  const editingTimezone = useSelector(selectEditingSettings.timezone);
+  const currentFormat = useSelector(selectSettings.datetimeFormat);
+  const editingFormat = useSelector(selectEditingSettings.datetimeFormat);
 
   const timezone = editingTimezone ?? currentTimezone;
   const format = editingFormat ?? currentFormat;

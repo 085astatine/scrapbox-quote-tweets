@@ -1,5 +1,10 @@
 import { createSelector, weakMapMemoize } from '@reduxjs/toolkit';
-import { type Hostname, baseURL } from '~/lib/settings';
+import {
+  type Hostname,
+  type Settings,
+  baseURL,
+  settingsKeys,
+} from '~/lib/settings';
 import { type TrashboxSort, deletedTimes } from '~/lib/trashbox';
 import { tweetSortFunction } from '~/lib/tweet/sort-tweets';
 import type {
@@ -173,47 +178,46 @@ export const selectAllTrashboxSelectButtonState = createSelector(
 );
 
 // settings: current
-export const selectHostname = (state: State): Hostname => {
-  return state.settings.currentSettings.hostname;
+type SettingsSelectors = {
+  [Key in keyof Settings]: (state: State) => Settings[Key];
 };
 
-export const selectTimezone = (state: State): string => {
-  return state.settings.currentSettings.timezone;
-};
-
-export const selectDatetimeFormat = (state: State): string => {
-  return state.settings.currentSettings.datetimeFormat;
-};
+export const selectSettings: Readonly<SettingsSelectors> = settingsKeys.reduce(
+  (selectors, key) =>
+    Object.assign(selectors, {
+      [key]: (state: State) => state.settings.currentSettings[key],
+    }),
+  {} as SettingsSelectors,
+);
 
 // settings: editings
-export const selectEditingHostname = (state: State): Hostname | undefined => {
-  return state.settings.editingSettings.hostname;
+type EditingSettingsSelectors = {
+  [Key in keyof Settings]: (state: State) => Partial<Settings>[Key];
 };
 
-export const selectEditingTimezone = (state: State): string | undefined => {
-  return state.settings.editingSettings.timezone;
-};
-
-export const selectEditingDatetimeFormat = (
-  state: State,
-): string | undefined => {
-  return state.settings.editingSettings.datetimeFormat;
-};
+export const selectEditingSettings: Readonly<EditingSettingsSelectors> =
+  settingsKeys.reduce(
+    (selectors, key) =>
+      Object.assign(selectors, {
+        [key]: (state: State) => state.settings.editingSettings[key],
+      }),
+    {} as EditingSettingsSelectors,
+  );
 
 // settings: error
-export const selectHostnameErrors = (state: State): string[] => {
-  return fallbackToEmptyArray(state.settings.settingsErrors.hostname ?? []);
+type SettingsErrorSelectors = {
+  [Key in keyof Settings]: (state: State) => string[];
 };
 
-export const selectTimezoneErrors = (state: State): string[] => {
-  return fallbackToEmptyArray(state.settings.settingsErrors.timezone ?? []);
-};
-
-export const selectDatetimeFormatErrors = (state: State): string[] => {
-  return fallbackToEmptyArray(
-    state.settings.settingsErrors.datetimeFormat ?? [],
+export const selectSettingsError: Readonly<SettingsErrorSelectors> =
+  settingsKeys.reduce(
+    (selectors, key) =>
+      Object.assign(selectors, {
+        [key]: (state: State) =>
+          fallbackToEmptyArray(state.settings.settingsErrors[key] ?? []),
+      }),
+    {} as SettingsErrorSelectors,
   );
-};
 
 // tweet-template: currnt
 export const selectTemplate = <Key extends keyof TweetTemplate>(
@@ -330,14 +334,18 @@ export const selectIsSettingsEdited = (state: State): boolean => {
 };
 
 export const selectBaseURL = createSelector(
-  [selectHostname],
+  [selectSettings.hostname],
   (hostname: Hostname): string => {
     return baseURL(hostname);
   },
 );
 
 export const selectTweetToStringOption = createSelector(
-  [selectHostname, selectTimezone, selectDatetimeFormat],
+  [
+    selectSettings.hostname,
+    selectSettings.timezone,
+    selectSettings.datetimeFormat,
+  ],
   (
     hostname: Hostname,
     timezone: string,
