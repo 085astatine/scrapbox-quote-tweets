@@ -2,7 +2,6 @@ import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 import equal from 'fast-deep-equal';
 import type { Dispatch } from 'redux';
 import {
-  type Hostname,
   type Settings,
   defaultSettings,
   settingsKeys,
@@ -103,17 +102,11 @@ const settings = createSlice({
     resetUpdateTrigger(state: SettingsState): void {
       state.updateTrigger = 'none';
     },
-    editHostname(state: SettingsState, action: PayloadAction<Hostname>): void {
-      editSettings(state, 'hostname', action.payload);
-    },
-    editTimezone(state: SettingsState, action: PayloadAction<string>): void {
-      editSettings(state, 'timezone', action.payload);
-    },
-    editDatetimeFormat(
+    editSettings: <Key extends keyof Settings>(
       state: SettingsState,
-      action: PayloadAction<string>,
-    ): void {
-      editSettings(state, 'datetimeFormat', action.payload);
+      action: PayloadAction<{ type: Key; value: Settings[Key] }>,
+    ): void => {
+      editSettings(state, action.payload.type, action.payload.value);
     },
     editTemplate: <Key extends keyof TweetTemplate>(
       state: SettingsState,

@@ -117,7 +117,12 @@ const BaseURL: React.FC = () => {
                   name={name}
                   checked={hostname === value}
                   onChange={() =>
-                    dispatch(actions.settings.editHostname(hostname))
+                    dispatch(
+                      actions.settings.editSettings({
+                        type: 'hostname',
+                        value: hostname,
+                      }),
+                    )
                   }
                 />
                 <label
@@ -145,7 +150,12 @@ const Timezone: React.FC = () => {
   const value = editingValue ?? currentValue;
   const isUpdated = editingValue !== undefined;
   const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    dispatch(actions.settings.editTimezone(event.target.value));
+    dispatch(
+      actions.settings.editSettings({
+        type: 'timezone',
+        value: event.target.value,
+      }),
+    );
   };
   return (
     <SettingsItem
@@ -185,7 +195,12 @@ const DatetimeFormat: React.FC = () => {
   const value = editingValue ?? currentValue;
   const isUpdated = editingValue !== undefined;
   const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    dispatch(actions.settings.editDatetimeFormat(event.target.value));
+    dispatch(
+      actions.settings.editSettings({
+        type: 'datetimeFormat',
+        value: event.target.value,
+      }),
+    );
   };
   return (
     <SettingsItem
