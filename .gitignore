@@ -1,5 +1,5 @@
 build/
-test_data.json
+public/test_data.json
 web-ext-artifacts/
 web-ext-config.cjs
 web-ext-config.js
