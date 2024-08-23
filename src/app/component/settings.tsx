@@ -15,10 +15,11 @@ import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
 import DownloadIcon from '~/icon/bootstrap/download.svg';
 import CloseIcon from '~/icon/bootstrap/x.svg';
+import ScrapboxIcon from '~/icon/scrapbox.svg';
 import { Collapse } from '~/lib/component/transition';
 import { isValidTimezone, toDatetime } from '~/lib/datetime';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
-import { baseURL, hostnames } from '~/lib/settings';
+import { baseURL, hostnames, scrapboxIcons } from '~/lib/settings';
 import { saveSettings } from '~/lib/storage/settings';
 import { saveTweetTemplate } from '~/lib/storage/tweet-template';
 import {
@@ -85,6 +86,7 @@ const SettingsEditor: React.FC = () => {
             <BaseURL />
             <Timezone />
             <DatetimeFormat />
+            <ScrapboxIcons />
           </div>
         }
       />
@@ -260,6 +262,58 @@ const DatetimeFormatSample: React.FC = () => {
       />
       <div>{customFormatted}</div>
     </div>
+  );
+};
+
+const ScrapboxIcons: React.FC = () => {
+  const currentValue = useSelector(selectSettings.scrapboxIcon);
+  const editingValue = useSelector(selectEditingSettings.scrapboxIcon);
+  const dispatch = useDispatch();
+
+  const name = 'settings-scrapboxicon';
+  const value = editingValue ?? currentValue;
+  const isUpdated = editingValue !== undefined;
+  return (
+    <SettingsItem
+      label="Scrapbox Icon"
+      form={
+        <>
+          {scrapboxIcons.map((icon) => {
+            const id = `${name}-${icon}`;
+            return (
+              <div className="settings-select-icon" key={icon}>
+                <input
+                  type="radio"
+                  className="form-check-input"
+                  id={id}
+                  name={name}
+                  checked={icon === value}
+                  onChange={() =>
+                    dispatch(
+                      actions.settings.editSettings({
+                        type: 'scrapboxIcon',
+                        value: icon,
+                      }),
+                    )
+                  }
+                />
+                <label htmlFor={id}>
+                  {icon === 'scrapbox' ?
+                    <ScrapboxIcon
+                      className="sample-icon"
+                      width={undefined}
+                      height={undefined}
+                    />
+                  : <div className="cosense-icon sample-icon" />}
+                  {icon}
+                </label>
+              </div>
+            );
+          })}
+        </>
+      }
+      isUpdated={isUpdated}
+    />
   );
 };
 
