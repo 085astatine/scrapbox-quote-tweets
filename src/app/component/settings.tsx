@@ -305,7 +305,7 @@ const ScrapboxIcons: React.FC = () => {
                       height={undefined}
                     />
                   : <div className="cosense-icon sample-icon" />}
-                  {icon}
+                  {`${icon.charAt(0).toUpperCase()}${icon.slice(1)}`}
                 </label>
               </div>
             );
