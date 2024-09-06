@@ -62,7 +62,12 @@ module.exports = (env, argv) => {
           test: /\.s[ac]ss$/,
           use: [
             MiniCssExtractPlugin.loader,
-            'css-loader',
+            {
+              loader: 'css-loader',
+              options: {
+                url: false,
+              },
+            },
             {
               loader: 'sass-loader',
               options: {
@@ -140,18 +145,17 @@ module.exports = (env, argv) => {
         additionalAliases: ['process'],
       }),
       new WextManifestPlugin(),
-      ...(mode === 'development' ?
-        [
-          new CopyPlugin({
-            patterns: [
-              {
-                from: 'test_data.json',
-                noErrorOnMissing: true,
-              },
-            ],
-          }),
-        ]
-      : []),
+      new CopyPlugin({
+        patterns: [
+          {
+            from: '**/*',
+            context: 'public',
+            globOptions: {
+              ignore: mode === 'production' ? ['**/test_data.json'] : [],
+            },
+          },
+        ],
+      }),
     ],
     performance: {
       hints: false,

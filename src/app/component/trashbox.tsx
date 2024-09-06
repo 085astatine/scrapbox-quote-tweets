@@ -16,13 +16,12 @@ import { trimGoogleFontsIcon } from '~/lib/utility';
 import { type State, actions } from '../store';
 import {
   selectAllTrashboxSelectButtonState,
-  selectDatetimeFormat,
   selectDeletedTimes,
   selectDeletedTweets,
   selectIsAllDeletedTweetsSelected,
   selectIsDeletedTweetSelected,
   selectSelectedDeletedTweets,
-  selectTimezone,
+  selectSettings,
   selectTrashboxSize,
   selectTrashboxSort,
 } from '../store/selector';
@@ -99,8 +98,8 @@ const DeletedTweetsHeader: React.FC<DeletedTweetsHeaderProps> = ({
   timestamp,
   tweetsLength,
 }) => {
-  const timezone = useSelector(selectTimezone);
-  const datetimeFormat = useSelector(selectDatetimeFormat);
+  const timezone = useSelector(selectSettings.timezone);
+  const datetimeFormat = useSelector(selectSettings.datetimeFormat);
   const deletedTime = toDatetime(timestamp, timezone).format(datetimeFormat);
   return (
     <div className="deleted-tweets-header">

@@ -1,19 +1,27 @@
 import { defaultTimezone, isValidTimezone } from './datetime';
 
 export const hostnames = ['x.com', 'twitter.com'] as const;
+export const scrapboxIcons = ['scrapbox', 'cosense'] as const;
+export const twitterIcons = ['twitter', 'x'] as const;
 
 export type Hostname = (typeof hostnames)[number];
+export type ScrapboxIcon = (typeof scrapboxIcons)[number];
+export type TwitterIcon = (typeof twitterIcons)[number];
 
 export interface Settings {
   hostname: Hostname;
   timezone: string;
   datetimeFormat: string;
+  scrapboxIcon: ScrapboxIcon;
+  twitterIcon: TwitterIcon;
 }
 
 export const settingsKeys: ReadonlyArray<keyof Settings> = [
   'hostname',
   'timezone',
   'datetimeFormat',
+  'scrapboxIcon',
+  'twitterIcon',
 ] as const;
 
 export const defaultSettings = (): Settings => {
@@ -21,6 +29,8 @@ export const defaultSettings = (): Settings => {
     hostname: 'x.com',
     timezone: defaultTimezone(),
     datetimeFormat: 'YYYY/MM/DD HH:mm:ss',
+    scrapboxIcon: 'scrapbox',
+    twitterIcon: 'twitter',
   };
 };
 

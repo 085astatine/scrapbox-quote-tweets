@@ -10,7 +10,21 @@ export const settingsJSONSchema: Readonly<JSONSchemaType<Settings>> = {
     },
     timezone: { type: 'string' },
     datetimeFormat: { type: 'string' },
+    scrapboxIcon: {
+      type: 'string',
+      enum: ['scrapbox', 'cosense'],
+    },
+    twitterIcon: {
+      type: 'string',
+      enum: ['twitter', 'x'],
+    },
   },
-  required: ['hostname', 'timezone', 'datetimeFormat'],
+  required: [
+    'hostname',
+    'timezone',
+    'datetimeFormat',
+    'scrapboxIcon',
+    'twitterIcon',
+  ],
   additionalProperties: false,
 };

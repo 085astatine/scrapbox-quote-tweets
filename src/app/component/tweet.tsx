@@ -8,11 +8,7 @@ import FilmIcon from '~/icon/bootstrap/film.svg';
 import ImageIcon from '~/icon/bootstrap/image.svg';
 import { toDatetime } from '~/lib/datetime';
 import type { Media, Tweet as TweetData, TweetID } from '~/lib/tweet/types';
-import {
-  selectBaseURL,
-  selectDatetimeFormat,
-  selectTimezone,
-} from '../store/selector';
+import { selectBaseURL, selectSettings } from '../store/selector';
 
 export interface TweetProps {
   tweet: TweetData;
@@ -47,8 +43,8 @@ const Header: React.FC<HeaderProps> = ({
   timestamp,
 }: HeaderProps) => {
   const baseURL = useSelector(selectBaseURL);
-  const timezone = useSelector(selectTimezone);
-  const datetimeFormat = useSelector(selectDatetimeFormat);
+  const timezone = useSelector(selectSettings.timezone);
+  const datetimeFormat = useSelector(selectSettings.datetimeFormat);
   const userURL = `${baseURL}/${username}`;
   const tweetURL = `${userURL}/status/${id}`;
   const date = toDatetime(timestamp, timezone).format(datetimeFormat);

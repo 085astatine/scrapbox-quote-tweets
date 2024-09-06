@@ -7,8 +7,16 @@ const schema11 = {
     hostname: { type: 'string', enum: ['twitter.com', 'x.com'] },
     timezone: { type: 'string' },
     datetimeFormat: { type: 'string' },
+    scrapboxIcon: { type: 'string', enum: ['scrapbox', 'cosense'] },
+    twitterIcon: { type: 'string', enum: ['twitter', 'x'] },
   },
-  required: ['hostname', 'timezone', 'datetimeFormat'],
+  required: [
+    'hostname',
+    'timezone',
+    'datetimeFormat',
+    'scrapboxIcon',
+    'twitterIcon',
+  ],
   additionalProperties: false,
 };
 function validate10(
@@ -63,53 +71,52 @@ function validate10(
       }
       errors++;
     }
+    if (data.scrapboxIcon === undefined) {
+      const err3 = {
+        instancePath,
+        schemaPath: '#/required',
+        keyword: 'required',
+        params: { missingProperty: 'scrapboxIcon' },
+        message: "must have required property '" + 'scrapboxIcon' + "'",
+      };
+      if (vErrors === null) {
+        vErrors = [err3];
+      } else {
+        vErrors.push(err3);
+      }
+      errors++;
+    }
+    if (data.twitterIcon === undefined) {
+      const err4 = {
+        instancePath,
+        schemaPath: '#/required',
+        keyword: 'required',
+        params: { missingProperty: 'twitterIcon' },
+        message: "must have required property '" + 'twitterIcon' + "'",
+      };
+      if (vErrors === null) {
+        vErrors = [err4];
+      } else {
+        vErrors.push(err4);
+      }
+      errors++;
+    }
     for (const key0 in data) {
       if (
         !(
           key0 === 'hostname' ||
           key0 === 'timezone' ||
-          key0 === 'datetimeFormat'
+          key0 === 'datetimeFormat' ||
+          key0 === 'scrapboxIcon' ||
+          key0 === 'twitterIcon'
         )
       ) {
-        const err3 = {
+        const err5 = {
           instancePath,
           schemaPath: '#/additionalProperties',
           keyword: 'additionalProperties',
           params: { additionalProperty: key0 },
           message: 'must NOT have additional properties',
-        };
-        if (vErrors === null) {
-          vErrors = [err3];
-        } else {
-          vErrors.push(err3);
-        }
-        errors++;
-      }
-    }
-    if (data.hostname !== undefined) {
-      let data0 = data.hostname;
-      if (typeof data0 !== 'string') {
-        const err4 = {
-          instancePath: instancePath + '/hostname',
-          schemaPath: '#/properties/hostname/type',
-          keyword: 'type',
-          params: { type: 'string' },
-          message: 'must be string',
-        };
-        if (vErrors === null) {
-          vErrors = [err4];
-        } else {
-          vErrors.push(err4);
-        }
-        errors++;
-      }
-      if (!(data0 === 'twitter.com' || data0 === 'x.com')) {
-        const err5 = {
-          instancePath: instancePath + '/hostname',
-          schemaPath: '#/properties/hostname/enum',
-          keyword: 'enum',
-          params: { allowedValues: schema11.properties.hostname.enum },
-          message: 'must be equal to one of the allowed values',
         };
         if (vErrors === null) {
           vErrors = [err5];
@@ -119,11 +126,12 @@ function validate10(
         errors++;
       }
     }
-    if (data.timezone !== undefined) {
-      if (typeof data.timezone !== 'string') {
+    if (data.hostname !== undefined) {
+      let data0 = data.hostname;
+      if (typeof data0 !== 'string') {
         const err6 = {
-          instancePath: instancePath + '/timezone',
-          schemaPath: '#/properties/timezone/type',
+          instancePath: instancePath + '/hostname',
+          schemaPath: '#/properties/hostname/type',
           keyword: 'type',
           params: { type: 'string' },
           message: 'must be string',
@@ -135,15 +143,13 @@ function validate10(
         }
         errors++;
       }
-    }
-    if (data.datetimeFormat !== undefined) {
-      if (typeof data.datetimeFormat !== 'string') {
+      if (!(data0 === 'twitter.com' || data0 === 'x.com')) {
         const err7 = {
-          instancePath: instancePath + '/datetimeFormat',
-          schemaPath: '#/properties/datetimeFormat/type',
-          keyword: 'type',
-          params: { type: 'string' },
-          message: 'must be string',
+          instancePath: instancePath + '/hostname',
+          schemaPath: '#/properties/hostname/enum',
+          keyword: 'enum',
+          params: { allowedValues: schema11.properties.hostname.enum },
+          message: 'must be equal to one of the allowed values',
         };
         if (vErrors === null) {
           vErrors = [err7];
@@ -153,8 +159,108 @@ function validate10(
         errors++;
       }
     }
+    if (data.timezone !== undefined) {
+      if (typeof data.timezone !== 'string') {
+        const err8 = {
+          instancePath: instancePath + '/timezone',
+          schemaPath: '#/properties/timezone/type',
+          keyword: 'type',
+          params: { type: 'string' },
+          message: 'must be string',
+        };
+        if (vErrors === null) {
+          vErrors = [err8];
+        } else {
+          vErrors.push(err8);
+        }
+        errors++;
+      }
+    }
+    if (data.datetimeFormat !== undefined) {
+      if (typeof data.datetimeFormat !== 'string') {
+        const err9 = {
+          instancePath: instancePath + '/datetimeFormat',
+          schemaPath: '#/properties/datetimeFormat/type',
+          keyword: 'type',
+          params: { type: 'string' },
+          message: 'must be string',
+        };
+        if (vErrors === null) {
+          vErrors = [err9];
+        } else {
+          vErrors.push(err9);
+        }
+        errors++;
+      }
+    }
+    if (data.scrapboxIcon !== undefined) {
+      let data3 = data.scrapboxIcon;
+      if (typeof data3 !== 'string') {
+        const err10 = {
+          instancePath: instancePath + '/scrapboxIcon',
+          schemaPath: '#/properties/scrapboxIcon/type',
+          keyword: 'type',
+          params: { type: 'string' },
+          message: 'must be string',
+        };
+        if (vErrors === null) {
+          vErrors = [err10];
+        } else {
+          vErrors.push(err10);
+        }
+        errors++;
+      }
+      if (!(data3 === 'scrapbox' || data3 === 'cosense')) {
+        const err11 = {
+          instancePath: instancePath + '/scrapboxIcon',
+          schemaPath: '#/properties/scrapboxIcon/enum',
+          keyword: 'enum',
+          params: { allowedValues: schema11.properties.scrapboxIcon.enum },
+          message: 'must be equal to one of the allowed values',
+        };
+        if (vErrors === null) {
+          vErrors = [err11];
+        } else {
+          vErrors.push(err11);
+        }
+        errors++;
+      }
+    }
+    if (data.twitterIcon !== undefined) {
+      let data4 = data.twitterIcon;
+      if (typeof data4 !== 'string') {
+        const err12 = {
+          instancePath: instancePath + '/twitterIcon',
+          schemaPath: '#/properties/twitterIcon/type',
+          keyword: 'type',
+          params: { type: 'string' },
+          message: 'must be string',
+        };
+        if (vErrors === null) {
+          vErrors = [err12];
+        } else {
+          vErrors.push(err12);
+        }
+        errors++;
+      }
+      if (!(data4 === 'twitter' || data4 === 'x')) {
+        const err13 = {
+          instancePath: instancePath + '/twitterIcon',
+          schemaPath: '#/properties/twitterIcon/enum',
+          keyword: 'enum',
+          params: { allowedValues: schema11.properties.twitterIcon.enum },
+          message: 'must be equal to one of the allowed values',
+        };
+        if (vErrors === null) {
+          vErrors = [err13];
+        } else {
+          vErrors.push(err13);
+        }
+        errors++;
+      }
+    }
   } else {
-    const err8 = {
+    const err14 = {
       instancePath,
       schemaPath: '#/type',
       keyword: 'type',
@@ -162,9 +268,9 @@ function validate10(
       message: 'must be object',
     };
     if (vErrors === null) {
-      vErrors = [err8];
+      vErrors = [err14];
     } else {
-      vErrors.push(err8);
+      vErrors.push(err14);
     }
     errors++;
   }
