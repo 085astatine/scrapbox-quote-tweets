@@ -504,21 +504,9 @@ const TemplateMediaEditor: React.FC = () => {
 };
 
 const TemplateQuote: React.FC = () => {
-  const selectCurrent = React.useCallback(
-    (state: State) => selectTemplate(state, 'quote'),
-    [],
-  );
-  const selectEditing = React.useCallback(
-    (state: State) => selectEditingTemplate(state, 'quote'),
-    [],
-  );
-  const selectError = React.useCallback(
-    (state: State) => selectTemplateError(state, 'quote'),
-    [],
-  );
-  const current = useSelector(selectCurrent);
-  const editing = useSelector(selectEditing);
-  const error = useSelector(selectError, shallowEqual);
+  const current = useSelector(selectTemplate.quote);
+  const editing = useSelector(selectEditingTemplate.quote);
+  const error = useSelector(selectTemplateError.quote, shallowEqual);
   const dispatch = useDispatch();
 
   const value = editing ?? current;
@@ -720,21 +708,9 @@ type TextTemplateProps = {
 };
 
 const TextTemplate: React.FC<TextTemplateProps> = ({ type, name }) => {
-  const selectCurrent = React.useCallback(
-    (state: State) => selectTemplate(state, type),
-    [type],
-  );
-  const selectEditing = React.useCallback(
-    (state: State) => selectEditingTemplate(state, type),
-    [type],
-  );
-  const selectError = React.useCallback(
-    (state: State) => selectTemplateError(state, type),
-    [type],
-  );
-  const current = useSelector(selectCurrent);
-  const editing = useSelector(selectEditing);
-  const error = useSelector(selectError, shallowEqual);
+  const current = useSelector(selectTemplate[type]);
+  const editing = useSelector(selectEditingTemplate[type]);
+  const error = useSelector(selectTemplateError[type], shallowEqual);
   const dispatch = useDispatch();
 
   const value = editing ?? current;

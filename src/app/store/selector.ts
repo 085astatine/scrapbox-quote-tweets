@@ -7,9 +7,10 @@ import {
 } from '~/lib/settings';
 import { type TrashboxSort, deletedTimes } from '~/lib/trashbox';
 import { tweetSortFunction } from '~/lib/tweet/sort-tweets';
-import type {
-  TextTemplateKey,
-  TweetTemplate,
+import {
+  type TextTemplateKey,
+  type TweetTemplate,
+  tweetTemplateKeys,
 } from '~/lib/tweet/tweet-template';
 import type { TweetToStringOption } from '~/lib/tweet/tweet-to-string';
 import type {
@@ -220,28 +221,47 @@ export const selectSettingsError: Readonly<SettingsErrorSelectors> =
   );
 
 // tweet-template: currnt
-export const selectTemplate = <Key extends keyof TweetTemplate>(
-  state: State,
-  key: Key,
-): TweetTemplate[Key] => {
-  return state.settings.currentTemplate[key];
+type TweetTemplateSelectors = {
+  [Key in keyof TweetTemplate]: (state: State) => TweetTemplate[Key];
 };
+
+export const selectTemplate: Readonly<TweetTemplateSelectors> =
+  tweetTemplateKeys.reduce(
+    (selectors, key) =>
+      Object.assign(selectors, {
+        [key]: (state: State) => state.settings.currentTemplate[key],
+      }),
+    {} as TweetTemplateSelectors,
+  );
 
 // tweet-template: editing
-export const selectEditingTemplate = <Key extends keyof TweetTemplate>(
-  state: State,
-  key: Key,
-): TweetTemplate[Key] | undefined => {
-  return state.settings.editingTemplate[key];
+type EditingTweetTemplateSelectors = {
+  [Key in keyof TweetTemplate]: (state: State) => Partial<TweetTemplate>[Key];
 };
 
+export const selectEditingTemplate: Readonly<EditingTweetTemplateSelectors> =
+  tweetTemplateKeys.reduce(
+    (selectors, key) =>
+      Object.assign(selectors, {
+        [key]: (state: State) => state.settings.editingTemplate[key],
+      }),
+    {} as EditingTweetTemplateSelectors,
+  );
+
 // tweet-template: error
-export const selectTemplateError = <Key extends keyof TweetTemplate>(
-  state: State,
-  key: Key,
-): string[] => {
-  return fallbackToEmptyArray(state.settings.templateErrors[key] ?? []);
+type TweetTemplateErrorsSelectors = {
+  [Key in keyof TweetTemplate]: (state: State) => string[];
 };
+
+export const selectTemplateError: Readonly<TweetTemplateErrorsSelectors> =
+  tweetTemplateKeys.reduce(
+    (selectors, key) =>
+      Object.assign(selectors, {
+        [key]: (state: State) =>
+          fallbackToEmptyArray(state.settings.templateErrors[key] ?? []),
+      }),
+    {} as TweetTemplateErrorsSelectors,
+  );
 
 // settings update trigger
 export const selectSettingsUpdateTrigger = (state: State): UpdateTrigger => {
