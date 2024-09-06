@@ -21,11 +21,7 @@ import type {
   TweetSort,
 } from '~/lib/tweet/types';
 import type { State } from '.';
-import type {
-  EditingTweetTemplate,
-  TemplateErrors,
-  UpdateTrigger,
-} from './settings';
+import type { TemplateErrors, UpdateTrigger } from './settings';
 
 // types
 export type EditStatus = 'none' | 'updated' | 'invalid';
@@ -311,10 +307,10 @@ const templateEntityKeys: ReadonlyArray<TextTemplateKey> = [
 ] as const;
 export const selectTemplateEntitiesEditStatus = createSelector(
   [
-    (state: State): EditingTweetTemplate => state.settings.editingTemplate,
+    (state: State): Partial<TweetTemplate> => state.settings.editingTemplate,
     (state: State): TemplateErrors => state.settings.templateErrors,
   ],
-  (editing: EditingTweetTemplate, errors: TemplateErrors): EditStatus => {
+  (editing: Partial<TweetTemplate>, errors: TemplateErrors): EditStatus => {
     const isUpdated = !templateEntityKeys.every((key) => !(key in editing));
     const hasError = !templateEntityKeys.every((key) => !(key in errors));
     return (
@@ -331,10 +327,10 @@ const templateMediaKeys: ReadonlyArray<TextTemplateKey> = [
 ] as const;
 export const selectTemplateMediaEditStatus = createSelector(
   [
-    (state: State): EditingTweetTemplate => state.settings.editingTemplate,
+    (state: State): Partial<TweetTemplate> => state.settings.editingTemplate,
     (state: State): TemplateErrors => state.settings.templateErrors,
   ],
-  (editing: EditingTweetTemplate, errors: TemplateErrors): EditStatus => {
+  (editing: Partial<TweetTemplate>, errors: TemplateErrors): EditStatus => {
     const isUpdated = !templateMediaKeys.every((key) => !(key in editing));
     const hasError = !templateMediaKeys.every((key) => !(key in errors));
     return (
