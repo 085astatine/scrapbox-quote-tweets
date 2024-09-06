@@ -17,8 +17,6 @@ import {
 } from '~/lib/tweet/tweet-template';
 
 // state
-export type EditingSettings = Partial<Settings>;
-export type EditingTweetTemplate = Partial<TweetTemplate>;
 export type SettingsErrors = Partial<Record<keyof Settings, string[]>>;
 export type TemplateErrors = Partial<Record<keyof TweetTemplate, string[]>>;
 
@@ -26,10 +24,10 @@ export type UpdateTrigger = 'none' | 'self' | 'interrupt';
 
 export interface SettingsState {
   currentSettings: Settings;
-  editingSettings: EditingSettings;
+  editingSettings: Partial<Settings>;
   settingsErrors: SettingsErrors;
   currentTemplate: TweetTemplate;
-  editingTemplate: EditingTweetTemplate;
+  editingTemplate: Partial<TweetTemplate>;
   templateErrors: TemplateErrors;
   updateTrigger: UpdateTrigger;
 }
@@ -117,8 +115,8 @@ const settings = createSlice({
     updateByInterrupt(
       state: SettingsState,
       action: PayloadAction<{
-        settings?: EditingSettings;
-        template?: EditingTweetTemplate;
+        settings?: Partial<Settings>;
+        template?: Partial<TweetTemplate>;
       }>,
     ): void {
       // update settings
@@ -170,8 +168,8 @@ export const settingsStorageListener = (
   dispatch: Dispatch,
 ): void => {
   // settings & tweetTemplate
-  const settings: EditingSettings = args.settings || {};
-  const template: EditingTweetTemplate = args.tweetTemplate || {};
+  const settings: Partial<Settings> = args.settings || {};
+  const template: Partial<TweetTemplate> = args.tweetTemplate || {};
   const update = {
     ...(Object.keys(settings).length > 0 && { settings }),
     ...(Object.keys(template).length > 0 && { template }),

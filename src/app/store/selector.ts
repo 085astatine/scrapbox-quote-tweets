@@ -7,9 +7,10 @@ import {
 } from '~/lib/settings';
 import { type TrashboxSort, deletedTimes } from '~/lib/trashbox';
 import { tweetSortFunction } from '~/lib/tweet/sort-tweets';
-import type {
-  TextTemplateKey,
-  TweetTemplate,
+import {
+  type TextTemplateKey,
+  type TweetTemplate,
+  tweetTemplateKeys,
 } from '~/lib/tweet/tweet-template';
 import type { TweetToStringOption } from '~/lib/tweet/tweet-to-string';
 import type {
@@ -20,11 +21,7 @@ import type {
   TweetSort,
 } from '~/lib/tweet/types';
 import type { State } from '.';
-import type {
-  EditingTweetTemplate,
-  TemplateErrors,
-  UpdateTrigger,
-} from './settings';
+import type { TemplateErrors, UpdateTrigger } from './settings';
 
 // types
 export type EditStatus = 'none' | 'updated' | 'invalid';
@@ -220,28 +217,47 @@ export const selectSettingsError: Readonly<SettingsErrorSelectors> =
   );
 
 // tweet-template: currnt
-export const selectTemplate = <Key extends keyof TweetTemplate>(
-  state: State,
-  key: Key,
-): TweetTemplate[Key] => {
-  return state.settings.currentTemplate[key];
+type TweetTemplateSelectors = {
+  [Key in keyof TweetTemplate]: (state: State) => TweetTemplate[Key];
 };
+
+export const selectTemplate: Readonly<TweetTemplateSelectors> =
+  tweetTemplateKeys.reduce(
+    (selectors, key) =>
+      Object.assign(selectors, {
+        [key]: (state: State) => state.settings.currentTemplate[key],
+      }),
+    {} as TweetTemplateSelectors,
+  );
 
 // tweet-template: editing
-export const selectEditingTemplate = <Key extends keyof TweetTemplate>(
-  state: State,
-  key: Key,
-): TweetTemplate[Key] | undefined => {
-  return state.settings.editingTemplate[key];
+type EditingTweetTemplateSelectors = {
+  [Key in keyof TweetTemplate]: (state: State) => Partial<TweetTemplate>[Key];
 };
 
+export const selectEditingTemplate: Readonly<EditingTweetTemplateSelectors> =
+  tweetTemplateKeys.reduce(
+    (selectors, key) =>
+      Object.assign(selectors, {
+        [key]: (state: State) => state.settings.editingTemplate[key],
+      }),
+    {} as EditingTweetTemplateSelectors,
+  );
+
 // tweet-template: error
-export const selectTemplateError = <Key extends keyof TweetTemplate>(
-  state: State,
-  key: Key,
-): string[] => {
-  return fallbackToEmptyArray(state.settings.templateErrors[key] ?? []);
+type TweetTemplateErrorsSelectors = {
+  [Key in keyof TweetTemplate]: (state: State) => string[];
 };
+
+export const selectTemplateError: Readonly<TweetTemplateErrorsSelectors> =
+  tweetTemplateKeys.reduce(
+    (selectors, key) =>
+      Object.assign(selectors, {
+        [key]: (state: State) =>
+          fallbackToEmptyArray(state.settings.templateErrors[key] ?? []),
+      }),
+    {} as TweetTemplateErrorsSelectors,
+  );
 
 // settings update trigger
 export const selectSettingsUpdateTrigger = (state: State): UpdateTrigger => {
@@ -291,10 +307,10 @@ const templateEntityKeys: ReadonlyArray<TextTemplateKey> = [
 ] as const;
 export const selectTemplateEntitiesEditStatus = createSelector(
   [
-    (state: State): EditingTweetTemplate => state.settings.editingTemplate,
+    (state: State): Partial<TweetTemplate> => state.settings.editingTemplate,
     (state: State): TemplateErrors => state.settings.templateErrors,
   ],
-  (editing: EditingTweetTemplate, errors: TemplateErrors): EditStatus => {
+  (editing: Partial<TweetTemplate>, errors: TemplateErrors): EditStatus => {
     const isUpdated = !templateEntityKeys.every((key) => !(key in editing));
     const hasError = !templateEntityKeys.every((key) => !(key in errors));
     return (
@@ -311,10 +327,10 @@ const templateMediaKeys: ReadonlyArray<TextTemplateKey> = [
 ] as const;
 export const selectTemplateMediaEditStatus = createSelector(
   [
-    (state: State): EditingTweetTemplate => state.settings.editingTemplate,
+    (state: State): Partial<TweetTemplate> => state.settings.editingTemplate,
     (state: State): TemplateErrors => state.settings.templateErrors,
   ],
-  (editing: EditingTweetTemplate, errors: TemplateErrors): EditStatus => {
+  (editing: Partial<TweetTemplate>, errors: TemplateErrors): EditStatus => {
     const isUpdated = !templateMediaKeys.every((key) => !(key in editing));
     const hasError = !templateMediaKeys.every((key) => !(key in errors));
     return (
