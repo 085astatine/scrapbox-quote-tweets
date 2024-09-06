@@ -131,9 +131,9 @@ const settings = createSlice({
       // update settings
       if (action.payload.settings !== undefined) {
         const previous = { ...state.currentSettings };
-        state.currentTemplate = {
-          ...state.currentTemplate,
-          ...action.payload.template,
+        state.currentSettings = {
+          ...state.currentSettings,
+          ...action.payload.settings,
         };
         settingsKeys.forEach((key) => {
           resetEditingSettingsByInterrupt(state, key, previous);
