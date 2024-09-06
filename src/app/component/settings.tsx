@@ -16,10 +16,17 @@ import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
 import DownloadIcon from '~/icon/bootstrap/download.svg';
 import CloseIcon from '~/icon/bootstrap/x.svg';
 import ScrapboxIcon from '~/icon/scrapbox.svg';
+import TwitterIcon from '~/icon/twitter.svg';
 import { Collapse } from '~/lib/component/transition';
+import { XIcon } from '~/lib/component/x-icon';
 import { isValidTimezone, toDatetime } from '~/lib/datetime';
 import { SettingsDownloadStorageMessage } from '~/lib/message';
-import { baseURL, hostnames, scrapboxIcons } from '~/lib/settings';
+import {
+  baseURL,
+  hostnames,
+  scrapboxIcons,
+  twitterIcons,
+} from '~/lib/settings';
 import { saveSettings } from '~/lib/storage/settings';
 import { saveTweetTemplate } from '~/lib/storage/tweet-template';
 import {
@@ -87,6 +94,7 @@ const SettingsEditor: React.FC = () => {
             <Timezone />
             <DatetimeFormat />
             <ScrapboxIcons />
+            <TwitterIcons />
           </div>
         }
       />
@@ -308,6 +316,58 @@ const ScrapboxIcons: React.FC = () => {
                       <img src="./cosense.png" alt="Cosense Icon" />
                     </div>
                   }
+                  {`${icon.charAt(0).toUpperCase()}${icon.slice(1)}`}
+                </label>
+              </div>
+            );
+          })}
+        </>
+      }
+      isUpdated={isUpdated}
+    />
+  );
+};
+
+const TwitterIcons: React.FC = () => {
+  const currentValue = useSelector(selectSettings.twitterIcon);
+  const editingValue = useSelector(selectEditingSettings.twitterIcon);
+  const dispatch = useDispatch();
+
+  const name = 'settings-twittericon';
+  const value = editingValue ?? currentValue;
+  const isUpdated = editingValue !== undefined;
+  return (
+    <SettingsItem
+      label="Twitter Icon"
+      form={
+        <>
+          {twitterIcons.map((icon) => {
+            const id = `${name}-${icon}`;
+            return (
+              <div className="settings-select-icon" key={icon}>
+                <input
+                  type="radio"
+                  className="form-check-input"
+                  id={id}
+                  name={name}
+                  checked={icon === value}
+                  onChange={() =>
+                    dispatch(
+                      actions.settings.editSettings({
+                        type: 'twitterIcon',
+                        value: icon,
+                      }),
+                    )
+                  }
+                />
+                <label htmlFor={id}>
+                  {icon === 'twitter' ?
+                    <TwitterIcon
+                      className="sample-icon"
+                      width={undefined}
+                      height={undefined}
+                    />
+                  : <XIcon className="sample-icon" />}
                   {`${icon.charAt(0).toUpperCase()}${icon.slice(1)}`}
                 </label>
               </div>
