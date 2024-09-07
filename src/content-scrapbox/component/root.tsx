@@ -2,9 +2,13 @@ import React from 'react';
 import ReactModal from 'react-modal';
 import { useSelector } from 'react-redux';
 import { App } from '~/app';
+import { selectSettings } from '~/app/store/selector';
 import TwitterIcon from '~/icon/twitter.svg';
+import { XIcon } from '~/lib/component/x-icon';
 
 export const Root: React.FC = () => {
+  // redux
+  const icon = useSelector(selectSettings.twitterIcon);
   // state
   const [isOpen, setIsOpen] = React.useState(false);
   // open
@@ -20,7 +24,9 @@ export const Root: React.FC = () => {
   return (
     <>
       <div className="tool-btn" role="button" onClick={open}>
-        <TwitterIcon className="kamon" />
+        {icon === 'twitter' ?
+          <TwitterIcon className="kamon" />
+        : <XIcon className="kamon" />}
       </div>
       <ReactModal
         isOpen={isOpen}
