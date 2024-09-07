@@ -57,5 +57,17 @@
 
   "action": {},
 
+  "web_accessible_resources": [
+    {
+      "resources": ["cosense.png"],
+      "matches": [
+        "https://twitter/com/*",
+        "https://x.com/*",
+        "https://scrapbox.io/*",
+        "https://cosen.se/*"
+      ]
+    }
+  ],
+
   "__chrome__minimum_chrome_version": "116"
 }
