@@ -1,14 +1,10 @@
 import React from 'react';
 import ReactModal from 'react-modal';
+import { useSelector } from 'react-redux';
 import { App } from '~/app';
-import type { Store } from '~/app/store';
 import TwitterIcon from '~/icon/twitter.svg';
 
-export interface RootProps {
-  store: Store;
-}
-
-export const Root: React.FC<RootProps> = ({ store }) => {
+export const Root: React.FC = () => {
   // state
   const [isOpen, setIsOpen] = React.useState(false);
   // open
@@ -42,7 +38,7 @@ export const Root: React.FC<RootProps> = ({ store }) => {
           afterOpen: 'after-open',
           beforeClose: 'before-close',
         }}>
-        <App store={store} />
+        <App />
       </ReactModal>
     </>
   );

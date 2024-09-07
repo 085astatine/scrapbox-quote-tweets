@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
 import browser from 'webextension-polyfill';
 import {
   initializeStoreWithStorage,
@@ -12,7 +13,11 @@ import './index.scss';
 const root = document.getElementById('root');
 if (root !== null) {
   const reactRoot = createRoot(root);
-  reactRoot.render(<Root store={store} />);
+  reactRoot.render(
+    <Provider store={store}>
+      <Root />
+    </Provider>,
+  );
 }
 
 // initialize store with data loaded from storage
