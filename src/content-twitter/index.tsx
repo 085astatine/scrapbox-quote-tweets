@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import browser from 'webextension-polyfill';
 import { mutationRecordInfo } from '~/lib/dom';
 import { logger } from '~/lib/logger';
+import { loadSettings } from '~/lib/storage/settings';
 import { savedTweetIDs } from '~/lib/storage/tweet';
 import { ScrapboxButton } from './component/scrapbox-button';
 import './index.scss';
@@ -49,16 +50,24 @@ window.addEventListener('DOMContentLoaded', () => {
     childList: true,
   };
   observer.observe(document.body, options);
-  // Load saved TweetIDs from storage
-  savedTweetIDs().then((tweetIDs) => {
-    logger.debug('Saved Tweet IDs', tweetIDs);
-    store.dispatch(
-      actions.tweet.updateButton(
-        tweetIDs.map((tweetID) => ({ tweetID, button: { state: 'success' } })),
-      ),
-    );
-  });
 });
+
+// initialize store
+const initializeStore = async (): Promise<void> => {
+  // tweet
+  const tweetIDs = await savedTweetIDs();
+  logger.debug('Saved Tweet IDs', tweetIDs);
+  store.dispatch(
+    actions.tweet.updateButton(
+      tweetIDs.map((tweetID) => ({ tweetID, button: { state: 'success' } })),
+    ),
+  );
+  // settings
+  const settings = await loadSettings();
+  logger.debug('Settings', settings);
+  store.dispatch(actions.settings.update(settings.scrapboxIcon));
+};
+initializeStore();
 
 // storage listener
 browser.storage.local.onChanged.addListener(storageListener);
