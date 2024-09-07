@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import React from 'react';
-import { Provider } from 'react-redux';
 import SettingsIcon from '~/icon/bootstrap/gear.svg';
 import TweetsIcon from '~/icon/bootstrap/list-ul.svg';
 import TrashboxIcon from '~/icon/google-fonts/delete.svg';
@@ -8,23 +7,18 @@ import { trimGoogleFontsIcon } from '~/lib/utility';
 import { Settings } from './component/settings';
 import { Trashbox } from './component/trashbox';
 import { Tweets } from './component/tweets';
-import type { Store } from './store';
 
-export interface AppProps {
-  store: Store;
-}
-
-export const App: React.FC<AppProps> = ({ store }: AppProps) => {
+export const App: React.FC = () => {
   const [tab, setTab] = React.useState<Tab>('tweets');
   return (
-    <Provider store={store}>
+    <>
       <Tabs tab={tab} switchTab={setTab} />
       <div className="tab-content">
         {tab === 'tweets' && <Tweets />}
         {tab === 'trashbox' && <Trashbox />}
         {tab === 'settings' && <Settings />}
       </div>
-    </Provider>
+    </>
   );
 };
 

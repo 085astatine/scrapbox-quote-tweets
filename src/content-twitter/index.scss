@@ -48,6 +48,13 @@ $fav-color: rgb(249, 24, 128);
       width: 1.5em;
       height: 1.5em;
 
+      .logo {
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
       .circle-inactive {
         @include circle;
         background-color: transparent;

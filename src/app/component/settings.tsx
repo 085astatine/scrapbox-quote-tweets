@@ -313,7 +313,10 @@ const ScrapboxIcons: React.FC = () => {
                       height={undefined}
                     />
                   : <div className="cosense-icon sample-icon">
-                      <img src="./cosense.png" alt="Cosense Icon" />
+                      <img
+                        src={browser.runtime.getURL('cosense.png')}
+                        alt="Cosense Icon"
+                      />
                     </div>
                   }
                   {`${icon.charAt(0).toUpperCase()}${icon.slice(1)}`}

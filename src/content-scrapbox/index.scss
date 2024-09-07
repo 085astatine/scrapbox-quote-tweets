@@ -47,3 +47,7 @@ $bs-prefix: sct-;
 
   @include meta.load-css('~/app/index', $with: (bs-prefix: $bs-prefix));
 }
+
+#scrapbox-copy-tweets {
+  @include meta.load-css('~/lib/component/x-icon');
+}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
 import browser from 'webextension-polyfill';
 import {
   initializeStoreWithStorage,
@@ -37,7 +38,11 @@ const observerCallback = (records: MutationRecord[]): void => {
         return;
       }
       const reactRoot = createRoot(rootDiv);
-      reactRoot.render(<Root store={store} />);
+      reactRoot.render(
+        <Provider store={store}>
+          <Root />
+        </Provider>,
+      );
       // initialize store with data loaded from storage
       initializeStoreWithStorage();
     });

@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactModal from 'react-modal';
+import { useSelector } from 'react-redux';
 import { App } from '~/app';
-import type { Store } from '~/app/store';
+import { selectSettings } from '~/app/store/selector';
 import TwitterIcon from '~/icon/twitter.svg';
+import { XIcon } from '~/lib/component/x-icon';
 
-export interface RootProps {
-  store: Store;
-}
-
-export const Root: React.FC<RootProps> = ({ store }) => {
+export const Root: React.FC = () => {
+  // redux
+  const icon = useSelector(selectSettings.twitterIcon);
   // state
   const [isOpen, setIsOpen] = React.useState(false);
   // open
@@ -24,7 +24,9 @@ export const Root: React.FC<RootProps> = ({ store }) => {
   return (
     <>
       <div className="tool-btn" role="button" onClick={open}>
-        <TwitterIcon className="kamon" />
+        {icon === 'twitter' ?
+          <TwitterIcon className="kamon" />
+        : <XIcon className="kamon" />}
       </div>
       <ReactModal
         isOpen={isOpen}
@@ -42,7 +44,7 @@ export const Root: React.FC<RootProps> = ({ store }) => {
           afterOpen: 'after-open',
           beforeClose: 'before-close',
         }}>
-        <App store={store} />
+        <App />
       </ReactModal>
     </>
   );
