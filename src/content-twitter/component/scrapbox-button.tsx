@@ -8,6 +8,7 @@ import {
 import classNames from 'classnames';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import browser from 'webextension-polyfill';
 import CloseIcon from '~/icon/bootstrap/x.svg';
 import ScrapboxIcon from '~/icon/scrapbox.svg';
 import { Fade } from '~/lib/component/transition';
@@ -21,7 +22,10 @@ import type { Tweet, TweetID } from '~/lib/tweet/types';
 import { JSONSchemaValidationError } from '~/validate-json/error';
 import { parseTweet } from '../lib/parse-tweet';
 import { State, actions } from '../store';
-import { selectScrapboxButtonState } from '../store/selector';
+import {
+  selectScrapboxButtonState,
+  selectScrapboxIcon,
+} from '../store/selector';
 
 type TooltipType = 'notification' | 'error';
 
@@ -46,6 +50,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
     [tweetID],
   );
   const buttonState = useSelector(selector);
+  const icon = useSelector(selectScrapboxIcon);
   const dispatch = useDispatch();
   // floting-ui
   const arrowRef = React.useRef(null);
@@ -139,12 +144,20 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
             'circle-active': buttonState.state === 'success',
           })}
         />
-        <ScrapboxIcon
-          className="logo"
-          viewBox="-29 0 172 172"
-          width={undefined}
-          height={undefined}
-        />
+        {icon === 'scrapbox' ?
+          <ScrapboxIcon
+            className="logo"
+            viewBox="-29 0 172 172"
+            width={undefined}
+            height={undefined}
+          />
+        : <div className="logo">
+            <img
+              src={browser.runtime.getURL('cosense.png')}
+              alt="Cosense Icon"
+            />
+          </div>
+        }
       </div>
       <Fade
         nodeRef={refs.floating}
