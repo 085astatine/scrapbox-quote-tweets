@@ -102,13 +102,8 @@ const loadDeletedTweetIDs = async (): Promise<DeletedTweetID[]> => {
   if (deletedTweetIDs === undefined) {
     return [];
   }
-  if (!validateDeletedTweetIDs(deletedTweetIDs)) {
-    throw new JSONSchemaValidationError(
-      deletedTweetIDsJSONSchema,
-      deletedTweetIDs,
-      validateDeletedTweetIDs.errors ?? [],
-    );
-  }
+  // JSONSchema validation
+  assertIsDeletedTweetIDs(deletedTweetIDs);
   return deletedTweetIDs;
 };
 
@@ -131,8 +126,8 @@ export const onChangedTrashbox = (
   changes: browser.Storage.StorageAreaOnChangedChangesType,
 ): OnChangedTrashbox => {
   const trashbox = parseChanges(
-    changes[keyTrashbox]?.oldValue,
-    changes[keyTrashbox]?.newValue,
+    toDeletedTweetIDs(changes[keyTrashbox]?.oldValue),
+    toDeletedTweetIDs(changes[keyTrashbox]?.newValue),
   );
   return {
     ...(Object.keys(trashbox).length > 0 && { trashbox }),
@@ -140,16 +135,16 @@ export const onChangedTrashbox = (
 };
 
 const parseChanges = (
-  oldValue: DeletedTweetID[] | undefined,
-  newValue: DeletedTweetID[] | undefined,
+  oldValue: DeletedTweetID[],
+  newValue: DeletedTweetID[],
 ): NonNullable<OnChangedTrashbox['trashbox']> => {
-  if (oldValue === undefined || oldValue.length === 0) {
-    if (newValue === undefined || newValue.length === 0) {
+  if (oldValue.length === 0) {
+    if (newValue.length === 0) {
       return {};
     } else {
       return { added: newValue };
     }
-  } else if (newValue === undefined || newValue.length === 0) {
+  } else if (newValue.length === 0) {
     return { deleted: oldValue };
   }
   // join on TweetID
@@ -187,4 +182,29 @@ const parseChanges = (
     ...(deleted.length > 0 && { deleted }),
     ...(updated.length > 0 && { updated }),
   };
+};
+
+// type guard
+function assertIsDeletedTweetIDs(
+  value: unknown,
+): asserts value is DeletedTweetID[] {
+  if (!validateDeletedTweetIDs(value)) {
+    throw new JSONSchemaValidationError(
+      deletedTweetIDsJSONSchema,
+      value,
+      validateDeletedTweetIDs.errors ?? [],
+    );
+  }
+}
+
+const toDeletedTweetIDs = (value: unknown): DeletedTweetID[] => {
+  if (value === undefined) {
+    return [];
+  }
+  try {
+    assertIsDeletedTweetIDs(value);
+    return value;
+  } catch {
+    return [];
+  }
 };
