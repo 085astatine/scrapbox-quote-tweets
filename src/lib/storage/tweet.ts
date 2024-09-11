@@ -6,7 +6,6 @@ import validateTweets from '~/validate-json/validate-tweets';
 import type { Tweet, TweetID } from '../tweet/types';
 import { logger } from './logger';
 import {
-  type TweetIDKey,
   TweetIDKeyMismatchError,
   isTweetIDKey,
   toTweetID,
@@ -109,7 +108,7 @@ export const deleteTweet = async (tweetID: TweetID): Promise<void> => {
 };
 
 const validateLoadedTweet = async (
-  key: TweetIDKey,
+  key: string,
   value: Tweet,
 ): Promise<void> => {
   // validation with JSONSchema
