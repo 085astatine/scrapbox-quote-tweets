@@ -108,17 +108,11 @@ const loadDeletedTweetIDs = async (): Promise<DeletedTweetID[]> => {
 };
 
 // storage listener
-type UpdatedDeletedTweetID = {
-  id: TweetID;
-  before: DeletedTweetID;
-  after: DeletedTweetID;
-};
-
 export type OnChangedTrashbox = {
   trashbox?: {
     added?: DeletedTweetID[];
     deleted?: DeletedTweetID[];
-    updated?: UpdatedDeletedTweetID[];
+    updated?: DeletedTweetID[];
   };
 };
 
@@ -163,7 +157,7 @@ const parseChanges = (
   // categorize added/deleted/updated
   const added: DeletedTweetID[] = [];
   const deleted: DeletedTweetID[] = [];
-  const updated: UpdatedDeletedTweetID[] = [];
+  const updated: DeletedTweetID[] = [];
   changes.forEach(({ before, after }, id) => {
     if (before === undefined) {
       if (after !== undefined) {
@@ -173,7 +167,7 @@ const parseChanges = (
       if (after === undefined) {
         deleted.push(before);
       } else if (!equal(before, after)) {
-        updated.push({ id, before, after });
+        updated.push(after);
       }
     }
   });

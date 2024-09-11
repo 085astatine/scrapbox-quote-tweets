@@ -129,17 +129,11 @@ const validateLoadedTweet = async (
 };
 
 // storage listener
-type UpdatedTweet = {
-  id: TweetID;
-  before: Tweet;
-  after: Tweet;
-};
-
 export type OnChangedTweet = {
   tweet?: {
     added?: Tweet[];
     deleted?: Tweet[];
-    updated?: UpdatedTweet[];
+    updated?: Tweet[];
   };
 };
 
@@ -148,19 +142,19 @@ export const onChangedTweet = (
 ): OnChangedTweet => {
   const added: Tweet[] = [];
   const deleted: Tweet[] = [];
-  const updated: UpdatedTweet[] = [];
+  const updated: Tweet[] = [];
   Object.entries(changes).forEach(([key, { oldValue, newValue }]) => {
     if (isTweetIDKey(key)) {
-      if (oldValue === undefined) {
-        added.push(newValue);
-      } else if (newValue === undefined) {
-        deleted.push(oldValue);
+      if (newValue !== undefined) {
+        if (oldValue !== undefined) {
+          updated.push(newValue);
+        } else {
+          added.push(newValue);
+        }
       } else {
-        updated.push({
-          id: toTweetID(key),
-          before: oldValue,
-          after: newValue,
-        });
+        if (oldValue !== undefined) {
+          deleted.push(oldValue);
+        }
       }
     }
   });
