@@ -16,13 +16,7 @@ import {
 export const saveTweets = async (tweets: Tweet[]): Promise<void> => {
   logger.debug('save tweets', tweets);
   // JSON Schema validation
-  if (!validateTweets(tweets)) {
-    throw new JSONSchemaValidationError(
-      tweetsJSONSchema,
-      tweets,
-      validateTweets.errors ?? [],
-    );
-  }
+  assertIsTweets(tweets);
   // set to storage
   await browser.storage.local.set(
     Object.fromEntries(tweets.map((tweet) => [toTweetIDKey(tweet.id), tweet])),
@@ -32,13 +26,7 @@ export const saveTweets = async (tweets: Tweet[]): Promise<void> => {
 export const saveTweet = async (tweet: Tweet): Promise<void> => {
   logger.debug('save tweet', tweet);
   // JSON Schema validation
-  if (!validateTweet(tweet)) {
-    throw new JSONSchemaValidationError(
-      tweetJSONSchema,
-      tweet,
-      validateTweet.errors ?? [],
-    );
-  }
+  assertIsTweet(tweet);
   // set to storage
   await browser.storage.local.set({ [toTweetIDKey(tweet.id)]: tweet });
 };
@@ -64,10 +52,12 @@ export const loadTweets = async (tweetIDs?: TweetID[]): Promise<Tweet[]> => {
           // validation
           if (isTweetIDKey(key)) {
             try {
-              await validateLoadedTweet(key, value);
+              assertIsTweetRecord(key, value);
               tweets.push(value);
             } catch (error: unknown) {
               logger.debug('validation error', error);
+              // delete from storage
+              await browser.storage.local.remove(key);
             }
           }
           return tweets;
@@ -89,7 +79,7 @@ export const loadTweet = async (tweetID: TweetID): Promise<Tweet | null> => {
     return null;
   }
   // validation
-  await validateLoadedTweet(key, tweet);
+  assertIsTweet(tweet);
   return tweet;
 };
 
@@ -105,26 +95,6 @@ export const deleteTweet = async (tweetID: TweetID): Promise<void> => {
   logger.debug('delete tweet', tweetID);
   // remove from storage
   await browser.storage.local.remove(toTweetIDKey(tweetID));
-};
-
-const validateLoadedTweet = async (
-  key: string,
-  value: Tweet,
-): Promise<void> => {
-  // validation with JSONSchema
-  if (!validateTweet(value)) {
-    await browser.storage.local.remove(key);
-    throw new JSONSchemaValidationError(
-      tweetJSONSchema,
-      value,
-      validateTweet.errors ?? [],
-    );
-  }
-  // tweet ID key
-  if (key !== toTweetIDKey(value.id)) {
-    await browser.storage.local.remove(key);
-    throw new TweetIDKeyMismatchError(key, value);
-  }
 };
 
 // storage listener
@@ -144,15 +114,17 @@ export const onChangedTweet = (
   const updated: Tweet[] = [];
   Object.entries(changes).forEach(([key, { oldValue, newValue }]) => {
     if (isTweetIDKey(key)) {
-      if (newValue !== undefined) {
-        if (oldValue !== undefined) {
-          updated.push(newValue);
+      const newTweet = toTweet(newValue);
+      const oldTweet = toTweet(oldValue);
+      if (newTweet !== undefined) {
+        if (oldTweet !== undefined) {
+          updated.push(newTweet);
         } else {
-          added.push(newValue);
+          added.push(newTweet);
         }
       } else {
-        if (oldValue !== undefined) {
-          deleted.push(oldValue);
+        if (oldTweet !== undefined) {
+          deleted.push(oldTweet);
         }
       }
     }
@@ -165,4 +137,50 @@ export const onChangedTweet = (
   return {
     ...(Object.keys(tweet).length > 0 && { tweet }),
   };
+};
+
+// type guard
+function assertIsTweet(value: unknown): asserts value is Tweet {
+  // JSONSchema validation
+  if (!validateTweet(value)) {
+    throw new JSONSchemaValidationError(
+      tweetJSONSchema,
+      value,
+      validateTweet.errors ?? [],
+    );
+  }
+}
+
+function assertIsTweets(value: unknown): asserts value is Tweet[] {
+  if (!validateTweets(value)) {
+    throw new JSONSchemaValidationError(
+      tweetsJSONSchema,
+      value,
+      validateTweets.errors ?? [],
+    );
+  }
+}
+
+function assertIsTweetRecord(
+  key: string,
+  value: unknown,
+): asserts value is Tweet {
+  // JSONSchema validation
+  assertIsTweet(value);
+  // key check
+  if (key !== toTweetIDKey(value.id)) {
+    throw new TweetIDKeyMismatchError(key, value);
+  }
+}
+
+const toTweet = (value: unknown): Tweet | undefined => {
+  if (value === undefined) {
+    return undefined;
+  }
+  try {
+    assertIsTweet(value);
+    return value;
+  } catch {
+    return undefined;
+  }
 };
