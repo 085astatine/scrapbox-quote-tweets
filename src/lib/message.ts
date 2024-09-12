@@ -132,3 +132,44 @@ export async function forwardMessageToOffscreen(
   await offscreen.close();
   return response;
 }
+
+// type guard
+type AnyMessage = {
+  type?: string;
+};
+
+export const isExpandTCoURLRequestMessage = (
+  value: unknown,
+): value is ExpandTCoURLRequestMessage => {
+  return (value as AnyMessage)?.type === 'ExpandTCoURL/Request';
+};
+
+export const isExpandTCoURLResultMessage = (
+  value: unknown,
+): value is ExpandTCoURLResultMessage => {
+  return (value as AnyMessage)?.type === 'ExpandTCoURL/Result';
+};
+
+export const isForwardToOffscreenMessage = <Message extends AnyMessage>(
+  value: unknown,
+): value is ForwardToOffscreenMessage<Message> => {
+  return (value as AnyMessage)?.type === 'Forward/ToOffscreen';
+};
+
+export const isGetURLTitleRequestMessage = (
+  value: unknown,
+): value is GetURLTitleRequestMessage => {
+  return (value as AnyMessage)?.type === 'GetURLTitle/Request';
+};
+
+export const isGetURLTitleResultMessage = (
+  value: unknown,
+): value is GetURLTitleResultMessage => {
+  return (value as AnyMessage)?.type === 'GetURLTitle/Result';
+};
+
+export const isSettingsDownloadStorageMessage = (
+  value: unknown,
+): value is SettingsDownloadStorageMessage => {
+  return (value as AnyMessage)?.type === 'Settings/DownloadStorage';
+};
