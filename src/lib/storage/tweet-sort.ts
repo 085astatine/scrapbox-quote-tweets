@@ -17,13 +17,7 @@ const keyTweetSort = 'tweetSort' as const;
 export const saveTweetSort = async (value: TweetSort): Promise<void> => {
   logger.debug('save tweet-sort', value);
   // JSONSchema validation
-  if (!validateTweetSort(value)) {
-    throw new JSONSchemaValidationError(
-      tweetSortJSONSchema,
-      value,
-      validateTweetSort.errors ?? [],
-    );
-  }
+  assertIsTweetSort(value);
   // set to storage
   await browser.storage.local.set({ [keyTweetSort]: value });
 };
@@ -38,13 +32,7 @@ export const loadTweetSort = async (): Promise<TweetSort | null> => {
     return null;
   }
   // JSONSchema validation
-  if (!validateTweetSort(value)) {
-    throw new JSONSchemaValidationError(
-      tweetSortJSONSchema,
-      value,
-      validateTweetSort.errors ?? [],
-    );
-  }
+  assertIsTweetSort(value);
   return value;
 };
 
@@ -54,13 +42,7 @@ const keyTrashboxSort = 'trashboxSort' as const;
 export const saveTrashboxSort = async (value: TrashboxSort): Promise<void> => {
   logger.debug('save trashbox-sort', value);
   // JSONSchema validation
-  if (!validateTrashboxSort(value)) {
-    throw new JSONSchemaValidationError(
-      trashboxSortJSONSchema,
-      value,
-      validateTrashboxSort.errors ?? [],
-    );
-  }
+  assertIsTrashboxSort(value);
   // set to storage
   await browser.storage.local.set({ [keyTrashboxSort]: value });
 };
@@ -75,13 +57,7 @@ export const loadTrashboxSort = async (): Promise<TrashboxSort | null> => {
     return null;
   }
   // JSONSchema validation
-  if (!validateTrashboxSort(value)) {
-    throw new JSONSchemaValidationError(
-      trashboxSortJSONSchema,
-      value,
-      validateTrashboxSort.errors ?? [],
-    );
-  }
+  assertIsTrashboxSort(value);
   return value;
 };
 
@@ -101,6 +77,7 @@ export const onChangedTweetSort = (
     tweetSortChange?.newValue !== undefined &&
     !equal(tweetSortChange.oldValue, tweetSortChange.newValue)
   ) {
+    assertIsTweetSort(tweetSortChange.newValue);
     result[keyTweetSort] = tweetSortChange.newValue;
   }
   // trashboxSort
@@ -109,7 +86,29 @@ export const onChangedTweetSort = (
     trashboxSortChange?.newValue !== undefined &&
     !equal(trashboxSortChange.oldValue, trashboxSortChange.newValue)
   ) {
+    assertIsTrashboxSort(trashboxSortChange.newValue);
     result[keyTrashboxSort] = trashboxSortChange.newValue;
   }
   return result;
 };
+
+// type guard
+function assertIsTweetSort(value: unknown): asserts value is TweetSort {
+  if (!validateTweetSort(value)) {
+    throw new JSONSchemaValidationError(
+      tweetSortJSONSchema,
+      value,
+      validateTweetSort.errors ?? [],
+    );
+  }
+}
+
+function assertIsTrashboxSort(value: unknown): asserts value is TrashboxSort {
+  if (!validateTrashboxSort(value)) {
+    throw new JSONSchemaValidationError(
+      trashboxSortJSONSchema,
+      value,
+      validateTrashboxSort.errors ?? [],
+    );
+  }
+}

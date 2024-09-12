@@ -108,19 +108,19 @@ export async function forwardMessageToOffscreen(
   offscreen: Offscreen,
   message: ExpandTCoURLRequestMessage,
   logger: Logger,
-): Promise<ExpandTCoURLResultMessage>;
+): Promise<ExpandTCoURLResultMessage | void>;
 
 export async function forwardMessageToOffscreen(
   offscreen: Offscreen,
   message: GetURLTitleRequestMessage,
   logger: Logger,
-): Promise<GetURLTitleResultMessage>;
+): Promise<GetURLTitleResultMessage | void>;
 
 export async function forwardMessageToOffscreen(
   offscreen: Offscreen,
   message: ExpandTCoURLRequestMessage | GetURLTitleRequestMessage,
   logger: Logger,
-): Promise<ExpandTCoURLResultMessage | GetURLTitleResultMessage> {
+): Promise<ExpandTCoURLResultMessage | GetURLTitleResultMessage | void> {
   await offscreen.open();
   logger.debug('forward to offscreen', message);
   const request = {
@@ -130,5 +130,53 @@ export async function forwardMessageToOffscreen(
   const response = await browser.runtime.sendMessage(request);
   logger.debug('response from offscreen', response);
   await offscreen.close();
-  return response;
+  if (
+    (message.type === 'ExpandTCoURL/Request' &&
+      isExpandTCoURLResultMessage(response)) ||
+    (message.type === 'GetURLTitle/Request' &&
+      isGetURLTitleResultMessage(response))
+  ) {
+    return response;
+  }
 }
+
+// type guard
+type AnyMessage = {
+  type?: string;
+};
+
+export const isExpandTCoURLRequestMessage = (
+  value: unknown,
+): value is ExpandTCoURLRequestMessage => {
+  return (value as AnyMessage)?.type === 'ExpandTCoURL/Request';
+};
+
+export const isExpandTCoURLResultMessage = (
+  value: unknown,
+): value is ExpandTCoURLResultMessage => {
+  return (value as AnyMessage)?.type === 'ExpandTCoURL/Result';
+};
+
+export const isForwardToOffscreenMessage = <Message extends AnyMessage>(
+  value: unknown,
+): value is ForwardToOffscreenMessage<Message> => {
+  return (value as AnyMessage)?.type === 'Forward/ToOffscreen';
+};
+
+export const isGetURLTitleRequestMessage = (
+  value: unknown,
+): value is GetURLTitleRequestMessage => {
+  return (value as AnyMessage)?.type === 'GetURLTitle/Request';
+};
+
+export const isGetURLTitleResultMessage = (
+  value: unknown,
+): value is GetURLTitleResultMessage => {
+  return (value as AnyMessage)?.type === 'GetURLTitle/Result';
+};
+
+export const isSettingsDownloadStorageMessage = (
+  value: unknown,
+): value is SettingsDownloadStorageMessage => {
+  return (value as AnyMessage)?.type === 'Settings/DownloadStorage';
+};

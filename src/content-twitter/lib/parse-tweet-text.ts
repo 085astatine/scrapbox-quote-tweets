@@ -1,9 +1,9 @@
 import browser from 'webextension-polyfill';
 import { getElement, getNode, isHTMLElement } from '~/lib/dom';
 import { type Logger, logger as defaultLogger } from '~/lib/logger';
-import type {
-  ExpandTCoURLRequestMessage,
-  ExpandTCoURLResultMessage,
+import {
+  type ExpandTCoURLRequestMessage,
+  isExpandTCoURLResultMessage,
 } from '~/lib/message';
 import type {
   TweetEntity,
@@ -126,9 +126,9 @@ const parseEntityURL = async (
   logger.debug('Request to expand t.co URL', request);
   const { expandedURL, title } = await browser.runtime
     .sendMessage(request)
-    .then((response: ExpandTCoURLResultMessage) => {
+    .then((response: unknown) => {
       logger.debug('Response to request', response);
-      if (response?.type === 'ExpandTCoURL/Result') {
+      if (isExpandTCoURLResultMessage(response)) {
         if (response?.ok) {
           const { expandedURL, title } = response;
           return { expandedURL, title };

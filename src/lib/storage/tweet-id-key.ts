@@ -16,10 +16,10 @@ export const toTweetID = (key: TweetIDKey): string => {
 };
 
 export class TweetIDKeyMismatchError extends Error {
-  readonly key: TweetIDKey;
+  readonly key: string;
   readonly value: Tweet;
 
-  constructor(key: TweetIDKey, value: Tweet) {
+  constructor(key: string, value: Tweet) {
     super(
       [
         'Tweet IDs of key and value do not match',
