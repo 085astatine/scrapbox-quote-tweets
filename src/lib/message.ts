@@ -108,19 +108,19 @@ export async function forwardMessageToOffscreen(
   offscreen: Offscreen,
   message: ExpandTCoURLRequestMessage,
   logger: Logger,
-): Promise<ExpandTCoURLResultMessage>;
+): Promise<ExpandTCoURLResultMessage | void>;
 
 export async function forwardMessageToOffscreen(
   offscreen: Offscreen,
   message: GetURLTitleRequestMessage,
   logger: Logger,
-): Promise<GetURLTitleResultMessage>;
+): Promise<GetURLTitleResultMessage | void>;
 
 export async function forwardMessageToOffscreen(
   offscreen: Offscreen,
   message: ExpandTCoURLRequestMessage | GetURLTitleRequestMessage,
   logger: Logger,
-): Promise<ExpandTCoURLResultMessage | GetURLTitleResultMessage> {
+): Promise<ExpandTCoURLResultMessage | GetURLTitleResultMessage | void> {
   await offscreen.open();
   logger.debug('forward to offscreen', message);
   const request = {
@@ -130,7 +130,14 @@ export async function forwardMessageToOffscreen(
   const response = await browser.runtime.sendMessage(request);
   logger.debug('response from offscreen', response);
   await offscreen.close();
-  return response;
+  if (
+    (message.type === 'ExpandTCoURL/Request' &&
+      isExpandTCoURLResultMessage(response)) ||
+    (message.type === 'GetURLTitle/Request' &&
+      isGetURLTitleResultMessage(response))
+  ) {
+    return response;
+  }
 }
 
 // type guard

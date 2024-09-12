@@ -1,13 +1,13 @@
 import browser from 'webextension-polyfill';
 import { getElement, getElements, getNode, getNodes } from '~/lib/dom';
-import { Logger, logger as defaultLogger } from '~/lib/logger';
+import { type Logger, logger as defaultLogger } from '~/lib/logger';
 import {
-  ExpandTCoURLRequestMessage,
-  ExpandTCoURLResultMessage,
-  GetURLTitleRequestMessage,
-  GetURLTitleResultMessage,
+  type ExpandTCoURLRequestMessage,
+  type GetURLTitleRequestMessage,
+  isExpandTCoURLResultMessage,
+  isGetURLTitleResultMessage,
 } from '~/lib/message';
-import {
+import type {
   Media,
   MediaPhoto,
   MediaVideo,
@@ -265,10 +265,10 @@ const toEntityURL = async (
     };
     const title = await browser.runtime
       .sendMessage(request)
-      .then((response: GetURLTitleResultMessage) => {
+      .then((response: unknown) => {
         logger.debug('Response to request', response);
-        if (response?.type === 'GetURLTitle/Result') {
-          if (response.ok) {
+        if (isGetURLTitleResultMessage(response)) {
+          if (response?.ok) {
             return response.title;
           }
         }
@@ -291,9 +291,9 @@ const toEntityURL = async (
   logger.debug('Request to expand t.co URL', request);
   const { expandedURL, title } = await browser.runtime
     .sendMessage(request)
-    .then((response: ExpandTCoURLResultMessage) => {
+    .then((response: unknown) => {
       logger.debug('Response to request', response);
-      if (response?.type === 'ExpandTCoURL/Result') {
+      if (isExpandTCoURLResultMessage(response)) {
         if (response?.ok) {
           const { expandedURL, title } = response;
           return { expandedURL, title };

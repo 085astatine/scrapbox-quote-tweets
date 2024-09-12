@@ -1,12 +1,12 @@
 import browser from 'webextension-polyfill';
 import { logger } from '~/lib/logger';
 import {
-  type ExpandTCoURLRequestMessage,
   type ExpandTCoURLResultMessage,
-  type GetURLTitleRequestMessage,
   type GetURLTitleResultMessage,
-  type SettingsDownloadStorageMessage,
   forwardMessageToOffscreen,
+  isExpandTCoURLRequestMessage,
+  isGetURLTitleRequestMessage,
+  isSettingsDownloadStorageMessage,
   respondToExpandTCoURLRequest,
   respondToGetURLTitleRequest,
 } from '~/lib/message';
@@ -32,18 +32,21 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // onMessage Listener
-type RequestMessage =
-  | ExpandTCoURLRequestMessage
-  | GetURLTitleRequestMessage
-  | SettingsDownloadStorageMessage;
-
-type ResponseMessage = ExpandTCoURLResultMessage | GetURLTitleResultMessage;
-
 const onMessageListener = async (
-  message: RequestMessage,
+  message: unknown,
   sender: browser.Runtime.MessageSender,
-): Promise<void | ResponseMessage> => {
+): Promise<ExpandTCoURLResultMessage | GetURLTitleResultMessage | void> => {
   logger.debug('on message', { message, sender });
+  // check message type
+  if (
+    !isExpandTCoURLRequestMessage(message) &&
+    !isGetURLTitleRequestMessage(message) &&
+    !isSettingsDownloadStorageMessage(message)
+  ) {
+    logger.debug('skip message', message);
+    return;
+  }
+  // respond to message
   switch (message.type) {
     case 'ExpandTCoURL/Request':
       logger.info(`Request to expand URL("${message.shortURL}")`);
@@ -60,7 +63,6 @@ const onMessageListener = async (
       break;
     default: {
       const _: never = message;
-      logger.error('unexpected message', message);
       return _;
     }
   }

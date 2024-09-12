@@ -1,11 +1,11 @@
 import browser from 'webextension-polyfill';
 import { createLogger } from '~/lib/logger';
 import {
-  type ExpandTCoURLRequestMessage,
   type ExpandTCoURLResultMessage,
-  type ForwardToOffscreenMessage,
-  type GetURLTitleRequestMessage,
   type GetURLTitleResultMessage,
+  isExpandTCoURLRequestMessage,
+  isForwardToOffscreenMessage,
+  isGetURLTitleRequestMessage,
   respondToExpandTCoURLRequest,
   respondToGetURLTitleRequest,
 } from '~/lib/message';
@@ -14,19 +14,14 @@ import {
 const logger = createLogger({ prefix: '[offscreen] ' });
 
 // runtime.onMessage
-type ForwardedMessage = ExpandTCoURLRequestMessage | GetURLTitleRequestMessage;
-type RequestMessage = ForwardToOffscreenMessage<ForwardedMessage>;
-type ResponseMessage = ExpandTCoURLResultMessage | GetURLTitleResultMessage;
-
 const listener = async (
-  message: RequestMessage,
-): Promise<ResponseMessage | void> => {
+  message: unknown,
+): Promise<ExpandTCoURLResultMessage | GetURLTitleResultMessage | void> => {
   logger.debug('on message', message);
-  switch (message?.type) {
-    case 'Forward/ToOffscreen':
-      return await respondToForwardedMessage(message.message);
-    default:
-      logger.debug('skip message', message);
+  if (isForwardToOffscreenMessage(message)) {
+    return await respondToForwardedMessage(message.message);
+  } else {
+    logger.debug('skip message', message);
   }
 };
 
@@ -34,8 +29,15 @@ browser.runtime.onMessage.addListener(listener);
 
 // respond to Forward/ToOffscreen
 const respondToForwardedMessage = async (
-  message: ForwardedMessage,
-): Promise<ResponseMessage | void> => {
+  message: unknown,
+): Promise<ExpandTCoURLResultMessage | GetURLTitleResultMessage | void> => {
+  if (
+    !isExpandTCoURLRequestMessage(message) &&
+    !isGetURLTitleRequestMessage(message)
+  ) {
+    logger.debug('unexpected forwarded message', message);
+    return;
+  }
   switch (message?.type) {
     case 'ExpandTCoURL/Request':
       return await respondToExpandTCoURLRequest(message.shortURL, logger);
