@@ -61,7 +61,7 @@
     {
       "resources": ["cosense.png"],
       "matches": [
-        "https://twitter/com/*",
+        "https://twitter.com/*",
         "https://x.com/*",
         "https://scrapbox.io/*",
         "https://cosen.se/*"
