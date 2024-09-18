@@ -53,8 +53,8 @@ export type GetURLTitleResultMessage =
   | GetURLTitleSuccessMessage
   | GetURLTitleFailureMessage;
 
-export interface SettingsDownloadStorageMessage {
-  type: 'Settings/DownloadStorage';
+export interface StorageDownloadMessage {
+  type: 'Storage/Download';
 }
 
 // Respond to ExpandTCoURL/Request
@@ -175,8 +175,8 @@ export const isGetURLTitleResultMessage = (
   return (value as AnyMessage)?.type === 'GetURLTitle/Result';
 };
 
-export const isSettingsDownloadStorageMessage = (
+export const isStorageDownloadMessage = (
   value: unknown,
-): value is SettingsDownloadStorageMessage => {
-  return (value as AnyMessage)?.type === 'Settings/DownloadStorage';
+): value is StorageDownloadMessage => {
+  return (value as AnyMessage)?.type === 'Storage/Download';
 };

@@ -20,7 +20,7 @@ import TwitterIcon from '~/icon/twitter.svg';
 import { Collapse } from '~/lib/component/transition';
 import { XIcon } from '~/lib/component/x-icon';
 import { isValidTimezone, toDatetime } from '~/lib/datetime';
-import { SettingsDownloadStorageMessage } from '~/lib/message';
+import type { StorageDownloadMessage } from '~/lib/message';
 import {
   baseURL,
   hostnames,
@@ -545,8 +545,8 @@ const DevTools: React.FC = () => {
 
 const DownloadStorage: React.FC = () => {
   const onClick = async () => {
-    const message: SettingsDownloadStorageMessage = {
-      type: 'Settings/DownloadStorage',
+    const message: StorageDownloadMessage = {
+      type: 'Storage/Download',
     };
     browser.runtime.sendMessage(message);
   };

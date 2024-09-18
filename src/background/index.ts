@@ -6,7 +6,7 @@ import {
   forwardMessageToOffscreen,
   isExpandTCoURLRequestMessage,
   isGetURLTitleRequestMessage,
-  isSettingsDownloadStorageMessage,
+  isStorageDownloadMessage,
   respondToExpandTCoURLRequest,
   respondToGetURLTitleRequest,
 } from '~/lib/message';
@@ -41,7 +41,7 @@ const onMessageListener = async (
   if (
     !isExpandTCoURLRequestMessage(message) &&
     !isGetURLTitleRequestMessage(message) &&
-    !isSettingsDownloadStorageMessage(message)
+    !isStorageDownloadMessage(message)
   ) {
     logger.debug('skip message', message);
     return;
@@ -58,7 +58,7 @@ const onMessageListener = async (
       return process.env.TARGET_BROWSER !== 'chrome' ?
           await respondToGetURLTitleRequest(message.url, logger)
         : await forwardMessageToOffscreen(offscreen, message, logger);
-    case 'Settings/DownloadStorage':
+    case 'Storage/Download':
       await downloadStorage();
       break;
     default: {
