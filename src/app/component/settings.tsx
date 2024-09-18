@@ -545,10 +545,20 @@ const DevTools: React.FC = () => {
 
 const DownloadStorage: React.FC = () => {
   const onClick = async () => {
+    // create object URL
+    const data = await browser.storage.local.get();
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: 'application/json',
+    });
+    const objectURL = await URL.createObjectURL(blob);
+    // send message
     const message: StorageDownloadMessage = {
       type: 'Storage/Download',
+      objectURL,
     };
-    browser.runtime.sendMessage(message);
+    await browser.runtime.sendMessage(message);
+    // revoke object URL
+    URL.revokeObjectURL(objectURL);
   };
   return (
     <SettingsItem
