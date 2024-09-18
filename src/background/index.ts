@@ -6,7 +6,7 @@ import {
   forwardMessageToOffscreen,
   isExpandTCoURLRequestMessage,
   isGetURLTitleRequestMessage,
-  isSettingsDownloadStorageMessage,
+  isStorageDownloadMessage,
   respondToExpandTCoURLRequest,
   respondToGetURLTitleRequest,
 } from '~/lib/message';
@@ -41,7 +41,7 @@ const onMessageListener = async (
   if (
     !isExpandTCoURLRequestMessage(message) &&
     !isGetURLTitleRequestMessage(message) &&
-    !isSettingsDownloadStorageMessage(message)
+    !isStorageDownloadMessage(message)
   ) {
     logger.debug('skip message', message);
     return;
@@ -58,9 +58,15 @@ const onMessageListener = async (
       return process.env.TARGET_BROWSER !== 'chrome' ?
           await respondToGetURLTitleRequest(message.url, logger)
         : await forwardMessageToOffscreen(offscreen, message, logger);
-    case 'Settings/DownloadStorage':
-      await downloadStorage();
-      break;
+    case 'Storage/Download':
+      if (process.env.NODE_ENV === 'development') {
+        await browser.downloads.download({
+          url: message.objectURL,
+          filename: 'scrapbox-copy-tweets.json',
+          saveAs: true,
+        });
+      }
+      return;
     default: {
       const _: never = message;
       return _;
@@ -92,18 +98,3 @@ browser.action.onClicked.addListener(
 
 // offscreen (for chrome)
 const offscreen = setupOffscreen(logger);
-
-// Download storage (in development)
-const downloadStorage = async (): Promise<void> => {
-  if (process.env.NODE_ENV === 'development') {
-    const data = await browser.storage.local.get();
-    const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: 'application/json',
-    });
-    browser.downloads.download({
-      url: await URL.createObjectURL(blob),
-      filename: 'scrapbox-copy-tweets.json',
-      saveAs: true,
-    });
-  }
-};
