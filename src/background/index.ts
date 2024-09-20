@@ -59,13 +59,11 @@ const onMessageListener = async (
           await respondToGetURLTitleRequest(message.url, logger)
         : await forwardMessageToOffscreen(offscreen, message, logger);
     case 'Storage/Download':
-      if (process.env.NODE_ENV === 'development') {
-        await browser.downloads.download({
-          url: message.objectURL,
-          filename: 'scrapbox-copy-tweets.json',
-          saveAs: true,
-        });
-      }
+      await browser.downloads.download({
+        url: message.objectURL,
+        filename: 'scrapbox-copy-tweets.json',
+        saveAs: true,
+      });
       return;
     default: {
       const _: never = message;
