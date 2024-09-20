@@ -58,7 +58,7 @@ export const Settings: React.FC = () => {
         <UpdateNotification />
         <SettingsEditor />
         <TemplateEditor />
-        {process.env.NODE_ENV === 'development' && <DevTools />}
+        <Storage />
       </div>
       <Commands />
     </>
@@ -534,11 +534,33 @@ const TemplateQuote: React.FC = () => {
   );
 };
 
-const DevTools: React.FC = () => {
+const Storage: React.FC = () => {
+  const ref = React.useRef(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const Icon = isOpen ? ChevronUpIcon : ChevronDownIcon;
   return (
     <>
-      <h2>Dev Tools</h2>
-      <DownloadStorage />
+      <div className="settings-editor-headerline">
+        <button
+          className="button settings-editor-header-1"
+          onClick={() => setIsOpen((open) => !open)}>
+          Storage
+          <Icon className="expand-icon" width={undefined} height={undefined} />
+        </button>
+      </div>
+      <Collapse
+        nodeRef={ref}
+        in={isOpen}
+        duration={300}
+        mountOnEnter
+        unmountOnExit
+        target={
+          <div ref={ref}>
+            <DownloadStorage />
+          </div>
+        }
+      />
     </>
   );
 };

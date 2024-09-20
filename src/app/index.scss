@@ -514,6 +514,10 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 .settings-editor-headerline {
   display: flex;
   padding: map.get($bs-spacers, 1) map.get($bs-spacers, 3);
+
+  &:not(:has(> .settings-telomere)) {
+    padding-left: map.get($bs-spacers, 3) + 1rem;
+  }
 }
 
 @each $header, $font-size in $header-font-sizes {
