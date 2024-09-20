@@ -583,7 +583,7 @@ const DownloadStorage: React.FC = () => {
     URL.revokeObjectURL(objectURL);
   };
   return (
-    <SettingsItem
+    <StorageItem
       label="Download Storage"
       form={
         <button
@@ -840,5 +840,27 @@ const Placeholders: React.FC<PlaceholdersProps> = ({ fields, onSelect }) => {
         </div>
       )}
     </>
+  );
+};
+
+type StorageItemProps = {
+  label: string;
+  form: React.ReactElement;
+  description?: React.ReactElement;
+};
+
+const StorageItem: React.FC<StorageItemProps> = ({
+  label,
+  form,
+  description,
+}) => {
+  return (
+    <div className="settings-item">
+      <div className="settings-item-input">
+        <div className="settings-label">{label}</div>
+        <div className="settings-form">{form}</div>
+      </div>
+      {description !== undefined && description}
+    </div>
   );
 };
