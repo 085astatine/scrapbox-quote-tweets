@@ -15,6 +15,7 @@ import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
 import DownloadIcon from '~/icon/bootstrap/download.svg';
 import CloseIcon from '~/icon/bootstrap/x.svg';
+import DeleteIcon from '~/icon/google-fonts/delete-forever.svg';
 import ScrapboxIcon from '~/icon/scrapbox.svg';
 import TwitterIcon from '~/icon/twitter.svg';
 import { Collapse } from '~/lib/component/transition';
@@ -27,12 +28,14 @@ import {
   scrapboxIcons,
   twitterIcons,
 } from '~/lib/settings';
+import { clearStorage } from '~/lib/storage';
 import { saveSettings } from '~/lib/storage/settings';
 import { saveTweetTemplate } from '~/lib/storage/tweet-template';
 import {
   type TextTemplateKey,
   textTemplateFields,
 } from '~/lib/tweet/tweet-template';
+import { trimGoogleFontsIcon } from '~/lib/utility';
 import { type State, actions } from '../store';
 import {
   type EditStatus,
@@ -58,7 +61,7 @@ export const Settings: React.FC = () => {
         <UpdateNotification />
         <SettingsEditor />
         <TemplateEditor />
-        {process.env.NODE_ENV === 'development' && <DevTools />}
+        <Storage />
       </div>
       <Commands />
     </>
@@ -534,11 +537,34 @@ const TemplateQuote: React.FC = () => {
   );
 };
 
-const DevTools: React.FC = () => {
+const Storage: React.FC = () => {
+  const ref = React.useRef(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const Icon = isOpen ? ChevronUpIcon : ChevronDownIcon;
   return (
     <>
-      <h2>Dev Tools</h2>
-      <DownloadStorage />
+      <div className="settings-editor-headerline">
+        <button
+          className="button settings-editor-header-1"
+          onClick={() => setIsOpen((open) => !open)}>
+          Storage
+          <Icon className="expand-icon" width={undefined} height={undefined} />
+        </button>
+      </div>
+      <Collapse
+        nodeRef={ref}
+        in={isOpen}
+        duration={300}
+        mountOnEnter
+        unmountOnExit
+        target={
+          <div ref={ref}>
+            <DownloadStorage />
+            <ClearStorage />
+          </div>
+        }
+      />
     </>
   );
 };
@@ -561,19 +587,48 @@ const DownloadStorage: React.FC = () => {
     URL.revokeObjectURL(objectURL);
   };
   return (
-    <SettingsItem
+    <StorageItem
       label="Download Storage"
       form={
-        <button
-          className="button button-primary download-button"
-          onClick={onClick}>
-          <DownloadIcon
-            className="download-icon"
-            width={undefined}
-            height={undefined}
-          />
+        <button className="button button-primary icon-button" onClick={onClick}>
+          <DownloadIcon className="icon" width={undefined} height={undefined} />
           <span>Download Storage</span>
         </button>
+      }
+    />
+  );
+};
+
+const ClearStorage: React.FC = () => {
+  const [isEnabled, setIsEnabled] = React.useState(false);
+
+  const onClick = async () => {
+    await clearStorage();
+    setIsEnabled(false);
+  };
+  return (
+    <StorageItem
+      label="Clear Storage"
+      form={
+        <div className="clear-buttons">
+          <Checkbox
+            checked={isEnabled}
+            onClick={() => setIsEnabled((isEnabled) => !isEnabled)}
+          />
+          <button
+            className="button button-primary icon-button"
+            disabled={!isEnabled}
+            onClick={onClick}>
+            <DeleteIcon
+              className="icon"
+              viewBox={trimGoogleFontsIcon(200)}
+              width={undefined}
+              height={undefined}
+              fill="currentColor"
+            />
+            <span> Clear Storage</span>
+          </button>
+        </div>
       }
     />
   );
@@ -818,5 +873,27 @@ const Placeholders: React.FC<PlaceholdersProps> = ({ fields, onSelect }) => {
         </div>
       )}
     </>
+  );
+};
+
+type StorageItemProps = {
+  label: string;
+  form: React.ReactElement;
+  description?: React.ReactElement;
+};
+
+const StorageItem: React.FC<StorageItemProps> = ({
+  label,
+  form,
+  description,
+}) => {
+  return (
+    <div className="settings-item">
+      <div className="settings-item-input">
+        <div className="settings-label">{label}</div>
+        <div className="settings-form">{form}</div>
+      </div>
+      {description !== undefined && description}
+    </div>
   );
 };
