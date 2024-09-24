@@ -15,6 +15,7 @@ import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
 import DownloadIcon from '~/icon/bootstrap/download.svg';
 import CloseIcon from '~/icon/bootstrap/x.svg';
+import DeleteIcon from '~/icon/google-fonts/delete-forever.svg';
 import ScrapboxIcon from '~/icon/scrapbox.svg';
 import TwitterIcon from '~/icon/twitter.svg';
 import { Collapse } from '~/lib/component/transition';
@@ -27,12 +28,14 @@ import {
   scrapboxIcons,
   twitterIcons,
 } from '~/lib/settings';
+import { clearStorage } from '~/lib/storage';
 import { saveSettings } from '~/lib/storage/settings';
 import { saveTweetTemplate } from '~/lib/storage/tweet-template';
 import {
   type TextTemplateKey,
   textTemplateFields,
 } from '~/lib/tweet/tweet-template';
+import { trimGoogleFontsIcon } from '~/lib/utility';
 import { type State, actions } from '../store';
 import {
   type EditStatus,
@@ -558,6 +561,7 @@ const Storage: React.FC = () => {
         target={
           <div ref={ref}>
             <DownloadStorage />
+            <ClearStorage />
           </div>
         }
       />
@@ -586,16 +590,45 @@ const DownloadStorage: React.FC = () => {
     <StorageItem
       label="Download Storage"
       form={
-        <button
-          className="button button-primary download-button"
-          onClick={onClick}>
-          <DownloadIcon
-            className="download-icon"
-            width={undefined}
-            height={undefined}
-          />
+        <button className="button button-primary icon-button" onClick={onClick}>
+          <DownloadIcon className="icon" width={undefined} height={undefined} />
           <span>Download Storage</span>
         </button>
+      }
+    />
+  );
+};
+
+const ClearStorage: React.FC = () => {
+  const [isEnabled, setIsEnabled] = React.useState(false);
+
+  const onClick = async () => {
+    await clearStorage();
+    setIsEnabled(false);
+  };
+  return (
+    <StorageItem
+      label="Clear Storage"
+      form={
+        <div className="clear-buttons">
+          <Checkbox
+            checked={isEnabled}
+            onClick={() => setIsEnabled((isEnabled) => !isEnabled)}
+          />
+          <button
+            className="button button-primary icon-button"
+            disabled={!isEnabled}
+            onClick={onClick}>
+            <DeleteIcon
+              className="icon"
+              viewBox={trimGoogleFontsIcon(200)}
+              width={undefined}
+              height={undefined}
+              fill="currentColor"
+            />
+            <span> Clear Storage</span>
+          </button>
+        </div>
       }
     />
   );

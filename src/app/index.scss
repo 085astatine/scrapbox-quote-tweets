@@ -49,6 +49,10 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   transition-duration: 0.15s;
   transition-property: box-shadow, outline;
 
+  &:disabled {
+    opacity: 0.65;
+  }
+
   &:is(:focus, :hover) {
     box-shadow: 0 0 0 var(--#{$bs-prefix}focus-ring-width)
       rgba(
@@ -104,6 +108,17 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
         var(--#{$bs-prefix}secondary-rgb),
         var(--#{$bs-prefix}focus-ring-opacity)
       );
+  }
+}
+
+.icon-button {
+  display: flex;
+  column-gap: map.get($bs-spacers, 1);
+  align-items: center;
+
+  .icon {
+    width: 1.5em;
+    height: 1.5em;
   }
 }
 
@@ -686,13 +701,8 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   }
 }
 
-.download-button {
+.clear-buttons {
   display: flex;
-  column-gap: map.get($bs-spacers, 1);
+  gap: map.get($bs-spacers, 2);
   align-items: center;
-
-  .download-icon {
-    width: 1.5em;
-    height: 1.5em;
-  }
 }
