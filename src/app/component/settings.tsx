@@ -31,11 +31,14 @@ import {
 import { clearStorage } from '~/lib/storage';
 import { saveSettings } from '~/lib/storage/settings';
 import { saveTweetTemplate } from '~/lib/storage/tweet-template';
+import type { Storage as StorageJSON } from '~/lib/storage/types';
+import { validateStorage } from '~/lib/storage/validate';
 import {
   type TextTemplateKey,
   textTemplateFields,
 } from '~/lib/tweet/tweet-template';
 import { trimGoogleFontsIcon } from '~/lib/utility';
+import { JSONSchemaValidationError } from '~/validate-json/error';
 import { type State, actions } from '../store';
 import {
   type EditStatus,
@@ -562,6 +565,7 @@ const Storage: React.FC = () => {
           <div ref={ref}>
             <DownloadStorage />
             <ClearStorage />
+            <LoadStorage />
           </div>
         }
       />
@@ -631,6 +635,66 @@ const ClearStorage: React.FC = () => {
         </div>
       }
     />
+  );
+};
+
+const LoadStorage: React.FC = () => {
+  const [file, setFile] = React.useState<File | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const isMultilineError = error !== null && error.split('\n').length > 1;
+
+  const validateFile = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    const file = event.target.files?.[0];
+    if (file === undefined) {
+      setFile(null);
+      return;
+    }
+    setFile(file);
+    // validate selected file
+    readFile(file)
+      .then((text) => parseStorageJSON(text))
+      .then(() => setError(null))
+      .catch((error: unknown) => {
+        if (
+          error instanceof LoadStorageError ||
+          error instanceof JSONSchemaValidationError
+        ) {
+          setError(error.message);
+        } else {
+          setError(`${error}`);
+        }
+      });
+  };
+  return (
+    <>
+      <StorageItem
+        label="Load Storage"
+        form={
+          <input
+            className="form-control"
+            type="file"
+            accept=".json"
+            onChange={validateFile}
+          />
+        }
+      />
+      {file !== null && error !== null && (
+        <>
+          <div className="load-storage-error-header">
+            {`Failed to Load "${file.name}"`}
+          </div>
+          <pre
+            className={classNames('load-storage-error', {
+              'load-storage-multiline-error': isMultilineError,
+            })}>
+            {error}
+          </pre>
+        </>
+      )}
+    </>
   );
 };
 
@@ -896,4 +960,48 @@ const StorageItem: React.FC<StorageItemProps> = ({
       {description !== undefined && description}
     </div>
   );
+};
+
+// file
+class LoadStorageError extends Error {
+  constructor(message: string) {
+    super(message);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, LoadStorageError);
+    }
+    this.name = 'LoadStorageError';
+  }
+}
+
+const readFile = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result);
+      } else {
+        reject(new LoadStorageError('Failed to read file as text'));
+      }
+    };
+    reader.onerror = () => {
+      reject(new LoadStorageError('Failed to read file'));
+    };
+    reader.readAsText(file);
+  });
+};
+
+const parseStorageJSON = (text: string): StorageJSON => {
+  try {
+    // parse as JSON
+    const data = JSON.parse(text);
+    // JSONSchema validation
+    validateStorage(data);
+    return data;
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new LoadStorageError('Failed to parse file as JSON');
+    } else {
+      throw error;
+    }
+  }
 };
