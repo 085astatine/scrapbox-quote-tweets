@@ -708,7 +708,7 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 }
 
 .load-storage-error-header {
-  margin-left: map.get($bs-spacers, 3) + map.get($bs-spacers, 3) + 1rem;
+  margin-left: map.get($bs-spacers, 3) + 1rem;
   font-weight: bold;
   color: var(--#{$bs-prefix}red);
 }
@@ -717,7 +717,7 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   margin-top: map.get($bs-spacers, 1);
   margin-right: map.get($bs-spacers, 3);
   margin-bottom: map.get($bs-spacers, 1);
-  margin-left: map.get($bs-spacers, 3) + map.get($bs-spacers, 3) + 2rem;
+  margin-left: map.get($bs-spacers, 3) + 2rem;
   font-size: 0.875rem;
   line-height: 1;
   color: var(--#{$bs-prefix}red);

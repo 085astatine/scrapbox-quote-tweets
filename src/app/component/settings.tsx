@@ -639,6 +639,10 @@ const ClearStorage: React.FC = () => {
 };
 
 const LoadStorage: React.FC = () => {
+  const errorMessageRef = React.useRef(null);
+  const [state, setState] = React.useState<
+    'not-selected' | 'invalid' | 'valid'
+  >('not-selected');
   const [file, setFile] = React.useState<File | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -649,15 +653,16 @@ const LoadStorage: React.FC = () => {
   ): Promise<void> => {
     const file = event.target.files?.[0];
     if (file === undefined) {
-      setFile(null);
+      setState('not-selected');
       return;
     }
     setFile(file);
     // validate selected file
     readFile(file)
       .then((text) => parseStorageJSON(text))
-      .then(() => setError(null))
+      .then(() => setState('valid'))
       .catch((error: unknown) => {
+        setState('invalid');
         if (
           error instanceof LoadStorageError ||
           error instanceof JSONSchemaValidationError
@@ -669,32 +674,40 @@ const LoadStorage: React.FC = () => {
       });
   };
   return (
-    <>
-      <StorageItem
-        label="Load Storage"
-        form={
+    <div className="settings-item">
+      <div className="settings-item-input">
+        <div className="settings-label">Load Storage</div>
+        <div className="settings-form">
           <input
             className="form-control"
             type="file"
             accept=".json"
             onChange={validateFile}
           />
-        }
-      />
-      {file !== null && error !== null && (
-        <>
-          <div className="load-storage-error-header">
-            {`Failed to Load "${file.name}"`}
+        </div>
+      </div>
+      <Collapse
+        nodeRef={errorMessageRef}
+        in={state === 'invalid'}
+        duration={300}
+        mountOnEnter
+        unmountOnExit
+        target={
+          <div ref={errorMessageRef}>
+            <div className="load-storage-error-header">
+              {`Failed to Load "${file?.name}"`}
+            </div>
+            <pre
+              className={classNames('load-storage-error', {
+                'load-storage-multiline-error': isMultilineError,
+              })}>
+              {error}
+            </pre>
           </div>
-          <pre
-            className={classNames('load-storage-error', {
-              'load-storage-multiline-error': isMultilineError,
-            })}>
-            {error}
-          </pre>
-        </>
-      )}
-    </>
+        }
+        onExited={() => setError(null)}
+      />
+    </div>
   );
 };
 
