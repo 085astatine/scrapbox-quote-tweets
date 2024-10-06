@@ -675,7 +675,7 @@ const LoadStorage: React.FC = () => {
   };
   return (
     <div className="settings-item">
-      <div className="settings-item-input">
+      <div className="settings-item-row">
         <div className="settings-label">Load Storage</div>
         <div className="settings-form">
           <input
@@ -693,7 +693,7 @@ const LoadStorage: React.FC = () => {
         mountOnEnter
         unmountOnExit
         target={
-          <div ref={errorMessageRef}>
+          <div ref={errorMessageRef} className="settings-item-row">
             <div className="load-storage-error-header">
               {`Failed to Load "${file?.name}"`}
             </div>
@@ -830,17 +830,21 @@ const SettingsItem: React.FC<SettingsItemProps> = ({
 }) => {
   return (
     <div className="settings-item">
-      <div className="settings-item-input">
+      <div className="settings-item-row">
         <Telomere status={editStatus(isUpdated, errors)} />
         <div className="settings-label">{label}</div>
         <div className="settings-form">{form}</div>
       </div>
-      {description !== undefined && description}
+      {description !== undefined && (
+        <div className="settings-item-row">{description}</div>
+      )}
       {errors !== undefined && errors.length > 0 && (
-        <div className="settings-item-errors">
-          {errors.map((error, index) => (
-            <div key={index}>{error}</div>
-          ))}
+        <div className="settings-item-row">
+          <div className="settings-item-errors">
+            {errors.map((error, index) => (
+              <div key={index}>{error}</div>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -873,23 +877,27 @@ const TextTemplate: React.FC<TextTemplateProps> = ({ type, name }) => {
   };
   return (
     <div className="settings-item">
-      <div className="settings-item-input">
+      <div className="settings-item-row">
         <Telomere status={editStatus(isUpdated, error)} />
         <div className="settings-label">{name}</div>
         <Placeholders fields={fields} onSelect={addPlaceholder} />
       </div>
-      <textarea
-        className="text-template-input"
-        value={value}
-        onChange={onChange}
-        wrap="off"
-        rows={value.split('\n').length}
-      />
+      <div className="settings-item-row">
+        <textarea
+          className="text-template-input"
+          value={value}
+          onChange={onChange}
+          wrap="off"
+          rows={value.split('\n').length}
+        />
+      </div>
       {error !== undefined && error.length > 0 && (
-        <div className="settings-item-errors">
-          {error.map((text, index) => (
-            <div key={index}>{text}</div>
-          ))}
+        <div className="settings-item-row">
+          <div className="settings-item-errors">
+            {error.map((text, index) => (
+              <div key={index}>{text}</div>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -966,11 +974,13 @@ const StorageItem: React.FC<StorageItemProps> = ({
 }) => {
   return (
     <div className="settings-item">
-      <div className="settings-item-input">
+      <div className="settings-item-row">
         <div className="settings-label">{label}</div>
         <div className="settings-form">{form}</div>
       </div>
-      {description !== undefined && description}
+      {description !== undefined && (
+        <div className="settings-item-row">{description}</div>
+      )}
     </div>
   );
 };

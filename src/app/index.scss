@@ -551,13 +551,10 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 }
 
 .settings-item {
-  display: flex;
-  flex-direction: column;
-  column-gap: map.get($bs-spacers, 1);
   padding: map.get($bs-spacers, 1) map.get($bs-spacers, 3);
 }
 
-.settings-item-input {
+.settings-item-row {
   display: flex;
   flex-wrap: wrap;
 
@@ -584,7 +581,6 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   display: flex;
   align-self: center;
   margin-right: map.get($bs-spacers, 3);
-  margin-left: map.get($bs-spacers, 3);
   font-weight: bold;
 }
 
@@ -597,11 +593,11 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 }
 
 .settings-item-description {
-  padding-left: map.get($bs-spacers, 5);
+  padding-left: map.get($bs-spacers, 3);
 }
 
 .settings-item-errors {
-  padding-left: map.get($bs-spacers, 5);
+  padding-left: map.get($bs-spacers, 3);
   color: var(--#{$bs-prefix}form-invalid-color);
 }
 
@@ -633,7 +629,8 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 }
 
 .text-template-input {
-  margin: map.get($bs-spacers, 1) 0 0 map.get($bs-spacers, 3);
+  width: 100%;
+  margin: 0;
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
@@ -708,19 +705,15 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 }
 
 .load-storage-error-header {
-  margin-left: map.get($bs-spacers, 3) + 1rem;
   font-weight: bold;
-  color: var(--#{$bs-prefix}red);
+  color: var(--#{$bs-prefix}form-invalid-color);
 }
 
 .load-storage-error {
-  margin-top: map.get($bs-spacers, 1);
-  margin-right: map.get($bs-spacers, 3);
-  margin-bottom: map.get($bs-spacers, 1);
-  margin-left: map.get($bs-spacers, 3) + 2rem;
+  margin-left: map.get($bs-spacers, 3);
   font-size: 0.875rem;
   line-height: 1;
-  color: var(--#{$bs-prefix}red);
+  color: var(--#{$bs-prefix}form-invalid-color);
 }
 
 .load-storage-multiline-error {
