@@ -14,6 +14,7 @@ import ArrowRightIcon from '~/icon/bootstrap/arrow-right.svg';
 import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
 import DownloadIcon from '~/icon/bootstrap/download.svg';
+import UploadIcon from '~/icon/bootstrap/upload.svg';
 import CloseIcon from '~/icon/bootstrap/x.svg';
 import DeleteIcon from '~/icon/google-fonts/delete-forever.svg';
 import ScrapboxIcon from '~/icon/scrapbox.svg';
@@ -646,6 +647,11 @@ const LoadStorage: React.FC = () => {
   const [file, setFile] = React.useState<File | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
+  const stateMessage: Readonly<Record<typeof state, string>> = {
+    'not-selected': 'Select JSON file',
+    invalid: `Unable to load "${file?.name}"`,
+    valid: `Enable to load "${file?.name}"`,
+  };
   const isMultilineError = error !== null && error.split('\n').length > 1;
 
   const validateFile = async (
@@ -658,9 +664,29 @@ const LoadStorage: React.FC = () => {
     }
     setFile(file);
     // validate selected file
-    readFile(file)
+    loadStorageJSON(file);
+  };
+  const loadFile = async (): Promise<void> => {
+    if (file === null || state !== 'valid') {
+      return;
+    }
+    // load JSON File
+    const data = await loadStorageJSON(file);
+    if (data === null) {
+      return;
+    }
+    // clear storage
+    await browser.storage.local.clear();
+    // save to storage
+    await browser.storage.local.set(data);
+  };
+  const loadStorageJSON = async (file: File): Promise<StorageJSON | null> => {
+    return await readFile(file)
       .then((text) => parseStorageJSON(text))
-      .then(() => setState('valid'))
+      .then((data) => {
+        setState('valid');
+        return data;
+      })
       .catch((error: unknown) => {
         setState('invalid');
         if (
@@ -671,8 +697,10 @@ const LoadStorage: React.FC = () => {
         } else {
           setError(`${error}`);
         }
+        return null;
       });
   };
+
   return (
     <div className="settings-item">
       <div className="settings-item-row">
@@ -686,6 +714,24 @@ const LoadStorage: React.FC = () => {
           />
         </div>
       </div>
+      <div className="settings-item-row">
+        <div
+          className={classNames('load-storage-message', {
+            'load-storage-valid': state === 'valid',
+            'load-storage-invalid': state === 'invalid',
+          })}>
+          {stateMessage[state]}
+        </div>
+        <div className="settings-form">
+          <button
+            className="btn btn-primary icon-button"
+            disabled={state !== 'valid'}
+            onClick={loadFile}>
+            <UploadIcon className="icon" width={undefined} height={undefined} />
+            Load
+          </button>
+        </div>
+      </div>
       <Collapse
         nodeRef={errorMessageRef}
         in={state === 'invalid'}
@@ -694,9 +740,6 @@ const LoadStorage: React.FC = () => {
         unmountOnExit
         target={
           <div ref={errorMessageRef} className="settings-item-row">
-            <div className="load-storage-error-header">
-              {`Failed to Load "${file?.name}"`}
-            </div>
             <pre
               className={classNames('load-storage-error', {
                 'load-storage-multiline-error': isMultilineError,

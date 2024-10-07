@@ -704,8 +704,16 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   align-items: center;
 }
 
-.load-storage-error-header {
-  font-weight: bold;
+.load-storage-message {
+  align-self: center;
+  margin-left: map.get($bs-spacers, 3);
+}
+
+.load-storage-valid {
+  color: var(--#{$bs-prefix}form-valid-color);
+}
+
+.load-storage-invalid {
   color: var(--#{$bs-prefix}form-invalid-color);
 }
 
