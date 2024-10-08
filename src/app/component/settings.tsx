@@ -14,6 +14,7 @@ import ArrowRightIcon from '~/icon/bootstrap/arrow-right.svg';
 import ChevronDownIcon from '~/icon/bootstrap/chevron-down.svg';
 import ChevronUpIcon from '~/icon/bootstrap/chevron-up.svg';
 import DownloadIcon from '~/icon/bootstrap/download.svg';
+import UploadIcon from '~/icon/bootstrap/upload.svg';
 import CloseIcon from '~/icon/bootstrap/x.svg';
 import DeleteIcon from '~/icon/google-fonts/delete-forever.svg';
 import ScrapboxIcon from '~/icon/scrapbox.svg';
@@ -31,11 +32,14 @@ import {
 import { clearStorage } from '~/lib/storage';
 import { saveSettings } from '~/lib/storage/settings';
 import { saveTweetTemplate } from '~/lib/storage/tweet-template';
+import type { Storage as StorageJSON } from '~/lib/storage/types';
+import { validateStorage } from '~/lib/storage/validate';
 import {
   type TextTemplateKey,
   textTemplateFields,
 } from '~/lib/tweet/tweet-template';
 import { trimGoogleFontsIcon } from '~/lib/utility';
+import { JSONSchemaValidationError } from '~/validate-json/error';
 import { type State, actions } from '../store';
 import {
   type EditStatus,
@@ -562,6 +566,7 @@ const Storage: React.FC = () => {
           <div ref={ref}>
             <DownloadStorage />
             <ClearStorage />
+            <LoadStorage />
           </div>
         }
       />
@@ -631,6 +636,121 @@ const ClearStorage: React.FC = () => {
         </div>
       }
     />
+  );
+};
+
+const LoadStorage: React.FC = () => {
+  const errorMessageRef = React.useRef(null);
+  const [state, setState] = React.useState<
+    'not-selected' | 'invalid' | 'valid'
+  >('not-selected');
+  const [file, setFile] = React.useState<File | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const stateMessage: Readonly<Record<typeof state, string>> = {
+    'not-selected': 'Select JSON file',
+    invalid: `Unable to load "${file?.name}"`,
+    valid: `Enable to load "${file?.name}"`,
+  };
+  const isMultilineError = error !== null && error.split('\n').length > 1;
+
+  const validateFile = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    const file = event.target.files?.[0];
+    if (file === undefined) {
+      setState('not-selected');
+      return;
+    }
+    setFile(file);
+    // validate selected file
+    loadStorageJSON(file);
+  };
+  const loadFile = async (): Promise<void> => {
+    if (file === null || state !== 'valid') {
+      return;
+    }
+    // load JSON File
+    const data = await loadStorageJSON(file);
+    if (data === null) {
+      return;
+    }
+    // clear storage
+    await browser.storage.local.clear();
+    // save to storage
+    await browser.storage.local.set(data);
+  };
+  const loadStorageJSON = async (file: File): Promise<StorageJSON | null> => {
+    return await readFile(file)
+      .then((text) => parseStorageJSON(text))
+      .then((data) => {
+        setState('valid');
+        return data;
+      })
+      .catch((error: unknown) => {
+        setState('invalid');
+        if (
+          error instanceof LoadStorageError ||
+          error instanceof JSONSchemaValidationError
+        ) {
+          setError(error.message);
+        } else {
+          setError(`${error}`);
+        }
+        return null;
+      });
+  };
+
+  return (
+    <div className="settings-item">
+      <div className="settings-item-row">
+        <div className="settings-label">Load Storage</div>
+        <div className="settings-form">
+          <input
+            className="form-control"
+            type="file"
+            accept=".json"
+            onChange={validateFile}
+          />
+        </div>
+      </div>
+      <div className="settings-item-row">
+        <div
+          className={classNames('load-storage-message', {
+            'load-storage-valid': state === 'valid',
+            'load-storage-invalid': state === 'invalid',
+          })}>
+          {stateMessage[state]}
+        </div>
+        <div className="settings-form">
+          <button
+            className="btn btn-primary icon-button"
+            disabled={state !== 'valid'}
+            onClick={loadFile}>
+            <UploadIcon className="icon" width={undefined} height={undefined} />
+            Load
+          </button>
+        </div>
+      </div>
+      <Collapse
+        nodeRef={errorMessageRef}
+        in={state === 'invalid'}
+        duration={300}
+        mountOnEnter
+        unmountOnExit
+        target={
+          <div ref={errorMessageRef} className="settings-item-row">
+            <pre
+              className={classNames('load-storage-error', {
+                'load-storage-multiline-error': isMultilineError,
+              })}>
+              {error}
+            </pre>
+          </div>
+        }
+        onExited={() => setError(null)}
+      />
+    </div>
   );
 };
 
@@ -753,17 +873,21 @@ const SettingsItem: React.FC<SettingsItemProps> = ({
 }) => {
   return (
     <div className="settings-item">
-      <div className="settings-item-input">
+      <div className="settings-item-row">
         <Telomere status={editStatus(isUpdated, errors)} />
         <div className="settings-label">{label}</div>
         <div className="settings-form">{form}</div>
       </div>
-      {description !== undefined && description}
+      {description !== undefined && (
+        <div className="settings-item-row">{description}</div>
+      )}
       {errors !== undefined && errors.length > 0 && (
-        <div className="settings-item-errors">
-          {errors.map((error, index) => (
-            <div key={index}>{error}</div>
-          ))}
+        <div className="settings-item-row">
+          <div className="settings-item-errors">
+            {errors.map((error, index) => (
+              <div key={index}>{error}</div>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -796,23 +920,27 @@ const TextTemplate: React.FC<TextTemplateProps> = ({ type, name }) => {
   };
   return (
     <div className="settings-item">
-      <div className="settings-item-input">
+      <div className="settings-item-row">
         <Telomere status={editStatus(isUpdated, error)} />
         <div className="settings-label">{name}</div>
         <Placeholders fields={fields} onSelect={addPlaceholder} />
       </div>
-      <textarea
-        className="text-template-input"
-        value={value}
-        onChange={onChange}
-        wrap="off"
-        rows={value.split('\n').length}
-      />
+      <div className="settings-item-row">
+        <textarea
+          className="text-template-input"
+          value={value}
+          onChange={onChange}
+          wrap="off"
+          rows={value.split('\n').length}
+        />
+      </div>
       {error !== undefined && error.length > 0 && (
-        <div className="settings-item-errors">
-          {error.map((text, index) => (
-            <div key={index}>{text}</div>
-          ))}
+        <div className="settings-item-row">
+          <div className="settings-item-errors">
+            {error.map((text, index) => (
+              <div key={index}>{text}</div>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -889,11 +1017,57 @@ const StorageItem: React.FC<StorageItemProps> = ({
 }) => {
   return (
     <div className="settings-item">
-      <div className="settings-item-input">
+      <div className="settings-item-row">
         <div className="settings-label">{label}</div>
         <div className="settings-form">{form}</div>
       </div>
-      {description !== undefined && description}
+      {description !== undefined && (
+        <div className="settings-item-row">{description}</div>
+      )}
     </div>
   );
+};
+
+// file
+class LoadStorageError extends Error {
+  constructor(message: string) {
+    super(message);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, LoadStorageError);
+    }
+    this.name = 'LoadStorageError';
+  }
+}
+
+const readFile = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result);
+      } else {
+        reject(new LoadStorageError('Failed to read file as text'));
+      }
+    };
+    reader.onerror = () => {
+      reject(new LoadStorageError('Failed to read file'));
+    };
+    reader.readAsText(file);
+  });
+};
+
+const parseStorageJSON = (text: string): StorageJSON => {
+  try {
+    // parse as JSON
+    const data = JSON.parse(text);
+    // JSONSchema validation
+    validateStorage(data);
+    return data;
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new LoadStorageError('Failed to parse file as JSON');
+    } else {
+      throw error;
+    }
+  }
 };

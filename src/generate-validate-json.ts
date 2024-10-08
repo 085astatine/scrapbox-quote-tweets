@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { deletedTweetIDsJSONSchema } from './jsonschema/deleted-tweet-id';
 import { settingsJSONSchema } from './jsonschema/settings';
+import { storageJSONSchema } from './jsonschema/storage';
 import {
   tweetIDsJSONSchema,
   tweetJSONSchema,
@@ -113,4 +114,11 @@ generate(
   'validate-trashbox-sort',
   'TrashboxSort',
   "import { TrashboxSort } from '~/lib/trashbox'",
+);
+// Storage
+generate(
+  storageJSONSchema,
+  'validate-storage',
+  'Storage',
+  "import { Storage } from '~/lib/storage/types'",
 );
