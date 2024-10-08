@@ -27,11 +27,11 @@ import type {
   TweetEntityURL,
 } from './types';
 
-export interface TweetToStringOption {
+export type TweetToStringOption = {
   hostname?: Hostname;
   timezone?: string;
   datetimeFormat?: string;
-}
+};
 
 const defaultOption = (): Required<TweetToStringOption> => {
   return {

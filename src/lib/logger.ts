@@ -2,12 +2,12 @@ import { isJSONable } from './is-jsonable';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
-export interface LoggerOption {
+export type LoggerOption = {
   level?: LogLevel;
   collapsed?: boolean;
   prefix?: string;
   time?: boolean;
-}
+};
 
 const defaultLoggerOption = (): Required<LoggerOption> => {
   return {
@@ -21,14 +21,14 @@ const defaultLoggerOption = (): Required<LoggerOption> => {
   };
 };
 
-export interface Logger {
+export type Logger = {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   debug(message: string, ...args: any[]): void;
   info(message: string, ...args: any[]): void;
   warn(message: string, ...args: any[]): void;
   error(message: string, ...args: any[]): void;
   /* eslint-enable @typescript-eslint/no-explicit-any */
-}
+};
 
 export const createLogger = (option?: LoggerOption) => {
   // destruct options

@@ -3,10 +3,10 @@ import { type Logger, logger as defaultLogger } from '~/lib/logger';
 import type { TweetID } from '~/lib/tweet/types';
 import { isPromotionTweet } from './tweet';
 
-export interface InsertReactRootResult {
+export type InsertReactRootResult = {
   tweetID: TweetID;
   reactRoot: Element;
-}
+};
 
 export const insertReactRoot = (
   node: Node,
@@ -52,10 +52,10 @@ const findTweetArticles = (node: Node): Element[] => {
   return getElements('.//article[@data-testid="tweet"]', node);
 };
 
-interface TweetLink {
+type TweetLink = {
   username: string;
   id: TweetID;
-}
+};
 
 const parseTweetLink = (url: URL): TweetLink | null => {
   // check origin

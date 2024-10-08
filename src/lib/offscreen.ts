@@ -1,11 +1,11 @@
 import browser from 'webextension-polyfill';
 import { type Logger, logger as defaultLogger } from './logger';
 
-export interface Offscreen {
+export type Offscreen = {
   exists: () => Promise<boolean>;
   open: () => Promise<void>;
   close: () => Promise<void>;
-}
+};
 
 let opening: Promise<void> | null = null;
 

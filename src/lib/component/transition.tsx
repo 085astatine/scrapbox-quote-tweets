@@ -10,13 +10,13 @@ type TransitionTarget =
       childProps?: Record<string, unknown>,
     ) => React.ReactNode);
 
-interface Timeout {
+type Timeout = {
   appear: number;
   enter: number;
   exit: number;
-}
+};
 
-interface TransitionProps<RefElement extends HTMLElement> {
+type TransitionProps<RefElement extends HTMLElement> = {
   nodeRef: React.RefObject<RefElement>;
   target: TransitionTarget;
   in?: boolean;
@@ -32,12 +32,12 @@ interface TransitionProps<RefElement extends HTMLElement> {
   onExit?: (node: RefElement) => void;
   onExiting?: (node: RefElement) => void;
   onExited?: (node: RefElement) => void;
-}
+};
 
 const defaultCollapseDuration = 300;
 
-export interface CollapseProps<RefElement extends HTMLElement>
-  extends TransitionProps<RefElement> {}
+export type CollapseProps<RefElement extends HTMLElement> =
+  TransitionProps<RefElement>;
 
 export const Collapse = <RefElement extends HTMLElement>({
   nodeRef: ref,
@@ -135,8 +135,8 @@ export const Collapse = <RefElement extends HTMLElement>({
 
 const defaultFadeDuration = 300;
 
-export interface FadeProps<RefElement extends HTMLElement>
-  extends TransitionProps<RefElement> {}
+export type FadeProps<RefElement extends HTMLElement> =
+  TransitionProps<RefElement>;
 
 export const Fade = <RefElement extends HTMLElement>({
   nodeRef: ref,

@@ -132,11 +132,11 @@ export const getElementSnapshots = (
   return getNodeSnapshots(xpath, parent).filter(isElement);
 };
 
-export interface MutationRecordInfo {
+export type MutationRecordInfo = {
   type: string;
   addedNodes: string[];
   removedNodes: string[];
-}
+};
 
 // mutation record
 export const mutationRecordInfo = (

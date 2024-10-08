@@ -29,15 +29,15 @@ import {
 
 type TooltipType = 'notification' | 'error';
 
-interface TooltipMessage {
+type TooltipMessage = {
   type: TooltipType;
   message: string;
   onClosed?: () => void;
-}
+};
 
-export interface ScrapboxButtonProps {
+export type ScrapboxButtonProps = {
   tweetID: TweetID;
-}
+};
 
 export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
   // logger
@@ -199,10 +199,10 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
   );
 };
 
-interface TooltipBodyProps {
+type TooltipBodyProps = {
   message: string;
   onClose?: () => void;
-}
+};
 
 const TooltipBody: React.FC<TooltipBodyProps> = ({
   message,
@@ -226,15 +226,15 @@ const TooltipBody: React.FC<TooltipBodyProps> = ({
   );
 };
 
-interface AddTweetSuccess {
+type AddTweetSuccess = {
   ok: true;
   tweet: Tweet;
-}
+};
 
-interface AddTweetFailure {
+type AddTweetFailure = {
   ok: false;
   error: string;
-}
+};
 
 type AddTweetResult = AddTweetSuccess | AddTweetFailure;
 
@@ -283,14 +283,14 @@ const addTweet = async (
     });
 };
 
-interface DeleteTweetSuccess {
+type DeleteTweetSuccess = {
   ok: true;
-}
+};
 
-interface DeleteTweetFailure {
+type DeleteTweetFailure = {
   ok: false;
   error: string;
-}
+};
 
 type DeleteTweetResult = DeleteTweetSuccess | DeleteTweetFailure;
 

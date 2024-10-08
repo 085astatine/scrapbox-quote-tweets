@@ -42,9 +42,9 @@ export const Tweets: React.FC = () => {
   );
 };
 
-interface TweetProps {
+type TweetProps = {
   tweet: TweetData;
-}
+};
 
 const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
   const selectIsSelected = React.useCallback(

@@ -22,7 +22,7 @@ export type TemplateErrors = Partial<Record<keyof TweetTemplate, string[]>>;
 
 export type UpdateTrigger = 'none' | 'self' | 'interrupt';
 
-export interface SettingsState {
+export type SettingsState = {
   currentSettings: Settings;
   editingSettings: Partial<Settings>;
   settingsErrors: SettingsErrors;
@@ -30,7 +30,7 @@ export interface SettingsState {
   editingTemplate: Partial<TweetTemplate>;
   templateErrors: TemplateErrors;
   updateTrigger: UpdateTrigger;
-}
+};
 
 const initialSettingsState = (): SettingsState => {
   return {

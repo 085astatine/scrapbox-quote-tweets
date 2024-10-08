@@ -41,15 +41,15 @@ export const defaultTweetTemplate = (): TweetTemplate => {
   };
 };
 
-export interface TemplateElementText {
+export type TemplateElementText = {
   type: 'text';
   text: string;
-}
+};
 
-export interface TemplateElementPlaceholder<Field extends string> {
+export type TemplateElementPlaceholder<Field extends string> = {
   type: 'placeholder';
   field: Field;
-}
+};
 
 export type TemplateElement<Field extends string> =
   | TemplateElementText
@@ -114,7 +114,7 @@ export const textTemplateFields = {
   mediaVideo: mediaVideoFields,
 } as const;
 
-export interface ParsedTweetTemplate {
+export type ParsedTweetTemplate = {
   tweet: readonly TemplateElement<TweetField>[];
   footer: readonly TemplateElement<TweetField>[];
   entityText: readonly TemplateElement<EntityTextField>[];
@@ -125,7 +125,7 @@ export interface ParsedTweetTemplate {
   mediaPhoto: readonly TemplateElement<MediaPhotoField>[];
   mediaVideo: readonly TemplateElement<MediaVideoField>[];
   quote: boolean;
-}
+};
 
 export const parseTweetTemplate = (
   template: TweetTemplate,

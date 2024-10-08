@@ -49,9 +49,9 @@ const DeletedTweetsList: React.FC = () => {
   );
 };
 
-interface DeletedTweetsProps {
+type DeletedTweetsProps = {
   deletedTime: number;
-}
+};
 
 const DeletedTweets: React.FC<DeletedTweetsProps> = ({ deletedTime }) => {
   const selectTweets = React.useCallback(
@@ -89,10 +89,10 @@ const DeletedTweets: React.FC<DeletedTweetsProps> = ({ deletedTime }) => {
   );
 };
 
-interface DeletedTweetsHeaderProps {
+type DeletedTweetsHeaderProps = {
   timestamp: number;
   tweetsLength: number;
-}
+};
 
 const DeletedTweetsHeader: React.FC<DeletedTweetsHeaderProps> = ({
   timestamp,
@@ -109,9 +109,9 @@ const DeletedTweetsHeader: React.FC<DeletedTweetsHeaderProps> = ({
   );
 };
 
-interface TweetProps {
+type TweetProps = {
   tweet: TweetData;
-}
+};
 
 const Tweet: React.FC<TweetProps> = ({ tweet }) => {
   // redux

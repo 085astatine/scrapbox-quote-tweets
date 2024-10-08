@@ -2,12 +2,12 @@ import classNames from 'classnames';
 import React from 'react';
 import CheckIcon from '~/icon/bootstrap/check2.svg';
 
-export interface CheckboxProps {
+export type CheckboxProps = {
   checked: boolean;
   onClick: () => void;
   id?: string;
   disabled?: boolean;
-}
+};
 
 export const Checkbox: React.FC<CheckboxProps> = ({
   checked,
