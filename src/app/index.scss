@@ -256,9 +256,9 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 
 .tab-content {
   display: flex;
-  flex-direction: column;
   flex-grow: 1;
   flex-shrink: 1;
+  flex-direction: column;
   margin-bottom: map.get($bs-spacers, 1);
   overflow-y: hidden;
   border-color: transparent $tab-border-color $tab-border-color;
@@ -474,8 +474,8 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 
 .tweets {
   display: flex;
-  flex-direction: column;
   flex-shrink: 1;
+  flex-direction: column;
   gap: map.get($bs-spacers, 1);
   padding: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
   overflow-y: scroll;
@@ -497,8 +497,8 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 
 .deleted-tweets-list {
   display: flex;
-  flex-direction: column;
   flex-shrink: 1;
+  flex-direction: column;
   gap: map.get($bs-spacers, 1);
   padding: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
   overflow-y: scroll;
@@ -520,8 +520,8 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
 
 .settings {
   display: flex;
-  flex-direction: column;
   flex-shrink: 1;
+  flex-direction: column;
   padding: map.get($bs-spacers, 1) map.get($bs-spacers, 1);
   overflow-y: scroll;
 }
