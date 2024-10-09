@@ -61,7 +61,7 @@ export const createLogger = (option?: LoggerOption) => {
       if (isJSONable(arg)) {
         try {
           console[level](JSON.stringify(arg, null, 2));
-        } catch (error: unknown) {
+        } catch {
           console[level](arg);
         }
       } else {

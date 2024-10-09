@@ -65,7 +65,6 @@ describe('is-jsonable', () => {
   });
   test('object/empty', () => {
     expect(isJSONable({})).toBe(true);
-    // eslint-disable-next-line no-new-object
     expect(isJSONable(new Object())).toBe(true);
     expect(isJSONable(Object.create(null))).toBe(true);
   });
