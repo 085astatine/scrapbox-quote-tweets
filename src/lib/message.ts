@@ -3,60 +3,60 @@ import type { Logger } from './logger';
 import type { Offscreen } from './offscreen';
 import { expandTCoURL, getURLTitle } from './url';
 
-export interface ExpandTCoURLRequestMessage {
+export type ExpandTCoURLRequestMessage = {
   type: 'ExpandTCoURL/Request';
   shortURL: string;
-}
+};
 
-export interface ExpandTCoURLSuccessMessage {
+export type ExpandTCoURLSuccessMessage = {
   type: 'ExpandTCoURL/Result';
   ok: true;
   shortURL: string;
   expandedURL: string;
   title?: string;
-}
+};
 
-export interface ExpandTCoURLFailureMessage {
+export type ExpandTCoURLFailureMessage = {
   type: 'ExpandTCoURL/Result';
   ok: false;
   shortURL: string;
-}
+};
 
 export type ExpandTCoURLResultMessage =
   | ExpandTCoURLSuccessMessage
   | ExpandTCoURLFailureMessage;
 
-export interface ForwardToOffscreenMessage<Message> {
+export type ForwardToOffscreenMessage<Message> = {
   type: 'Forward/ToOffscreen';
   message: Message;
-}
+};
 
-export interface GetURLTitleRequestMessage {
+export type GetURLTitleRequestMessage = {
   type: 'GetURLTitle/Request';
   url: string;
-}
+};
 
-export interface GetURLTitleSuccessMessage {
+export type GetURLTitleSuccessMessage = {
   type: 'GetURLTitle/Result';
   ok: true;
   url: string;
   title: string;
-}
+};
 
-export interface GetURLTitleFailureMessage {
+export type GetURLTitleFailureMessage = {
   type: 'GetURLTitle/Result';
   ok: false;
   url: string;
-}
+};
 
 export type GetURLTitleResultMessage =
   | GetURLTitleSuccessMessage
   | GetURLTitleFailureMessage;
 
-export interface StorageDownloadMessage {
+export type StorageDownloadMessage = {
   type: 'Storage/Download';
   objectURL: string;
-}
+};
 
 // Respond to ExpandTCoURL/Request
 export const respondToExpandTCoURLRequest = async (

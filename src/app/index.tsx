@@ -24,10 +24,10 @@ export const App: React.FC = () => {
 
 type Tab = 'tweets' | 'trashbox' | 'settings';
 
-interface TabsProps {
+type TabsProps = {
   tab: Tab;
   switchTab: (tab: Tab) => void;
-}
+};
 
 const Tabs: React.FC<TabsProps> = ({ tab, switchTab }: TabsProps) => {
   return (

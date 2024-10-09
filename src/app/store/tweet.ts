@@ -12,14 +12,14 @@ import type {
 } from '~/lib/tweet/types';
 import { type ArrayOr, toArray } from '~/lib/utility';
 
-export interface TweetState {
+export type TweetState = {
   tweets: Tweet[];
   trashbox: DeletedTweet[];
   selectedTweets: Tweet[];
   selectedDeletedTweets: Tweet[];
   tweetSort: TweetSort;
   trashboxSort: TrashboxSort;
-}
+};
 
 const initialTweetState = (): TweetState => {
   return {

@@ -1,42 +1,42 @@
 export type TweetID = string;
 
-export interface User {
+export type User = {
   name: string;
   username: string;
-}
+};
 
-export interface TweetEntityText {
+export type TweetEntityText = {
   type: 'text';
   text: string;
-}
+};
 
-export interface TweetEntityURL {
+export type TweetEntityURL = {
   type: 'url';
   text: string;
   short_url: string;
   expanded_url: string;
   decoded_url: string;
   title?: string;
-}
+};
 
-export interface TweetEntityHashtag {
+export type TweetEntityHashtag = {
   type: 'hashtag';
   text: string;
   tag: string;
   hashmoji?: string;
-}
+};
 
-export interface TweetEntityCashtag {
+export type TweetEntityCashtag = {
   type: 'cashtag';
   text: string;
   tag: string;
-}
+};
 
-export interface TweetEntityMention {
+export type TweetEntityMention = {
   type: 'mention';
   text: string;
   username: string;
-}
+};
 
 export type TweetEntity =
   | TweetEntityText
@@ -45,53 +45,53 @@ export type TweetEntity =
   | TweetEntityCashtag
   | TweetEntityMention;
 
-export interface MediaPhoto {
+export type MediaPhoto = {
   type: 'photo';
   url: string;
-}
+};
 
-export interface MediaVideo {
+export type MediaVideo = {
   type: 'video';
   thumbnail: string;
-}
+};
 
 export type Media = MediaPhoto | MediaVideo;
 
-export interface Tweet {
+export type Tweet = {
   id: TweetID;
   created_at: number;
   saved_at: number;
   author: User;
   text: TweetEntity[];
   media?: Media[];
-}
+};
 
-export interface DeletedTweetID {
+export type DeletedTweetID = {
   deleted_at: number;
   tweet_id: TweetID;
-}
+};
 
-export interface DeletedTweet {
+export type DeletedTweet = {
   deleted_at: number;
   tweet: Tweet;
-}
+};
 
 export type TweetSortKey = 'created_time' | 'saved_time' | 'username';
 export type DeletedTweetIDSortKey = 'deleted_time' | 'tweet_id';
 export type DeletedTweetSortKey = 'deleted_time' | TweetSortKey;
 export type SortOrder = 'asc' | 'desc';
 
-export interface TweetSort {
+export type TweetSort = {
   key: TweetSortKey;
   order: SortOrder;
-}
+};
 
-export interface DeletedTweetIDSort {
+export type DeletedTweetIDSort = {
   key: DeletedTweetIDSortKey;
   order: SortOrder;
-}
+};
 
-export interface DeletedTweetSort {
+export type DeletedTweetSort = {
   key: DeletedTweetSortKey;
   order: SortOrder;
-}
+};

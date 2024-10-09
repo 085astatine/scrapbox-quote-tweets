@@ -14,10 +14,10 @@ export type ScrapboxButtonState =
       message: string;
     };
 
-export interface TweetState {
+export type TweetState = {
   tweetID: TweetID;
   button: ScrapboxButtonState;
-}
+};
 
 // slice
 export type ScrapboxButtonUpdater = Pick<TweetState, 'tweetID' | 'button'>;

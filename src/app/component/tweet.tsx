@@ -10,9 +10,9 @@ import { toDatetime } from '~/lib/datetime';
 import type { Media, Tweet as TweetData, TweetID } from '~/lib/tweet/types';
 import { selectBaseURL, selectSettings } from '../store/selector';
 
-export interface TweetProps {
+export type TweetProps = {
   tweet: TweetData;
-}
+};
 
 export const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
   const text = tweet.text.map((entity) => entity.text).join('');
@@ -29,12 +29,12 @@ export const Tweet: React.FC<TweetProps> = ({ tweet }: TweetProps) => {
   );
 };
 
-interface HeaderProps {
+type HeaderProps = {
   id: TweetID;
   name: string;
   username: string;
   timestamp: number;
-}
+};
 
 const Header: React.FC<HeaderProps> = ({
   id,
@@ -63,10 +63,10 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
-interface BodyProps {
+type BodyProps = {
   text: string;
   media: Media[] | undefined;
-}
+};
 
 const Body: React.FC<BodyProps> = ({ text, media }: BodyProps) => {
   const [ellipsis, setEllipsis] = React.useState(true);
@@ -104,9 +104,9 @@ const Body: React.FC<BodyProps> = ({ text, media }: BodyProps) => {
   );
 };
 
-interface MediaIconProps {
+type MediaIconProps = {
   media: Media;
-}
+};
 
 const MediaIcon: React.FC<MediaIconProps> = ({ media }) => {
   switch (media.type) {

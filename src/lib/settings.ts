@@ -8,13 +8,13 @@ export type Hostname = (typeof hostnames)[number];
 export type ScrapboxIcon = (typeof scrapboxIcons)[number];
 export type TwitterIcon = (typeof twitterIcons)[number];
 
-export interface Settings {
+export type Settings = {
   hostname: Hostname;
   timezone: string;
   datetimeFormat: string;
   scrapboxIcon: ScrapboxIcon;
   twitterIcon: TwitterIcon;
-}
+};
 
 export const settingsKeys: ReadonlyArray<keyof Settings> = [
   'hostname',
@@ -44,21 +44,21 @@ export const isHostname = (value: string): value is Hostname => {
 };
 
 // validate functions
-interface ValidationSuccess {
+type ValidationSuccess = {
   ok: true;
-}
+};
 
-interface SettingsValueValidationFailure {
+type SettingsValueValidationFailure = {
   ok: false;
   error: string[];
-}
+};
 
-interface SettingsValidationFailure {
+type SettingsValidationFailure = {
   ok: false;
   errors: {
     [key in keyof Settings]?: string[];
   };
-}
+};
 
 export type ValidateSettingsValueResult =
   | ValidationSuccess

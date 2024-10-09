@@ -1,9 +1,9 @@
 import type { DeletedTweet, DeletedTweetID, SortOrder } from './tweet/types';
 
-export interface TrashboxSort {
+export type TrashboxSort = {
   key: 'deleted_time';
   order: SortOrder;
-}
+};
 
 export const deletedTimes = (
   tweets: DeletedTweet[] | DeletedTweetID[],
