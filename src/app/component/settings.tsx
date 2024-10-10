@@ -640,6 +640,7 @@ const ClearStorage: React.FC = () => {
 };
 
 const LoadStorage: React.FC = () => {
+  const inputFileRef = React.useRef<HTMLInputElement>(null);
   const errorMessageRef = React.useRef(null);
   const [state, setState] = React.useState<
     'not-selected' | 'invalid' | 'valid'
@@ -679,6 +680,12 @@ const LoadStorage: React.FC = () => {
     await browser.storage.local.clear();
     // save to storage
     await browser.storage.local.set(data);
+    // clear input
+    setFile(null);
+    setState('not-selected');
+    if (inputFileRef.current !== null) {
+      inputFileRef.current.value = '';
+    }
   };
   const loadStorageJSON = async (file: File): Promise<StorageJSON | null> => {
     return await readFile(file)
@@ -707,6 +714,7 @@ const LoadStorage: React.FC = () => {
         <div className="settings-label">Load Storage</div>
         <div className="settings-form">
           <input
+            ref={inputFileRef}
             className="form-control"
             type="file"
             accept=".json"
