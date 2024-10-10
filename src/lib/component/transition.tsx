@@ -97,7 +97,7 @@ export const Collapse = <RefElement extends HTMLElement>({
       ref.current.style.overflow = 'hidden';
       onExitProps?.(ref.current);
       // reading a dimension prop will cause the browser to recalculate
-      ref.current.scrollHeight;
+      const _ = ref.current.scrollHeight;
     }
   }, [ref, onExitProps]);
   const onExiting = React.useCallback(() => {
@@ -159,7 +159,7 @@ export const Fade = <RefElement extends HTMLElement>({
         ref.current.style.opacity = '0';
         onEnterProps?.(ref.current, isAppearing);
         // reading a dimension prop will cause the browser to recalculate
-        ref.current.scrollHeight;
+        const _ = ref.current.scrollHeight;
       }
     },
     [ref, onEnterProps],

@@ -34,8 +34,8 @@ $fav-color: rgb(249, 24, 128);
 
   .scrapbox-button {
     display: flex;
-    flex-direction: row;
     flex-shrink: 0;
+    flex-direction: row;
     justify-content: center;
     width: 2em;
     font-size: 15px;

@@ -5,7 +5,6 @@ const typescriptParser = require('@typescript-eslint/parser');
 const react = require('eslint-plugin-react');
 const reactHooks = require('eslint-plugin-react-hooks');
 const reactRedux = require('eslint-plugin-react-redux');
-const google = require('eslint-config-google');
 const prettier = require('eslint-config-prettier');
 
 module.exports = [
@@ -36,7 +35,6 @@ module.exports = [
       },
     },
     rules: {
-      ...google.rules,
       ...js.configs.recommended.rules,
       ...typescript.configs.recommended.rules,
       ...react.configs.recommended.rules,
@@ -44,7 +42,6 @@ module.exports = [
       ...reactRedux.configs.recommended.rules,
       ...prettier.rules,
       'no-redeclare': 'off',
-      'require-jsdoc': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         { varsIgnorePattern: '^_', args: 'none' },
@@ -68,12 +65,10 @@ module.exports = [
       '@typescript-eslint': typescript,
     },
     rules: {
-      ...google.rules,
       ...js.configs.recommended.rules,
       ...typescript.configs.recommended.rules,
       ...prettier.rules,
       'no-redeclare': 'off',
-      'require-jsdoc': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         { varsIgnorePattern: '^_', args: 'none' },
