@@ -1,11 +1,11 @@
 @use 'sass:meta';
 
-$bs-prefix: sct-;
+$bs-prefix: sqt-;
 @use './style/bootstrap' with (
   $prefix: $bs-prefix
 );
 
-.scrapbox-copy-tweets {
+.scrapbox-quote-tweets {
   &.modal-portal {
     .overlay {
       position: fixed;
@@ -48,6 +48,6 @@ $bs-prefix: sct-;
   @include meta.load-css('~/app/index', $with: (bs-prefix: $bs-prefix));
 }
 
-#scrapbox-copy-tweets {
+#scrapbox-quote-tweets {
   @include meta.load-css('~/lib/component/x-icon');
 }

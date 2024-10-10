@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Scrapbox Copy Tweets",
+  "name": "Scrapbox Quote Tweets",
   "version": "_",
 
   "__chrome|prod__permissions": [
