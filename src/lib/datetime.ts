@@ -6,10 +6,13 @@ dayjs.extend(dayjsUTC);
 dayjs.extend(dayjsTimezone);
 
 export const toDatetime = (
-  timestamp: number,
+  timestamp?: number,
   timezone?: string,
 ): dayjs.Dayjs => {
-  return dayjs.unix(timestamp).tz(timezone);
+  if (timestamp !== undefined) {
+    return dayjs.unix(timestamp).tz(timezone);
+  }
+  return dayjs().tz(timezone);
 };
 
 export class InvalidTimezoneError extends Error {
