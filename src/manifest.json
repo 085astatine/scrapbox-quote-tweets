@@ -5,6 +5,7 @@
 
   "__chrome|prod__permissions": [
     "clipboardWrite",
+    "downloads",
     "offscreen",
     "storage",
     "tabs"
@@ -17,7 +18,12 @@
     "storage",
     "tabs"
   ],
-  "__firefox|prod__permissions": ["clipboardWrite", "storage", "tabs"],
+  "__firefox|prod__permissions": [
+    "clipboardWrite",
+    "downloads",
+    "storage",
+    "tabs"
+  ],
   "__firefox|dev__permissions": [
     "clipboardWrite",
     "cookies",
