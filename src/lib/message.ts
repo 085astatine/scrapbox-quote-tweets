@@ -56,6 +56,7 @@ export type GetURLTitleResultMessage =
 export type StorageDownloadMessage = {
   type: 'Storage/Download';
   objectURL: string;
+  filename: string;
 };
 
 // Respond to ExpandTCoURL/Request

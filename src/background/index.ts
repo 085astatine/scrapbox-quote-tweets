@@ -61,7 +61,7 @@ const onMessageListener = async (
     case 'Storage/Download':
       await browser.downloads.download({
         url: message.objectURL,
-        filename: 'scrapbox-quote-tweets.json',
+        filename: message.filename,
         saveAs: true,
       });
       return;

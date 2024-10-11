@@ -586,6 +586,7 @@ const DownloadStorage: React.FC = () => {
     const message: StorageDownloadMessage = {
       type: 'Storage/Download',
       objectURL,
+      filename: 'scrapbox-quote-tweets.json',
     };
     await browser.runtime.sendMessage(message);
     // revoke object URL
