@@ -23,7 +23,7 @@ export const insertReactRoot = (
     if (tweetID === null) {
       return;
     }
-    // create <div class="scrapbox-copy-tweets" />
+    // create <div class="scrapbox-quote-tweets" />
     const reactRoot = createRootDiv(element, tweetID, logger);
     if (reactRoot === null) {
       return;
@@ -142,14 +142,14 @@ const createRootDiv = (
     return null;
   }
   // check if react root exists
-  if (getElement('./div[@class="scrapbox-copy-tweets"]', group) !== null) {
-    logger.info('<div classse="scrapbox-copy-tweets:" /> already exists');
+  if (getElement('./div[@class="scrapbox-quote-tweets"]', group) !== null) {
+    logger.info('<div classse="scrapbox-quote-tweets:" /> already exists');
     return null;
   }
   // create react root
-  logger.info('create <div class="scrapbox-copy-tweets" />');
+  logger.info('create <div class="scrapbox-quote-tweets" />');
   const root = group.appendChild(document.createElement('div'));
-  root.classList.add('scrapbox-copy-tweets');
+  root.classList.add('scrapbox-quote-tweets');
   root.setAttribute('tweet-id', tweetID);
   return root;
 };

@@ -33,7 +33,7 @@ export const Root: React.FC = () => {
         onRequestClose={close}
         closeTimeoutMS={300}
         bodyOpenClassName={null}
-        portalClassName="scrapbox-copy-tweets modal-portal"
+        portalClassName="scrapbox-quote-tweets modal-portal"
         className={{
           base: 'content',
           afterOpen: 'after-open',

@@ -1,5 +1,5 @@
 {
-  "name": "scrapbox-copy-tweets",
+  "name": "scrapbox-quote-tweets",
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
@@ -31,14 +31,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/085astatine/scrapbox-copy-tweets.git"
+    "url": "git+https://github.com/085astatine/scrapbox-quote-tweets.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/085astatine/scrapbox-copy-tweets/issues"
+    "url": "https://github.com/085astatine/scrapbox-quote-tweets/issues"
   },
-  "homepage": "https://github.com/085astatine/scrapbox-copy-tweets#readme",
+  "homepage": "https://github.com/085astatine/scrapbox-quote-tweets#readme",
   "devDependencies": {
     "@eslint/js": "^9.12.0",
     "@svgr/webpack": "^8.1.0",
