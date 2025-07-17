@@ -71,7 +71,10 @@ module.exports = (env, argv) => {
             {
               loader: 'sass-loader',
               options: {
-                sassOptions: { quietDeps: true },
+                sassOptions: {
+                  quietDeps: true,
+                  silenceDeprecations: ['import'],
+                },
               },
             },
           ],
