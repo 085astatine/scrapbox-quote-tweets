@@ -12,7 +12,8 @@ jobs:
           - chrome
           - firefox
         node-version:
-          - 18
+          - 22
+          - 24
 
     steps:
       # Checkout
