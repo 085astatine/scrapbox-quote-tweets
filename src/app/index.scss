@@ -313,9 +313,9 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
     .name {
       flex-shrink: 3;
       overflow: hidden;
+      text-overflow: clip;
       color: var(--#{$bs-prefix}black);
       text-decoration: none;
-      text-overflow: clip;
 
       &:hover {
         text-decoration: underline;
@@ -332,9 +332,9 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
     .username {
       flex-shrink: 1;
       overflow: hidden;
+      text-overflow: clip;
       color: var(--#{$bs-prefix}gray);
       text-decoration: none;
-      text-overflow: clip;
 
       &:hover {
         text-decoration: underline;
@@ -352,10 +352,10 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
       flex-grow: 1;
       flex-shrink: 2;
       overflow: hidden;
+      text-overflow: clip;
       color: var(--#{$bs-prefix}black);
       text-align: right;
       text-decoration: none;
-      text-overflow: clip;
 
       &:hover {
         text-decoration: underline;
@@ -364,8 +364,8 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
       &:focus-visible {
         color: var(--#{$bs-prefix}link-color);
         text-decoration: underline;
-        border-color: none;
         outline: none;
+        border-color: none;
         box-shadow: none;
       }
     }
@@ -658,10 +658,10 @@ $focus-visible-outline: var(--#{$bs-prefix}primary) solid 1px;
   border-radius: var(--#{$bs-prefix}border-radius);
 
   .close {
+    float: right;
     display: flex;
     align-items: center;
     justify-content: center;
-    float: right;
     aspect-ratio: 1 / 1;
     padding: 0;
     color: inherit;
