@@ -141,9 +141,7 @@ module.exports = (env, argv) => {
         ]
       : []),
       new MiniCssExtractPlugin(),
-      new NodePolyfillPlugin({
-        additionalAliases: ['process'],
-      }),
+      new NodePolyfillPlugin(),
       new WextManifestPlugin(),
       new CopyPlugin({
         patterns: [
