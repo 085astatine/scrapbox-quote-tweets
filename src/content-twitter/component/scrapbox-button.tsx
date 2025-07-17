@@ -43,7 +43,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
   // logger
   const logger = createLogger({ prefix: `[Tweet ID: ${tweetID}] ` });
   // reference for parsing this tweet
-  const tweetRef = React.useRef(null);
+  const tweetRef = React.useRef<HTMLDivElement>(null);
   // redux
   const selector = React.useCallback(
     (state: State) => selectScrapboxButtonState(state, tweetID),
@@ -53,7 +53,7 @@ export const ScrapboxButton: React.FC<ScrapboxButtonProps> = ({ tweetID }) => {
   const icon = useSelector(selectScrapboxIcon);
   const dispatch = useDispatch();
   // floting-ui
-  const arrowRef = React.useRef(null);
+  const arrowRef = React.useRef<SVGSVGElement>(null);
   const { refs, floatingStyles, context } = useFloating({
     placement: 'top',
     middleware: [offset(10), shift(), arrow({ element: arrowRef })],
