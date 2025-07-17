@@ -217,7 +217,7 @@ const SelectSort: React.FC = () => {
 };
 
 const Commands: React.FC = () => {
-  const ref = React.useRef(null);
+  const ref = React.useRef<HTMLDivElement>(null);
   const tweets = useSelector(selectSelectedDeletedTweets, shallowEqual);
   // restore
   const restoreTweets = () => {

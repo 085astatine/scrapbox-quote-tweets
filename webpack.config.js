@@ -71,7 +71,10 @@ module.exports = (env, argv) => {
             {
               loader: 'sass-loader',
               options: {
-                sassOptions: { quietDeps: true },
+                sassOptions: {
+                  quietDeps: true,
+                  silenceDeprecations: ['import'],
+                },
               },
             },
           ],
@@ -141,9 +144,7 @@ module.exports = (env, argv) => {
         ]
       : []),
       new MiniCssExtractPlugin(),
-      new NodePolyfillPlugin({
-        additionalAliases: ['process'],
-      }),
+      new NodePolyfillPlugin(),
       new WextManifestPlugin(),
       new CopyPlugin({
         patterns: [

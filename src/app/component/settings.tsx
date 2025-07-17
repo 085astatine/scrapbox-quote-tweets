@@ -73,7 +73,7 @@ export const Settings: React.FC = () => {
 };
 
 const SettingsEditor: React.FC = () => {
-  const ref = React.useRef(null);
+  const ref = React.useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const editStatus = useSelector(selectSettingsEditStatus);
 
@@ -391,7 +391,7 @@ const TwitterIcons: React.FC = () => {
 };
 
 const TemplateEditor: React.FC = () => {
-  const ref = React.useRef(null);
+  const ref = React.useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const editStatus = useSelector(selectTemplateEditStatus);
 
@@ -433,7 +433,7 @@ const TemplateEditor: React.FC = () => {
 };
 
 const TemplateEntityEditor: React.FC = () => {
-  const ref = React.useRef(null);
+  const ref = React.useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const editStatus = useSelector(selectTemplateEntitiesEditStatus);
 
@@ -475,7 +475,7 @@ const TemplateEntityEditor: React.FC = () => {
 };
 
 const TemplateMediaEditor: React.FC = () => {
-  const ref = React.useRef(null);
+  const ref = React.useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const editStatus = useSelector(selectTemplateMediaEditStatus);
 
@@ -542,7 +542,7 @@ const TemplateQuote: React.FC = () => {
 };
 
 const Storage: React.FC = () => {
-  const ref = React.useRef(null);
+  const ref = React.useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = React.useState(false);
 
   const Icon = isOpen ? ChevronUpIcon : ChevronDownIcon;
@@ -642,7 +642,7 @@ const ClearStorage: React.FC = () => {
 
 const LoadStorage: React.FC = () => {
   const inputFileRef = React.useRef<HTMLInputElement>(null);
-  const errorMessageRef = React.useRef(null);
+  const errorMessageRef = React.useRef<HTMLDivElement>(null);
   const [state, setState] = React.useState<
     'not-selected' | 'invalid' | 'valid'
   >('not-selected');
@@ -764,7 +764,7 @@ const LoadStorage: React.FC = () => {
 };
 
 const Commands: React.FC = () => {
-  const ref = React.useRef(null);
+  const ref = React.useRef<HTMLDivElement>(null);
   const show = useSelector(selectIsSettingsEdited);
   const dispatch = useDispatch();
   const store = useStore<State>();
@@ -808,7 +808,7 @@ const Commands: React.FC = () => {
 };
 
 const UpdateNotification: React.FC = () => {
-  const ref = React.useRef(null);
+  const ref = React.useRef<HTMLDivElement>(null);
   const trigger = useSelector(selectSettingsUpdateTrigger);
   const dispatch = useDispatch();
   return (

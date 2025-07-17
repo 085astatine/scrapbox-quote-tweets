@@ -17,7 +17,7 @@ type Timeout = {
 };
 
 type TransitionProps<RefElement extends HTMLElement> = {
-  nodeRef: React.RefObject<RefElement>;
+  nodeRef: React.RefObject<RefElement | null>;
   target: TransitionTarget;
   in?: boolean;
   mountOnEnter?: boolean;
