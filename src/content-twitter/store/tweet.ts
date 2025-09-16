@@ -22,29 +22,34 @@ export type TweetState = {
 // slice
 export type ScrapboxButtonUpdater = Pick<TweetState, 'tweetID' | 'button'>;
 
+// reducers
+const updateButton = (
+  states: TweetState[],
+  action: PayloadAction<ArrayOr<ScrapboxButtonUpdater>>,
+): void => {
+  toArray(action.payload).forEach(({ tweetID, button }) => {
+    const state = states.find((state) => state.tweetID === tweetID);
+    if (state !== undefined) {
+      state.button = button;
+    } else {
+      states.push({ tweetID, button });
+    }
+  });
+};
+
+const touch = (states: TweetState[], action: PayloadAction<TweetID>): void => {
+  const state = states.find((state) => state.tweetID === action.payload);
+  if (state === undefined) {
+    states.push({ tweetID: action.payload, button: { state: 'none' } });
+  }
+};
+
 const tweet = createSlice({
   name: 'tweet',
   initialState: [] as TweetState[],
   reducers: {
-    updateButton(
-      states: TweetState[],
-      action: PayloadAction<ArrayOr<ScrapboxButtonUpdater>>,
-    ) {
-      toArray(action.payload).forEach(({ tweetID, button }) => {
-        const state = states.find((state) => state.tweetID === tweetID);
-        if (state !== undefined) {
-          state.button = button;
-        } else {
-          states.push({ tweetID, button });
-        }
-      });
-    },
-    touch(states: TweetState[], action: PayloadAction<TweetID>) {
-      const state = states.find((state) => state.tweetID === action.payload);
-      if (state === undefined) {
-        states.push({ tweetID: action.payload, button: { state: 'none' } });
-      }
-    },
+    updateButton,
+    touch,
   },
 });
 

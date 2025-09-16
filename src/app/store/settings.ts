@@ -44,114 +44,142 @@ const initialSettingsState = (): SettingsState => {
   };
 };
 
+// reducers
+const initialize = (
+  state: SettingsState,
+  action: PayloadAction<{ settings: Settings; template: TweetTemplate }>,
+): void => {
+  state.currentSettings = { ...action.payload.settings };
+  state.editingSettings = {};
+  state.settingsErrors = {};
+  state.currentTemplate = { ...action.payload.template };
+  state.editingTemplate = {};
+  state.templateErrors = {};
+  state.updateTrigger = 'none';
+};
+
+const applyEdits = (state: SettingsState): void => {
+  // reset errors
+  state.settingsErrors = {};
+  state.templateErrors = {};
+  // validate editing value
+  settingsKeys.forEach((key) => {
+    validateEditingSettings(state, key);
+  });
+  tweetTemplateKeys.forEach((key) => {
+    if (key !== 'quote') {
+      validateEditingTemplate(state, key);
+    }
+  });
+  // update if theare is no error
+  if (
+    Object.keys(state.settingsErrors).length === 0 &&
+    Object.keys(state.templateErrors).length === 0
+  ) {
+    state.currentSettings = {
+      ...state.currentSettings,
+      ...state.editingSettings,
+    };
+    state.editingSettings = {};
+    state.currentTemplate = {
+      ...state.currentTemplate,
+      ...state.editingTemplate,
+    };
+    state.editingTemplate = {};
+    state.updateTrigger = 'self';
+  }
+};
+
+const resetEdits = (state: SettingsState): void => {
+  state.editingSettings = {};
+  state.settingsErrors = {};
+  state.editingTemplate = {};
+  state.templateErrors = {};
+};
+
+const resetUpdateTrigger = (state: SettingsState): void => {
+  state.updateTrigger = 'none';
+};
+
+const editSettings = <Key extends keyof Settings>(
+  state: SettingsState,
+  {
+    payload: { type, value },
+  }: PayloadAction<{ type: Key; value: Settings[Key] }>,
+): void => {
+  if (!equal(state.currentSettings[type], value)) {
+    state.editingSettings[type] = value;
+  } else if (type in state.editingSettings) {
+    delete state.editingSettings[type];
+  }
+};
+
+const editTemplate = <Key extends keyof TweetTemplate>(
+  state: SettingsState,
+  {
+    payload: { type, value },
+  }: PayloadAction<{ type: Key; value: TweetTemplate[Key] }>,
+): void => {
+  if (!equal(state.currentTemplate[type], value)) {
+    state.editingTemplate[type] = value;
+  } else if (type in state.editingTemplate) {
+    delete state.editingTemplate[type];
+  }
+};
+
+const updateByInterrupt = (
+  state: SettingsState,
+  action: PayloadAction<{
+    settings?: Partial<Settings>;
+    template?: Partial<TweetTemplate>;
+  }>,
+): void => {
+  // update settings
+  if (action.payload.settings !== undefined) {
+    const previous = { ...state.currentSettings };
+    state.currentSettings = {
+      ...state.currentSettings,
+      ...action.payload.settings,
+    };
+    settingsKeys.forEach((key) => {
+      resetEditingSettingsByInterrupt(state, key, previous);
+    });
+  }
+  // update template
+  if (action.payload.template !== undefined) {
+    const previous = { ...state.currentTemplate };
+    state.currentTemplate = {
+      ...state.currentTemplate,
+      ...action.payload.template,
+    };
+    tweetTemplateKeys.forEach((key) => {
+      resetEditingTemplateByInterrupt(state, key, previous);
+    });
+  }
+  switch (state.updateTrigger) {
+    case 'none':
+      if (Object.keys(state.editingSettings).length > 0) {
+        state.updateTrigger = 'interrupt';
+      }
+      break;
+    case 'self':
+      state.updateTrigger = 'none';
+      break;
+  }
+};
+
+// slice
 const settings = createSlice({
   name: 'settings',
   initialState: initialSettingsState(),
   reducers: {
-    initialize(
-      state: SettingsState,
-      action: PayloadAction<{ settings: Settings; template: TweetTemplate }>,
-    ): void {
-      state.currentSettings = { ...action.payload.settings };
-      state.editingSettings = {};
-      state.settingsErrors = {};
-      state.currentTemplate = { ...action.payload.template };
-      state.editingTemplate = {};
-      state.templateErrors = {};
-      state.updateTrigger = 'none';
-    },
-    applyEdits(state: SettingsState): void {
-      // reset errors
-      state.settingsErrors = {};
-      state.templateErrors = {};
-      // validate editing value
-      settingsKeys.forEach((key) => {
-        validateEditingSettings(state, key);
-      });
-      tweetTemplateKeys.forEach((key) => {
-        if (key !== 'quote') {
-          validateEditingTemplate(state, key);
-        }
-      });
-      // update if theare is no error
-      if (
-        Object.keys(state.settingsErrors).length === 0 &&
-        Object.keys(state.templateErrors).length === 0
-      ) {
-        state.currentSettings = {
-          ...state.currentSettings,
-          ...state.editingSettings,
-        };
-        state.editingSettings = {};
-        state.currentTemplate = {
-          ...state.currentTemplate,
-          ...state.editingTemplate,
-        };
-        state.editingTemplate = {};
-        state.updateTrigger = 'self';
-      }
-    },
-    resetEdits(state: SettingsState): void {
-      state.editingSettings = {};
-      state.settingsErrors = {};
-      state.editingTemplate = {};
-      state.templateErrors = {};
-    },
-    resetUpdateTrigger(state: SettingsState): void {
-      state.updateTrigger = 'none';
-    },
-    editSettings: <Key extends keyof Settings>(
-      state: SettingsState,
-      action: PayloadAction<{ type: Key; value: Settings[Key] }>,
-    ): void => {
-      editSettings(state, action.payload.type, action.payload.value);
-    },
-    editTemplate: <Key extends keyof TweetTemplate>(
-      state: SettingsState,
-      action: PayloadAction<{ type: Key; value: TweetTemplate[Key] }>,
-    ): void => {
-      editTemplate(state, action.payload.type, action.payload.value);
-    },
-    updateByInterrupt(
-      state: SettingsState,
-      action: PayloadAction<{
-        settings?: Partial<Settings>;
-        template?: Partial<TweetTemplate>;
-      }>,
-    ): void {
-      // update settings
-      if (action.payload.settings !== undefined) {
-        const previous = { ...state.currentSettings };
-        state.currentSettings = {
-          ...state.currentSettings,
-          ...action.payload.settings,
-        };
-        settingsKeys.forEach((key) => {
-          resetEditingSettingsByInterrupt(state, key, previous);
-        });
-      }
-      // update template
-      if (action.payload.template !== undefined) {
-        const previous = { ...state.currentTemplate };
-        state.currentTemplate = {
-          ...state.currentTemplate,
-          ...action.payload.template,
-        };
-        tweetTemplateKeys.forEach((key) => {
-          resetEditingTemplateByInterrupt(state, key, previous);
-        });
-      }
-      switch (state.updateTrigger) {
-        case 'none':
-          if (Object.keys(state.editingSettings).length > 0) {
-            state.updateTrigger = 'interrupt';
-          }
-          break;
-        case 'self':
-          state.updateTrigger = 'none';
-          break;
-      }
-    },
+    initialize,
+    applyEdits,
+    resetEdits,
+    resetUpdateTrigger,
+    editSettings,
+    editTemplate,
+    updateByInterrupt,
   },
 });
 
@@ -180,30 +208,6 @@ export const settingsStorageListener = (
 };
 
 // utilities
-const editSettings = <Key extends keyof Settings>(
-  state: SettingsState,
-  key: Key,
-  value: Settings[Key],
-): void => {
-  if (!equal(state.currentSettings[key], value)) {
-    state.editingSettings[key] = value;
-  } else if (key in state.editingSettings) {
-    delete state.editingSettings[key];
-  }
-};
-
-const editTemplate = <Key extends keyof TweetTemplate>(
-  state: SettingsState,
-  key: Key,
-  value: TweetTemplate[Key],
-): void => {
-  if (!equal(state.currentTemplate[key], value)) {
-    state.editingTemplate[key] = value;
-  } else if (key in state.editingTemplate) {
-    delete state.editingTemplate[key];
-  }
-};
-
 const validateEditingSettings = <Key extends keyof Settings>(
   state: SettingsState,
   key: Key,

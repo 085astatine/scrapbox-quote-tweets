@@ -3,19 +3,27 @@ import type { Dispatch } from 'redux';
 import type { ScrapboxIcon } from '~/lib/settings';
 import type { OnChangedSettings } from '~/lib/storage/settings';
 
+// state
 export type SettingsState = {
   scrapboxIcon: ScrapboxIcon;
 };
 
+// reducers
+const update = (
+  state: SettingsState,
+  action: PayloadAction<ScrapboxIcon>,
+): void => {
+  state.scrapboxIcon = action.payload;
+};
+
+// slice
 const slice = createSlice({
   name: 'settings',
   initialState: {
     scrapboxIcon: 'scrapbox' as const,
   },
   reducers: {
-    update(state: SettingsState, action: PayloadAction<ScrapboxIcon>): void {
-      state.scrapboxIcon = action.payload;
-    },
+    update,
   },
 });
 

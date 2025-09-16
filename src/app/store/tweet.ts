@@ -12,6 +12,7 @@ import type {
 } from '~/lib/tweet/types';
 import { type ArrayOr, toArray } from '~/lib/utility';
 
+// state
 export type TweetState = {
   tweets: Tweet[];
   trashbox: DeletedTweet[];
@@ -38,148 +39,186 @@ const initialTweetState = (): TweetState => {
   };
 };
 
+// reducers
 type Initializer = Pick<TweetState, 'tweets' | 'trashbox'> &
   Partial<Pick<TweetState, 'tweetSort' | 'trashboxSort'>>;
 
+const initialize = (
+  state: TweetState,
+  action: PayloadAction<Initializer>,
+): void => {
+  state.tweets = [...action.payload.tweets];
+  state.trashbox = [...action.payload.trashbox];
+  state.selectedTweets = [];
+  state.selectedDeletedTweets = [];
+  if (action.payload.tweetSort !== undefined) {
+    state.tweetSort = action.payload.tweetSort;
+  }
+  if (action.payload.trashboxSort !== undefined) {
+    state.trashboxSort = action.payload.trashboxSort;
+  }
+};
+
+const addTweet = (state: TweetState, action: PayloadAction<Tweet[]>): void => {
+  addTweetToTweets(state.tweets, action.payload);
+};
+
+const deleteTweet = (
+  state: TweetState,
+  action: PayloadAction<Tweet[]>,
+): void => {
+  const targets = action.payload.map((tweet) => tweet.id);
+  state.tweets = removeTweetFromTweets(state.tweets, targets);
+  state.trashbox = removeTweetFromDeletedTweets(state.trashbox, targets);
+  state.selectedTweets = removeTweetFromTweets(state.selectedTweets, targets);
+  state.selectedDeletedTweets = removeTweetFromTweets(
+    state.selectedDeletedTweets,
+    targets,
+  );
+};
+
+const selectTweet = (state: TweetState, action: PayloadAction<Tweet>): void => {
+  addTweetToTweets(state.selectedTweets, action.payload);
+};
+
+const unselectTweet = (
+  state: TweetState,
+  action: PayloadAction<Tweet>,
+): void => {
+  state.selectedTweets = removeTweetFromTweets(
+    state.selectedTweets,
+    action.payload.id,
+  );
+};
+
+const selectAllTweets = (state: TweetState): void => {
+  state.selectedTweets = [...state.tweets];
+};
+
+const unselectAllTweets = (state: TweetState): void => {
+  state.selectedTweets = [];
+};
+
+const addToTrashbox = (
+  state: TweetState,
+  action: PayloadAction<DeletedTweetID[]>,
+): void => {
+  // seach tweet by ID
+  const targets = action.payload.reduce<DeletedTweet[]>(
+    (tweets, deletedTweetID) => {
+      const tweet = state.tweets.find(
+        (tweet) => tweet.id === deletedTweetID.tweet_id,
+      );
+      if (tweet !== undefined) {
+        tweets.push({ deleted_at: deletedTweetID.deleted_at, tweet });
+      }
+      return tweets;
+    },
+    [],
+  );
+  // remove from tweets & selected tweets
+  state.tweets = removeTweetFromTweets(
+    state.tweets,
+    action.payload.map((deletedTweet) => deletedTweet.tweet_id),
+  );
+  state.selectedTweets = removeTweetFromTweets(
+    state.selectedTweets,
+    action.payload.map((deletedTweet) => deletedTweet.tweet_id),
+  );
+  // add to trashbox
+  addTweetToDeletedTweets(state.trashbox, targets);
+};
+
+const deleteFromTrashbox = (
+  state: TweetState,
+  action: PayloadAction<DeletedTweetID[]>,
+): void => {
+  // search tweet by ID
+  const tweets = action.payload.reduce<Tweet[]>((tweets, deletedTweetID) => {
+    const tweet = state.trashbox.find(
+      (tweet) => tweet.tweet.id === deletedTweetID.tweet_id,
+    )?.tweet;
+    if (tweet !== undefined) {
+      tweets.push(tweet);
+    }
+    return tweets;
+  }, []);
+  // remove from trashbox & selected deleted tweet
+  state.trashbox = removeTweetFromDeletedTweets(
+    state.trashbox,
+    action.payload.map((deletedTweet) => deletedTweet.tweet_id),
+  );
+  state.selectedDeletedTweets = removeTweetFromTweets(
+    state.selectedDeletedTweets,
+    action.payload.map((deletedTweet) => deletedTweet.tweet_id),
+  );
+  // add to tweets
+  if (tweets.length > 0) {
+    addTweetToTweets(state.tweets, tweets);
+  }
+};
+
+const selectDeletedTweet = (
+  state: TweetState,
+  action: PayloadAction<ArrayOr<Tweet>>,
+): void => {
+  addTweetToTweets(state.selectedDeletedTweets, action.payload);
+};
+
+const unselectDeletedTweet = (
+  state: TweetState,
+  action: PayloadAction<ArrayOr<Tweet>>,
+): void => {
+  state.selectedDeletedTweets = removeTweetFromTweets(
+    state.selectedDeletedTweets,
+    toArray(action.payload).map((tweet) => tweet.id),
+  );
+};
+
+const selectAllDeletedTweets = (state: TweetState) => {
+  state.selectedDeletedTweets = state.trashbox.map(
+    (deletedTweet) => deletedTweet.tweet,
+  );
+};
+
+const unselectAllDeletedTweets = (state: TweetState) => {
+  state.selectedDeletedTweets = [];
+};
+
+const updateTweetSort = (
+  state: TweetState,
+  action: PayloadAction<TweetSort>,
+): void => {
+  state.tweetSort = action.payload;
+};
+
+const updateTrashboxSort = (
+  state: TweetState,
+  action: PayloadAction<TrashboxSort>,
+): void => {
+  state.trashboxSort = action.payload;
+};
+
+// slice
 const tweet = createSlice({
   name: 'tweet',
   initialState: initialTweetState(),
   reducers: {
-    initialize(state: TweetState, action: PayloadAction<Initializer>): void {
-      state.tweets = [...action.payload.tweets];
-      state.trashbox = [...action.payload.trashbox];
-      state.selectedTweets = [];
-      state.selectedDeletedTweets = [];
-      if (action.payload.tweetSort !== undefined) {
-        state.tweetSort = action.payload.tweetSort;
-      }
-      if (action.payload.trashboxSort !== undefined) {
-        state.trashboxSort = action.payload.trashboxSort;
-      }
-    },
-    addTweet(state: TweetState, action: PayloadAction<Tweet[]>): void {
-      addTweetToTweets(state.tweets, action.payload);
-    },
-    deleteTweet(state: TweetState, action: PayloadAction<Tweet[]>): void {
-      const targets = action.payload.map((tweet) => tweet.id);
-      state.tweets = removeTweetFromTweets(state.tweets, targets);
-      state.trashbox = removeTweetFromDeletedTweets(state.trashbox, targets);
-      state.selectedTweets = removeTweetFromTweets(
-        state.selectedTweets,
-        targets,
-      );
-      state.selectedDeletedTweets = removeTweetFromTweets(
-        state.selectedDeletedTweets,
-        targets,
-      );
-    },
-    selectTweet(state: TweetState, action: PayloadAction<Tweet>): void {
-      addTweetToTweets(state.selectedTweets, action.payload);
-    },
-    unselectTweet(state: TweetState, action: PayloadAction<Tweet>): void {
-      state.selectedTweets = removeTweetFromTweets(
-        state.selectedTweets,
-        action.payload.id,
-      );
-    },
-    selectAllTweets(state: TweetState): void {
-      state.selectedTweets = [...state.tweets];
-    },
-    unselectAllTweets(state: TweetState): void {
-      state.selectedTweets = [];
-    },
-    addToTrashbox(
-      state: TweetState,
-      action: PayloadAction<DeletedTweetID[]>,
-    ): void {
-      // seach tweet by ID
-      const targets = action.payload.reduce<DeletedTweet[]>(
-        (tweets, deletedTweetID) => {
-          const tweet = state.tweets.find(
-            (tweet) => tweet.id === deletedTweetID.tweet_id,
-          );
-          if (tweet !== undefined) {
-            tweets.push({ deleted_at: deletedTweetID.deleted_at, tweet });
-          }
-          return tweets;
-        },
-        [],
-      );
-      // remove from tweets & selected tweets
-      state.tweets = removeTweetFromTweets(
-        state.tweets,
-        action.payload.map((deletedTweet) => deletedTweet.tweet_id),
-      );
-      state.selectedTweets = removeTweetFromTweets(
-        state.selectedTweets,
-        action.payload.map((deletedTweet) => deletedTweet.tweet_id),
-      );
-      // add to trashbox
-      addTweetToDeletedTweets(state.trashbox, targets);
-    },
-    deleteFromTrashbox(
-      state: TweetState,
-      action: PayloadAction<DeletedTweetID[]>,
-    ) {
-      // search tweet by ID
-      const tweets = action.payload.reduce<Tweet[]>(
-        (tweets, deletedTweetID) => {
-          const tweet = state.trashbox.find(
-            (tweet) => tweet.tweet.id === deletedTweetID.tweet_id,
-          )?.tweet;
-          if (tweet !== undefined) {
-            tweets.push(tweet);
-          }
-          return tweets;
-        },
-        [],
-      );
-      // remove from trashbox & selected deleted tweet
-      state.trashbox = removeTweetFromDeletedTweets(
-        state.trashbox,
-        action.payload.map((deletedTweet) => deletedTweet.tweet_id),
-      );
-      state.selectedDeletedTweets = removeTweetFromTweets(
-        state.selectedDeletedTweets,
-        action.payload.map((deletedTweet) => deletedTweet.tweet_id),
-      );
-      // add to tweets
-      if (tweets.length > 0) {
-        addTweetToTweets(state.tweets, tweets);
-      }
-    },
-    selectDeletedTweet(
-      state: TweetState,
-      action: PayloadAction<ArrayOr<Tweet>>,
-    ): void {
-      addTweetToTweets(state.selectedDeletedTweets, action.payload);
-    },
-    unselectDeletedTweet(
-      state: TweetState,
-      action: PayloadAction<ArrayOr<Tweet>>,
-    ): void {
-      state.selectedDeletedTweets = removeTweetFromTweets(
-        state.selectedDeletedTweets,
-        toArray(action.payload).map((tweet) => tweet.id),
-      );
-    },
-    selectAllDeletedTweets(state: TweetState) {
-      state.selectedDeletedTweets = state.trashbox.map(
-        (deletedTweet) => deletedTweet.tweet,
-      );
-    },
-    unselectAllDeletedTweets(state: TweetState) {
-      state.selectedDeletedTweets = [];
-    },
-    updateTweetSort(state: TweetState, action: PayloadAction<TweetSort>): void {
-      state.tweetSort = action.payload;
-    },
-    updateTrashboxSort(
-      state: TweetState,
-      action: PayloadAction<TrashboxSort>,
-    ): void {
-      state.trashboxSort = action.payload;
-    },
+    initialize,
+    addTweet,
+    deleteTweet,
+    selectTweet,
+    unselectTweet,
+    selectAllTweets,
+    unselectAllTweets,
+    addToTrashbox,
+    deleteFromTrashbox,
+    selectDeletedTweet,
+    unselectDeletedTweet,
+    selectAllDeletedTweets,
+    unselectAllDeletedTweets,
+    updateTweetSort,
+    updateTrashboxSort,
   },
 });
 
