@@ -20,6 +20,7 @@ import type {
   TweetID,
   TweetSort,
 } from '~/lib/tweet/types';
+import { fallbackToEmptyArray } from '~/lib/utility';
 import type { State } from '.';
 import type { TemplateErrors, UpdateTrigger } from './settings';
 
@@ -370,10 +371,3 @@ export const selectTweetToStringOption = createSelector(
     return { hostname, timezone, datetimeFormat };
   },
 );
-
-// utilities
-const EMPTY_ARRAY: [] = [];
-
-const fallbackToEmptyArray = <T>(array: T[]): T[] => {
-  return array.length === 0 ? EMPTY_ARRAY : array;
-};
