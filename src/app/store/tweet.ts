@@ -43,7 +43,7 @@ const initialTweetState = (): TweetState => {
 type Initializer = Pick<TweetState, 'tweets' | 'trashbox'> &
   Partial<Pick<TweetState, 'tweetSort' | 'trashboxSort'>>;
 
-const initialize = (
+const _initialize = (
   state: TweetState,
   action: PayloadAction<Initializer>,
 ): void => {
@@ -59,11 +59,11 @@ const initialize = (
   }
 };
 
-const addTweet = (state: TweetState, action: PayloadAction<Tweet[]>): void => {
+const _addTweet = (state: TweetState, action: PayloadAction<Tweet[]>): void => {
   addTweetToTweets(state.tweets, action.payload);
 };
 
-const deleteTweet = (
+const _deleteTweet = (
   state: TweetState,
   action: PayloadAction<Tweet[]>,
 ): void => {
@@ -77,11 +77,14 @@ const deleteTweet = (
   );
 };
 
-const selectTweet = (state: TweetState, action: PayloadAction<Tweet>): void => {
+const _selectTweet = (
+  state: TweetState,
+  action: PayloadAction<Tweet>,
+): void => {
   addTweetToTweets(state.selectedTweets, action.payload);
 };
 
-const unselectTweet = (
+const _unselectTweet = (
   state: TweetState,
   action: PayloadAction<Tweet>,
 ): void => {
@@ -91,15 +94,15 @@ const unselectTweet = (
   );
 };
 
-const selectAllTweets = (state: TweetState): void => {
+const _selectAllTweets = (state: TweetState): void => {
   state.selectedTweets = [...state.tweets];
 };
 
-const unselectAllTweets = (state: TweetState): void => {
+const _unselectAllTweets = (state: TweetState): void => {
   state.selectedTweets = [];
 };
 
-const addToTrashbox = (
+const _addToTrashbox = (
   state: TweetState,
   action: PayloadAction<DeletedTweetID[]>,
 ): void => {
@@ -129,7 +132,7 @@ const addToTrashbox = (
   addTweetToDeletedTweets(state.trashbox, targets);
 };
 
-const deleteFromTrashbox = (
+const _deleteFromTrashbox = (
   state: TweetState,
   action: PayloadAction<DeletedTweetID[]>,
 ): void => {
@@ -158,14 +161,14 @@ const deleteFromTrashbox = (
   }
 };
 
-const selectDeletedTweet = (
+const _selectDeletedTweet = (
   state: TweetState,
   action: PayloadAction<ArrayOr<Tweet>>,
 ): void => {
   addTweetToTweets(state.selectedDeletedTweets, action.payload);
 };
 
-const unselectDeletedTweet = (
+const _unselectDeletedTweet = (
   state: TweetState,
   action: PayloadAction<ArrayOr<Tweet>>,
 ): void => {
@@ -175,24 +178,24 @@ const unselectDeletedTweet = (
   );
 };
 
-const selectAllDeletedTweets = (state: TweetState) => {
+const _selectAllDeletedTweets = (state: TweetState) => {
   state.selectedDeletedTweets = state.trashbox.map(
     (deletedTweet) => deletedTweet.tweet,
   );
 };
 
-const unselectAllDeletedTweets = (state: TweetState) => {
+const _unselectAllDeletedTweets = (state: TweetState) => {
   state.selectedDeletedTweets = [];
 };
 
-const updateTweetSort = (
+const _updateTweetSort = (
   state: TweetState,
   action: PayloadAction<TweetSort>,
 ): void => {
   state.tweetSort = action.payload;
 };
 
-const updateTrashboxSort = (
+const _updateTrashboxSort = (
   state: TweetState,
   action: PayloadAction<TrashboxSort>,
 ): void => {
@@ -204,21 +207,21 @@ const tweet = createSlice({
   name: 'tweet',
   initialState: initialTweetState(),
   reducers: {
-    initialize,
-    addTweet,
-    deleteTweet,
-    selectTweet,
-    unselectTweet,
-    selectAllTweets,
-    unselectAllTweets,
-    addToTrashbox,
-    deleteFromTrashbox,
-    selectDeletedTweet,
-    unselectDeletedTweet,
-    selectAllDeletedTweets,
-    unselectAllDeletedTweets,
-    updateTweetSort,
-    updateTrashboxSort,
+    initialize: _initialize,
+    addTweet: _addTweet,
+    deleteTweet: _deleteTweet,
+    selectTweet: _selectTweet,
+    unselectTweet: _unselectTweet,
+    selectAllTweets: _selectAllTweets,
+    unselectAllTweets: _unselectAllTweets,
+    addToTrashbox: _addToTrashbox,
+    deleteFromTrashbox: _deleteFromTrashbox,
+    selectDeletedTweet: _selectDeletedTweet,
+    unselectDeletedTweet: _unselectDeletedTweet,
+    selectAllDeletedTweets: _selectAllDeletedTweets,
+    unselectAllDeletedTweets: _unselectAllDeletedTweets,
+    updateTweetSort: _updateTweetSort,
+    updateTrashboxSort: _updateTrashboxSort,
   },
 });
 

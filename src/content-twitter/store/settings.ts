@@ -9,7 +9,7 @@ export type SettingsState = {
 };
 
 // reducers
-const update = (
+const _update = (
   state: SettingsState,
   action: PayloadAction<ScrapboxIcon>,
 ): void => {
@@ -23,7 +23,7 @@ const slice = createSlice({
     scrapboxIcon: 'scrapbox' as const,
   },
   reducers: {
-    update,
+    update: _update,
   },
 });
 

@@ -23,7 +23,7 @@ export type TweetState = {
 export type ScrapboxButtonUpdater = Pick<TweetState, 'tweetID' | 'button'>;
 
 // reducers
-const updateButton = (
+const _updateButton = (
   states: TweetState[],
   action: PayloadAction<ArrayOr<ScrapboxButtonUpdater>>,
 ): void => {
@@ -37,7 +37,7 @@ const updateButton = (
   });
 };
 
-const touch = (states: TweetState[], action: PayloadAction<TweetID>): void => {
+const _touch = (states: TweetState[], action: PayloadAction<TweetID>): void => {
   const state = states.find((state) => state.tweetID === action.payload);
   if (state === undefined) {
     states.push({ tweetID: action.payload, button: { state: 'none' } });
@@ -48,8 +48,8 @@ const tweet = createSlice({
   name: 'tweet',
   initialState: [] as TweetState[],
   reducers: {
-    updateButton,
-    touch,
+    updateButton: _updateButton,
+    touch: _touch,
   },
 });
 

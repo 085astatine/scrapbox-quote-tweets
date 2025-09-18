@@ -45,7 +45,7 @@ const initialSettingsState = (): SettingsState => {
 };
 
 // reducers
-const initialize = (
+const _initialize = (
   state: SettingsState,
   action: PayloadAction<{ settings: Settings; template: TweetTemplate }>,
 ): void => {
@@ -58,7 +58,7 @@ const initialize = (
   state.updateTrigger = 'none';
 };
 
-const applyEdits = (state: SettingsState): void => {
+const _applyEdits = (state: SettingsState): void => {
   // reset errors
   state.settingsErrors = {};
   state.templateErrors = {};
@@ -90,18 +90,18 @@ const applyEdits = (state: SettingsState): void => {
   }
 };
 
-const resetEdits = (state: SettingsState): void => {
+const _resetEdits = (state: SettingsState): void => {
   state.editingSettings = {};
   state.settingsErrors = {};
   state.editingTemplate = {};
   state.templateErrors = {};
 };
 
-const resetUpdateTrigger = (state: SettingsState): void => {
+const _resetUpdateTrigger = (state: SettingsState): void => {
   state.updateTrigger = 'none';
 };
 
-const editSettings = <Key extends keyof Settings>(
+const _editSettings = <Key extends keyof Settings>(
   state: SettingsState,
   {
     payload: { type, value },
@@ -114,7 +114,7 @@ const editSettings = <Key extends keyof Settings>(
   }
 };
 
-const editTemplate = <Key extends keyof TweetTemplate>(
+const _editTemplate = <Key extends keyof TweetTemplate>(
   state: SettingsState,
   {
     payload: { type, value },
@@ -127,7 +127,7 @@ const editTemplate = <Key extends keyof TweetTemplate>(
   }
 };
 
-const updateByInterrupt = (
+const _updateByInterrupt = (
   state: SettingsState,
   action: PayloadAction<{
     settings?: Partial<Settings>;
@@ -173,13 +173,13 @@ const settings = createSlice({
   name: 'settings',
   initialState: initialSettingsState(),
   reducers: {
-    initialize,
-    applyEdits,
-    resetEdits,
-    resetUpdateTrigger,
-    editSettings,
-    editTemplate,
-    updateByInterrupt,
+    initialize: _initialize,
+    applyEdits: _applyEdits,
+    resetEdits: _resetEdits,
+    resetUpdateTrigger: _resetUpdateTrigger,
+    editSettings: _editSettings,
+    editTemplate: _editTemplate,
+    updateByInterrupt: _updateByInterrupt,
   },
 });
 
