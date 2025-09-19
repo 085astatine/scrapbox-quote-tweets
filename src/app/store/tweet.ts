@@ -1,16 +1,23 @@
-import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
+import {
+  type PayloadAction,
+  createSelector,
+  createSlice,
+  weakMapMemoize,
+} from '@reduxjs/toolkit';
 import type { Dispatch } from 'redux';
 import type { OnChangedTrashbox } from '~/lib/storage/trashbox';
 import type { OnChangedTweet } from '~/lib/storage/tweet';
-import type { TrashboxSort } from '~/lib/trashbox';
+import { type TrashboxSort, deletedTimes } from '~/lib/trashbox';
+import { tweetSortFunction } from '~/lib/tweet/sort-tweets';
 import type {
   DeletedTweet,
   DeletedTweetID,
+  SortOrder,
   Tweet,
   TweetID,
   TweetSort,
 } from '~/lib/tweet/types';
-import { type ArrayOr, toArray } from '~/lib/utility';
+import { type ArrayOr, fallbackToEmptyArray, toArray } from '~/lib/utility';
 
 // state
 export type TweetState = {
@@ -202,6 +209,153 @@ const _updateTrashboxSort = (
   state.trashboxSort = action.payload;
 };
 
+// selectors
+// selectors: tweets
+export const _selectTweetSort = (state: TweetState): TweetSort => {
+  return state.tweetSort;
+};
+
+export const _selectTweets = createSelector(
+  [(state: TweetState): Tweet[] => state.tweets, _selectTweetSort],
+  (tweets: Tweet[], sort: TweetSort): Tweet[] => {
+    return fallbackToEmptyArray([...tweets].sort(tweetSortFunction(sort)));
+  },
+);
+
+export const _selectTweetsSize = (state: TweetState): number => {
+  return state.tweets.length;
+};
+
+export const _selectIsSelectedTweet = createSelector(
+  [
+    (state: TweetState): Tweet[] => state.selectedTweets,
+    (_, tweetID: TweetID): TweetID => tweetID,
+  ],
+  (selectedTweets: Tweet[], tweetID: TweetID): boolean => {
+    return selectedTweets.some((tweet) => tweet.id === tweetID);
+  },
+  {
+    memoize: weakMapMemoize,
+    argsMemoize: weakMapMemoize,
+  },
+);
+
+export const _selectSelectedTweets = createSelector(
+  [(state: TweetState): Tweet[] => state.selectedTweets, _selectTweetSort],
+  (selectedTweets: Tweet[], sort: TweetSort): Tweet[] => {
+    return fallbackToEmptyArray(
+      [...selectedTweets].sort(tweetSortFunction(sort)),
+    );
+  },
+);
+
+export const _selectAllTweetsSelectButtonState = createSelector(
+  [
+    (state: TweetState): Tweet[] => state.tweets,
+    (state: TweetState): Tweet[] => state.selectedTweets,
+  ],
+  (
+    tweets: Tweet[],
+    selected: Tweet[],
+  ): 'disabled' | 'checked' | 'unchecked' => {
+    return (
+      tweets.length === 0 ? 'disabled'
+      : tweets.every((tweet) => selected.includes(tweet)) ? 'checked'
+      : 'unchecked'
+    );
+  },
+);
+
+// selectors: trashbox
+export const _selectTrashboxSort = (state: TweetState): TrashboxSort => {
+  return state.trashboxSort;
+};
+
+export const _selectTrashboxSize = (state: TweetState): number => {
+  return state.trashbox.length;
+};
+
+export const _selectDeletedTimes = createSelector(
+  [
+    (state: TweetState): DeletedTweet[] => state.trashbox,
+    (state: TweetState): SortOrder => state.trashboxSort.order,
+  ],
+  (trashbox: DeletedTweet[], order: SortOrder) => {
+    return fallbackToEmptyArray(deletedTimes(trashbox, order));
+  },
+);
+
+export const _selectDeletedTweets = createSelector(
+  [
+    (state: TweetState): DeletedTweet[] => state.trashbox,
+    (_, deletedTime: number): number => deletedTime,
+  ],
+  (trashbox: DeletedTweet[], deletedTime: number): Tweet[] => {
+    return fallbackToEmptyArray(
+      trashbox
+        .filter((deletedTweet) => deletedTweet.deleted_at === deletedTime)
+        .map((deletedTweet) => deletedTweet.tweet)
+        .sort(tweetSortFunction({ key: 'created_time', order: 'asc' })),
+    );
+  },
+  {
+    memoize: weakMapMemoize,
+    argsMemoize: weakMapMemoize,
+  },
+);
+
+export const _selectIsDeletedTweetSelected = createSelector(
+  [
+    (state: TweetState): Tweet[] => state.selectedDeletedTweets,
+    (_, tweetID: TweetID): TweetID => tweetID,
+  ],
+  (selected: Tweet[], tweetID: TweetID): boolean => {
+    return selected.some((tweet) => tweet.id === tweetID);
+  },
+  {
+    memoize: weakMapMemoize,
+    argsMemoize: weakMapMemoize,
+  },
+);
+
+export const _selectIsAllDeletedTweetsSelected = createSelector(
+  [
+    _selectDeletedTweets,
+    (state: TweetState): Tweet[] => state.selectedDeletedTweets,
+  ],
+  (tweets: Tweet[], selected: Tweet[]): boolean => {
+    return (
+      tweets.length > 0 && tweets.every((tweet) => selected.includes(tweet))
+    );
+  },
+  {
+    memoize: weakMapMemoize,
+    argsMemoize: weakMapMemoize,
+  },
+);
+
+export const _selectSelectedDeletedTweets = (state: TweetState): Tweet[] => {
+  return state.selectedDeletedTweets;
+};
+
+export const _selectAllTrashboxSelectButtonState = createSelector(
+  [
+    (state: TweetState): DeletedTweet[] => state.trashbox,
+    (state: TweetState): Tweet[] => state.selectedDeletedTweets,
+  ],
+  (
+    trashbox: DeletedTweet[],
+    selected: Tweet[],
+  ): 'disabled' | 'checked' | 'unchecked' => {
+    const deletedTweets = trashbox.map((deletedTweet) => deletedTweet.tweet);
+    return (
+      deletedTweets.length === 0 ? 'disabled'
+      : deletedTweets.every((tweet) => selected.includes(tweet)) ? 'checked'
+      : 'unchecked'
+    );
+  },
+);
+
 // slice
 const tweet = createSlice({
   name: 'tweet',
@@ -223,13 +377,47 @@ const tweet = createSlice({
     updateTweetSort: _updateTweetSort,
     updateTrashboxSort: _updateTrashboxSort,
   },
+  selectors: {
+    // tweets
+    selectTweetSort: _selectTweetSort,
+    selectTweets: _selectTweets,
+    selectTweetsSize: _selectTweetsSize,
+    selectIsSelectedTweet: _selectIsSelectedTweet,
+    selectSelectedTweets: _selectSelectedTweets,
+    selectAllTweetsSelectButtonState: _selectAllTweetsSelectButtonState,
+    // trashbox
+    selectTrashboxSort: _selectTrashboxSort,
+    selectTrashboxSize: _selectTrashboxSize,
+    selectDeletedTimes: _selectDeletedTimes,
+    selectDeletedTweets: _selectDeletedTweets,
+    selectIsDeletedTweetSelected: _selectIsDeletedTweetSelected,
+    selectIsAllDeletedTweetsSelected: _selectIsAllDeletedTweetsSelected,
+    selectSelectedDeletedTweets: _selectSelectedDeletedTweets,
+    selectAllTrashboxSelectButtonState: _selectAllTrashboxSelectButtonState,
+  },
 });
 
-// reducer
+// export
 export const tweetReducer = tweet.reducer;
 
-// actions
 export const tweetActions: Readonly<typeof tweet.actions> = tweet.actions;
+
+export const {
+  selectTweetSort,
+  selectTweets,
+  selectIsSelectedTweet,
+  selectSelectedTweets,
+  selectAllTweetsSelectButtonState,
+  selectTweetsSize,
+  selectTrashboxSort,
+  selectTrashboxSize,
+  selectDeletedTimes,
+  selectDeletedTweets,
+  selectIsDeletedTweetSelected,
+  selectIsAllDeletedTweetsSelected,
+  selectSelectedDeletedTweets,
+  selectAllTrashboxSelectButtonState,
+} = tweet.selectors;
 
 // storage listener
 export const tweetStorageListener = (
