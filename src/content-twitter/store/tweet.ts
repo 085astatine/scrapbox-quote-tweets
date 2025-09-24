@@ -1,4 +1,9 @@
-import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
+import {
+  type PayloadAction,
+  createSelector,
+  createSlice,
+  weakMapMemoize,
+} from '@reduxjs/toolkit';
 import type { Dispatch } from 'redux';
 import type { OnChangedTweet } from '~/lib/storage/tweet';
 import type { TweetID } from '~/lib/tweet/types';
@@ -44,6 +49,26 @@ const _touch = (states: TweetState[], action: PayloadAction<TweetID>): void => {
   }
 };
 
+// selectors
+const _selectScrapboxButtonState = createSelector(
+  [
+    (state: TweetState[]): TweetState[] => state,
+    (_, tweetID: TweetID): TweetID => tweetID,
+  ],
+  (state: TweetState[], tweetID: TweetID): ScrapboxButtonState => {
+    const tweet = state.find((tweetState) => tweetState.tweetID === tweetID);
+    if (tweet !== undefined) {
+      return tweet.button;
+    }
+    return { state: 'none' };
+  },
+  {
+    memoize: weakMapMemoize,
+    argsMemoize: weakMapMemoize,
+  },
+);
+
+// slice
 const tweet = createSlice({
   name: 'tweet',
   initialState: [] as TweetState[],
@@ -51,13 +76,17 @@ const tweet = createSlice({
     updateButton: _updateButton,
     touch: _touch,
   },
+  selectors: {
+    selectScrapboxButtonState: _selectScrapboxButtonState,
+  },
 });
 
-// reducer
+// export
 export const tweetReducer = tweet.reducer;
 
-// actions
 export const tweetActions: Readonly<typeof tweet.actions> = tweet.actions;
+
+export const { selectScrapboxButtonState } = tweet.selectors;
 
 // storage listener
 export const tweetStorageListener = (

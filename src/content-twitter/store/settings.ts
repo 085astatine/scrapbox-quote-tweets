@@ -16,6 +16,11 @@ const _update = (
   state.scrapboxIcon = action.payload;
 };
 
+// selectors
+const _selectScrapboxIcon = (state: SettingsState): ScrapboxIcon => {
+  return state.scrapboxIcon;
+};
+
 // slice
 const slice = createSlice({
   name: 'settings',
@@ -25,13 +30,17 @@ const slice = createSlice({
   reducers: {
     update: _update,
   },
+  selectors: {
+    selectScrapboxIcon: _selectScrapboxIcon,
+  },
 });
 
-// reducer
+// export
 export const settingsReducer = slice.reducer;
 
-// actions
 export const settingsActions: Readonly<typeof slice.actions> = slice.actions;
+
+export const { selectScrapboxIcon } = slice.selectors;
 
 // storage listener
 export const settingsStorageListener = (
