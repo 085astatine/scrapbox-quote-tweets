@@ -1,22 +1,10 @@
-import { createSelector } from '@reduxjs/toolkit';
+import { type Settings, settingsKeys } from '~/lib/settings';
 import {
-  type Hostname,
-  type Settings,
-  baseURL,
-  settingsKeys,
-} from '~/lib/settings';
-import {
-  type TextTemplateKey,
   type TweetTemplate,
   tweetTemplateKeys,
 } from '~/lib/tweet/tweet-template';
-import type { TweetToStringOption } from '~/lib/tweet/tweet-to-string';
 import { fallbackToEmptyArray } from '~/lib/utility';
 import type { State } from '.';
-import type { TemplateErrors, UpdateTrigger } from './settings';
-
-// types
-export type EditStatus = 'none' | 'updated' | 'invalid';
 
 // settings: current
 type SettingsSelectors = {
@@ -102,115 +90,3 @@ export const selectTemplateError: Readonly<TweetTemplateErrorsSelectors> =
       }),
     {} as TweetTemplateErrorsSelectors,
   );
-
-// settings update trigger
-export const selectSettingsUpdateTrigger = (state: State): UpdateTrigger => {
-  return state.settings.updateTrigger;
-};
-
-// settings editor
-export const selectSettingsEditStatus = createSelector(
-  [
-    (state: State): boolean =>
-      Object.keys(state.settings.editingSettings).length > 0,
-    (state: State): boolean =>
-      Object.keys(state.settings.settingsErrors).length > 0,
-  ],
-  (isUpdated: boolean, hasError: boolean): EditStatus => {
-    return (
-      hasError ? 'invalid'
-      : isUpdated ? 'updated'
-      : 'none'
-    );
-  },
-);
-
-// template edtor
-export const selectTemplateEditStatus = createSelector(
-  [
-    (state: State): boolean =>
-      Object.keys(state.settings.editingTemplate).length > 0,
-    (state: State): boolean =>
-      Object.keys(state.settings.templateErrors).length > 0,
-  ],
-  (isUpdated: boolean, hasError: boolean): EditStatus => {
-    return (
-      hasError ? 'invalid'
-      : isUpdated ? 'updated'
-      : 'none'
-    );
-  },
-);
-
-const templateEntityKeys: ReadonlyArray<TextTemplateKey> = [
-  'entityText',
-  'entityUrl',
-  'entityHashtag',
-  'entityCashtag',
-  'entityMention',
-] as const;
-export const selectTemplateEntitiesEditStatus = createSelector(
-  [
-    (state: State): Partial<TweetTemplate> => state.settings.editingTemplate,
-    (state: State): TemplateErrors => state.settings.templateErrors,
-  ],
-  (editing: Partial<TweetTemplate>, errors: TemplateErrors): EditStatus => {
-    const isUpdated = !templateEntityKeys.every((key) => !(key in editing));
-    const hasError = !templateEntityKeys.every((key) => !(key in errors));
-    return (
-      hasError ? 'invalid'
-      : isUpdated ? 'updated'
-      : 'none'
-    );
-  },
-);
-
-const templateMediaKeys: ReadonlyArray<TextTemplateKey> = [
-  'mediaPhoto',
-  'mediaVideo',
-] as const;
-export const selectTemplateMediaEditStatus = createSelector(
-  [
-    (state: State): Partial<TweetTemplate> => state.settings.editingTemplate,
-    (state: State): TemplateErrors => state.settings.templateErrors,
-  ],
-  (editing: Partial<TweetTemplate>, errors: TemplateErrors): EditStatus => {
-    const isUpdated = !templateMediaKeys.every((key) => !(key in editing));
-    const hasError = !templateMediaKeys.every((key) => !(key in errors));
-    return (
-      hasError ? 'invalid'
-      : isUpdated ? 'updated'
-      : 'none'
-    );
-  },
-);
-
-// depend on settings
-export const selectIsSettingsEdited = (state: State): boolean => {
-  return (
-    Object.keys(state.settings.editingSettings).length > 0 ||
-    Object.keys(state.settings.editingTemplate).length > 0
-  );
-};
-
-export const selectBaseURL = createSelector(
-  [selectSettings.hostname],
-  (hostname: Hostname): string => {
-    return baseURL(hostname);
-  },
-);
-
-export const selectTweetToStringOption = createSelector(
-  [
-    selectSettings.hostname,
-    selectSettings.timezone,
-    selectSettings.datetimeFormat,
-  ],
-  (
-    hostname: Hostname,
-    timezone: string,
-    datetimeFormat: string,
-  ): TweetToStringOption => {
-    return { hostname, timezone, datetimeFormat };
-  },
-);

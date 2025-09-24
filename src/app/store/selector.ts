@@ -20,17 +20,19 @@ export {
 export {
   EditStatus,
   selectBaseURL,
-  selectEditingSettings,
-  selectEditingTemplate,
   selectIsSettingsEdited,
-  selectSettings,
   selectSettingsEditStatus,
-  selectSettingsError,
   selectSettingsUpdateTrigger,
-  selectTemplate,
   selectTemplateEditStatus,
   selectTemplateEntitiesEditStatus,
-  selectTemplateError,
   selectTemplateMediaEditStatus,
   selectTweetToStringOption,
+} from './settings';
+export {
+  selectEditingSettings,
+  selectEditingTemplate,
+  selectSettings,
+  selectSettingsError,
+  selectTemplate,
+  selectTemplateError,
 } from './settings-selector';

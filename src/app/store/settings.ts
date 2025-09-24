@@ -1,8 +1,14 @@
-import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
+import {
+  type PayloadAction,
+  createSelector,
+  createSlice,
+} from '@reduxjs/toolkit';
 import equal from 'fast-deep-equal';
 import type { Dispatch } from 'redux';
 import {
+  type Hostname,
   type Settings,
+  baseURL,
   defaultSettings,
   settingsKeys,
   validateSettingsFunctions,
@@ -10,11 +16,13 @@ import {
 import type { OnChangedSettings } from '~/lib/storage/settings';
 import type { OnChangedTweetTemplate } from '~/lib/storage/tweet-template';
 import {
+  type TextTemplateKey,
   type TweetTemplate,
   defaultTweetTemplate,
   tweetTemplateKeys,
   validateTweetTemplate,
 } from '~/lib/tweet/tweet-template';
+import type { TweetToStringOption } from '~/lib/tweet/tweet-to-string';
 
 // state
 export type SettingsErrors = Partial<Record<keyof Settings, string[]>>;
@@ -168,6 +176,118 @@ const _updateByInterrupt = (
   }
 };
 
+// selector
+export type EditStatus = 'none' | 'updated' | 'invalid';
+
+const _selectSettingsUpdateTrigger = (state: SettingsState): UpdateTrigger => {
+  return state.updateTrigger;
+};
+
+const _selectSettingsEditStatus = createSelector(
+  [
+    (state: SettingsState): boolean =>
+      Object.keys(state.editingSettings).length > 0,
+    (state: SettingsState): boolean =>
+      Object.keys(state.settingsErrors).length > 0,
+  ],
+  (isUpdated: boolean, hasError: boolean): EditStatus => {
+    return (
+      hasError ? 'invalid'
+      : isUpdated ? 'updated'
+      : 'none'
+    );
+  },
+);
+
+const _selectTemplateEditStatus = createSelector(
+  [
+    (state: SettingsState): boolean =>
+      Object.keys(state.editingTemplate).length > 0,
+    (state: SettingsState): boolean =>
+      Object.keys(state.templateErrors).length > 0,
+  ],
+  (isUpdated: boolean, hasError: boolean): EditStatus => {
+    return (
+      hasError ? 'invalid'
+      : isUpdated ? 'updated'
+      : 'none'
+    );
+  },
+);
+
+const _selectIsSettingsEdited = (state: SettingsState): boolean => {
+  return (
+    Object.keys(state.editingSettings).length > 0 ||
+    Object.keys(state.editingTemplate).length > 0
+  );
+};
+
+const templateEntityKeys: ReadonlyArray<TextTemplateKey> = [
+  'entityText',
+  'entityUrl',
+  'entityHashtag',
+  'entityCashtag',
+  'entityMention',
+] as const;
+
+const _selectTemplateEntitiesEditStatus = createSelector(
+  [
+    (state: SettingsState): Partial<TweetTemplate> => state.editingTemplate,
+    (state: SettingsState): TemplateErrors => state.templateErrors,
+  ],
+  (editing: Partial<TweetTemplate>, errors: TemplateErrors): EditStatus => {
+    const isUpdated = !templateEntityKeys.every((key) => !(key in editing));
+    const hasError = !templateEntityKeys.every((key) => !(key in errors));
+    return (
+      hasError ? 'invalid'
+      : isUpdated ? 'updated'
+      : 'none'
+    );
+  },
+);
+
+const templateMediaKeys: ReadonlyArray<TextTemplateKey> = [
+  'mediaPhoto',
+  'mediaVideo',
+] as const;
+const _selectTemplateMediaEditStatus = createSelector(
+  [
+    (state: SettingsState): Partial<TweetTemplate> => state.editingTemplate,
+    (state: SettingsState): TemplateErrors => state.templateErrors,
+  ],
+  (editing: Partial<TweetTemplate>, errors: TemplateErrors): EditStatus => {
+    const isUpdated = !templateMediaKeys.every((key) => !(key in editing));
+    const hasError = !templateMediaKeys.every((key) => !(key in errors));
+    return (
+      hasError ? 'invalid'
+      : isUpdated ? 'updated'
+      : 'none'
+    );
+  },
+);
+
+const _selectBaseURL = createSelector(
+  [(state: SettingsState): Hostname => state.currentSettings.hostname],
+  (hostname: Hostname): string => {
+    return baseURL(hostname);
+  },
+);
+
+const _selectTweetToStringOption = createSelector(
+  [
+    (state: SettingsState): Hostname => state.currentSettings.hostname,
+    (state: SettingsState): string => state.currentSettings.timezone,
+    (state: SettingsState): string => state.currentSettings.datetimeFormat,
+  ],
+  (
+    hostname: Hostname,
+    timezone: string,
+    datetimeFormat: string,
+  ): TweetToStringOption => {
+    return { hostname, timezone, datetimeFormat };
+  },
+);
+
 // slice
 const settings = createSlice({
   name: 'settings',
@@ -181,14 +301,34 @@ const settings = createSlice({
     editTemplate: _editTemplate,
     updateByInterrupt: _updateByInterrupt,
   },
+  selectors: {
+    selectSettingsUpdateTrigger: _selectSettingsUpdateTrigger,
+    selectSettingsEditStatus: _selectSettingsEditStatus,
+    selectTemplateEditStatus: _selectTemplateEditStatus,
+    selectTemplateEntitiesEditStatus: _selectTemplateEntitiesEditStatus,
+    selectTemplateMediaEditStatus: _selectTemplateMediaEditStatus,
+    selectIsSettingsEdited: _selectIsSettingsEdited,
+    selectBaseURL: _selectBaseURL,
+    selectTweetToStringOption: _selectTweetToStringOption,
+  },
 });
 
-// reducer
+// export
 export const settingsReducer = settings.reducer;
 
-// actions
 export const settingsActions: Readonly<typeof settings.actions> =
   settings.actions;
+
+export const {
+  selectSettingsUpdateTrigger,
+  selectSettingsEditStatus,
+  selectTemplateEditStatus,
+  selectTemplateEntitiesEditStatus,
+  selectTemplateMediaEditStatus,
+  selectIsSettingsEdited,
+  selectBaseURL,
+  selectTweetToStringOption,
+} = settings.selectors;
 
 // storage listener
 export const settingsStorageListener = (
