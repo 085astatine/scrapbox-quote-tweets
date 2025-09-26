@@ -22,7 +22,7 @@ const _selectScrapboxIcon = (state: SettingsState): ScrapboxIcon => {
 };
 
 // slice
-const slice = createSlice({
+const settingsSlice = createSlice({
   name: 'settings',
   initialState: {
     scrapboxIcon: 'scrapbox' as const,
@@ -36,11 +36,12 @@ const slice = createSlice({
 });
 
 // export
-export const settingsReducer = slice.reducer;
+export const settingsReducer = settingsSlice.reducer;
 
-export const settingsActions: Readonly<typeof slice.actions> = slice.actions;
+export const settingsActions: Readonly<typeof settingsSlice.actions> =
+  settingsSlice.actions;
 
-export const { selectScrapboxIcon } = slice.selectors;
+export const { selectScrapboxIcon } = settingsSlice.selectors;
 
 // storage listener
 export const settingsStorageListener = (

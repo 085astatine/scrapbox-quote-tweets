@@ -289,7 +289,7 @@ const _selectTweetToStringOption = createSelector(
 );
 
 // slice
-const settings = createSlice({
+const settingsSlice = createSlice({
   name: 'settings',
   initialState: initialSettingsState(),
   reducers: {
@@ -314,10 +314,10 @@ const settings = createSlice({
 });
 
 // export
-export const settingsReducer = settings.reducer;
+export const settingsReducer = settingsSlice.reducer;
 
-export const settingsActions: Readonly<typeof settings.actions> =
-  settings.actions;
+export const settingsActions: Readonly<typeof settingsSlice.actions> =
+  settingsSlice.actions;
 
 export const {
   selectSettingsUpdateTrigger,
@@ -328,7 +328,7 @@ export const {
   selectIsSettingsEdited,
   selectBaseURL,
   selectTweetToStringOption,
-} = settings.selectors;
+} = settingsSlice.selectors;
 
 // storage listener
 export const settingsStorageListener = (

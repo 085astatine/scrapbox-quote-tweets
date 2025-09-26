@@ -357,7 +357,7 @@ export const _selectAllTrashboxSelectButtonState = createSelector(
 );
 
 // slice
-const tweet = createSlice({
+const tweetSlice = createSlice({
   name: 'tweet',
   initialState: initialTweetState(),
   reducers: {
@@ -398,9 +398,10 @@ const tweet = createSlice({
 });
 
 // export
-export const tweetReducer = tweet.reducer;
+export const tweetReducer = tweetSlice.reducer;
 
-export const tweetActions: Readonly<typeof tweet.actions> = tweet.actions;
+export const tweetActions: Readonly<typeof tweetSlice.actions> =
+  tweetSlice.actions;
 
 export const {
   selectTweetSort,
@@ -417,7 +418,7 @@ export const {
   selectIsAllDeletedTweetsSelected,
   selectSelectedDeletedTweets,
   selectAllTrashboxSelectButtonState,
-} = tweet.selectors;
+} = tweetSlice.selectors;
 
 // storage listener
 export const tweetStorageListener = (

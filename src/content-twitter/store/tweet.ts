@@ -69,7 +69,7 @@ const _selectScrapboxButtonState = createSelector(
 );
 
 // slice
-const tweet = createSlice({
+const tweetSlice = createSlice({
   name: 'tweet',
   initialState: [] as TweetState[],
   reducers: {
@@ -82,11 +82,12 @@ const tweet = createSlice({
 });
 
 // export
-export const tweetReducer = tweet.reducer;
+export const tweetReducer = tweetSlice.reducer;
 
-export const tweetActions: Readonly<typeof tweet.actions> = tweet.actions;
+export const tweetActions: Readonly<typeof tweetSlice.actions> =
+  tweetSlice.actions;
 
-export const { selectScrapboxButtonState } = tweet.selectors;
+export const { selectScrapboxButtonState } = tweetSlice.selectors;
 
 // storage listener
 export const tweetStorageListener = (
