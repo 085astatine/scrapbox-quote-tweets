@@ -1,4 +1,9 @@
-import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
+import {
+  type PayloadAction,
+  createSelector,
+  createSlice,
+  weakMapMemoize,
+} from '@reduxjs/toolkit';
 import type { Dispatch } from 'redux';
 import type { OnChangedTweet } from '~/lib/storage/tweet';
 import type { TweetID } from '~/lib/tweet/types';
@@ -22,37 +27,67 @@ export type TweetState = {
 // slice
 export type ScrapboxButtonUpdater = Pick<TweetState, 'tweetID' | 'button'>;
 
-const tweet = createSlice({
+// reducers
+const _updateButton = (
+  states: TweetState[],
+  action: PayloadAction<ArrayOr<ScrapboxButtonUpdater>>,
+): void => {
+  toArray(action.payload).forEach(({ tweetID, button }) => {
+    const state = states.find((state) => state.tweetID === tweetID);
+    if (state !== undefined) {
+      state.button = button;
+    } else {
+      states.push({ tweetID, button });
+    }
+  });
+};
+
+const _touch = (states: TweetState[], action: PayloadAction<TweetID>): void => {
+  const state = states.find((state) => state.tweetID === action.payload);
+  if (state === undefined) {
+    states.push({ tweetID: action.payload, button: { state: 'none' } });
+  }
+};
+
+// selectors
+const _selectScrapboxButtonState = createSelector(
+  [
+    (state: TweetState[]): TweetState[] => state,
+    (_, tweetID: TweetID): TweetID => tweetID,
+  ],
+  (state: TweetState[], tweetID: TweetID): ScrapboxButtonState => {
+    const tweet = state.find((tweetState) => tweetState.tweetID === tweetID);
+    if (tweet !== undefined) {
+      return tweet.button;
+    }
+    return { state: 'none' };
+  },
+  {
+    memoize: weakMapMemoize,
+    argsMemoize: weakMapMemoize,
+  },
+);
+
+// slice
+const tweetSlice = createSlice({
   name: 'tweet',
   initialState: [] as TweetState[],
   reducers: {
-    updateButton(
-      states: TweetState[],
-      action: PayloadAction<ArrayOr<ScrapboxButtonUpdater>>,
-    ) {
-      toArray(action.payload).forEach(({ tweetID, button }) => {
-        const state = states.find((state) => state.tweetID === tweetID);
-        if (state !== undefined) {
-          state.button = button;
-        } else {
-          states.push({ tweetID, button });
-        }
-      });
-    },
-    touch(states: TweetState[], action: PayloadAction<TweetID>) {
-      const state = states.find((state) => state.tweetID === action.payload);
-      if (state === undefined) {
-        states.push({ tweetID: action.payload, button: { state: 'none' } });
-      }
-    },
+    updateButton: _updateButton,
+    touch: _touch,
+  },
+  selectors: {
+    selectScrapboxButtonState: _selectScrapboxButtonState,
   },
 });
 
-// reducer
-export const tweetReducer = tweet.reducer;
+// export
+export const tweetReducer = tweetSlice.reducer;
 
-// actions
-export const tweetActions: Readonly<typeof tweet.actions> = tweet.actions;
+export const tweetActions: Readonly<typeof tweetSlice.actions> =
+  tweetSlice.actions;
+
+export const { selectScrapboxButtonState } = tweetSlice.selectors;
 
 // storage listener
 export const tweetStorageListener = (
