@@ -26,6 +26,7 @@ export {
   selectTemplateEditStatus,
   selectTemplateEntitiesEditStatus,
   selectTemplateMediaEditStatus,
+  selectTweetTemplate,
   selectTweetToStringOption,
 } from './settings';
 export {

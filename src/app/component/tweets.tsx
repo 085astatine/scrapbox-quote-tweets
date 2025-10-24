@@ -6,7 +6,6 @@ import TrashboxIcon from '~/icon/google-fonts/delete.svg';
 import { Collapse } from '~/lib/component/transition';
 import { addTweetsToTrashbox } from '~/lib/storage/trashbox';
 import { saveTweetSort } from '~/lib/storage/tweet-sort';
-import { defaultTweetTemplate } from '~/lib/tweet/tweet-template';
 import { tweetToString } from '~/lib/tweet/tweet-to-string';
 import type {
   SortOrder,
@@ -20,6 +19,7 @@ import {
   selectIsSelectedTweet,
   selectSelectedTweets,
   selectTweetSort,
+  selectTweetTemplate,
   selectTweetToStringOption,
   selectTweets,
   selectTweetsSize,
@@ -153,14 +153,13 @@ const SelectSort: React.FC = () => {
 const Commands: React.FC = () => {
   const ref = React.useRef<HTMLDivElement>(null);
   const tweets = useSelector(selectSelectedTweets, shallowEqual);
+  const tweetTemplate = useSelector(selectTweetTemplate, shallowEqual);
   const toStringOption = useSelector(selectTweetToStringOption, shallowEqual);
   // clipboard
   const copyToClipboard = () => {
     // copy to clipboard
     const text = tweets
-      .map((tweet) =>
-        tweetToString(tweet, defaultTweetTemplate(), toStringOption),
-      )
+      .map((tweet) => tweetToString(tweet, tweetTemplate, toStringOption))
       .join('\n');
     navigator.clipboard.writeText(text);
     // move to trashbox

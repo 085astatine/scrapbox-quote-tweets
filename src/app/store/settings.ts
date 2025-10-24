@@ -179,6 +179,10 @@ const _updateByInterrupt = (
 // selector
 export type EditStatus = 'none' | 'updated' | 'invalid';
 
+const _selectTweetTemplate = (state: SettingsState): TweetTemplate => {
+  return state.currentTemplate;
+};
+
 const _selectSettingsUpdateTrigger = (state: SettingsState): UpdateTrigger => {
   return state.updateTrigger;
 };
@@ -302,6 +306,7 @@ const settingsSlice = createSlice({
     updateByInterrupt: _updateByInterrupt,
   },
   selectors: {
+    selectTweetTemplate: _selectTweetTemplate,
     selectSettingsUpdateTrigger: _selectSettingsUpdateTrigger,
     selectSettingsEditStatus: _selectSettingsEditStatus,
     selectTemplateEditStatus: _selectTemplateEditStatus,
@@ -320,6 +325,7 @@ export const settingsActions: Readonly<typeof settingsSlice.actions> =
   settingsSlice.actions;
 
 export const {
+  selectTweetTemplate,
   selectSettingsUpdateTrigger,
   selectSettingsEditStatus,
   selectTemplateEditStatus,
